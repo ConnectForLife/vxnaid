@@ -60,6 +60,7 @@ class SubstancesDataUtil {
                     otherSubstancesDataModelList.add(
                         OtherSubstanceDataModel(
                             otherSubstance.conceptName,
+                            otherSubstance.label,
                             otherSubstance.category,
                             otherSubstance.options
                         )
@@ -89,6 +90,7 @@ class SubstancesDataUtil {
 
             return SubstanceDataModel(
                 substanceToBeAdministered,
+                substance.label,
                 substance.category,
                 substance.routeOfAdministration
             )
