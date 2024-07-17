@@ -405,7 +405,8 @@ class VisitViewModel @Inject constructor(
                     weight = weight!!,
                     height = height!!,
                     isOedema = isOedema!!,
-                    muac = muac
+                    muac = muac,
+                    substanceObservations = null
                 )
 
                 // schedule next visit after submitting current one
