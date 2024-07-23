@@ -133,9 +133,11 @@
     <string name="participant_registration_details_label_select_language">Sélectionner la langue</string>
     <string name="participant_registration_details_error_no_participant_id">Veuillez entrer le NIP du participant</string>
     <string name="participant_registration_details_error_invalid_participant_id">Veuillez saisir un identifiant NIP de participant valide</string>
+    <string name="participant_registration_details_error_no_mother_name">Veuillez entrer le nom d\'une mère</string>
     <string name="participant_registration_details_error_no_gender">Veuillez sélectionner un genre</string>
     <string name="participant_registration_details_error_no_year_of_birth">Veuillez entrer une année de naissance valide</string>
     <string name="participant_registration_details_error_no_phone">Veuillez sélectionner un numéro de téléphone valide</string>
+    <string name="participant_registration_details_error_no_letters_used">Veuillez utiliser uniquement des lettres</string>
     <string name="participant_registration_details_error_no_home_location">Veuillez sélectionner le lieu du domicile</string>
     <string name="participant_registration_details_error_no_vaccine">Veuillez sélectionner un schéma de vaccination</string>
     <string name="participant_registration_details_error_no_language">Veuillez sélectionner une langue</string>
