@@ -158,21 +158,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     }
 
     private fun setupInputListeners() {
-
-        binding.editConfirmParticipantId.doAfterTextChanged {
-            val text = binding.editConfirmParticipantId.text.toString()
-            val formattedText = formatParticipantId(text)
-            if (formattedText != text) {
-                binding.editConfirmParticipantId.setTextKeepSelection(formattedText)
-            }
-            viewModel.setConfirmParticipantId(formattedText)
-        }
-
         binding.editParticipantNin.doAfterTextChanged {
-            val text = binding.editParticipantNin.text.toString()
-            viewModel.setNin(text)
+            viewModel.setNin(it?.toString().orEmpty())
         }
-        
 
         binding.editParticipantId.doAfterTextChanged {
             val text = binding.editParticipantId.text.toString()
@@ -191,9 +179,17 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.setBirthWeight(it?.toString().orEmpty())
         }
 
-//        binding.editYearOfBirth.doAfterTextChanged {
-//            viewModel.setYearOfBirth(it?.toString().orEmpty())
-//        }
+        binding.editMotherName.doAfterTextChanged {
+            viewModel.setMotherName(it?.toString().orEmpty())
+        }
+
+        binding.editFathersName.doAfterTextChanged {
+            viewModel.setFatherName(it?.toString().orEmpty())
+        }
+
+        binding.editChildName.doAfterTextChanged {
+            viewModel.setChildName(it?.toString().orEmpty())
+        }
     }
 
     private fun setupPhoneInput() {

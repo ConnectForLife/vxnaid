@@ -148,9 +148,11 @@
     <string name="participant_registration_details_error_no_participant_id">Please enter a Child ID</string>
     <string name="participant_registration_details_error_invalid_participant_id">Please enter a valid Child ID</string>
     <string name="participant_registration_details_error_not_same_participant_id">Child Number\'s do not match</string>
+    <string name="participant_registration_details_error_no_mother_name">Please enter a mother\'s name</string>
     <string name="participant_registration_details_error_no_gender">Please select a gender</string>
     <string name="participant_registration_details_error_no_year_of_birth">Please enter a valid year of birth</string>
     <string name="participant_registration_details_error_no_phone">Please enter a valid phone number with only numbers and spaces</string>
+    <string name="participant_registration_details_error_no_letters_used">Please use letters only</string>
     <string name="participant_registration_details_error_no_home_location">Please select a address</string>
     <string name="participant_registration_details_error_no_vaccine">Please select a regimen</string>
     <string name="participant_registration_details_error_no_language">Please select a language</string>
@@ -338,7 +340,6 @@
     <string name="participant_registration_details_label_is_birth_date_estimated">Is Birth Date Estimated?</string>
     <string name="participant_registration_details_error_no_birthday">Please select a birthdate</string>
     <string name="participant_registration_details_error_birthdate_bigger_than_today">Invalid future date</string>
-    <string name="participant_registration_details_error_no_nin">Please enter a National ID</string>
     <string name="participant_registration_details_error_nin_already_exist">National ID is already in use. Please use different one</string>
     <string name="visit_z_score_weight_label">Weight:</string>
     <string name="visit_z_score_label">Z Score:</string>
