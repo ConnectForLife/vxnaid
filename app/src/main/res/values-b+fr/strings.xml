@@ -104,7 +104,7 @@
     <string name="msg_no_iris_license_must_force_close">L\'application doit être fermée de force et redémarrée avant que les licences d\'iris puissent être obtenues. Faites-le lorsque la synchronisation n\'est pas en cours.</string>
     <string name="participant_matching_msg_no_iris_license">Aucune licence d\'iris n\'a pu être obtenue, impossible d\'effectuer la correspondance.</string>
     <string name="participant_matching_description">Veuillez sélectionner le participant reconnu ou enregistrer un nouveau participant:</string>
-    <string name="participant_matching_btn_new_participant">Nouveau participant</string>
+    <string name="participant_matching_btn_new_participant">Inscrire un nouvel enfant</string>
     <string name="participant_matching_btn_match_selected">Lancer la reconnaissance du participant sélectionné</string>
     <string name="participant_matching_label_no_results_this_site">Aucun participant trouvé sur votre site.</string>
     <string name="participant_matching_label_other_results">Les participants suivants ont été trouvés en dehors de votre site:</string>
