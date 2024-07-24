@@ -1,6 +1,5 @@
 package com.jnj.vaccinetracker.register.screens
 
-import android.util.Log
 import androidx.collection.ArrayMap
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.yearNow
@@ -17,6 +16,7 @@ import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableExceptio
 import com.jnj.vaccinetracker.common.exceptions.ParticipantAlreadyExistsException
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.model.DisplayValue
+import com.jnj.vaccinetracker.common.validators.NinValidator
 import com.jnj.vaccinetracker.common.validators.ParticipantIdValidator
 import com.jnj.vaccinetracker.common.validators.PhoneValidator
 import com.jnj.vaccinetracker.common.validators.TextInputValidator
@@ -25,6 +25,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel
+import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiService
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
@@ -50,7 +51,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         private val getTempBiometricsTemplatesBytesUseCase: GetTempBiometricsTemplatesBytesUseCase,
         private val fullPhoneFormatter: FullPhoneFormatter,
         private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
-        private val textInputValidator: TextInputValidator
+        private val textInputValidator: TextInputValidator,
+        private val ninValidator: NinValidator
 ) : ViewModelBase() {
 
     private companion object {
@@ -133,6 +135,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     val vaccineNames = mutableLiveData<List<DisplayValue>>()
     val languages = mutableLiveData<List<DisplayValue>>()
+    val ninIdentifiers = mutableLiveData<NinIdentifiersList>()
 
     var canSkipPhone = false
     private val irisScans = ArrayMap<IrisPosition, Boolean>()
@@ -175,6 +178,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val loc = configurationManager.getLocalization()
             onSiteAndConfigurationLoaded(site, configuration, loc)
             loading.set(false)
+            ninIdentifiers.set(configurationManager.getNinIdentifiers())
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()
@@ -387,19 +391,30 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         return isValid
     }
 
-    private suspend fun isNinValueValid(ninValue: String?): Boolean {
+    private fun isNinValueValid(ninValue: String?): Boolean {
         var isValid = true
-        if (isNinAlreadyExist(ninValue)) {
-            isValid = false
-            ninValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_nin_already_exist))
+
+        if (!ninValue.isNullOrEmpty()) {
+            if (!ninValidator.validate(ninValue)) {
+                isValid = false
+                ninValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_nin_wrong_format))
+            } else if (isNinAlreadyExist(ninValue)) {
+                isValid = false
+                ninValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_nin_already_exist))
+            }
         }
 
         return isValid
     }
 
-    private suspend fun isNinAlreadyExist(ninValue: String?): Boolean {
-        val ninIds = configurationManager.getNinIdentifiers().map { it.identifierValue }
-        return ninIds.any { it.equals(ninValue, ignoreCase = true) }
+    private fun isNinAlreadyExist(ninValue: String?): Boolean {
+        val ninIds = ninIdentifiers.get()?.map { it.identifierValue }
+
+        if (!ninIds.isNullOrEmpty()) {
+            return ninIds.any { it.equals(ninValue, ignoreCase = true) }
+        }
+
+        return false
     }
 
     private fun resetValidationMessages() {
