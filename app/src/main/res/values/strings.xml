@@ -113,7 +113,7 @@
     <string name="scan_barcode_grant_permission">Grant permission</string>
     <string name="participant_matching_msg_no_iris_license">No iris license could be obtained, cannot perform matching.</string>
     <string name="participant_matching_description">Please select matching Child or register a new Child:</string>
-    <string name="participant_matching_btn_new_participant">New Child</string>
+    <string name="participant_matching_btn_new_participant">Register a new child</string>
     <string name="participant_matching_btn_match_selected">Match selected Child</string>
     <string name="participant_matching_label_no_results_this_site">No match found within your site.</string>
     <string name="participant_matching_label_other_results">The following matches were found outside your site:</string>
