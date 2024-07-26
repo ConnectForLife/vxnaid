@@ -500,11 +500,31 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (currentBirthDate == birthDate && currentIsChecked == isChecked) return
 
         this.birthDate.set(birthDate)
-        val formattedDate = birthDate?.format(DateFormat.FORMAT_DATE)
+        val formattedDate =  if (isChecked) {
+            calculateAgeFromDate(birthDate!!)
+        } else {
+            birthDate?.format(DateFormat.FORMAT_DATE)
+        }
+            //birthDate?.format(DateFormat.FORMAT_DATE)
         this.birthDateText.set(formattedDate)
         birthDateValidationMessage.set(null)
         isBirthDateEstimated.set(isChecked)
     }
+
+    private fun calculateAgeFromDate(birthDate: DateTime): String {
+        val now = DateTime.now()
+        val years = now.yearInt - birthDate.yearInt
+        val months = now.month1 - birthDate.month1
+        val days = now.dayOfMonth - birthDate.dayOfMonth
+
+        var adjustedYears = years
+        if (months < 0 || (months == 0 && days < 0)) {
+            adjustedYears--
+        }
+
+        return "$adjustedYears years"
+    }
+
 
     private fun createFullPhone(): String {
         val phone = phone.value ?: return ""
