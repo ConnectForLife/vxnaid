@@ -64,19 +64,9 @@
             android:maxLines="1"
             android:text="@string/visit_label_year_of_birth"
             android:textAppearance="@style/LabelText"
-            app:layout_constraintBottom_toTopOf="@+id/textView_pre_vaccine"
+            app:layout_constraintBottom_toTopOf="@+id/separator"
             app:layout_constraintStart_toStartOf="@id/textView_pre_participantID"
             app:layout_constraintTop_toBottomOf="@+id/textView_pre_gender" />
-
-        <TextView
-            android:id="@+id/textView_pre_vaccine"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:maxLines="1"
-            android:text="@string/visit_label_vaccine"
-            android:textAppearance="@style/LabelText"
-            app:layout_constraintStart_toStartOf="@id/textView_pre_participantID"
-            app:layout_constraintTop_toBottomOf="@+id/textView_pre_yearOfBirth" />
 
         <TextView
             android:id="@+id/textView_participantID"
@@ -109,16 +99,6 @@
             app:layout_constraintEnd_toEndOf="@+id/textView_gender"
             app:layout_constraintStart_toStartOf="@+id/textView_participantID" />
 
-        <TextView
-            android:id="@+id/textView_vaccine"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.participant.vaccine.display}"
-            android:textAppearance="@style/GeneralText"
-            app:layout_constraintBaseline_toBaselineOf="@+id/textView_pre_vaccine"
-            app:layout_constraintEnd_toEndOf="@+id/textView_gender"
-            app:layout_constraintStart_toStartOf="@+id/textView_participantID" />
-
         <ImageView
             android:id="@+id/img_participant"
             android:layout_width="140dp"
@@ -126,7 +106,7 @@
             android:layout_marginEnd="32dp"
             android:scaleType="fitStart"
             app:imageUiModel="@{viewModel.participantImage}"
-            app:layout_constraintBottom_toBottomOf="@id/textView_pre_vaccine"
+            app:layout_constraintBottom_toBottomOf="@id/textView_pre_yearOfBirth"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/textView_pre_participantID"
             app:srcCompat="@drawable/ic_avatar_operator" />
@@ -141,7 +121,7 @@
             android:background="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textView_pre_vaccine" />
+            app:layout_constraintTop_toBottomOf="@id/textView_pre_yearOfBirth" />
 
         <TextView
             android:id="@+id/label_visit_type"
