@@ -20,6 +20,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantUiModel
+import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDetailsViewModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import kotlinx.coroutines.flow.*
@@ -30,6 +31,7 @@ import javax.inject.Inject
 
 class ParticipantFlowMatchingViewModel @Inject constructor(
     private val syncSettingsRepository: SyncSettingsRepository,
+    private val registerParticipantParticipantDetailsViewModel: RegisterParticipantParticipantDetailsViewModel,
     private val participantManager: ParticipantManager,
     private val configurationManager: ConfigurationManager,
     private val resourcesWrapper: ResourcesWrapper,
@@ -211,7 +213,7 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                         participantUUID = participant.uuid,
                         participantId = participant.participantId,
                         irisMatchingScore = participant.matchingScore,
-                        birthDateText = participant.birthDate.toDateTime().format(DateFormat.FORMAT_DATE),
+                        birthDateText = RegisterParticipantParticipantDetailsViewModel.calculateAgeFromDate(participant.birthDate.toDateTime()),
                         isBirthDateEstimated=participant.isBirthDateEstimated,
                         gender = participant.gender,
                         telephone = participant.telephoneNumber,
@@ -319,5 +321,4 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
         OTHERSITEPARTICIPANT(1),
         SUBTITLE(2)
     }
-
 }

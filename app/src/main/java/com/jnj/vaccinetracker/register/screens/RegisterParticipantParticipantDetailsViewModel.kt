@@ -55,7 +55,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         private val ninValidator: NinValidator
 ) : ViewModelBase() {
 
-    private companion object {
+    companion object {
         private const val YEAR_OF_BIRTH_MIN_VALUE = 1900
         private val YEAR_OF_BIRTH_MAX_VALUE = yearNow()
         private const val YEAR_OF_BIRTH_LENGTH = 4
@@ -64,6 +64,21 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
          * wait this long before we validate a field while typing
          */
         private val INLINE_VALIDATION_DELAY = 2.seconds
+
+        fun calculateAgeFromDate(birthDate: DateTime): String {
+            val now = DateTime.now()
+            val years = now.yearInt - birthDate.yearInt
+            val months = now.month1 - birthDate.month1
+            val days = now.dayOfMonth - birthDate.dayOfMonth
+
+            var adjustedYears = years
+            if (months < 0 || (months == 0 && days < 0)) {
+                adjustedYears--
+            }
+
+            return "$adjustedYears years"
+        }
+
 
     }
 
@@ -510,21 +525,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         birthDateValidationMessage.set(null)
         isBirthDateEstimated.set(isChecked)
     }
-
-    private fun calculateAgeFromDate(birthDate: DateTime): String {
-        val now = DateTime.now()
-        val years = now.yearInt - birthDate.yearInt
-        val months = now.month1 - birthDate.month1
-        val days = now.dayOfMonth - birthDate.dayOfMonth
-
-        var adjustedYears = years
-        if (months < 0 || (months == 0 && days < 0)) {
-            adjustedYears--
-        }
-
-        return "$adjustedYears years"
-    }
-
 
     private fun createFullPhone(): String {
         val phone = phone.value ?: return ""
