@@ -14,7 +14,6 @@ import com.soywiz.klock.DateTimeSpan
 import java.util.Calendar
 
 class BirthDatePickerDialog(
-    // initialing variables
     private var selectedDate: DateTime? = null,
     private var isBirthDateEstimatedChecked: Boolean = false,
     private var yearsEstimated: Int? = null,
@@ -127,7 +126,6 @@ class BirthDatePickerDialog(
         numberPickerMonths.wrapSelectorWheel = false
         numberPickerDays.wrapSelectorWheel = false
 
-        // Add listeners to the NumberPickers to update the DatePicker
         numberPickerYears.setOnValueChangedListener { _, _, _ -> updateDatePicker() }
         numberPickerMonths.setOnValueChangedListener { _, _, _ -> updateDatePicker() }
         numberPickerDays.setOnValueChangedListener { _, _, _ -> updateDatePicker() }

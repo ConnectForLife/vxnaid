@@ -520,7 +520,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         } else {
             birthDate?.format(DateFormat.FORMAT_DATE)
         }
-            //birthDate?.format(DateFormat.FORMAT_DATE)
         this.birthDateText.set(formattedDate)
         birthDateValidationMessage.set(null)
         isBirthDateEstimated.set(isChecked)
