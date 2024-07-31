@@ -55,7 +55,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         private val ninValidator: NinValidator
 ) : ViewModelBase() {
 
-    private companion object {
+    companion object {
         private const val YEAR_OF_BIRTH_MIN_VALUE = 1900
         private val YEAR_OF_BIRTH_MAX_VALUE = yearNow()
         private const val YEAR_OF_BIRTH_LENGTH = 4
@@ -65,6 +65,27 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
          */
         private val INLINE_VALIDATION_DELAY = 2.seconds
 
+        fun calculateAgeFromDate(birthDate: DateTime): String {
+            val now = DateTime.now()
+            val years = now.yearInt - birthDate.yearInt
+            val months = now.month1 - birthDate.month1
+            val days = now.dayOfMonth - birthDate.dayOfMonth
+
+            val adjustedMonths = if (days < 0) months - 1 else months
+            val adjustedYears = if (adjustedMonths < 0) years - 1 else years
+
+            val totalMonths = (adjustedYears * 12) + adjustedMonths
+
+            val daysUntilNow = now.unixMillisLong / (1000 * 60 * 60 * 24)
+            val daysUntilBirthDate = birthDate.unixMillisLong / (1000 * 60 * 60 * 24)
+            val totalDays = (daysUntilNow - daysUntilBirthDate).toInt()
+
+            return when {
+                totalDays < 30 -> "$totalDays days"
+                totalMonths < 24 -> "$totalMonths months"
+                else -> "$adjustedYears years"
+            }
+        }
     }
 
     data class Args(
@@ -500,7 +521,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (currentBirthDate == birthDate && currentIsChecked == isChecked) return
 
         this.birthDate.set(birthDate)
-        val formattedDate = birthDate?.format(DateFormat.FORMAT_DATE)
+        val formattedDate =  if (isChecked) {
+            calculateAgeFromDate(birthDate!!)
+        } else {
+            birthDate?.format(DateFormat.FORMAT_DATE)
+        }
         this.birthDateText.set(formattedDate)
         birthDateValidationMessage.set(null)
         isBirthDateEstimated.set(isChecked)
