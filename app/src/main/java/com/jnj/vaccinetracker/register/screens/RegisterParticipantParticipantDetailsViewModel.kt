@@ -71,15 +71,21 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val months = now.month1 - birthDate.month1
             val days = now.dayOfMonth - birthDate.dayOfMonth
 
-            var adjustedYears = years
-            if (months < 0 || (months == 0 && days < 0)) {
-                adjustedYears--
+            val adjustedMonths = if (days < 0) months - 1 else months
+            val adjustedYears = if (adjustedMonths < 0) years - 1 else years
+
+            val totalMonths = (adjustedYears * 12) + adjustedMonths
+
+            val daysUntilNow = now.unixMillisLong / (1000 * 60 * 60 * 24)
+            val daysUntilBirthDate = birthDate.unixMillisLong / (1000 * 60 * 60 * 24)
+            val totalDays = (daysUntilNow - daysUntilBirthDate).toInt()
+
+            return when {
+                totalDays < 30 -> "$totalDays days"
+                totalMonths < 24 -> "$totalMonths months"
+                else -> "$adjustedYears years"
             }
-
-            return "$adjustedYears years"
         }
-
-
     }
 
     data class Args(
