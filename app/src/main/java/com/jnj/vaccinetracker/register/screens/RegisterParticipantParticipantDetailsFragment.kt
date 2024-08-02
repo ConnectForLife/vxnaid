@@ -209,7 +209,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
         binding.btnPickDate.setOnClickListener {
             BirthDatePickerDialog(
-                    // todo refactor to use viewModel, do not save them here
+
                     birthDatePicked, isBirthDateEstimatedChecked, yearsEstimated, monthsEstimated, daysEstimated
             ).show(childFragmentManager, TAG_DATE_PICKER);
         }
