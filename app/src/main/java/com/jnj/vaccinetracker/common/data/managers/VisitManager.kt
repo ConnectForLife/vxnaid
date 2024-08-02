@@ -47,7 +47,6 @@ class VisitManager @Inject constructor(
         muac: Int?,
         substanceObservations: Map<String, String>?
     ) {
-        // TODO arguments could be refactored later on
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
 
