@@ -25,7 +25,6 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel
-import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiService
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
@@ -102,6 +101,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val registerFailedEvents = eventFlow<String>()
     val registerNoPhoneEvents = eventFlow<Unit>()
     val registerNoMatchingIdEvents = eventFlow<Unit>()
+    val registerChildNewbornEvents = eventFlow<Unit>()
+    val registerParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
 
     val loading = mutableLiveBoolean()
     val participantId = mutableLiveData<String?>()
@@ -160,6 +161,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     var canSkipPhone = false
     private val irisScans = ArrayMap<IrisPosition, Boolean>()
+
+    var isChildNewbornQuestionAlreadyAsked = false
+    var shouldOpenRegisterParticipantSuccessDialog = false
 
     private var validatePhoneJob: Job? = null
     private var validateParticipantIdJob: Job? = null
@@ -291,9 +295,13 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (!areInputsValid || !isNinValid)
             return
 
+        if (!isChildNewbornQuestionAlreadyAsked) {
+            registerChildNewbornEvents.tryEmit(Unit)
+            return
+        }
+
         loading.set(true)
 
-        val loc = configurationManager.getLocalization()
         try {
             val compressedImage = picture?.toDomain()?.compress()
             val biometricsTemplateBytes = getTempBiometricsTemplatesBytesUseCase.getBiometricsTemplate(irisScans)
@@ -312,17 +320,23 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 biometricsTemplateBytes = biometricsTemplateBytes,
             )
             loading.set(false)
-            registerSuccessEvents.tryEmit(
-                    ParticipantSummaryUiModel(
-                            result.participantUuid,
-                            participantId,
-                            gender,
-                            birthDate.format(DateFormat.FORMAT_DATE),
-                            isBirthDateEstimated,
-                            null,
-                            compressedImage?.let { ParticipantImageUiModel(it.bytes) }
-                    )
+
+            val participant = ParticipantSummaryUiModel(
+                                result.participantUuid,
+                                participantId,
+                                gender,
+                                birthDate.format(DateFormat.FORMAT_DATE),
+                                isBirthDateEstimated,
+                                null,
+                                compressedImage?.let { ParticipantImageUiModel(it.bytes) }
             )
+
+            if (shouldOpenRegisterParticipantSuccessDialog) {
+                registerParticipantSuccessDialogEvents.tryEmit(participant)
+            } else {
+                registerSuccessEvents.tryEmit(participant)
+            }
+
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()

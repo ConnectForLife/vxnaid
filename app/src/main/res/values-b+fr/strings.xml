@@ -145,6 +145,7 @@
     <string name="participant_registration_label_success">Participant enrigistré avec succès</string>
     <string name="participant_registration_label_telephone_number_title">Le numéro de téléphone portable est manquant</string>
     <string name="participant_registration_label_telephone_number_desc">Veuillez confirmer que ce participant sera enregistré sans numéro de téléphone portable.</string>
+    <string name="participant_registration_is_child_newborn">L’enfant est-il un nouveau-né?</string>
     <string name="home_location_picker_label_country">Pays</string>
     <string name="home_location_picker_title">Lieu du domicile</string>
     <string name="home_location_picker_error_enter_x">Veuillez entrer %s</string>

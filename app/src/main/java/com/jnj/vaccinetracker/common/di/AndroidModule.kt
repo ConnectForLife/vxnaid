@@ -17,6 +17,7 @@ import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantConfirmNoTelephoneDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantIdNotMatchingDialog
+import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantIsChildNewbornDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantSuccessfulDialog
 import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantAdministeredVaccinesFragment
@@ -225,4 +226,6 @@ interface AndroidModule {
     @ContributesAndroidInjector
     fun bindConfirmBackPressDialog(): ConfirmStopServiceDialog
 
+    @ContributesAndroidInjector
+    fun bindRegisterParticipantIsChildNewbornDialog(): RegisterParticipantIsChildNewbornDialog
 }

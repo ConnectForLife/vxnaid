@@ -127,6 +127,10 @@ class RegisterParticipantAdministeredVaccinesFragment : BaseFragment(),
       }
    }
 
+   private fun submitVaccineRegistration() {
+      viewModel.submitVaccineRegistration()
+   }
+
    override fun continueWithParticipantVisit(participant: ParticipantSummaryUiModel) {
       (requireActivity() as BaseActivity).run {
          setResult(
@@ -135,9 +139,6 @@ class RegisterParticipantAdministeredVaccinesFragment : BaseFragment(),
          )
          finish()
       }
-   }
-   private fun submitVaccineRegistration() {
-      viewModel.submitVaccineRegistration()
    }
 
    override fun finishParticipantFlow() {
