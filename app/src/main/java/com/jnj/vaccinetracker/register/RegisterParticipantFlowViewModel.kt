@@ -7,7 +7,6 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
-import com.jnj.vaccinetracker.participantflow.model.ParticipantUiModel
 import javax.inject.Inject
 
 /**
@@ -98,7 +97,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(override val dispatch
         currentScreen.set(Screen.PARTICIPANT_DETAILS)
     }
 
-    fun confirmRegistration(participant: ParticipantSummaryUiModel) {
+    fun confirmRegistrationWithCaptureVaccinesPage(participant: ParticipantSummaryUiModel) {
         this.participant.set(participant)
         navigationDirection = NavigationDirection.FORWARD
         currentScreen.set(Screen.PARTICIPANT_CAPTURE_VACCINES)
