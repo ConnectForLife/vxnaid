@@ -145,7 +145,8 @@
     <string name="participant_registration_label_success">Participant enrigistré avec succès</string>
     <string name="participant_registration_label_telephone_number_title">Le numéro de téléphone portable est manquant</string>
     <string name="participant_registration_label_telephone_number_desc">Veuillez confirmer que ce participant sera enregistré sans numéro de téléphone portable.</string>
-    <string name="participant_registration_is_child_newborn">L’enfant est-il un nouveau-né?</string>
+    <string name="participant_registration_has_child_ever_vaccinated_title">Vaccination des enfants</string>
+    <string name="participant_registration_has_child_ever_vaccinated_desc">Cet enfant a-t-il déjà été vacciné?</string>
     <string name="home_location_picker_label_country">Pays</string>
     <string name="home_location_picker_title">Lieu du domicile</string>
     <string name="home_location_picker_error_enter_x">Veuillez entrer %s</string>
