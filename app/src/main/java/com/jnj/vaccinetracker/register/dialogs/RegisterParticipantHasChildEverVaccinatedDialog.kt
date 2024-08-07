@@ -8,11 +8,11 @@ import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
-import com.jnj.vaccinetracker.databinding.DialogRegisterParticipantIsChildNewbornBinding
+import com.jnj.vaccinetracker.databinding.DialogRegisterParticipantHasChildEverVaccinatedBinding
 
-class RegisterParticipantIsChildNewbornDialog : BaseDialogFragment() {
+class RegisterParticipantHasChildEverVaccinatedDialog : BaseDialogFragment() {
 
-    private lateinit var binding: DialogRegisterParticipantIsChildNewbornBinding
+    private lateinit var binding: DialogRegisterParticipantHasChildEverVaccinatedBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,13 +21,13 @@ class RegisterParticipantIsChildNewbornDialog : BaseDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_register_participant_is_child_newborn, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_register_participant_has_child_ever_vaccinated, container, false)
         binding.btnYes.setOnClickListener {
-            findParent<RegisterParticipationIsChildNewbornListener>()?.continueRegistrationWithSuccessDialog()
+            findParent<RegisterParticipationIsChildNewbornListener>()?.continueRegistrationWithCaptureVaccinesPage()
             dismissAllowingStateLoss()
         }
         binding.btnNo.setOnClickListener {
-            findParent<RegisterParticipationIsChildNewbornListener>()?.continueRegistrationWithCaptureVaccinesPage()
+            findParent<RegisterParticipationIsChildNewbornListener>()?.continueRegistrationWithSuccessDialog()
             dismissAllowingStateLoss()
         }
         return binding.root

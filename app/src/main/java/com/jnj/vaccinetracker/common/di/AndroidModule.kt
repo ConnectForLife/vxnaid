@@ -3,7 +3,6 @@ package com.jnj.vaccinetracker.common.di
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
 import com.jnj.vaccinetracker.common.ui.dialog.SuccessDialog
 import com.jnj.vaccinetracker.common.ui.dialog.SyncErrorDialog
-import com.jnj.vaccinetracker.databinding.DialogScheduleMissingSubstancesBinding
 import com.jnj.vaccinetracker.irisscanner.ScannerConnectedActivity
 import com.jnj.vaccinetracker.login.LoginActivity
 import com.jnj.vaccinetracker.login.RefreshSessionDialog
@@ -17,7 +16,7 @@ import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantConfirmNoTelephoneDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantIdNotMatchingDialog
-import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantIsChildNewbornDialog
+import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantHasChildEverVaccinatedDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantSuccessfulDialog
 import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantAdministeredVaccinesFragment
@@ -42,7 +41,6 @@ import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.sync.presentation.SyncAndroidService
 import com.jnj.vaccinetracker.update.UpdateDialog
 import com.jnj.vaccinetracker.visit.VisitActivity
-import com.jnj.vaccinetracker.visit.adapters.VisitSubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.dialog.DatePickerDialog
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
@@ -227,5 +225,5 @@ interface AndroidModule {
     fun bindConfirmBackPressDialog(): ConfirmStopServiceDialog
 
     @ContributesAndroidInjector
-    fun bindRegisterParticipantIsChildNewbornDialog(): RegisterParticipantIsChildNewbornDialog
+    fun bindRegisterParticipantIsChildNewbornDialog(): RegisterParticipantHasChildEverVaccinatedDialog
 }

@@ -162,7 +162,8 @@
     <string name="participant_registration_label_telephone_number_desc">Please confirm that this Child will be registered without a mobile phone number.</string>
     <string name="participant_registration_label_id_not_matching_title">Re-enter Child ID</string>
     <string name="participant_registration_label_id_not_matching_desc">The entered Child ID\'s do not match. Please correct before submitting the Child.</string>
-    <string name="participant_registration_is_child_newborn">Is Child a Newborn?</string>
+    <string name="participant_registration_has_child_ever_vaccinated_title">Child vaccination</string>
+    <string name="participant_registration_has_child_ever_vaccinated_desc">Has this child been ever vaccinated?</string>
     <string name="home_location_picker_label_country">Country</string>
     <string name="home_location_picker_title">Address</string>
     <string name="home_location_picker_error_enter_x">Enter %s</string>

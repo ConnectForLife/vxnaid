@@ -38,7 +38,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     HomeLocationPickerDialog.HomeLocationPickerListener,
     BirthDatePickerDialog.BirthDatePickerListener,
     RegisterParticipantConfirmNoTelephoneDialog.RegisterParticipationNoTelephoneConfirmationListener,
-    RegisterParticipantIsChildNewbornDialog.RegisterParticipationIsChildNewbornListener,
+    RegisterParticipantHasChildEverVaccinatedDialog.RegisterParticipationIsChildNewbornListener,
     RegisterParticipantSuccessfulDialog.RegisterParticipationCompletionListener {
 
     private companion object {
@@ -155,7 +155,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         registerChildNewbornEvents
             .asFlow()
             .onEach {
-                RegisterParticipantIsChildNewbornDialog()
+                RegisterParticipantHasChildEverVaccinatedDialog()
                     .show(childFragmentManager, TAG_CHILD_NEWBORN_ID)
             }.launchIn(lifecycleOwner)
         registerParticipantSuccessDialogEvents
