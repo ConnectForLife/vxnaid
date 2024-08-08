@@ -4,4 +4,5 @@ import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 
 interface DraftParticipantEntityBase : ParticipantEntityBase, UploadableDraft {
     val registrationDate: DateEntity
+    val isUpdate: Boolean?
 }

@@ -2,10 +2,15 @@ package com.jnj.vaccinetracker.register
 
 import androidx.annotation.StringRes
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
+import com.jnj.vaccinetracker.common.domain.entities.ImageBytes
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
+import com.jnj.vaccinetracker.common.helpers.logDebug
+import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
+import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantUiModel
 import javax.inject.Inject
@@ -13,26 +18,32 @@ import javax.inject.Inject
 /**
  * Responsible for managing the flow of registering a new participant.
  */
-class RegisterParticipantFlowViewModel @Inject constructor(override val dispatchers: AppCoroutineDispatchers) : ViewModelBase() {
+class RegisterParticipantFlowViewModel @Inject constructor(
+    override val dispatchers: AppCoroutineDispatchers,
+    private val participantManager: ParticipantManager,
+) : ViewModelBase() {
 
     val currentScreen = mutableLiveData<Screen>()
     var navigationDirection = NavigationDirection.NONE
     val participantPicture = mutableLiveData<ParticipantImageUiModel>()
     val participantId = mutableLiveData<String>()
+    val participantUuid = mutableLiveData<String>()
     val participant = mutableLiveData<ParticipantSummaryUiModel>()
     val leftEyeScanned = mutableLiveBoolean()
     val rightEyeScanned = mutableLiveBoolean()
     val isManualEnteredId = mutableLiveBoolean()
     val countryCode = mutableLiveData<String>()
     val phoneNumber = mutableLiveData<String>()
+    val requestFinish = mutableLiveData<Boolean>()
 
-    fun setArguments(
+    suspend fun setArguments(
         participantId: String?,
         leftEyeScanned: Boolean,
         rightEyeScanned: Boolean,
         countryCode: String?,
         phoneNumber: String?,
         isManualEnteredId: Boolean,
+        participantUuid: String?,
     ) {
         if (currentScreen.get() == null) {
             currentScreen.set(Screen.CAMERA_PERMISSION)
@@ -43,6 +54,27 @@ class RegisterParticipantFlowViewModel @Inject constructor(override val dispatch
         this.countryCode.set(countryCode)
         this.phoneNumber.set(phoneNumber)
         this.isManualEnteredId.set(isManualEnteredId)
+        this.participantUuid.set(participantUuid)
+        if (participantUuid != null) {
+            val participantPicture = loadParticipantPicture(participantUuid)?.toUiModel()
+            if (participantPicture != null) {
+                this.participantPicture.set(participantPicture)
+            } else {
+                this.participantPicture.set(null)
+            }
+            currentScreen.set(Screen.PARTICIPANT_DETAILS)
+        }
+    }
+
+    private suspend fun loadParticipantPicture(participantUUID: String?): ImageBytes? {
+        if (participantUUID == null) return null
+        return try {
+            participantManager.getPersonImage(participantUUID)
+        } catch (ex: Throwable) {
+            ex.rethrowIfFatal()
+            logDebug("No picture for participant $participantUUID")
+            null
+        }
     }
 
     fun navigateBack(): Boolean {
@@ -99,6 +131,10 @@ class RegisterParticipantFlowViewModel @Inject constructor(override val dispatch
     }
 
     fun confirmRegistration(participant: ParticipantSummaryUiModel) {
+        if (participantUuid.value != null) {
+            requestFinish.value = true
+            return
+        }
         this.participant.set(participant)
         navigationDirection = NavigationDirection.FORWARD
         currentScreen.set(Screen.PARTICIPANT_CAPTURE_VACCINES)

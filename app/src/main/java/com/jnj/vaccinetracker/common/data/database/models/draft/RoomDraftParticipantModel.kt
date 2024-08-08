@@ -19,7 +19,6 @@ data class RoomDraftParticipantModel(
     override val birthWeight: String?,
     override val gender: GenderEntity,
     override val birthDate: BirthDateEntity,
-    // todo add birth weight here
     override val isBirthDateEstimated: Boolean? = false,
     @Relation(parentColumn = DraftParticipantEntity.ID, entityColumn = DraftParticipantEntity.ID)
     val attributes: List<DraftParticipantAttributeEntity>,
@@ -28,4 +27,5 @@ data class RoomDraftParticipantModel(
     override val draftState: DraftState,
     override val registrationDate: DateEntity,
     override val locationUuid: String?,
+    override val isUpdate: Boolean? = false,
 ) : DraftParticipantEntityBase

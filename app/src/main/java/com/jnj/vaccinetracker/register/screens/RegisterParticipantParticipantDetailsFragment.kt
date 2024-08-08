@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -13,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
@@ -30,6 +32,7 @@ import com.jnj.vaccinetracker.register.dialogs.*
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /**
  * @author maartenvangiel
@@ -76,6 +79,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         binding.flowViewModel = flowViewModel
         binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
         binding.textViewParticipantHomeLocation.movementMethod = ScrollingMovementMethod()
+
+        setHasOptionsMenu(true)
 
         setupPhoneInput()
         setupDropdowns()
@@ -125,6 +130,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             binding.genderError.requestFocus()
             binding.genderError.error = genderValidationMessage
         }
+        viewModel.participantUuid.observe(lifecycleOwner) {
+            setupEditableFields()
+        }
         observeViewModelEvents(lifecycleOwner)
     }
 
@@ -156,6 +164,16 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG).show()
             }.launchIn(lifecycleOwner)
     }
+
+    private fun setupEditableFields() {
+        if (viewModel.participantUuid.value != null) {
+            binding.editParticipantId.isEnabled = false
+            binding.rbGenderMale.isEnabled = false
+            binding.rbGenderFemale.isEnabled = false
+            binding.btnScanParticipantId.visibility = View.INVISIBLE
+        }
+    }
+
 
     private fun setupInputListeners() {
         binding.editParticipantNin.doAfterTextChanged {
@@ -268,6 +286,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 leftEyeScanned = flowViewModel.leftEyeScanned.value,
                 rightEyeScanned = flowViewModel.rightEyeScanned.value,
                 phoneNumber = flowViewModel.phoneNumber.value,
+                participantUuid = flowViewModel.participantUuid.value
             )
         )
     }
@@ -307,6 +326,13 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         this.monthsEstimated=monthsEstimated
         this.daysEstimated=daysEstimated
         viewModel.setBirthDate(birthDate, isChecked)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        if (flowViewModel.participantUuid.value != null) {
+            menu.findItem(R.id.action_cancel).isVisible = false
+        }
     }
 
 }

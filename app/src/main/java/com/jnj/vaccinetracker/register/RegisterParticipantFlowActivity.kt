@@ -7,8 +7,11 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
+import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.helpers.logWarn
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
@@ -20,6 +23,7 @@ import com.jnj.vaccinetracker.register.screens.RegisterParticipantCameraPermissi
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDetailsFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantPicturePreviewFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantTakePictureFragment
+import kotlinx.coroutines.launch
 
 /**
  * @author maartenvangiel
@@ -33,6 +37,7 @@ class RegisterParticipantFlowActivity : BaseActivity() {
         private const val EXTRA_MANUAL_ID = "isManualEnteredParticipantId"
         const val EXTRA_PARTICIPANT_ID = "participantId"
         const val EXTRA_PARTICIPANT = "participant"
+        const val EXTRA_PARTICIPANT_UUID = "participantBase"
         const val EXTRA_COUNTRY_CODE = "phoneCountryCode"
         const val EXTRA_PHONE_NUMBER = "participantPhoneNumber"
 
@@ -45,6 +50,7 @@ class RegisterParticipantFlowActivity : BaseActivity() {
             irisScannedRight: Boolean,
             countryCode: String?,
             phoneNumber: String?,
+            participantUuid: String? = null,
         ): Intent {
             return Intent(context, RegisterParticipantFlowActivity::class.java)
                 .putExtra(EXTRA_PARTICIPANT_ID, participantId)
@@ -53,6 +59,7 @@ class RegisterParticipantFlowActivity : BaseActivity() {
                 .putExtra(EXTRA_COUNTRY_CODE, countryCode)
                 .putExtra(EXTRA_PHONE_NUMBER, phoneNumber)
                 .putExtra(EXTRA_MANUAL_ID, isManualEnteredParticipantId)
+                .putExtra(EXTRA_PARTICIPANT_UUID, participantUuid)
         }
     }
 
@@ -61,18 +68,24 @@ class RegisterParticipantFlowActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setArguments(
-            intent.getStringExtra(EXTRA_PARTICIPANT_ID),
-            leftEyeScanned = intent.getBooleanExtra(EXTRA_IRIS_LEFT, false),
-            rightEyeScanned = intent.getBooleanExtra(EXTRA_IRIS_RIGHT, false),
-            countryCode = intent.getStringExtra(EXTRA_COUNTRY_CODE),
-            phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER),
-            isManualEnteredId = intent.getBooleanExtra(EXTRA_MANUAL_ID, false),
-        )
+        lifecycleScope.launch {
+            viewModel.setArguments(
+                intent.getStringExtra(EXTRA_PARTICIPANT_ID),
+                leftEyeScanned = intent.getBooleanExtra(EXTRA_IRIS_LEFT, false),
+                rightEyeScanned = intent.getBooleanExtra(EXTRA_IRIS_RIGHT, false),
+                countryCode = intent.getStringExtra(EXTRA_COUNTRY_CODE),
+                phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER),
+                isManualEnteredId = intent.getBooleanExtra(EXTRA_MANUAL_ID, false),
+                participantUuid = intent.getStringExtra(EXTRA_PARTICIPANT_UUID)
+            )
+        }
         binding = DataBindingUtil.setContentView(this, R.layout.activity_register_participant_flow)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         viewModel.currentScreen.observe(this) { screen ->
             navigateToScreen(screen, viewModel.navigationDirection)
+        }
+        viewModel.requestFinish.observe(this) { shouldClose ->
+            if (shouldClose == true) finishIfEdit()
         }
     }
 
@@ -82,6 +95,8 @@ class RegisterParticipantFlowActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
+        finishIfEdit()
+
         val hasCameraPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
 
         // Edge case for going back from the take picture screen: if the user already has camera permission, no need to go back to that screen
@@ -91,6 +106,12 @@ class RegisterParticipantFlowActivity : BaseActivity() {
 
         if (!viewModel.navigateBack()) {
             super.onBackPressed()
+        }
+    }
+
+    private fun finishIfEdit() {
+        if (viewModel.participantUuid.value != null) {
+            finish()
         }
     }
 

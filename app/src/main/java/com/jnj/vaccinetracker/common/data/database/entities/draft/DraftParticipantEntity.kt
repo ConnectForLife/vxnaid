@@ -27,6 +27,7 @@ data class DraftParticipantEntity(
     override val draftState: DraftState = DraftState.initialState(),
     @ColumnInfo(index = true)
     override val locationUuid: String?,
+    override val isUpdate: Boolean? = false,
 
 ) : DraftParticipantEntityBase {
     companion object {

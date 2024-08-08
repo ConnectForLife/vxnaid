@@ -21,7 +21,13 @@ class FindAllRelatedDraftParticipantDataPendingUploadUseCase @Inject constructor
     private val syncLogger: SyncLogger,
 ) {
 
-    private fun DraftParticipant.toPendingCall() = ParticipantPendingCall.RegisterParticipant(this)
+    private fun DraftParticipant.toPendingCall(): ParticipantPendingCall {
+        return if (isUpdate) {
+            ParticipantPendingCall.UpdateParticipant(this)
+        } else {
+            ParticipantPendingCall.RegisterParticipant(this)
+        }
+    }
     private fun DraftVisit.toPendingCall() = ParticipantPendingCall.CreateVisit(this)
     private fun DraftVisitEncounter.toPendingCall() = ParticipantPendingCall.UpdateVisit(this)
 

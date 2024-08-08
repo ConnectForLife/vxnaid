@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.IrisPosition
+import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
@@ -52,7 +53,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         binding.recyclerViewParticipants.adapter = adapter
 
         binding.btnNewParticipant.setOnClickListener {
-            viewModel.onNewParticipantButtonClick()
+            viewModel.getSelectedParticipantSummary()?.let { startParticipantEdit(it) }
         }
         binding.btnMatchParticipant.setOnClickListener {
             viewModel.getSelectedParticipantSummary()?.let { startParticipantVisit(it, false) }
@@ -148,4 +149,19 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         (requireActivity() as BaseActivity).setForwardAnimation()
     }
 
+    private fun startParticipantEdit(participant: ParticipantSummaryUiModel) {
+        startActivity(
+            RegisterParticipantFlowActivity.create(
+                context = requireContext(),
+                participantId = null,
+                isManualEnteredParticipantId = null,
+                irisScannedLeft = false,
+                irisScannedRight = false,
+                countryCode = null,
+                phoneNumber = null,
+                participantUuid = participant.participantUuid
+            )
+        )
+        (requireActivity() as BaseActivity).setForwardAnimation()
+    }
 }

@@ -25,6 +25,7 @@ data class SyncErrorOverview(val metadata: SyncErrorMetadata, val dateCreated: D
         ParticipantPendingCall.Type.REGISTER_PARTICIPANT -> R.string.participant
         ParticipantPendingCall.Type.CREATE_VISIT -> R.string.visit
         ParticipantPendingCall.Type.UPDATE_VISIT -> R.string.encounter
+        ParticipantPendingCall.Type.UPDATE_PARTICIPANT -> R.string.participant_update
     }.let { context.getString(it) }
 
     private fun MasterDataFile.display(context: ResourcesWrapper) = when (this) {

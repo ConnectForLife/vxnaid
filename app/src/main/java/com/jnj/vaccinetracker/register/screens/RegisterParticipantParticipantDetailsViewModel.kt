@@ -9,6 +9,7 @@ import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.models.IrisPosition
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.*
+import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.GenerateUniqueParticipantIdUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.GetTempBiometricsTemplatesBytesUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
@@ -23,6 +24,7 @@ import com.jnj.vaccinetracker.common.validators.TextInputValidator
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
+import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiService
@@ -52,7 +54,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         private val fullPhoneFormatter: FullPhoneFormatter,
         private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
         private val textInputValidator: TextInputValidator,
-        private val ninValidator: NinValidator
+        private val ninValidator: NinValidator,
+        private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+        private val homeLocationPickerViewModel: HomeLocationPickerViewModel,
 ) : ViewModelBase() {
 
     private companion object {
@@ -73,6 +77,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val leftEyeScanned: Boolean,
             val rightEyeScanned: Boolean,
             val phoneNumber: String?,
+            val participantUuid: String?,
     )
 
     private val args = stateFlow<Args?>(null)
@@ -84,6 +89,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     val loading = mutableLiveBoolean()
     val participantId = mutableLiveData<String?>()
+    val participantUuid = mutableLiveData<String?>()
     val scannedParticipantId = mutableLiveData<String?>()
 
     val isManualSetParticipantID = mutableLiveBoolean()
@@ -172,18 +178,42 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 phone.set(it)
             }
 
+            participantUuid.set(args.participantUuid)
+            onParticipantEdit()
+
             val site = syncSettingsRepository.getSiteUuid()?.let { configurationManager.getSiteByUuid(it) }
                     ?: throw NoSiteUuidAvailableException()
             val configuration = configurationManager.getConfiguration()
             val loc = configurationManager.getLocalization()
             onSiteAndConfigurationLoaded(site, configuration, loc)
-            loading.set(false)
             ninIdentifiers.set(configurationManager.getNinIdentifiers())
+            loading.set(false)
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()
             loading.set(false)
             logError("Failed to get site by uuid: ", ex)
+        }
+    }
+
+    suspend fun onParticipantEdit() {
+        if (participantUuid.value != null) {
+            val participantBase = findParticipantByParticipantUuidUseCase.findByParticipantUuid(participantUuid.value!!)
+            participantBase?.participantId?.let { setParticipantId(it) }
+            participantBase?.nin?.let { setNin(it) }
+            participantBase?.birthWeight?.let { setBirthWeight(it) }
+            participantBase?.gender?.let { setGender(it) }
+            setBirthDate(participantBase?.birthDate?.toDateTime(), participantBase?.isBirthDateEstimated ?: false)
+            participantBase?.phone?.let { setPhone(it, true) }
+            participantBase?.motherName?.let { setMotherName(it) }
+            participantBase?.fatherName?.let { setFatherName(it) }
+            participantBase?.participantName?.let { setChildName(it) }
+            participantBase?.childCategory?.let { category ->
+                val selectedCategory = childCategoryNames.get()?.find { it.value == category }
+                if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
+            }
+            homeLocation.value = participantBase?.address
+            //setHomeLocation(participantBase?.address)
         }
     }
 
@@ -244,6 +274,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val motherName = mothersName.get()
         val fatherName = fathersName.get()
         val childName = name.get()
+        val childUuid = participantUuid.get()
+        val childCategoryValue = childCategory.get()?.value
 
         val areInputsValid = validateInput(participantId, gender, birthDate, homeLocation, motherName, fatherName, childName)
         val isNinValid = isNinValueValid(nin)
@@ -289,6 +321,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,
+                fatherName=fatherName,
+                motherName=motherName!!,
+                participantName=childName!!,
+                childCategory=childCategoryValue,
+                participantUuid=childUuid,
             )
             loading.set(false)
             registerSuccessEvents.tryEmit(
@@ -525,9 +562,14 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         }
     }
 
-    fun setPhone(phone: String) {
+    fun setPhone(phone: String, removeCode: Boolean = false) {
         if (this.phone.get() == phone) return
-        this.phone.set(phone)
+        var modifiedPhone = phone
+        if (removeCode) {
+            // it will only work for Uganda and other 3 digit country codes
+            modifiedPhone = modifiedPhone.removeRange(0, 3)
+        }
+        this.phone.set(modifiedPhone)
         validatePhone()
     }
 

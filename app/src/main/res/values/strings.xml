@@ -123,6 +123,7 @@
     <string name="participant_registration_label_take_picture">Please take a clear and well-lit photo of the Child</string>
     <string name="participant_registration_label_confirm_photo_or_try_again">Would you like to submit this photo or try again?</string>
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
+    <string name="participant_registration_details_action_update_participant">Update Child</string>
     <string name="participant_registration_details_description">Please provide new Child\'s details below:</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
@@ -368,4 +369,6 @@
     <string name="hint_new_visit_date">Enter a date</string>
     <string name="label_new_visit_date">New visit date:</string>
     <string name="dialog_missing_substances_empty_date_validation_message">Enter date</string>
+    <string name="participant_update">Child Update</string>
+    <string name="participant_matching_btn_edit_participant">Update Child</string>
 </resources>

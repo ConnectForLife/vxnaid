@@ -49,7 +49,8 @@ class DraftParticipantRepository @Inject constructor(
             .withPhone(phone)
             .withLocationUuid(locationUuid)
             .withBirthWeight(birthWeight),
-        draftState = draftState
+        draftState = draftState,
+        isUpdate = isUpdate ?: false
     )
 
     private fun DraftParticipant.toPersistence() = DraftParticipantEntity(
@@ -63,7 +64,8 @@ class DraftParticipantRepository @Inject constructor(
         isBirthDateEstimated = isBirthDateEstimated,
         draftState = DraftState.initialState(),
         registrationDate = dateModified,
-        locationUuid = locationUuid
+        locationUuid = locationUuid,
+        isUpdate = isUpdate
     )
 
     override suspend fun findAllByPhone(phone: String?): List<DraftParticipant> {
@@ -156,6 +158,7 @@ class DraftParticipantRepository @Inject constructor(
             if (orReplace) {
                 //we assume due to foreign keys, the related child rows will be deleted as well
                 val isDeleted = draftParticipantDao.deleteByParticipantUuid(model.participantUuid) > 0
+                // TODO if deleted not registered it should register then
                 if (isDeleted) {
                     logInfo("deleted draft participant for replace ${model.participantUuid}")
                 }
