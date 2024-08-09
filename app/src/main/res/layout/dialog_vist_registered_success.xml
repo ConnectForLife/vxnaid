@@ -14,7 +14,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="677dp">
 
         <ImageView
             android:id="@+id/img_header"
@@ -69,7 +69,7 @@
                 android:layout_marginEnd="16dp"
                 android:gravity="center_horizontal"
                 android:text="@string/upcoming_visit_title"
-                android:textAppearance="@style/LabelText"/>
+                android:textAppearance="@style/LabelText" />
 
             <TextView
                 android:id="@+id/upcoming_visit_type"
@@ -87,24 +87,174 @@
                 android:text="@{nextVisit!=null ? nextVisit.timeWindow : null}"
                 android:textAppearance="@style/GeneralText"
                 android:visibility="@{nextVisit!=null ? View.VISIBLE : View.GONE}"
-                tools:text="3 May 2021 - 10 May 2021"/>
+                tools:text="3 May 2021 - 10 May 2021" />
         </LinearLayout>
 
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginTop="24dp"
+            android:background="#CCCCCC"
+            android:paddingBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/upcoming_visit_container" />
+
+        <TextView
+            android:id="@+id/schedule_next_visit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="44dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_horizontal"
+            android:text="@string/visit_schedule_next_visit_title"
+            android:textAppearance="@style/PopupTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/upcoming_visit_container" />
+
+        <LinearLayout
+            android:id="@+id/proposed_next_visit_date_container"
+            android:layout_width="387dp"
+            android:layout_height="41dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/schedule_next_visit_title">
+
+            <TextView
+                android:id="@+id/proposed_next_visit_date_label"
+                android:layout_width="155dp"
+                android:layout_height="wrap_content"
+                android:text="@string/visit_schedule_next_visit_proposed_date_title"
+                android:textAppearance="@style/LabelText" />
+
+            <TextView
+                android:id="@+id/proposed_next_visit_date_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:maxHeight="70sp"
+                android:text=""
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/next_visit_date_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/proposed_next_visit_date_container">
+
+            <TextView
+                android:id="@+id/next_visit_date_label"
+                android:layout_width="155dp"
+                android:layout_height="wrap_content"
+                android:text="@string/visit_schedule_next_visit_set_next_visit_title"
+                android:textAppearance="@style/LabelText" />
+
+            <TextView
+                android:id="@+id/next_visit_date_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:hint="@string/hint_new_visit_date"
+                android:maxHeight="70sp"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/next_visit_date_picker_button"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/colorPrimary"
+                android:text="@string/participant_registration_details_action_set_birth_date"
+                android:textAppearance="@style/ButtonTextStyling" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/visit_schedule_result_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/next_visit_date_container">
+
+            <TextView
+                android:id="@+id/visit_schedule_result_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text=""
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/visit_schedule_result_container"
+                tools:layout_editor_absoluteX="19dp"
+                tools:layout_editor_absoluteY="526dp" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_finish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="52dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/colorPrimary"
-            android:textAppearance="@style/ButtonTextStyling"
             android:text="@string/general_label_close"
+            android:textAppearance="@style/ButtonTextStyling"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.316"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/upcoming_visit_container" />
+            app:layout_constraintTop_toBottomOf="@+id/next_visit_date_container"
+            app:layout_constraintVertical_bias="0.381" />
+
+        <Button
+            android:id="@+id/btn_save_visit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="@string/visit_schedule_next_visit_save_visit_button_label"
+            android:textAppearance="@style/ButtonTextStyling"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.768"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/next_visit_date_container"
+            app:layout_constraintVertical_bias="0.372" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

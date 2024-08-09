@@ -39,7 +39,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.reflect.KFunction1
 
 /**
  * ViewModel for visit screen.
@@ -469,9 +468,9 @@ class VisitViewModel @Inject constructor(
                 val minWeekNumber = it.weeksAfterBirth - it.weeksAfterBirthLowWindow
                 val maxWeekNumber = it.weeksAfterBirth + it.weeksAfterBirthUpWindow
                 childAgeInWeeks in minWeekNumber..maxWeekNumber
+            }.firstNotNullOfOrNull {
+                weeksAfterBirthSet.filter { week -> week > it.weeksAfterBirth }.minOrNull()
             }
-            .mapNotNull { weeksAfterBirthSet.filter { week -> week > it.weeksAfterBirth }.minOrNull() }
-            .firstOrNull()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

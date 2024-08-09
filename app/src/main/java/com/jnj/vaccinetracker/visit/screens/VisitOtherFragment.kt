@@ -34,7 +34,7 @@ class VisitOtherFragment : BaseFragment(), VisitRegisteredSuccessDialog.VisitReg
             .asFlow()
             .onEach { success ->
                 if (success) {
-                    VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value).show(childFragmentManager, TAG_DIALOG_SUCCESS)
+                    VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value, viewModel.participant.value).show(childFragmentManager, TAG_DIALOG_SUCCESS)
                 } else
                     Snackbar.make(binding.root, R.string.general_label_error, Snackbar.LENGTH_LONG).show()
             }.launchIn(lifecycleOwner)
