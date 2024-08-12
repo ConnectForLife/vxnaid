@@ -214,6 +214,7 @@
     <string name="visit_dosing_error_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen and should not be administered.</string>
     <string name="visit_dosing_warning_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen. Please confirm you will administer a different vaccine.</string>
     <string name="visit_dosing_warning_different_manufacturer_title">Different Manufacturer Expected</string>
+    <string name="visit_schedule_adverse_effect_message">Please ensure to inform the patient about potential side effects before administering the vaccine.</string>
     <string name="upcoming_visit_title">Next visit</string>
     <string name="upcoming_visit_type_follow_up">In Person Follow Up</string>
     <string name="upcoming_visit_type_dosing">Dosing</string>

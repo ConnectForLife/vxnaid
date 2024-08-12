@@ -78,4 +78,10 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="WarningText">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/alertLight</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
