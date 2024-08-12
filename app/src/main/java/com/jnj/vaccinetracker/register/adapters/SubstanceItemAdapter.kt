@@ -42,7 +42,7 @@ class SubstanceItemAdapter(
       private val btnRemove: ImageButton = itemView.findViewById(R.id.btnRemove)
 
       fun bind(substance: SubstanceDataModel, viewModel: RegisterParticipantAdministeredVaccinesViewModel) {
-         substanceName.text = substance.conceptName
+         substanceName.text = substance.label
 
          btnRemove.setOnClickListener {
             viewModel.removeFromSelectedSubstances(substance)

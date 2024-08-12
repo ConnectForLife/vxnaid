@@ -66,7 +66,7 @@ class VisitSubstanceItemAdapter(
       }
 
       fun bind(substance: SubstanceDataModel) {
-         substanceName.text = substance.conceptName
+         substanceName.text = substance.label
          btnBarcode.setOnClickListener {
             DialogVaccineBarcode(substance).show(supportFragmentManager, TAG_VISIT_VACCINE_DIALOG)
          }
