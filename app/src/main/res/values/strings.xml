@@ -203,6 +203,12 @@
     <string name="visit_dosing_error_no_vial_barcode">Please enter or scan a vial barcode</string>
     <string name="visit_dosing_error_no_manufacturer">Please select a manufacturer</string>
     <string name="visit_dosing_label_success">Visit successfully registered!</string>
+    <string name="visit_schedule_next_visit_title">Schedule next visit</string>
+    <string name="visit_schedule_next_visit_proposed_date_title">Proposed date:</string>
+    <string name="visit_schedule_next_visit_set_next_visit_title">Next visit date:</string>
+    <string name="visit_schedule_next_visit_save_visit_button_label">Save Visit</string>
+    <string name="visit_schedule_visit_saved_successfully_label">Next visit successfully registered on: </string>
+    <string name="visit_schedule_visit_failed">Saving visit failed</string>
     <string name="visit_dosing_warning_out_of_time_window_description">Please confirm that this Child is receiving a dosage outside of the indicated time window.</string>
     <string name="visit_dosing_warning_out_of_time_window_title">Dosing outside of window</string>
     <string name="visit_dosing_error_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen and should not be administered.</string>

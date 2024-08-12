@@ -170,7 +170,7 @@ class VisitDosingFragment : BaseFragment(),
     }
 
     private fun onDosingVisitRegistrationSuccessful() {
-        VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value).show(childFragmentManager, TAG_DIALOG_SUCCESS)
+        VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value, viewModel.participant.value).show(childFragmentManager, TAG_DIALOG_SUCCESS)
     }
 
     private fun showOutsideTimeWindowConfirmationDialog() {
