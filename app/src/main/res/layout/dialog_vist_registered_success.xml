@@ -45,6 +45,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_header" />
 
+        <LinearLayout
+            android:id="@+id/adverse_effects_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/label_title">
+
+            <TextView
+                android:id="@+id/adverse_effect_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_horizontal"
+                android:text="@string/visit_schedule_adverse_effect_message"
+                android:textAppearance="@style/WarningText" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/upcoming_visit_container"
@@ -58,7 +82,7 @@
             android:visibility="@{nextVisit!=null ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_title">
+            app:layout_constraintTop_toBottomOf="@+id/adverse_effects_container">
 
             <TextView
                 android:id="@+id/upcoming_visit_title"
@@ -89,7 +113,6 @@
                 android:visibility="@{nextVisit!=null ? View.VISIBLE : View.GONE}"
                 tools:text="3 May 2021 - 10 May 2021" />
         </LinearLayout>
-
 
         <View
             android:layout_width="match_parent"

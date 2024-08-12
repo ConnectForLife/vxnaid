@@ -196,6 +196,7 @@
     <string name="visit_dosing_error_different_manufacturer_description">Le fabricant sélectionné est différent de celui indiqué dans le schéma thérapeutique et la dose ne devrait pas être administré.</string>
     <string name="visit_dosing_warning_different_manufacturer_description">Le fabricant sélectionné est différent de celui indiqué dans le schéma thérapeutique. Veuillez confirmer que vous administrerez un vaccin différent.</string>
     <string name="visit_dosing_warning_different_manufacturer_title">Différent fabricant attendu</string>
+    <string name="visit_schedule_adverse_effect_message">Assurez-vous d’informer le patient des effets secondaires potentiels avant d’administrer le vaccin.</string>
     <string name="visit_other_title">Aucune autre étape requise, veuillez cliquer sur Soumettre pour terminer le flux opérationel du participant</string>
     <string name="sync_service_notification_title">Suivi de vaccination</string>
     <string name="sync_status_idle">Inactif</string>
