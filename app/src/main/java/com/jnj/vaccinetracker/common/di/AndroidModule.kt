@@ -41,12 +41,14 @@ import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.sync.presentation.SyncAndroidService
 import com.jnj.vaccinetracker.update.UpdateDialog
 import com.jnj.vaccinetracker.visit.VisitActivity
-import com.jnj.vaccinetracker.visit.dialog.DatePickerDialog
+import com.jnj.vaccinetracker.common.dialogs.DatePickerDialog
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
 import com.jnj.vaccinetracker.visit.dialog.DifferentManufacturerExpectedDialog
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
+import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
 import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
+import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
 import com.jnj.vaccinetracker.visit.screens.VisitDosingFragment
 import com.jnj.vaccinetracker.visit.screens.VisitOtherFragment
 import dagger.Module
@@ -180,6 +182,9 @@ interface AndroidModule {
     fun bindVisitDosageFragment(): VisitDosingFragment
 
     @ContributesAndroidInjector
+    fun bindContraindicationsFragment(): ContraindicationsActivity
+
+    @ContributesAndroidInjector
     fun bindVisitOtherFragment(): VisitOtherFragment
 
     @ContributesAndroidInjector
@@ -196,6 +201,9 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindVisitRegisteredSuccessDialog(): VisitRegisteredSuccessDialog
+
+    @ContributesAndroidInjector
+    fun bindRescheduleVisitDialog(): RescheduleVisitDialog
 
     @ContributesAndroidInjector
     fun bindDifferentManufacturerExpectedDialog(): DifferentManufacturerExpectedDialog

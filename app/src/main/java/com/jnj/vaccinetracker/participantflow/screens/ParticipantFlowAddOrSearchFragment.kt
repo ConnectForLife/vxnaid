@@ -23,7 +23,7 @@ import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.update.UpdateDialog
-import com.jnj.vaccinetracker.visit.VisitActivity
+import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
@@ -106,7 +106,7 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
                startActivity(ParticipantFlowActivity.create(requireContext()))
             } else {
                // If participant passed, we continue
-               startParticipantVisit(participant)
+               startParticipantVisitContraindications(participant)
             }
             requireActivity().finish()
          }
@@ -116,8 +116,8 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
       }
    }
 
-   private fun startParticipantVisit(participant: ParticipantSummaryUiModel) {
-      startActivity(VisitActivity.create(requireContext(), participant, true))
+   private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel) {
+      startActivity(ContraindicationsActivity.create(requireContext(), participant, true))
       (requireActivity() as BaseActivity).setForwardAnimation()
    }
 
