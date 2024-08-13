@@ -31,7 +31,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:text="@{item.conceptName}"
+                android:text="@{item.label}"
                 android:textAppearance="@style/GeneralText"
                 tools:text="Vaccine"
                 android:textStyle="bold"/>

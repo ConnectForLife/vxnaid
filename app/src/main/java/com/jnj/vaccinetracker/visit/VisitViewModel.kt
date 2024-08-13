@@ -643,7 +643,7 @@ class VisitViewModel @Inject constructor(
 
         return substancesData.value
             ?.filter { it.conceptName !in selectedConceptNames }
-           ?.map { it.conceptName } ?: listOf()
+           ?.map { it.label } ?: listOf()
     }
 
 }

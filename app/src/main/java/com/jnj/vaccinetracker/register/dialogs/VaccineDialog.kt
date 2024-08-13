@@ -71,7 +71,7 @@ class VaccineDialog(
       val adapter = ArrayAdapter(
          requireContext(),
          R.layout.item_dropdown,
-         substanceData.map { it.conceptName }.distinct()
+         substanceData.map { it.label }.distinct()
       )
       dropdown.setAdapter(adapter)
    }

@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/vaccine_dialog_select_vaccine_dropdown"
                     android:inputType="none"
-                    android:text="@{viewModel.selectedSubstance.conceptName}" />
+                    android:text="@{viewModel.selectedSubstance.label}" />
 
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>

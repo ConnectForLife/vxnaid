@@ -40,7 +40,7 @@ class SubstancesDataUtil {
                 }
             }
 
-            return substanceDataModelList
+            return substanceDataModelList.filter { it.conceptName != ""}
         }
 
 
@@ -53,8 +53,8 @@ class SubstancesDataUtil {
                     substanceDataModelList.add(
                         SubstanceDataModel(
                             substance.conceptName,
-                            substance.category,
                             substance.label,
+                            substance.category,
                             substance.routeOfAdministration
                         )
                     )
@@ -98,11 +98,15 @@ class SubstancesDataUtil {
         ): SubstanceDataModel {
             val group =
                 substancesGroupConfig.find { substanceGroup -> substanceGroup.substanceName == substance.group }
-            val earlierElements =
-                group?.options?.takeWhile { it != substance.conceptName } ?: emptyList()
+            val earlierElements = group?.options?.takeWhile { it != substance.conceptName }?.toMutableList() ?: mutableListOf()
+            if (group?.options?.contains(substance.conceptName) == true) {
+                earlierElements.add(substance.conceptName)
+            }
             var substanceToBeAdministered = substance.conceptName
             for (item in earlierElements) {
-                if (!isSubstanceAlreadyApplied(participantVisits, item)) {
+                if (isSubstanceAlreadyApplied(participantVisits, item)) {
+                    substanceToBeAdministered = ""
+                } else {
                     substanceToBeAdministered = item
                     break
                 }
