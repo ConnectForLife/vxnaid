@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visit.dialog
+package com.jnj.vaccinetracker.common.dialogs
 
 import android.app.Dialog
 import android.os.Bundle

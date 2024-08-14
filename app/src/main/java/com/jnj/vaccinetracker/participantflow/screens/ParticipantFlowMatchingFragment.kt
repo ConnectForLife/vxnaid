@@ -23,7 +23,7 @@ import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowMissingIdentifiersDialog
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
-import com.jnj.vaccinetracker.visit.VisitActivity
+import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
 import kotlinx.coroutines.flow.onEach
 
 /**
@@ -55,7 +55,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
             viewModel.onNewParticipantButtonClick()
         }
         binding.btnMatchParticipant.setOnClickListener {
-            viewModel.getSelectedParticipantSummary()?.let { startParticipantVisit(it, false) }
+            viewModel.getSelectedParticipantSummary()?.let { startParticipantVisitContraindications(it, false) }
         }
 
         return binding.root
@@ -133,7 +133,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
                     startActivity(ParticipantFlowActivity.create(requireContext()))
                 } else {
                     // If participant passed, we continue
-                    startParticipantVisit(participant, true)
+                    startParticipantVisitContraindications(participant, true)
                 }
                 requireActivity().finish()
             }
@@ -143,8 +143,8 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         }
     }
 
-    private fun startParticipantVisit(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
-        startActivity(VisitActivity.create(requireContext(), participant, newRegisteredParticipant))
+    private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
+        startActivity(ContraindicationsActivity.create(requireContext(), participant, newRegisteredParticipant))
         (requireActivity() as BaseActivity).setForwardAnimation()
     }
 
