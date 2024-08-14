@@ -265,19 +265,35 @@
                     android:layout_marginEnd="32dp"
                     android:orientation="vertical"
                     android:visibility="@{viewModel.dosingVisit == null ? View.INVISIBLE : View.VISIBLE}"
-                    app:layout_constraintBottom_toTopOf="@+id/btn_submit"
+                    app:layout_constraintBottom_toTopOf="@+id/linearLayout_otherSubstances"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout_z_score">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerView_vaccines"
                         android:layout_width="match_parent"
                         android:layout_height="350dp">
-
                     </androidx.recyclerview.widget.RecyclerView>
-
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/linearLayout_otherSubstances"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_submit"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout_vaccines">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView_otherSubstances"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp">
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/btn_submit"

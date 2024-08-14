@@ -4,5 +4,6 @@ data class OtherSubstanceDataModel(
     val conceptName: String,
     val label: String,
     val category: String,
+    val inputType: String,
     val options: List<String>
 )
