@@ -18,6 +18,7 @@ import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.*
 import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.visit.VisitViewModel
+import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.adapters.VisitSubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
@@ -29,7 +30,6 @@ import com.jnj.vaccinetracker.visit.zscore.InputFilterMinMax
 import kotlinx.coroutines.flow.onEach
 import java.util.Date
 
-
 /**
  * @author maartenvangiel
  * @author druelens
@@ -40,7 +40,8 @@ class VisitDosingFragment : BaseFragment(),
         DosingOutOfWindowDialog.DosingOutOfWindowDialogListener,
         DifferentManufacturerExpectedDialog.DifferentManufacturerExpectedListener,
         DialogVaccineBarcode.ConfirmSubstanceListener,
-        DialogScheduleMissingSubstances.DialogScheduleMissingSubstancesListener
+        DialogScheduleMissingSubstances.DialogScheduleMissingSubstancesListener,
+        OtherSubstanceItemAdapter.AddSubstanceValueListener
 {
 
     private companion object {
@@ -59,6 +60,7 @@ class VisitDosingFragment : BaseFragment(),
     private val viewModel: VisitViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: FragmentVisitDosingBinding
     private lateinit var adapter: VisitSubstanceItemAdapter
+    private lateinit var otherSubstancesAdapter: OtherSubstanceItemAdapter
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -70,8 +72,8 @@ class VisitDosingFragment : BaseFragment(),
         setupFilters()
         setupClickListeners()
         setupInputListeners()
-        setupRecyclerView()
-
+        setupVaccinesRecyclerView()
+        setOtherSubstancesRecyclerView()
 
         return binding.root
     }
@@ -82,10 +84,16 @@ class VisitDosingFragment : BaseFragment(),
         binding.editTextMuacInput.filters = arrayOf(InputFilterMinMax(MIN_MUAC, MAX_MUAC))
     }
 
-    private fun setupRecyclerView() {
+    private fun setupVaccinesRecyclerView() {
         adapter = VisitSubstanceItemAdapter(mutableListOf(), requireActivity().supportFragmentManager, requireContext())
         binding.recyclerViewVaccines.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewVaccines.adapter = adapter
+    }
+
+    private fun setOtherSubstancesRecyclerView() {
+        otherSubstancesAdapter = OtherSubstanceItemAdapter(mutableListOf(), this)
+        binding.recyclerViewOtherSubstances.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewOtherSubstances.adapter = otherSubstancesAdapter
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -149,7 +157,10 @@ class VisitDosingFragment : BaseFragment(),
         viewModel.substancesData.observe(lifecycleOwner) { substances ->
             adapter.updateList(substances)
         }
-        viewModel.selectedSubstancesAndBarcodes.observe(lifecycleOwner) { substances ->
+        viewModel.otherSubstancesData.observe(lifecycleOwner) { otherSubstances ->
+            otherSubstancesAdapter.updateItemsList(otherSubstances)
+        }
+        viewModel.selectedSubstancesWithValues.observe(lifecycleOwner) { substances ->
             adapter.colorItems(substances)
         }
     }
@@ -213,6 +224,10 @@ class VisitDosingFragment : BaseFragment(),
     }
 
     override fun addSubstance(substance: SubstanceDataModel, barcodeText: String) {
-        viewModel.setSelectedSubstances(substance, barcodeText)
+        viewModel.addObsToObsMap(substance.conceptName, barcodeText)
+    }
+
+    override fun addOtherSubstance(substanceName: String, value: String) {
+        viewModel.addObsToObsMap(substanceName, value)
     }
 }

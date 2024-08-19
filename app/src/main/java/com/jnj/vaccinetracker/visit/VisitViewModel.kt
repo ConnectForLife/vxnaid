@@ -104,9 +104,8 @@ class VisitViewModel @Inject constructor(
     private var manufacturersList: MutableList<Manufacturer> = mutableListOf<Manufacturer>()
 
     var substancesData = MutableLiveData<List<SubstanceDataModel>>(listOf<SubstanceDataModel>())
-    var selectedSubstancesAndBarcodes = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
-    private var otherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
-
+    var selectedSubstancesWithValues = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
+    var otherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
 
     init {
         initState()
@@ -355,7 +354,7 @@ class VisitViewModel @Inject constructor(
         val isOedema = if (!displayOedema.value!!) false else isOedema.value
         val participant = participant.get()
         val dosingVisit = dosingVisit.get()
-        val substancesObservations = selectedSubstancesAndBarcodes.value ?: mapOf()
+        val substancesObservations = selectedSubstancesWithValues.value ?: mapOf()
         val missingSubstances = getMissingSubstanceLabels()
 
         vialValidationMessage.set(null)
@@ -632,19 +631,18 @@ class VisitViewModel @Inject constructor(
         zScoreNutritionTextColor.value = nutritionZScoreCalculator.getTextColorBasedOnZsCoreValue()
     }
 
-    fun setSelectedSubstances(substance: SubstanceDataModel, barcode: String) {
-        val currentMap = selectedSubstancesAndBarcodes.value ?: mutableMapOf()
-        currentMap[substance.conceptName] = barcode
-        selectedSubstancesAndBarcodes.postValue(currentMap)
+    fun addObsToObsMap(conceptName: String, value: String) {
+        val currentMap = selectedSubstancesWithValues.value ?: mutableMapOf()
+        currentMap[conceptName] = value
+        selectedSubstancesWithValues.postValue(currentMap)
     }
 
     private fun getMissingSubstanceLabels(): List<String> {
-        val selectedConceptNames = selectedSubstancesAndBarcodes.value?.keys?.toSet() ?: setOf()
+        val selectedConceptNames = selectedSubstancesWithValues.value?.keys?.toSet() ?: setOf()
 
         return substancesData.value
             ?.filter { it.conceptName !in selectedConceptNames }
            ?.map { it.label } ?: listOf()
     }
-
 }
 

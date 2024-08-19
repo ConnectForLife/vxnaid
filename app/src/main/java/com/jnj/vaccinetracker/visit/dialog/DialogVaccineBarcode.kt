@@ -20,10 +20,8 @@ import com.jnj.vaccinetracker.common.data.encryption.SharedPreference
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogVaccineBarcodeBinding
-import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
 import com.jnj.vaccinetracker.visit.VisitViewModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
-import com.jnj.vaccinetracker.visit.screens.VisitDosingFragment
 
 class DialogVaccineBarcode(
    private val substance: SubstanceDataModel
@@ -113,6 +111,7 @@ class DialogVaccineBarcode(
          viewModel.matchBarcodeManufacturer(barcode, resourcesWrapper)
       }
    }
+
    interface ConfirmSubstanceListener {
       fun addSubstance(substance: SubstanceDataModel, barcodeText: String)
    }

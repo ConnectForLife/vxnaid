@@ -82,6 +82,7 @@ class SubstancesDataUtil {
                             otherSubstance.conceptName,
                             otherSubstance.label,
                             otherSubstance.category,
+                            otherSubstance.inputType,
                             otherSubstance.options
                         )
                     )
