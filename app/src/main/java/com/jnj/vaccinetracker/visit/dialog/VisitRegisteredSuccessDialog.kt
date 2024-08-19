@@ -3,7 +3,6 @@ package com.jnj.vaccinetracker.visit.dialog
 import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -62,6 +62,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     private lateinit var nextVisitDateContainerLinearLayout: LinearLayout
     private lateinit var proposedDateContainerLinearLayout: LinearLayout
     private lateinit var saveVisitButton: Button
+    private lateinit var closeButton: Button
     private lateinit var proposedDateTextVisit: TextView
     private val nextVisit: UpcomingVisit? by lazy { requireArguments().getParcelable(ARG_NEXT_VISIT) }
     private var visitDate: DateTime? = null
@@ -87,14 +88,20 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         nextVisitDateContainerLinearLayout = binding.root.findViewById(R.id.next_visit_date_container)
         proposedDateContainerLinearLayout = binding.root.findViewById(R.id.proposed_next_visit_date_container)
         saveVisitButton = binding.root.findViewById(R.id.btn_save_visit)
+        closeButton = binding.root.findViewById(R.id.btn_finish)
         proposedDateTextVisit = binding.root.findViewById(R.id.proposed_next_visit_date_value)
 
         lifecycleScope.launch {
-            proposedDateTextVisit.text = getProposedNextVisitDate()
-        }
+            proposedDateTextVisit.text = getProposedNextVisitDateAsText()
 
-        binding.nextVisitDatePickerButton.setOnClickListener {
-           ScheduleVisitDatePickerDialog(visitDate, this).show(childFragmentManager, "scheduleVisitDatePickerDialog")
+            val proposedDate = getProposedNextVisitDateAsDate()
+            binding.nextVisitDatePickerButton.setOnClickListener {
+                ScheduleVisitDatePickerDialog(proposedDate, this@VisitRegisteredSuccessDialog).show(childFragmentManager, "scheduleVisitDatePickerDialog")
+            }
+
+            if (proposedDate != null) {
+                onDateSelected(proposedDate)
+            }
         }
 
         binding.btnSaveVisit.setOnClickListener {
@@ -108,8 +115,11 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                        visitScheduleResultTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.successDark))
                        nextVisitDateContainerLinearLayout.visibility = View.GONE
                        proposedDateContainerLinearLayout.visibility = View.GONE
-                       saveVisitButton.isEnabled = false
-                       saveVisitButton.alpha = 0.7f
+                       saveVisitButton.visibility = View.GONE
+
+                       val layoutParams = closeButton.layoutParams as ConstraintLayout.LayoutParams
+                       layoutParams.horizontalBias = 0.5f
+                       closeButton.layoutParams = layoutParams
                    }
                } catch (ex: Exception) {
                    visitScheduleResultTextView.text = getString(R.string.visit_schedule_visit_failed)
@@ -165,7 +175,14 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun getProposedNextVisitDate(): String {
+    private suspend fun getProposedNextVisitDateAsDate(): DateTime? {
+        val weeksNumberAfterBirthForNextVisit = findWeeksNumberAfterBirthForNextVisit(participant!!.birthDateText)
+        val nextVisitDate = weeksNumberAfterBirthForNextVisit?.let { calculateNextVisitDate(participant!!.birthDateText, it) }
+        return nextVisitDate?.let { DateTime.fromUnix(it.time) }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun getProposedNextVisitDateAsText(): String {
         val weeksNumberAfterBirthForNextVisit = findWeeksNumberAfterBirthForNextVisit(participant!!.birthDateText)
         val nextVisitDate = weeksNumberAfterBirthForNextVisit?.let { calculateNextVisitDate(participant!!.birthDateText, it) }
         if (nextVisitDate != null) {
