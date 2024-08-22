@@ -171,7 +171,7 @@ class RegisterParticipantAdministeredVaccinesViewModel @Inject constructor(
       }
 
       val substanceObservations = selectedSubstances.value?.associate { substance ->
-         substance.conceptName to substance.conceptName
+         substance.conceptName to mapOf(Constants.BARCODE_STR to "", Constants.MANUFACTURER_NAME_STR to "")
       }.orEmpty()
 
 
@@ -182,15 +182,14 @@ class RegisterParticipantAdministeredVaccinesViewModel @Inject constructor(
             visitManager.registerDosingVisit(
                encounterDatetime = Date(),
                visitUuid = dosingVisit.uuid,
-               vialCode = "",
-               manufacturer = "",
                participantUuid = participant.participantUuid,
                dosingNumber = dosingVisit.dosingNumber ?: 0,
                weight = null,
                height = null,
                isOedema = null,
                muac = null,
-               substanceObservations = substanceObservations
+               substanceObservations = substanceObservations,
+               otherSubstanceObservations = null
             )
             createNextVisit(participant)
             loading.set(false)

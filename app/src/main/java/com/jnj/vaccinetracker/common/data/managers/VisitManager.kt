@@ -38,36 +38,31 @@ class VisitManager @Inject constructor(
         participantUuid: String,
         encounterDatetime: Date,
         visitUuid: String,
-        vialCode: String,
-        manufacturer: String,
         dosingNumber: Int,
-        weight: Int?,
-        height: Int?,
-        isOedema: Boolean?,
-        muac: Int?,
-        substanceObservations: Map<String, String>?
+        weight: Int? = null,
+        height: Int? = null,
+        isOedema: Boolean? = null,
+        muac: Int? = null,
+        substanceObservations: Map<String, Map<String, String>>? = null,
+        otherSubstanceObservations: Map<String, String>? = null
     ) {
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
 
-        val operatorUUid = userRepository.getUser()?.uuid
-            ?: throw OperatorUuidNotAvailableException("trying to register dosing visit without stored operator uuid")
+        val operatorUuid = userRepository.getUser()?.uuid
+            ?: throw OperatorUuidNotAvailableException("Trying to register dosing visit without stored operator UUID")
 
-        val attributes = mapOf(
-            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
-            Constants.ATTRIBUTE_OPERATOR to operatorUUid,
-            Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to dosingNumber.toString(),
+        val attributes = buildVisitAttributes(operatorUuid, dosingNumber)
+
+        val observations = buildObservations(
+            weight = weight,
+            height = height,
+            muac = muac,
+            isOedema = isOedema,
+            substanceObservations = substanceObservations,
+            otherSubstanceObservations = otherSubstanceObservations,
+            encounterDatetime=encounterDatetime
         )
-
-        val obsBuilder = mutableMapOf<String, String>().apply {
-            put(Constants.OBSERVATION_TYPE_BARCODE, vialCode)
-            put(Constants.OBSERVATION_TYPE_MANUFACTURER, manufacturer)
-            muac?.let { put(Constants.OBSERVATION_TYPE_VISIT_MUAC, it.toString()) }
-            weight?.let { put(Constants.OBSERVATION_TYPE_VISIT_WEIGHT, it.toString()) }
-            height?.let { put(Constants.OBSERVATION_TYPE_VISIT_HEIGHT, it.toString()) }
-            isOedema?.let { put(Constants.OBSERVATION_TYPE_VISIT_OEDEMA, it.toString()) }
-            substanceObservations?.let { putAll(it) }
-        }
 
         val request = UpdateVisit(
             visitUuid = visitUuid,
@@ -75,11 +70,51 @@ class VisitManager @Inject constructor(
             participantUuid = participantUuid,
             locationUuid = locationUuid,
             attributes = attributes,
-            observations = obsBuilder.toMap(),
+            observations = observations
         )
 
         updateVisitUseCase.updateVisit(request)
     }
+
+    private fun buildVisitAttributes(operatorUuid: String, dosingNumber: Int): Map<String, String> {
+        return mapOf(
+            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
+            Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+            Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to dosingNumber.toString()
+        )
+    }
+
+    private fun buildObservations(
+        weight: Int?,
+        height: Int?,
+        muac: Int?,
+        isOedema: Boolean?,
+        substanceObservations: Map<String, Map<String, String>>?,
+        otherSubstanceObservations: Map<String, String>?,
+        encounterDatetime: Date
+    ): Map<String, String> {
+        return mutableMapOf<String, String>().apply {
+            weight?.let { put(Constants.OBSERVATION_TYPE_VISIT_WEIGHT, it.toString()) }
+            height?.let { put(Constants.OBSERVATION_TYPE_VISIT_HEIGHT, it.toString()) }
+            muac?.let { put(Constants.OBSERVATION_TYPE_VISIT_MUAC, it.toString()) }
+            isOedema?.let { put(Constants.OBSERVATION_TYPE_VISIT_OEDEMA, it.toString()) }
+
+            // convention for obs for a vaccine is its conceptName plus Date/Barcode/Manufacturer ex: Polio 0 Barcode
+            substanceObservations?.forEach { (conceptName, obsMap) ->
+                // Date needs to be always added
+                put("$conceptName ${Constants.DATE_STR}", encounterDatetime.toString())
+                obsMap.forEach { (key, value) ->
+                    val fullKey = "$conceptName $key"
+                    put(fullKey, value)
+                }
+            }
+
+            otherSubstanceObservations?.forEach { (conceptName, conceptValue) ->
+                put(conceptName, conceptValue)
+            }
+        }
+    }
+
 
 
     suspend fun registerOtherVisit(participantUuid: String) {
