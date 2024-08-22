@@ -12,8 +12,10 @@ import com.jnj.vaccinetracker.common.domain.usecases.GetUpcomingVisitUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
+import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
+import com.soywiz.klock.DateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -61,7 +63,7 @@ class VisitManager @Inject constructor(
             isOedema = isOedema,
             substanceObservations = substanceObservations,
             otherSubstanceObservations = otherSubstanceObservations,
-            encounterDatetime=encounterDatetime
+            encounterDatetime = encounterDatetime
         )
 
         val request = UpdateVisit(
@@ -101,8 +103,11 @@ class VisitManager @Inject constructor(
 
             // convention for obs for a vaccine is its conceptName plus Date/Barcode/Manufacturer ex: Polio 0 Barcode
             substanceObservations?.forEach { (conceptName, obsMap) ->
-                // Date needs to be always added
-                put("$conceptName ${Constants.DATE_STR}", encounterDatetime.toString())
+                if (obsMap[Constants.DATE_STR].isNullOrEmpty()) {
+                    // Date needs to be always added if not exists yet
+                    put("$conceptName ${Constants.DATE_STR}", DateUtil.convertDateToString(encounterDatetime, DateFormat.FORMAT_DATE.toString()))
+                }
+
                 obsMap.forEach { (key, value) ->
                     val fullKey = "$conceptName $key"
                     put(fullKey, value)
@@ -114,8 +119,6 @@ class VisitManager @Inject constructor(
             }
         }
     }
-
-
 
     suspend fun registerOtherVisit(participantUuid: String) {
         val locationUuid = syncSettingsRepository.getSiteUuid() ?: throw NoSiteUuidAvailableException("Trying to register other visit without a selected site")
