@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.helpers.findParent
@@ -53,7 +54,8 @@ class VaccineDialog(
 
    private fun setOnClickListeners() {
       btnAdd.setOnClickListener {
-         if (selectedSubstance != null) {
+         validateDate()
+         if (selectedSubstance != null && vaccineDate != null) {
             selectedSubstance!!.obsDate = vaccineDate?.format(DateFormat.FORMAT_DATE)
             findParent<AddVaccineListener>()?.addVaccine(selectedSubstance!!)
             findParent<AddVaccineListener>()?.addVaccineDate(selectedSubstance!!.conceptName, vaccineDate!!)
@@ -81,6 +83,15 @@ class VaccineDialog(
       }
    }
 
+   private fun validateDate() {
+      if (vaccineDate == null) {
+         val dateValidationText = getString(R.string.dialog_missing_substances_empty_date_validation_message)
+         vaccineDateTextView.error = dateValidationText
+         val hintTextColor = ContextCompat.getColor(requireContext(), R.color.errorLight)
+         vaccineDateTextView.setHintTextColor(hintTextColor)
+      }
+   }
+
    private fun setupDropdown() {
       val adapter = ArrayAdapter(
          requireContext(),
@@ -93,6 +104,7 @@ class VaccineDialog(
    override fun onDateSelected(dateTime: DateTime) {
       vaccineDate = dateTime
       vaccineDateTextView.text = dateTime.format(DateFormat.FORMAT_DATE)
+      vaccineDateTextView.error = null
    }
 
    interface AddVaccineListener {
