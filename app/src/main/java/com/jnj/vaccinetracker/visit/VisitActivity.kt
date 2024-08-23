@@ -170,7 +170,8 @@ class VisitActivity :
 
     private fun onSubmit() {
         viewModel.checkIfAnyOtherSubstancesEmpty()
-        if (viewModel.isAnyOtherSubstancesEmpty.value == true) {
+        viewModel.checkVisitLocationSelection()
+        if (viewModel.isAnyOtherSubstancesEmpty.value == true || !viewModel.isVisitLocationValid()) {
             viewModel.isAnyOtherSubstancesEmpty.value = false
             binding.tabLayout.getTabAt(0)?.select()
             return

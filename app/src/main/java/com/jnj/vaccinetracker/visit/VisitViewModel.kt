@@ -97,10 +97,13 @@ class VisitViewModel @Inject constructor(
     var substancesData = MutableLiveData(listOf<SubstanceDataModel>())
     var selectedSubstancesWithBarcodes = MutableLiveData<MutableMap<String, Map<String, String>>>(mutableMapOf())
     var selectedOtherSubstances = MutableLiveData<MutableMap<String, String>>()
-    var otherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
-    var checkOtherSubstances =  MutableLiveData<Boolean>(false)
-    var isAnyOtherSubstancesEmpty =  MutableLiveData<Boolean>(false)
-    var visitsCounter = MutableLiveData<Int>(0)
+    var otherSubstancesData = MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
+    var checkOtherSubstances = MutableLiveData(false)
+    var isAnyOtherSubstancesEmpty = MutableLiveData(false)
+    var visitsCounter = MutableLiveData(0)
+    var visitLocation = MutableLiveData<String>()
+    var isVisitLocationSelected = MutableLiveData(false)
+    var checkVisitLocation = MutableLiveData(false)
 
     init {
         initState()
@@ -261,6 +264,7 @@ class VisitViewModel @Inject constructor(
         val substancesObservations = selectedSubstancesWithBarcodes.value ?: mapOf()
         val otherSubstancesObservations = selectedOtherSubstances.value ?: mapOf()
         val missingSubstances = getMissingSubstanceLabels()
+        val visitLocationValue = visitLocation.value
 
         if (participant == null || dosingVisit == null) {
             logError("No participant or dosing visit in memory!")
@@ -307,6 +311,7 @@ class VisitViewModel @Inject constructor(
                     dosingNumber = visitsCounter ?: 0,
                     substanceObservations = substancesObservations.toMap(),
                     otherSubstanceObservations = otherSubstancesObservations.toMap(),
+                    visitLocation = visitLocationValue
                 )
 
                 // schedule next visit after submitting current one
@@ -510,6 +515,18 @@ class VisitViewModel @Inject constructor(
 
     fun checkIfAnyOtherSubstancesEmpty() {
         checkOtherSubstances.value = true
+    }
+
+    fun setVisitLocationValue(locationValue: String) {
+        visitLocation.value = locationValue
+    }
+
+    fun isVisitLocationValid() : Boolean {
+        return isVisitLocationSelected.value == true
+    }
+
+    fun checkVisitLocationSelection() {
+        checkVisitLocation.value = true
     }
 }
 
