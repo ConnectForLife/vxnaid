@@ -69,8 +69,8 @@ class SubstancesDataUtil {
             }
 
             val filteredResultList = applyVaccinesCatchUpSchedule(substanceDataModelList, childAgeInWeeks, participantVisits).toMutableList()
-            handleHepBBDVaccine(filteredResultList, childAgeInWeeks, participantVisits, substancesConfig)
-            handleBCGVaccine(filteredResultList, participantVisits, substancesConfig)
+            handleHepBBDVaccine(filteredResultList, childAgeInWeeks, participantVisits)
+            handleBCGVaccine(filteredResultList, participantVisits)
 
             return filteredResultList.filter { it.conceptName != "" }
         }
@@ -278,43 +278,23 @@ class SubstancesDataUtil {
         private fun handleHepBBDVaccine(
             substances: MutableList<SubstanceDataModel>,
             childAgeInWeeks: Int,
-            participantVisits: List<VisitDetail>,
-            substancesConfig: SubstancesConfig
+            participantVisits: List<VisitDetail>
         ) {
             val isHepBBDVaccineAlreadyApplied =
                 participantVisits.any { visit -> HEP_B_BD_VACCINE_CONCEPT_NAME + " ${Constants.DATE_STR}" in visit.observations }
-            if (!isHepBBDVaccineAlreadyApplied && childAgeInWeeks <= 6) {
-                val hepBBDVaccineObject =
-                    substancesConfig.find { it.conceptName == HEP_B_BD_VACCINE_CONCEPT_NAME }
-                substances.add(
-                    SubstanceDataModel(
-                        hepBBDVaccineObject?.conceptName ?: "",
-                        hepBBDVaccineObject?.label ?: "",
-                        hepBBDVaccineObject?.category ?: "",
-                        hepBBDVaccineObject?.routeOfAdministration ?: ""
-                    )
-                )
+            if (isHepBBDVaccineAlreadyApplied || childAgeInWeeks > 6) {
+                substances.removeAll { it.conceptName == HEP_B_BD_VACCINE_CONCEPT_NAME }
             }
         }
 
         private fun handleBCGVaccine(
             substances: MutableList<SubstanceDataModel>,
-            participantVisits: List<VisitDetail>,
-            substancesConfig: SubstancesConfig
+            participantVisits: List<VisitDetail>
         ) {
             val isBCGVaccineAlreadyApplied =
                 participantVisits.any { visit -> BCG_VACCINE_CONCEPT_NAME + " ${Constants.DATE_STR}" in visit.observations }
-            val bcgVaccineObject =
-                substancesConfig.find { it.conceptName == BCG_VACCINE_CONCEPT_NAME }
-            if (!isBCGVaccineAlreadyApplied) {
-                substances.add(
-                    SubstanceDataModel(
-                        bcgVaccineObject?.conceptName ?: "",
-                        bcgVaccineObject?.label ?: "",
-                        bcgVaccineObject?.category ?: "",
-                        bcgVaccineObject?.routeOfAdministration ?: ""
-                    )
-                )
+            if (isBCGVaccineAlreadyApplied) {
+                substances.removeAll { it.conceptName == BCG_VACCINE_CONCEPT_NAME }
             }
         }
     }
