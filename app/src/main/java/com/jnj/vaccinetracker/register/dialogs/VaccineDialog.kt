@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -19,7 +20,8 @@ import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 
 class VaccineDialog(
-   private val substanceData: List<SubstanceDataModel>
+   private val substanceData: List<SubstanceDataModel>,
+   private val withDate: Boolean = true
 ) : BaseDialogFragment(), ScheduleVisitDatePickerDialog.OnDateSelectedListener {
    private lateinit var btnAdd: Button
    private lateinit var btnCancel: Button
@@ -27,6 +29,7 @@ class VaccineDialog(
    private lateinit var binding: DialogSelectVaccineBinding
    private lateinit var vaccineDateButton: Button
    private lateinit var vaccineDateTextView: TextView
+   private lateinit var dateLayout: LinearLayout
    var selectedSubstance: SubstanceDataModel? = null
    private var vaccineDate: DateTime? = null
 
@@ -50,15 +53,25 @@ class VaccineDialog(
       dropdown = binding.dropdownVaccine
       vaccineDateButton = binding.vaccineDateDatePickerButton
       vaccineDateTextView = binding.vaccineDateValue
+      dateLayout = binding.vaccineDateLinearLayout
+
+      if (!withDate) {
+         dateLayout.visibility = View.GONE
+      }
    }
 
    private fun setOnClickListeners() {
       btnAdd.setOnClickListener {
          validateDate()
-         if (selectedSubstance != null && vaccineDate != null) {
+         if (selectedSubstance != null || (vaccineDate != null && withDate)) {
             selectedSubstance!!.obsDate = vaccineDate?.format(DateFormat.FORMAT_DATE)
             findParent<AddVaccineListener>()?.addVaccine(selectedSubstance!!)
-            findParent<AddVaccineListener>()?.addVaccineDate(selectedSubstance!!.conceptName, vaccineDate!!)
+            if (withDate) {
+               findParent<AddVaccineListener>()?.addVaccineDate(
+                  selectedSubstance!!.conceptName,
+                  vaccineDate!!
+               )
+            }
             dismissAllowingStateLoss()
          }
       }
@@ -84,7 +97,7 @@ class VaccineDialog(
    }
 
    private fun validateDate() {
-      if (vaccineDate == null) {
+      if (withDate && vaccineDate == null) {
          val dateValidationText = getString(R.string.dialog_missing_substances_empty_date_validation_message)
          vaccineDateTextView.error = dateValidationText
          val hintTextColor = ContextCompat.getColor(requireContext(), R.color.errorLight)

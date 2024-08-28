@@ -19,11 +19,13 @@ import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.*
 import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.visit.VisitViewModel
+import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.adapters.VisitSubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
 import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
 import kotlinx.coroutines.flow.onEach
+import java.util.Date
 
 /**
  * @author maartenvangiel
@@ -45,6 +47,7 @@ class VisitVaccinesFragment : BaseFragment(),
     private lateinit var binding: FragmentVisitVaccinesBinding
     private lateinit var adapter: VisitSubstanceItemAdapter
 
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visit_vaccines, container, false)
         binding.viewModel = viewModel
@@ -57,7 +60,13 @@ class VisitVaccinesFragment : BaseFragment(),
     }
 
     private fun setupVaccinesRecyclerView() {
-        adapter = VisitSubstanceItemAdapter(mutableListOf(), requireActivity().supportFragmentManager, requireContext())
+        adapter = VisitSubstanceItemAdapter(
+            mutableListOf(),
+            requireActivity().supportFragmentManager,
+            requireContext(),
+            viewModel,
+            viewModel.suggestedSubstancesData.value,
+        )
         binding.recyclerViewVaccines.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewVaccines.adapter = adapter
     }
@@ -75,11 +84,17 @@ class VisitVaccinesFragment : BaseFragment(),
                     else
                         onDosingVisitRegistrationFailed()
                 }.launchIn(lifecycleOwner)
-        viewModel.substancesData.observe(lifecycleOwner) { substances ->
+        viewModel.selectedSubstancesData.observe(lifecycleOwner) { substances ->
             adapter.updateList(substances)
         }
         viewModel.selectedSubstancesWithBarcodes.observe(lifecycleOwner) { substances ->
             adapter.colorItems(substances)
+        }
+        viewModel.isSuggesting.observe(lifecycleOwner) {isSuggesting ->
+            adapter.setSuggestingMode(isSuggesting)
+        }
+        viewModel.suggestedSubstancesData.observe(lifecycleOwner) {suggestedSubstances ->
+            adapter.setSuggestedSubstances(suggestedSubstances)
         }
     }
 

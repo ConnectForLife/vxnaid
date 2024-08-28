@@ -2,10 +2,10 @@ package com.jnj.vaccinetracker.visit.screens
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.util.Log
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
@@ -118,4 +118,5 @@ class VisitCaptureDataFragment :
     private fun checkIfAnyOtherDataEmpty(): Boolean {
         return otherSubstancesAdapter.checkIfAnyItemsEmpty(viewModel.selectedOtherSubstances.value, binding.recyclerViewOtherSubstances)
     }
+
 }
