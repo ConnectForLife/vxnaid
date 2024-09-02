@@ -393,4 +393,13 @@
     <string name="general_label_enter_text">Enter text</string>
     <string name="general_label_label">Label</string>
     <string name="participant_registration_description_success">Does the child require vaccination?</string>
+    <string name="referral_page_title">Refer to clinic</string>
+    <string name="referral_page_refer_button_title">Refer</string>
+    <string name="referral_page_cancel_button_title">Do not refer</string>
+    <string name="referral_page_clinic_title">Select a clinic</string>
+    <string name="referral_page_additional_info_title">Additional information</string>
+    <string name="referral_page_additional_info_hint">Enter an additional information</string>
+    <string name="referral_page_clinic_not_selected_hint">Please select a clinic</string>
+    <string name="referral_page_success_referral_text">Child successfully referred to clinic:</string>
+    <string name="referral_page_failed_referral_text">Error while referring a child</string>
 </resources>

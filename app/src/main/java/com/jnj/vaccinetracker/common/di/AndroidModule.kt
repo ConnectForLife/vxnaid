@@ -48,6 +48,7 @@ import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
 import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
 import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
 import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
+import com.jnj.vaccinetracker.visit.screens.ReferralActivity
 import com.jnj.vaccinetracker.visit.screens.VisitVaccinesFragment
 import com.jnj.vaccinetracker.visit.screens.VisitCaptureDataFragment
 import dagger.Module
@@ -230,4 +231,7 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindRegisterParticipantIsChildNewbornDialog(): RegisterParticipantHasChildEverVaccinatedDialog
+
+    @ContributesAndroidInjector
+    fun bindReferralFlowActivity(): ReferralActivity
 }
