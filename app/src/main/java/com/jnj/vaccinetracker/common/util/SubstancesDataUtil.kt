@@ -92,7 +92,7 @@ class SubstancesDataUtil {
                     )
                 }
             }
-            return substanceDataModelList.filter { it.conceptName != "" }
+            return substanceDataModelList.filter { it.conceptName != "" }.distinctBy { it.conceptName }
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
