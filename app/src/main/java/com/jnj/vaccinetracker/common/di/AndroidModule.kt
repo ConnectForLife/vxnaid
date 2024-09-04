@@ -15,12 +15,13 @@ import com.jnj.vaccinetracker.participantflow.screens.*
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantConfirmNoTelephoneDialog
-import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantIdNotMatchingDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantHasChildEverVaccinatedDialog
+import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantIdNotMatchingDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantSuccessfulDialog
 import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
-import com.jnj.vaccinetracker.register.screens.RegisterParticipantAdministeredVaccinesFragment
+import com.jnj.vaccinetracker.register.screens.HistoricalDataForVisitTypeFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantCameraPermissionFragment
+import com.jnj.vaccinetracker.register.screens.RegisterParticipantHistoricalDataFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDetailsFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantPicturePreviewFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantTakePictureFragment
@@ -96,7 +97,10 @@ interface AndroidModule {
     fun bindParticipantFlowAddOrSearchFragment(): ParticipantFlowAddOrSearchFragment
 
     @ContributesAndroidInjector
-    fun bindRegisterParticipantAdministeredVaccinesFragment(): RegisterParticipantAdministeredVaccinesFragment
+    fun bindRegisterParticipantAdministeredVaccinesFragment(): HistoricalDataForVisitTypeFragment
+
+    @ContributesAndroidInjector
+    fun bindRegisterParticipantHistoricalDataFragment(): RegisterParticipantHistoricalDataFragment
 
     @ContributesAndroidInjector
     fun bindLoginActivity(): LoginActivity
@@ -153,12 +157,12 @@ interface AndroidModule {
     fun bindHomeLocationPickerDialog(): HomeLocationPickerDialog
 
     @ContributesAndroidInjector
+    fun bindDialogVaccineBarcode(): DialogVaccineBarcode
+
+    @ContributesAndroidInjector
     fun bindRegisterParticipantSuccessfulDialog(): RegisterParticipantSuccessfulDialog
     @ContributesAndroidInjector
     fun bindVaccineDialog(): VaccineDialog
-
-    @ContributesAndroidInjector
-    fun bindDialogVaccineBarcode(): DialogVaccineBarcode
 
     @ContributesAndroidInjector
     fun bindRegisterParticipantConfirmNoTelephoneDialog(): RegisterParticipantConfirmNoTelephoneDialog
@@ -179,10 +183,10 @@ interface AndroidModule {
     fun bindVisitActivity(): VisitActivity
 
     @ContributesAndroidInjector
-    fun bindVisitVaccinesFragment(): VisitVaccinesFragment
+    fun bindContraindicationsActivity(): ContraindicationsActivity
 
     @ContributesAndroidInjector
-    fun bindContraindicationsFragment(): ContraindicationsActivity
+    fun bindVisitVaccinesFragment(): VisitVaccinesFragment
 
     @ContributesAndroidInjector
     fun bindVisitCaptureDataFragment(): VisitCaptureDataFragment

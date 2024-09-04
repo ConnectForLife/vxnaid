@@ -84,4 +84,7 @@ object Constants {
 
     const val REFERRAL_CLINIC_CONCEPT_NAME = "Referral Clinic Vxnaid";
     const val REFERRAL_ADDITIONAL_INFO_CONCEPT_NAME = "Referral Additional Info Vxnaid";
+
+    const val SUBSTANCES_AND_DATES_STR = "substancesAndDates"
+    const val OTHER_SUBSTANCES_AND_VALUES_STR = "otherSubstancesAndValues"
 }
