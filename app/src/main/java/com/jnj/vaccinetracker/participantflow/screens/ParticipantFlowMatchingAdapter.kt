@@ -53,7 +53,7 @@ class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (Particip
                 DataBindingUtil.inflate(layoutInflater, R.layout.item_participant_matching_participant, parent, false), onClickListener = ::onParticipantItemClicked
             )
             ITEM_TYPE_OTHER_SITE_PARTICIPANT -> ParticipantOtherSiteViewHolder(
-                DataBindingUtil.inflate(layoutInflater, R.layout.item_participant_matching_other_site_participant, parent, false)
+                DataBindingUtil.inflate(layoutInflater, R.layout.item_participant_matching_other_site_participant, parent, false), onClickListener = ::onParticipantItemClicked
             )
             ITEM_TYPE_SUBTITLE -> SubtitleViewHolder(DataBindingUtil.inflate(layoutInflater, R.layout.item_participant_matching_subtitle, parent, false))
             else -> error("No such viewtype exists")
@@ -71,7 +71,7 @@ class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (Particip
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ParticipantViewHolder -> holder.bind(items[position] as ParticipantFlowMatchingViewModel.ParticipantItem, position == selectedPosition)
-            is ParticipantOtherSiteViewHolder -> holder.bind(items[position] as ParticipantFlowMatchingViewModel.OtherSiteParticipantItem)
+            is ParticipantOtherSiteViewHolder -> holder.bind(items[position] as ParticipantFlowMatchingViewModel.OtherSiteParticipantItem, position == selectedPosition)
             is SubtitleViewHolder -> holder.bind(items[position] as ParticipantFlowMatchingViewModel.SubtitleItem)
         }
     }
@@ -92,9 +92,18 @@ class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (Particip
         }
     }
 
-    class ParticipantOtherSiteViewHolder(private val binding: ItemParticipantMatchingOtherSiteParticipantBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: ParticipantFlowMatchingViewModel.OtherSiteParticipantItem) {
+    class ParticipantOtherSiteViewHolder(
+        private val binding: ItemParticipantMatchingOtherSiteParticipantBinding,
+        private val onClickListener: (adapterPosition: Int) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener { onClickListener(adapterPosition) }
+        }
+
+        fun bind(item: ParticipantFlowMatchingViewModel.OtherSiteParticipantItem, selected: Boolean) {
             binding.item = item
+            binding.selected = selected
             binding.executePendingBindings()
         }
     }

@@ -23,8 +23,11 @@ import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowMissingIdentifiersDialog
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
+import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
+import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 /**
  * @author maartenvangiel
@@ -41,6 +44,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
 
     private lateinit var binding: FragmentParticipantFlowMatchingBinding
     private lateinit var adapter: ParticipantFlowMatchingAdapter
+    @Inject lateinit var syncSettingsRepository: SyncSettingsRepository
 
     private var errorSnackbar: Snackbar? = null
 
@@ -51,11 +55,18 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         adapter = ParticipantFlowMatchingAdapter(::onItemSelected)
         binding.recyclerViewParticipants.adapter = adapter
 
+        val currentLocationUuid = syncSettingsRepository.getSiteUuid()
+
         binding.btnNewParticipant.setOnClickListener {
             viewModel.onNewParticipantButtonClick()
         }
         binding.btnMatchParticipant.setOnClickListener {
-            viewModel.getSelectedParticipantSummary()?.let { startParticipantVisitContraindications(it, false) }
+            if (viewModel.selectedParticipant.value?.siteUUID != currentLocationUuid) {
+                viewModel.selectedParticipant.value?.let { TransferClinicDialog(it, currentLocationUuid!!).show(childFragmentManager, "transferClinicDialog") }
+            } else {
+                viewModel.getSelectedParticipantSummary()?.let { startParticipantVisitContraindications(it, false) }
+            }
+
         }
 
         return binding.root
