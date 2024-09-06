@@ -205,9 +205,9 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
             if (site == null) {
                 logError("site == null for location $participantLocationUuid")
             }
+            val addressMasterDataOrder =
+                getAddressMasterDataOrderUseCase.getAddressMasterDataOrder(participant.address?.country, isUseDefaultAsAlternative = true, onlyDropDowns = false)
             if (locationUuid == participantLocationUuid) {
-                val addressMasterDataOrder =
-                    getAddressMasterDataOrderUseCase.getAddressMasterDataOrder(participant.address?.country, isUseDefaultAsAlternative = true, onlyDropDowns = false)
                 ParticipantItem(
                     participant = ParticipantUiModel(
                         participantUUID = participant.uuid,
@@ -235,8 +235,19 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
             } else {
                 OtherSiteParticipantItem(
                     participant = ParticipantUiModel(
+                        participantUUID = participant.uuid,
                         participantId = participant.participantId,
-                        matchingScore = participant.matchingScore,
+                        irisMatchingScore = participant.matchingScore,
+                        birthDateText = (if (participant.isBirthDateEstimated) {
+                            RegisterParticipantParticipantDetailsViewModel.calculateAgeFromDate(participant.birthDate.toDateTime())
+                        } else {
+                            participant.birthDate.toDateTime().format(DateFormat.FORMAT_DATE)
+                        }),
+                        isBirthDateEstimated=participant.isBirthDateEstimated,
+                        gender = participant.gender,
+                        telephone = participant.telephoneNumber,
+                        homeLocation = participant.address?.toDomain()?.toStringList(addressMasterDataOrder)?.translate(),
+                        vaccine = participant.vaccine?.let { DisplayValue(it, loc[it]) },
                         siteUUID = participantLocationUuid
                     ),
                     isCurrentSite = false,
@@ -268,9 +279,14 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
     }
 
     fun setSelectedParticipant(matchingListItem: MatchingListItem) {
-        if (matchingListItem !is ParticipantItem) return
-        selectedParticipant.set(matchingListItem.participant)
-        selectedParticipantImage.set(matchingListItem.picture)
+      if (matchingListItem is ParticipantItem) {
+          selectedParticipant.set(matchingListItem.participant)
+          selectedParticipantImage.set(matchingListItem.picture)
+      } else if (matchingListItem is OtherSiteParticipantItem) {
+          selectedParticipant.set(matchingListItem.participant)
+      } else {
+          return
+      }
     }
 
     fun getSelectedParticipantSummary(): ParticipantSummaryUiModel? {

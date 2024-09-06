@@ -405,4 +405,7 @@
     <string name="referral_page_clinic_not_selected_hint">Please select a clinic</string>
     <string name="referral_page_success_referral_text">Child successfully referred to clinic:</string>
     <string name="referral_page_failed_referral_text">Error while referring a child</string>
+    <string name="transfer_clinic_question">Would you like to transfer child to your clinic?</string>
+    <string name="transfer_clinic_transfer_and_continue">Transfer and continue with visit</string>
+    <string name="transfer_clinic_just_visit">Just a visit</string>
 </resources>

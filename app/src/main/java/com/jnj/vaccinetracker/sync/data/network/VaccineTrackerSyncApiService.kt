@@ -138,4 +138,7 @@ interface VaccineTrackerSyncApiService {
 
     @POST("$BIOMETRIC/updateEncounterObservations/{visitUuid}")
     suspend fun updateEncounterObservationsByVisit(@Path("visitUuid") visitUuid: String, @Body obsToAdd: Map<String, String>)
+
+    @POST("$BIOMETRIC/updateParticipantLocation/{participantUuid}")
+    suspend fun updateParticipantLocation(@Path("participantUuid") participantUuid: String, @Body newLocationUuid: String)
 }
