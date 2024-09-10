@@ -7,22 +7,27 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogSelectVaccineBinding
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
+import com.soywiz.klock.DateFormat
+import com.soywiz.klock.DateTime
 
 class VaccineDialog(
    private val substanceData: List<SubstanceDataModel>
 ) : BaseDialogFragment() {
-   private lateinit var btnOk: Button
+   private lateinit var btnAdd: Button
    private lateinit var btnCancel: Button
    private lateinit var dropdown: AutoCompleteTextView
    private lateinit var binding: DialogSelectVaccineBinding
-
    var selectedSubstance: SubstanceDataModel? = null
+
    override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
@@ -38,13 +43,13 @@ class VaccineDialog(
    }
 
    private fun initializeViews() {
-      btnOk = binding.btnOk
+      btnAdd = binding.btnAdd
       btnCancel = binding.btnCancel
       dropdown = binding.dropdownVaccine
    }
 
    private fun setOnClickListeners() {
-      btnOk.setOnClickListener {
+      btnAdd.setOnClickListener {
          if (selectedSubstance != null) {
             findParent<AddVaccineListener>()?.addVaccine(selectedSubstance!!)
             dismissAllowingStateLoss()
@@ -71,11 +76,10 @@ class VaccineDialog(
       val adapter = ArrayAdapter(
          requireContext(),
          R.layout.item_dropdown,
-         substanceData.map { it.conceptName }.distinct()
+         substanceData.map { it.label }.distinct()
       )
       dropdown.setAdapter(adapter)
    }
-
 
    interface AddVaccineListener {
       fun addVaccine(vaccine: SubstanceDataModel)

@@ -63,7 +63,6 @@ class BirthDatePickerDialog(
             dialog.dismiss()
         }
 
-
         btnCancel.setOnClickListener {
             dialog.dismiss()
         }
@@ -126,11 +125,18 @@ class BirthDatePickerDialog(
         numberPickerYears.wrapSelectorWheel = false
         numberPickerMonths.wrapSelectorWheel = false
         numberPickerDays.wrapSelectorWheel = false
+
+        numberPickerYears.setOnValueChangedListener { _, _, _ -> updateDatePicker() }
+        numberPickerMonths.setOnValueChangedListener { _, _, _ -> updateDatePicker() }
+        numberPickerDays.setOnValueChangedListener { _, _, _ -> updateDatePicker() }
     }
 
     private fun setupSwitchListener() {
         switchIsBirthDateEstimated.setOnCheckedChangeListener { _, _ ->
             updateLayoutVisibility()
+            if (switchIsBirthDateEstimated.isChecked) {
+                updateDatePicker()
+            }
         }
     }
 
@@ -141,6 +147,13 @@ class BirthDatePickerDialog(
         } else {
             datePicker.visibility = LinearLayout.VISIBLE
             estimatedBirthdayLayout.visibility = LinearLayout.GONE
+        }
+    }
+
+    private fun updateDatePicker() {
+        if (switchIsBirthDateEstimated.isChecked) {
+            val estimatedDate = calculateEstimatedDate()
+            datePicker.updateDate(estimatedDate.yearInt, estimatedDate.month1 - 1, estimatedDate.dayOfMonth)
         }
     }
 

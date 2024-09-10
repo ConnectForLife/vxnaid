@@ -24,8 +24,11 @@ import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowMissingIdentifiersDialog
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
-import com.jnj.vaccinetracker.visit.VisitActivity
+import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
+import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 /**
  * @author maartenvangiel
@@ -42,6 +45,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
 
     private lateinit var binding: FragmentParticipantFlowMatchingBinding
     private lateinit var adapter: ParticipantFlowMatchingAdapter
+    @Inject lateinit var syncSettingsRepository: SyncSettingsRepository
 
     private var errorSnackbar: Snackbar? = null
 
@@ -52,11 +56,18 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         adapter = ParticipantFlowMatchingAdapter(::onItemSelected)
         binding.recyclerViewParticipants.adapter = adapter
 
+        val currentLocationUuid = syncSettingsRepository.getSiteUuid()
+
         binding.btnNewParticipant.setOnClickListener {
             viewModel.getSelectedParticipantSummary()?.let { startParticipantEdit(it) }
         }
         binding.btnMatchParticipant.setOnClickListener {
-            viewModel.getSelectedParticipantSummary()?.let { startParticipantVisit(it, false) }
+            if (viewModel.selectedParticipant.value?.siteUUID != currentLocationUuid) {
+                viewModel.selectedParticipant.value?.let { TransferClinicDialog(it, currentLocationUuid!!).show(childFragmentManager, "transferClinicDialog") }
+            } else {
+                viewModel.getSelectedParticipantSummary()?.let { startParticipantVisitContraindications(it, false) }
+            }
+
         }
 
         return binding.root
@@ -134,7 +145,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
                     startActivity(ParticipantFlowActivity.create(requireContext()))
                 } else {
                     // If participant passed, we continue
-                    startParticipantVisit(participant, true)
+                    startParticipantVisitContraindications(participant, true)
                 }
                 requireActivity().finish()
             }
@@ -144,8 +155,8 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         }
     }
 
-    private fun startParticipantVisit(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
-        startActivity(VisitActivity.create(requireContext(), participant, newRegisteredParticipant))
+    private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
+        startActivity(ContraindicationsActivity.create(requireContext(), participant, newRegisteredParticipant))
         (requireActivity() as BaseActivity).setForwardAnimation()
     }
 

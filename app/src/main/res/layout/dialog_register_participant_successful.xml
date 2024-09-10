@@ -34,8 +34,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_header" />
 
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_horizontal"
+            android:text="@string/participant_registration_description_success"
+            android:textAppearance="@style/DescriptionText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
         <Button
-            android:id="@+id/btn_continue"
+            android:id="@+id/btn_yes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -43,14 +57,14 @@
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/colorPrimary"
             android:textAppearance="@style/ButtonTextStyling"
-            android:text="@string/participant_registration_button_continue_visit"
+            android:text="@string/general_label_yes"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_finish"
+            app:layout_constraintEnd_toStartOf="@+id/btn_no"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_finish" />
+            app:layout_constraintTop_toTopOf="@+id/btn_no" />
 
         <Button
-            android:id="@+id/btn_finish"
+            android:id="@+id/btn_no"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -58,11 +72,11 @@
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/colorPrimary"
             android:textAppearance="@style/ButtonTextStyling"
-            android:text="@string/participant_registration_button_finish_workflow"
+            android:text="@string/general_label_no"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_continue"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            app:layout_constraintStart_toEndOf="@+id/btn_yes"
+            app:layout_constraintTop_toBottomOf="@+id/description" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

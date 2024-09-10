@@ -2,16 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-            name="viewModel"
-            type="com.jnj.vaccinetracker.visit.VisitViewModel" />
-
-        <import type="android.view.View" />
-
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -21,7 +11,7 @@
             android:id="@+id/frameLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@{viewModel.differentManufacturerAllowed ? @drawable/alert_background : @drawable/error_background}"
+            android:background="@color/alertLight"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -34,7 +24,7 @@
                 android:layout_marginBottom="30dp"
                 android:gravity="center"
                 android:scaleType="fitCenter"
-                android:src="@{viewModel.differentManufacturerAllowed ? @drawable/ic_checkmark_alert : @drawable/ic_x_circle}"
+                android:src="@drawable/ic_checkmark_alert"
                 app:tint="@color/colorTextOnPrimary" />
         </FrameLayout>
 
@@ -47,8 +37,8 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:gravity="center_horizontal"
-            android:text="@string/visit_dosing_warning_different_manufacturer_title"
-            android:textAppearance="@style/ScreenTitle"
+            android:text="@string/participant_registration_has_child_ever_vaccinated_title"
+            android:textAppearance="@style/PopupTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
@@ -60,16 +50,16 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="@{viewModel.differentManufacturerAllowed ? @string/visit_dosing_warning_different_manufacturer_description : @string/visit_dosing_error_different_manufacturer_description}"
+            android:text="@string/participant_registration_has_child_ever_vaccinated_desc"
             android:textAlignment="center"
-            android:textAppearance="@style/DescriptionText"
+            android:textAppearance="@style/GeneralText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView_title" />
 
         <Button
-            android:id="@+id/btn_confirm"
+            android:id="@+id/btn_yes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
@@ -79,17 +69,17 @@
             android:backgroundTint="@color/alertLight"
             android:textAppearance="@style/ButtonTextStyling"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/participant_registration_button_confirm_no_telephone"
+            android:text="@string/general_label_yes"
             android:textColor="@color/colorTextOnPrimary"
-            android:visibility="@{viewModel.differentManufacturerAllowed ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_cancel"
+            app:layout_constraintEnd_toStartOf="@+id/btn_no"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_cancel" />
+            app:layout_constraintTop_toTopOf="@+id/btn_no"
+            app:layout_constraintVertical_bias="0.0" />
 
         <Button
-            android:id="@+id/btn_cancel"
+            android:id="@+id/btn_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -97,12 +87,12 @@
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/colorPrimary"
             android:textAppearance="@style/ButtonTextStyling"
-            android:text="@string/participant_registration_button_cancel_submit"
+            android:text="@string/general_label_no"
             android:textColor="@color/colorTextOnSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/btn_confirm"
+            app:layout_constraintStart_toEndOf="@+id/btn_yes"
             app:layout_constraintTop_toBottomOf="@+id/textView_description" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,7 +24,7 @@
 
             <TextView
                 android:id="@+id/textView_vaccine"
-                android:layout_width="155dp"
+                android:layout_width="107dp"
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/vaccine_dialog_select_vaccine_label"
@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/vaccine_dialog_select_vaccine_dropdown"
                     android:inputType="none"
-                    android:text="@{viewModel.selectedSubstance.conceptName}" />
+                    android:text="@{viewModel.selectedSubstance.label}" />
 
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
@@ -56,7 +56,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_ok"
+                android:id="@+id/btn_add"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -12,8 +12,10 @@ import com.jnj.vaccinetracker.common.domain.usecases.GetUpcomingVisitUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
+import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
+import com.soywiz.klock.DateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,7 +30,6 @@ class VisitManager @Inject constructor(
     private val syncSettingsRepository: SyncSettingsRepository,
     private val getParticipantVisitDetailsUseCase: GetParticipantVisitDetailsUseCase,
     private val updateVisitUseCase: UpdateVisitUseCase,
-    private val createVisitUseCase: CreateVisitUseCase,
     private val getUpcomingVisitUseCase: GetUpcomingVisitUseCase,
 ) {
 
@@ -38,37 +39,24 @@ class VisitManager @Inject constructor(
         participantUuid: String,
         encounterDatetime: Date,
         visitUuid: String,
-        vialCode: String,
-        manufacturer: String,
         dosingNumber: Int,
-        weight: Int?,
-        height: Int?,
-        isOedema: Boolean?,
-        muac: Int?,
-        substanceObservations: Map<String, String>?
+        substanceObservations: Map<String, Map<String, String>>? = null,
+        otherSubstanceObservations: Map<String, String>? = null,
+        visitLocation: String? = null
     ) {
-        // TODO arguments could be refactored later on
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
 
-        val operatorUUid = userRepository.getUser()?.uuid
-            ?: throw OperatorUuidNotAvailableException("trying to register dosing visit without stored operator uuid")
+        val operatorUuid = userRepository.getUser()?.uuid
+            ?: throw OperatorUuidNotAvailableException("Trying to register dosing visit without stored operator UUID")
 
-        val attributes = mapOf(
-            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
-            Constants.ATTRIBUTE_OPERATOR to operatorUUid,
-            Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to dosingNumber.toString(),
+        val attributes = buildVisitAttributes(operatorUuid, dosingNumber, visitLocation)
+
+        val observations = buildObservations(
+            substanceObservations = substanceObservations,
+            otherSubstanceObservations = otherSubstanceObservations,
+            encounterDatetime = encounterDatetime
         )
-
-        val obsBuilder = mutableMapOf<String, String>().apply {
-            put(Constants.OBSERVATION_TYPE_BARCODE, vialCode)
-            put(Constants.OBSERVATION_TYPE_MANUFACTURER, manufacturer)
-            muac?.let { put(Constants.OBSERVATION_TYPE_VISIT_MUAC, it.toString()) }
-            weight?.let { put(Constants.OBSERVATION_TYPE_VISIT_WEIGHT, it.toString()) }
-            height?.let { put(Constants.OBSERVATION_TYPE_VISIT_HEIGHT, it.toString()) }
-            isOedema?.let { put(Constants.OBSERVATION_TYPE_VISIT_OEDEMA, it.toString()) }
-            substanceObservations?.let { putAll(it) }
-        }
 
         val request = UpdateVisit(
             visitUuid = visitUuid,
@@ -76,27 +64,44 @@ class VisitManager @Inject constructor(
             participantUuid = participantUuid,
             locationUuid = locationUuid,
             attributes = attributes,
-            observations = obsBuilder.toMap(),
+            observations = observations
         )
 
         updateVisitUseCase.updateVisit(request)
     }
 
-
-    suspend fun registerOtherVisit(participantUuid: String) {
-        val locationUuid = syncSettingsRepository.getSiteUuid() ?: throw NoSiteUuidAvailableException("Trying to register other visit without a selected site")
-        val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register other visit without stored operator uuid")
-        val request = CreateVisit(
-            participantUuid = participantUuid,
-            visitType = Constants.VISIT_TYPE_OTHER,
-            startDatetime = Date(),
-            locationUuid = locationUuid,
-            attributes = mapOf(
-                Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
-                Constants.ATTRIBUTE_OPERATOR to operatorUUid,
-            )
+    private fun buildVisitAttributes(operatorUuid: String, dosingNumber: Int, visitLocation: String?): Map<String, String> {
+        return mapOf(
+            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
+            Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+            Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to dosingNumber.toString(),
+            *listOfNotNull(visitLocation?.let { Constants.ATTRIBUTE_VISIT_LOCATION to visitLocation }).toTypedArray()
         )
-        createVisitUseCase.createVisit(request)
+    }
+
+    private fun buildObservations(
+        substanceObservations: Map<String, Map<String, String>>?,
+        otherSubstanceObservations: Map<String, String>?,
+        encounterDatetime: Date
+    ): Map<String, String> {
+        return mutableMapOf<String, String>().apply {
+            // convention for obs for a vaccine is its conceptName plus Date/Barcode/Manufacturer ex: Polio 0 Barcode
+            substanceObservations?.forEach { (conceptName, obsMap) ->
+                if (obsMap[Constants.DATE_STR].isNullOrEmpty()) {
+                    // Date needs to be always added if not exists yet
+                    put("$conceptName ${Constants.DATE_STR}", DateUtil.convertDateToString(encounterDatetime, DateFormat.FORMAT_DATE.toString()))
+                }
+
+                obsMap.forEach { (key, value) ->
+                    val fullKey = "$conceptName $key"
+                    put(fullKey, value)
+                }
+            }
+
+            otherSubstanceObservations?.forEach { (conceptName, conceptValue) ->
+                put(conceptName, conceptValue)
+            }
+        }
     }
 
     suspend fun getUpcomingVisit(participantUuid: String): UpcomingVisit? = getUpcomingVisitUseCase.getUpcomingVisit(participantUuid, date = dateNow())

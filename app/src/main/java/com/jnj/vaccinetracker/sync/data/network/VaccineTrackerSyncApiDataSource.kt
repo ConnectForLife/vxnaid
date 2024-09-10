@@ -99,6 +99,12 @@ interface VaccineTrackerSyncApiDataSource : VaccineTrackerApiDataSourceBase {
     suspend fun personTemplate(participantUuid: String, biometricsTemplate: BiometricsTemplateBytes)
 
     suspend fun getLatestVersion(): VersionDto
+
+    suspend fun updateEncounterObservationsByVisit(visitUuid: String, obsToAdd: Map<String, String>)
+
+    suspend fun updateParticipantLocation(participantUuid: String, newLocationUuid: String)
+
+    suspend fun updateVisitAttributes(visitUuid: String, visitAttributes: Map<String, String>)
 }
 
 @Singleton
@@ -320,5 +326,17 @@ class VaccineTrackerSyncApiDataSourceDefault @Inject constructor(
 
     override suspend fun getLatestVersion(): VersionDto = webCallSync(callName = "getLatestVersion") {
         apiService.getLatestVersion()
+    }
+
+    override suspend fun updateEncounterObservationsByVisit(visitUuid: String, obsToAdd: Map<String, String>) = webCallSync(callName = "updateEncounterObservations") {
+        apiService.updateEncounterObservationsByVisit(visitUuid, obsToAdd)
+    }
+
+    override suspend fun updateParticipantLocation(participantUuid: String, newLocationUuid: String) {
+        apiService.updateParticipantLocation(participantUuid, newLocationUuid)
+    }
+
+    override suspend fun updateVisitAttributes(visitUuid: String, visitAttributes: Map<String, String>) {
+        apiService.updateVisitAttributes(visitUuid, visitAttributes)
     }
 }

@@ -35,7 +35,6 @@ data class DraftParticipantEntity(
     }
 }
 
-
 @Entity(tableName = "draft_participant_attribute", foreignKeys = [
     ForeignKey(
         entity = DraftParticipantEntity::class,
@@ -61,7 +60,6 @@ data class DraftParticipantAttributeEntity(
         fun Map.Entry<String, String>.toDraftParticipantAttributeEntity(participantUuid: String) = DraftParticipantAttributeEntity(id = Id(participantUuid, key), value)
     }
 }
-
 
 @Entity(tableName = "draft_participant_address", foreignKeys = [
     ForeignKey(

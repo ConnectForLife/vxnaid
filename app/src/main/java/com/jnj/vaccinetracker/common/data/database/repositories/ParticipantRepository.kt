@@ -59,7 +59,6 @@ class ParticipantRepository @Inject constructor(
         nin = nin,
         gender = gender,
         birthDate = birthDate,
-        // todo might be here
         dateModified = dateModified,
         birthWeight = birthWeight,
         locationUuid = locationUuid,

@@ -27,7 +27,6 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Comp
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel
-import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiService
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
@@ -59,7 +58,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         private val homeLocationPickerViewModel: HomeLocationPickerViewModel,
 ) : ViewModelBase() {
 
-    private companion object {
+    companion object {
         private const val YEAR_OF_BIRTH_MIN_VALUE = 1900
         private val YEAR_OF_BIRTH_MAX_VALUE = yearNow()
         private const val YEAR_OF_BIRTH_LENGTH = 4
@@ -69,6 +68,27 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
          */
         private val INLINE_VALIDATION_DELAY = 2.seconds
 
+        fun calculateAgeFromDate(birthDate: DateTime): String {
+            val now = DateTime.now()
+            val years = now.yearInt - birthDate.yearInt
+            val months = now.month1 - birthDate.month1
+            val days = now.dayOfMonth - birthDate.dayOfMonth
+
+            val adjustedMonths = if (days < 0) months - 1 else months
+            val adjustedYears = if (adjustedMonths < 0) years - 1 else years
+
+            val totalMonths = (adjustedYears * 12) + adjustedMonths
+
+            val daysUntilNow = now.unixMillisLong / (1000 * 60 * 60 * 24)
+            val daysUntilBirthDate = birthDate.unixMillisLong / (1000 * 60 * 60 * 24)
+            val totalDays = (daysUntilNow - daysUntilBirthDate).toInt()
+
+            return when {
+                totalDays < 30 -> "$totalDays days"
+                totalMonths < 24 -> "$totalMonths months"
+                else -> "$adjustedYears years"
+            }
+        }
     }
 
     data class Args(
@@ -86,6 +106,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val registerFailedEvents = eventFlow<String>()
     val registerNoPhoneEvents = eventFlow<Unit>()
     val registerNoMatchingIdEvents = eventFlow<Unit>()
+    val registerChildNewbornEvents = eventFlow<Unit>()
+    val registerParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
 
     val loading = mutableLiveBoolean()
     val participantId = mutableLiveData<String?>()
@@ -145,6 +167,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     var canSkipPhone = false
     private val irisScans = ArrayMap<IrisPosition, Boolean>()
+
+    var isChildNewbornQuestionAlreadyAsked = false
+    var shouldOpenRegisterParticipantSuccessDialog = false
 
     private var validatePhoneJob: Job? = null
     private var validateParticipantIdJob: Job? = null
@@ -302,9 +327,13 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (!areInputsValid || !isNinValid)
             return
 
+        if (!isChildNewbornQuestionAlreadyAsked) {
+            registerChildNewbornEvents.tryEmit(Unit)
+            return
+        }
+
         loading.set(true)
 
-        val loc = configurationManager.getLocalization()
         try {
             val compressedImage = picture?.toDomain()?.compress()
             val biometricsTemplateBytes = getTempBiometricsTemplatesBytesUseCase.getBiometricsTemplate(irisScans)
@@ -328,17 +357,23 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 participantUuid=childUuid,
             )
             loading.set(false)
-            registerSuccessEvents.tryEmit(
-                    ParticipantSummaryUiModel(
-                            result.participantUuid,
-                            participantId,
-                            gender,
-                            birthDate.format(DateFormat.FORMAT_DATE),
-                            isBirthDateEstimated,
-                            null,
-                            compressedImage?.let { ParticipantImageUiModel(it.bytes) }
-                    )
+
+            val participant = ParticipantSummaryUiModel(
+                                result.participantUuid,
+                                participantId,
+                                gender,
+                                birthDate.format(DateFormat.FORMAT_DATE),
+                                isBirthDateEstimated,
+                                null,
+                                compressedImage?.let { ParticipantImageUiModel(it.bytes) }
             )
+
+            if (shouldOpenRegisterParticipantSuccessDialog) {
+                registerParticipantSuccessDialogEvents.tryEmit(participant)
+            } else {
+                registerSuccessEvents.tryEmit(participant)
+            }
+
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()
@@ -537,7 +572,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (currentBirthDate == birthDate && currentIsChecked == isChecked) return
 
         this.birthDate.set(birthDate)
-        val formattedDate = birthDate?.format(DateFormat.FORMAT_DATE)
+        val formattedDate =  if (isChecked) {
+            calculateAgeFromDate(birthDate!!)
+        } else {
+            birthDate?.format(DateFormat.FORMAT_DATE)
+        }
         this.birthDateText.set(formattedDate)
         birthDateValidationMessage.set(null)
         isBirthDateEstimated.set(isChecked)

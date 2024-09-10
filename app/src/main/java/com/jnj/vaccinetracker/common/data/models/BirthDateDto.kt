@@ -1,3 +1,4 @@
+
 package com.jnj.vaccinetracker.common.data.models
 
 import com.jnj.vaccinetracker.common.domain.entities.BirthDate

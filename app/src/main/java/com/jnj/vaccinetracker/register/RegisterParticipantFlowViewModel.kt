@@ -12,7 +12,6 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
-import com.jnj.vaccinetracker.participantflow.model.ParticipantUiModel
 import javax.inject.Inject
 
 /**
@@ -29,6 +28,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
     val participantId = mutableLiveData<String>()
     val participantUuid = mutableLiveData<String>()
     val participant = mutableLiveData<ParticipantSummaryUiModel>()
+    val visitTypeName = mutableLiveData<String>()
     val leftEyeScanned = mutableLiveBoolean()
     val rightEyeScanned = mutableLiveBoolean()
     val isManualEnteredId = mutableLiveBoolean()
@@ -130,14 +130,20 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         currentScreen.set(Screen.PARTICIPANT_DETAILS)
     }
 
-    fun confirmRegistration(participant: ParticipantSummaryUiModel) {
-        if (participantUuid.value != null) {
-            requestFinish.value = true
-            return
-        }
-        this.participant.set(participant)
+    fun confirmRegistrationWithCaptureVaccinesPage(participant: ParticipantSummaryUiModel) {
+       if (participantUuid.value != null) {
+          requestFinish.value = true
+          return
+       }
+       this.participant.set(participant)
         navigationDirection = NavigationDirection.FORWARD
-        currentScreen.set(Screen.PARTICIPANT_CAPTURE_VACCINES)
+        currentScreen.set(Screen.PARTICIPANT_CAPTURE_HISTORICAL_DATA)
+    }
+    fun openHistoricalDataForVisitType(visitTypeName: String) {
+        this.visitTypeName.set(visitTypeName)
+        navigationDirection = NavigationDirection.FORWARD
+        currentScreen.set(Screen.VISIT_TYPE_HISTORICAL_DATA)
+        this.visitTypeName.set(null)
     }
 
     enum class Screen(@StringRes val title: Int) {
@@ -145,7 +151,8 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         TAKE_PICTURE(R.string.participant_registration_picture_title),
         CONFIRM_PICTURE(R.string.participant_registration_picture_title),
         PARTICIPANT_DETAILS(R.string.participant_registration_details_title),
-        PARTICIPANT_CAPTURE_VACCINES(R.string.participant_registration_administered_vaccines_title)
+        PARTICIPANT_CAPTURE_HISTORICAL_DATA(R.string.participant_registration_historical_data_title),
+        VISIT_TYPE_HISTORICAL_DATA(R.string.participant_registration_historical_data_title)
     }
 
 }

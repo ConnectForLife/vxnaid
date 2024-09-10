@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visit.dialog
+package com.jnj.vaccinetracker.register.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
@@ -6,12 +6,12 @@ import android.widget.Button
 import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.common.helpers.findParent
 import com.soywiz.klock.DateTime
 import java.util.Calendar
 
-class DatePickerDialog(
+class AlreadyAdministeredVaccineDatePickerDialog(
     private var selectedDate: DateTime? = null,
+    private val listener: ScheduleVisitDatePickerDialog.OnDateSelectedListener? = null
 ) : DialogFragment() {
 
     private lateinit var btnOk: Button
@@ -20,16 +20,14 @@ class DatePickerDialog(
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_date_picker)
+        dialog.setContentView(R.layout.dialog_schedule_visit_date_picker)
 
         initializeViews(dialog)
         setupDatePicker()
 
         btnOk.setOnClickListener {
             selectedDate = DateTime(datePicker.year, datePicker.month + 1, datePicker.dayOfMonth)
-            findParent<DatePickerListener>()?.onDatePicked(
-                selectedDate!!,
-            )
+            listener?.onDateSelected(selectedDate!!)
             dialog.dismiss()
         }
 
@@ -41,7 +39,7 @@ class DatePickerDialog(
     }
 
     private fun initializeViews(dialog: Dialog) {
-        datePicker = dialog.findViewById(R.id.datePicker)
+        datePicker = dialog.findViewById(R.id.scheduleVisitDatePicker)
         btnOk = dialog.findViewById(R.id.btn_ok)
         btnCancel = dialog.findViewById(R.id.btn_cancel)
     }
@@ -49,19 +47,16 @@ class DatePickerDialog(
     private fun setupDatePicker() {
         selectedDate?.let {
             datePicker.updateDate(it.yearInt, it.month1 - 1, it.dayOfMonth)
-        } ?: run {
-            val c = Calendar.getInstance()
-            datePicker.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), null)
         }
 
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
+        val c = Calendar.getInstance()
+        datePicker.maxDate = c.timeInMillis
 
-        val minDateInMillis = calendar.timeInMillis
-        datePicker.minDate = minDateInMillis
-    }
-
-    interface DatePickerListener {
-        fun onDatePicked(date: DateTime?)
+        if (selectedDate == null) {
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH)
+            val day = c.get(Calendar.DAY_OF_MONTH)
+            datePicker.init(year, month, day, null)
+        }
     }
 }

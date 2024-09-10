@@ -13,7 +13,8 @@ import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowParticipant
 import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowPhoneNumberViewModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel
-import com.jnj.vaccinetracker.register.screens.RegisterParticipantAdministeredVaccinesViewModel
+import com.jnj.vaccinetracker.register.screens.HistoricalDataForVisitTypeViewModel
+import com.jnj.vaccinetracker.register.screens.RegisterParticipantHistoricalDataViewModel
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDetailsViewModel
 import com.jnj.vaccinetracker.settings.SettingsViewModel
 import com.jnj.vaccinetracker.setup.SetupFlowViewModel
@@ -28,6 +29,7 @@ import com.jnj.vaccinetracker.setup.screens.p2p.transfer.server.SetupP2pDeviceSe
 import com.jnj.vaccinetracker.splash.SplashViewModel
 import com.jnj.vaccinetracker.update.UpdateViewModel
 import com.jnj.vaccinetracker.visit.VisitViewModel
+import com.jnj.vaccinetracker.visit.screens.ContraindicationsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -123,6 +125,11 @@ interface ViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(RegisterParticipantHistoricalDataViewModel::class)
+    fun bindRegisterParticipantHistoricalDataViewModel(model: RegisterParticipantHistoricalDataViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(RegisterParticipantParticipantDetailsViewModel::class)
     fun bindRegisterParticipantParticipantDetailsViewModel(model: RegisterParticipantParticipantDetailsViewModel): ViewModel
 
@@ -169,6 +176,11 @@ interface ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(RegisterParticipantAdministeredVaccinesViewModel::class)
-    fun bindRegisterParticipantAdministeredVaccinesViewModel(model: RegisterParticipantAdministeredVaccinesViewModel): ViewModel
+    @ViewModelKey(HistoricalDataForVisitTypeViewModel::class)
+    fun bindRegisterParticipantAdministeredVaccinesViewModel(model: HistoricalDataForVisitTypeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ContraindicationsViewModel::class)
+    fun bindContraindicationsViewModel(model: ContraindicationsViewModel): ViewModel
 }

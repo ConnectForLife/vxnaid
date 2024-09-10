@@ -11,6 +11,8 @@ import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogRegisterParticipantSuccessfulBinding
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
+import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
+import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
 
 /**
  * @author maartenvangiel
@@ -39,13 +41,13 @@ class RegisterParticipantSuccessfulDialog : BaseDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_register_participant_successful, container, false)
-        binding.btnContinue.setOnClickListener {
+        binding.btnYes.setOnClickListener {
             findParent<RegisterParticipationCompletionListener>()?.continueWithParticipantVisit(participant)
             dismissAllowingStateLoss()
         }
-        binding.btnFinish.setOnClickListener {
-            findParent<RegisterParticipationCompletionListener>()?.finishParticipantFlow()
-            dismissAllowingStateLoss()
+        binding.btnNo.setOnClickListener {
+            RescheduleVisitDialog.create(participant = participant)
+                .show(parentFragmentManager, ContraindicationsActivity.TAG_DIALOG_RESCHEDULE_VISIT)
         }
         return binding.root
     }

@@ -19,7 +19,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
 import com.jnj.vaccinetracker.barcode.formatParticipantId
-import com.jnj.vaccinetracker.common.domain.entities.BirthDate
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.BaseActivity
@@ -29,7 +28,6 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.*
-import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -42,7 +40,9 @@ import kotlinx.coroutines.launch
 class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     HomeLocationPickerDialog.HomeLocationPickerListener,
     BirthDatePickerDialog.BirthDatePickerListener,
-    RegisterParticipantConfirmNoTelephoneDialog.RegisterParticipationNoTelephoneConfirmationListener {
+    RegisterParticipantConfirmNoTelephoneDialog.RegisterParticipationNoTelephoneConfirmationListener,
+    RegisterParticipantHasChildEverVaccinatedDialog.RegisterParticipationIsChildNewbornListener,
+    RegisterParticipantSuccessfulDialog.RegisterParticipationCompletionListener {
 
     private companion object {
         private const val TAG_HOME_LOCATION_PICKER = "homeLocationPicker"
@@ -50,6 +50,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         private const val TAG_SUCCESS_DIALOG = "successDialog"
         private const val TAG_NO_PHONE_DIALOG = "confirmNoPhoneDialog"
         private const val TAG_NO_MATCHING_ID = "noMatchingIdDialog"
+        private const val TAG_CHILD_NEWBORN_ID = "childNewBornDialog"
         private const val REQ_BARCODE = 213
     }
 
@@ -140,28 +141,36 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         registerSuccessEvents
             .asFlow()
             .onEach { participant ->
-                flowViewModel.confirmRegistration(participant)
+                flowViewModel.confirmRegistrationWithCaptureVaccinesPage(participant)
             }.launchIn(lifecycleOwner)
         registerNoPhoneEvents
             .asFlow()
             .onEach {
-                RegisterParticipantConfirmNoTelephoneDialog().show(
-                    childFragmentManager,
-                    TAG_NO_PHONE_DIALOG
-                )
+                RegisterParticipantConfirmNoTelephoneDialog()
+                    .show(childFragmentManager, TAG_NO_PHONE_DIALOG)
             }.launchIn(lifecycleOwner)
         registerNoMatchingIdEvents
             .asFlow()
             .onEach {
-                RegisterParticipantIdNotMatchingDialog().show(
-                    childFragmentManager,
-                    TAG_NO_MATCHING_ID
-                )
+                RegisterParticipantIdNotMatchingDialog()
+                    .show(childFragmentManager, TAG_NO_MATCHING_ID)
             }.launchIn(lifecycleOwner)
         registerFailedEvents
             .asFlow()
             .onEach { errorMessage ->
                 Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG).show()
+            }.launchIn(lifecycleOwner)
+        registerChildNewbornEvents
+            .asFlow()
+            .onEach {
+                RegisterParticipantHasChildEverVaccinatedDialog()
+                    .show(childFragmentManager, TAG_CHILD_NEWBORN_ID)
+            }.launchIn(lifecycleOwner)
+        registerParticipantSuccessDialogEvents
+            .asFlow()
+            .onEach { participant ->
+                RegisterParticipantSuccessfulDialog.create(participant)
+                    .show(childFragmentManager, TAG_SUCCESS_DIALOG)
             }.launchIn(lifecycleOwner)
     }
 
@@ -227,7 +236,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
         binding.btnPickDate.setOnClickListener {
             BirthDatePickerDialog(
-                    // todo refactor to use viewModel, do not save them here
+
                     birthDatePicked, isBirthDateEstimatedChecked, yearsEstimated, monthsEstimated, daysEstimated
             ).show(childFragmentManager, TAG_DATE_PICKER);
         }
@@ -313,6 +322,17 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         submitRegistration()
     }
 
+    override fun continueRegistrationWithSuccessDialog() {
+        viewModel.isChildNewbornQuestionAlreadyAsked = true
+        viewModel.shouldOpenRegisterParticipantSuccessDialog = true
+        submitRegistration()
+    }
+
+    override fun continueRegistrationWithCaptureVaccinesPage() {
+        viewModel.isChildNewbornQuestionAlreadyAsked = true
+        submitRegistration()
+    }
+
     override fun onBirthDatePicked(
         birthDate: DateTime?,
         isChecked: Boolean,
@@ -335,4 +355,20 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
+    override fun continueWithParticipantVisit(participant: ParticipantSummaryUiModel) {
+        (requireActivity() as BaseActivity).run {
+            setResult(
+                Activity.RESULT_OK,
+                Intent().putExtra(RegisterParticipantFlowActivity.EXTRA_PARTICIPANT, participant)
+            )
+            finish()
+        }
+    }
+
+    override fun finishParticipantFlow() {
+        (requireActivity() as BaseActivity).run {
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
+    }
 }
