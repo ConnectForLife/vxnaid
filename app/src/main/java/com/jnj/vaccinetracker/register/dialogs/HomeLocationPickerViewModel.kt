@@ -42,7 +42,8 @@ class HomeLocationPickerViewModel @Inject constructor(
 
     private val userInput = mutableMapOf<AddressValueType, UserInput?>()
     private var addressFields: List<AddressField>? = null
-    var selectedAddress: SelectedAddressModel? = null
+    var selectedAddress: Address? = null
+    val usedKeys = mutableSetOf<AddressValueType>()
 
     init {
         initState()
@@ -70,9 +71,7 @@ class HomeLocationPickerViewModel @Inject constructor(
                     country.value = it
                 }.mapLatest { country ->
                     loadCountryData(config, country)
-                    if (selectedAddress != null) {
-                        fillDialogWithSelectedAddress()
-                    }
+                    setUserInputInAddressInputFieldsFromAddress()
                     loading.set(false)
                 }.launchIn(this)
         } else {
@@ -80,14 +79,23 @@ class HomeLocationPickerViewModel @Inject constructor(
         }
     }
 
-    private fun fillDialogWithSelectedAddress() {
-        selectedAddress?.addressInputFieldList?.forEach { field ->
-            val isDropdown = field.type == AddressInputFieldType.DROPDOWN
-            val selectedItem = field.userInput?.value ?: ""
-            onAddressFieldSelected(field, selectedItem, isDropdown)
+    fun setUserInputInAddressInputFieldsFromAddress() {
+        if (selectedAddress == null) return
+
+        val addressMap: Map<AddressValueType, String> = selectedAddress!!.toAddressValueType()
+        val addressInputFields = addressInputFields.value ?: return
+
+        addressMap.forEach { (key, value) ->
+            if (usedKeys.contains(key)) return@forEach
+            val match = addressInputFields.find { addressInputField -> addressInputField.addressField.field == key }
+            match?.let { addressField ->
+                val isDropdown = addressField.type == AddressInputFieldType.DROPDOWN
+                onAddressFieldSelected(addressField, value, isDropdown, isInit = true)
+                usedKeys.add(key)
+            }
         }
-        selectedAddress = null
     }
+
 
     private fun buildAddressFields(config: Configuration, country: String): List<AddressField> {
         return config.addressFields[country] ?: throw AddressNotFoundException(country)
@@ -302,7 +310,7 @@ class HomeLocationPickerViewModel @Inject constructor(
         }
     }
 
-    fun onAddressFieldSelected(addressInputField: AddressInputField, selectedItem: String, isDropdownValue: Boolean) = scope.launch {
+    fun onAddressFieldSelected(addressInputField: AddressInputField, selectedItem: String, isDropdownValue: Boolean, isInit: Boolean = false) = scope.launch {
         logInfo("onAddressFieldSelected: ${addressInputField.addressField.field} ${addressInputField.type} $selectedItem $isDropdownValue")
         val userInputValue = addressInputField.toUserInput(selectedItem, isDropdownValue = isDropdownValue)
         if (userInputValue == userInput[addressInputField.addressField.field]) return@launch
@@ -314,7 +322,7 @@ class HomeLocationPickerViewModel @Inject constructor(
             }
         }
         userInput[addressInputField.addressField.field] = userInputValue
-        if (isDropdownValue) {
+        if (isDropdownValue || isInit) {
             addressFields?.let { updateInputFields(it) }
         }
     }
@@ -323,12 +331,15 @@ class HomeLocationPickerViewModel @Inject constructor(
         return addressMapper.toDomain(this)
     }
 
-    fun confirmAddress(confirmationListener: (AddressUiModel, SelectedAddressModel) -> Unit) = scope.launch {
+    private fun Address.toAddressValueType(): Map<AddressValueType, String> {
+        return addressMapper.toAddressValueType(this)
+    }
+
+    fun confirmAddress(confirmationListener: (AddressUiModel) -> Unit) = scope.launch {
         if (!isInputValid()) {
             logWarn("Address validation failed!")
             return@launch
         }
-        val loc = configurationManager.getLocalization()
         val country = requireNotNull(country.get()) { "country must not be null" }
         val resultAddressMap = mutableMapOf(
             AddressValueType.COUNTRY to country
@@ -339,11 +350,10 @@ class HomeLocationPickerViewModel @Inject constructor(
                 resultAddressMap[addressFieldType] = userInput.value
             }
         }
-        val masterDataFields = getAddressMasterDataOrderUseCase.getAddressMasterDataOrder(country, isUseDefaultAsAlternative = false, onlyDropDowns = false)
         val address = resultAddressMap.toAddress()
-        val stringRepresentation = address.toStringList(masterDataFields).joinToString(" | ") { loc[it] }
+        val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
 
-        confirmationListener(AddressUiModel(address, stringRepresentation), SelectedAddressModel(country, addressInputFields.value))
+        confirmationListener(AddressUiModel(address, stringRepresentation))
     }
 
     private fun isInputValid(): Boolean {
@@ -383,7 +393,6 @@ class HomeLocationPickerViewModel @Inject constructor(
     }
 
     data class AddressUiModel(val addressMap: Address, val stringRepresentation: String)
-    data class SelectedAddressModel(val country: String, val addressInputFieldList: List<AddressInputField>?)
 
     data class AddressInputField(
         val displayName: String,

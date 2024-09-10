@@ -1,5 +1,7 @@
 package com.jnj.vaccinetracker.common.domain.entities
 
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.domain.usecases.GetAddressMasterDataOrderUseCase
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -26,5 +28,14 @@ data class Address(
 
     fun toStringList(fields: List<AddressValueType>): List<String> {
         return fields.mapNotNull { it.toValue() }
+    }
+
+    suspend fun toStringRepresentation(
+        configurationManager: ConfigurationManager,
+        getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase
+    ): String {
+        val loc = configurationManager.getLocalization()
+        val masterDataFields = getAddressMasterDataOrderUseCase.getAddressMasterDataOrder(country, isUseDefaultAsAlternative = false, onlyDropDowns = false)
+        return this.toStringList(masterDataFields).joinToString(" | ") { loc[it] }
     }
 }

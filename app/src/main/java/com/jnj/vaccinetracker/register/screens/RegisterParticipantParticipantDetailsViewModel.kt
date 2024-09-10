@@ -11,6 +11,7 @@ import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.*
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.GenerateUniqueParticipantIdUseCase
+import com.jnj.vaccinetracker.common.domain.usecases.GetAddressMasterDataOrderUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.GetTempBiometricsTemplatesBytesUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
@@ -55,7 +56,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         private val textInputValidator: TextInputValidator,
         private val ninValidator: NinValidator,
         private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
-        private val homeLocationPickerViewModel: HomeLocationPickerViewModel,
+        private val getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase,
 ) : ViewModelBase() {
 
     companion object {
@@ -108,6 +109,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val registerNoMatchingIdEvents = eventFlow<Unit>()
     val registerChildNewbornEvents = eventFlow<Unit>()
     val registerParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
+    val updateParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
 
     val loading = mutableLiveBoolean()
     val participantId = mutableLiveData<String?>()
@@ -149,8 +151,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     private val phoneCountryCode = mutableLiveData<String>()
     val phone = mutableLiveData<String>()
     val homeLocationLabel = mutableLiveData<String>()
-    private val homeLocation = mutableLiveData<Address>()
-    val selectedAddressType = mutableLiveData<HomeLocationPickerViewModel.SelectedAddressModel>()
+    val homeLocation = mutableLiveData<Address>()
     val vaccine = mutableLiveData<DisplayValue>()
     val language = mutableLiveData<DisplayValue>()
 
@@ -237,8 +238,10 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 val selectedCategory = childCategoryNames.get()?.find { it.value == category }
                 if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
             }
-            homeLocation.value = participantBase?.address
-            //setHomeLocation(participantBase?.address)
+            participantBase?.address?.let { address ->
+                val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
+                setHomeLocation(address, stringRepresentation)
+            }
         }
     }
 
@@ -327,7 +330,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (!areInputsValid || !isNinValid)
             return
 
-        if (!isChildNewbornQuestionAlreadyAsked) {
+        if (!isChildNewbornQuestionAlreadyAsked && participantUuid.value == null) {
             registerChildNewbornEvents.tryEmit(Unit)
             return
         }
@@ -367,6 +370,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                                 null,
                                 compressedImage?.let { ParticipantImageUiModel(it.bytes) }
             )
+
+            if (participantUuid.value != null) {
+                updateParticipantSuccessDialogEvents.tryEmit(participant)
+                return
+            }
 
             if (shouldOpenRegisterParticipantSuccessDialog) {
                 registerParticipantSuccessDialogEvents.tryEmit(participant)
@@ -624,10 +632,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         childCategoryValidationMessage.set(null)
     }
 
-    fun setHomeLocation(homeLocation: Address, stringRepresentation: String, selectedAddressType: HomeLocationPickerViewModel.SelectedAddressModel) {
+    fun setHomeLocation(homeLocation: Address, stringRepresentation: String) {
         this.homeLocation.set(homeLocation)
         this.homeLocationLabel.set(stringRepresentation)
-        this.selectedAddressType.set(selectedAddressType)
         homeLocationValidationMessage.set(null)
     }
 }

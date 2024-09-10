@@ -415,4 +415,5 @@
     <string name="visit_z_score_weight_for_height_hint">Fill weight and height first</string>
     <string name="participant_update">Child Update</string>
     <string name="participant_matching_btn_edit_participant">Update Child</string>
+    <string name="participant_update_label_success">Child successfully updated</string>
 </resources>

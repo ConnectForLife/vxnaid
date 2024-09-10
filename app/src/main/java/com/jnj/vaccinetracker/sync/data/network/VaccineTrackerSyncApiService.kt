@@ -67,7 +67,7 @@ interface VaccineTrackerSyncApiService {
         @Part irisTemplatePart: MultipartBody.Part?,
     ): RegisterParticipantResponse
 
-    @PUT("$BIOMETRIC/update")
+    @POST("$BIOMETRIC/update")
     suspend fun updateParticipant(@Body updateParticipantRequest: UpdateParticipantRequest)
 
 
