@@ -26,7 +26,6 @@ import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
 import java.util.Date
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
-import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
 
 /**
