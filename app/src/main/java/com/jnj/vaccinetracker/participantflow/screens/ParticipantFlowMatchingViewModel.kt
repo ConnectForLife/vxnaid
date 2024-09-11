@@ -243,7 +243,7 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                         } else {
                             participant.birthDate.toDateTime().format(DateFormat.FORMAT_DATE)
                         }),
-                        isBirthDateEstimated=participant.isBirthDateEstimated,
+                        isBirthDateEstimated = participant.isBirthDateEstimated,
                         gender = participant.gender,
                         telephone = participant.telephoneNumber,
                         homeLocation = participant.address?.toDomain()?.toStringList(addressMasterDataOrder)?.translate(),

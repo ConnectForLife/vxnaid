@@ -24,7 +24,7 @@ import javax.inject.Inject
 class ReferralActivity: BaseActivity() {
     private lateinit var binding: ActivityReferralFlowBinding
     private lateinit var clinicsDropdown: AutoCompleteTextView
-    private lateinit var additionalInfoTextView: TextView
+    private lateinit var referralReasonTextView: TextView
     private lateinit var referButton: Button
     private lateinit var doNotReferButton: Button
     private lateinit var referralResultText: TextView
@@ -45,7 +45,7 @@ class ReferralActivity: BaseActivity() {
         setContentView(binding.root)
 
         clinicsDropdown = binding.root.findViewById(R.id.dropdown_clinics)
-        additionalInfoTextView = binding.root.findViewById(R.id.editText_additionalInfo)
+        referralReasonTextView = binding.root.findViewById(R.id.editText_additionalInfo)
         referButton = binding.root.findViewById(R.id.btn_saveReferral)
         doNotReferButton = binding.root.findViewById(R.id.btn_cancelReferral)
         referralResultText = binding.root.findViewById(R.id.textView_referralResult)
@@ -69,21 +69,22 @@ class ReferralActivity: BaseActivity() {
 
         binding.btnSaveReferral.setOnClickListener {
             val selectedClinic = clinicsDropdown.text.toString()
-            val additionalInfo = additionalInfoTextView.text.toString()
+            val referralReason = referralReasonTextView.text.toString()
 
             val referralObservations: MutableMap<String, String> = mutableMapOf()
             if (selectedClinic.isNotEmpty()) {
                 referralObservations[Constants.REFERRAL_CLINIC_CONCEPT_NAME] = selectedClinic
             }
 
-            if (additionalInfo.isNotEmpty()) {
-                referralObservations[Constants.REFERRAL_ADDITIONAL_INFO_CONCEPT_NAME] = additionalInfo
+            if (referralReason.isNotEmpty()) {
+                referralObservations[Constants.REFERRAL_ADDITIONAL_INFO_CONCEPT_NAME] = referralReason
             }
 
             lifecycleScope.launch {
                 try {
                     validateClinic()
-                    if (selectedClinic.isNotEmpty()) {
+                    validateReferralReason()
+                    if (selectedClinic.isNotEmpty() && referralReason.isNotEmpty()) {
                         vaccineTrackerSyncApiDataSource.updateEncounterObservationsByVisit(currentVisitUuid!!, referralObservations)
                         referralResultText.text = "${getString(R.string.referral_page_success_referral_text)} $selectedClinic"
                         referralResultText.setTextColor(ContextCompat.getColor(this@ReferralActivity, R.color.successDark))
@@ -111,9 +112,18 @@ class ReferralActivity: BaseActivity() {
     private fun validateClinic() {
         val selectedClinic = clinicsDropdown.text.toString()
         if (selectedClinic.isEmpty()) {
-            clinicsDropdown.error = getString(R.string.referral_page_clinic_not_selected_hint)
+            clinicsDropdown.error = getString(R.string.referral_page_referral_clinic_cannot_be_empty)
         } else {
             clinicsDropdown.error = null
+        }
+    }
+
+    private fun validateReferralReason() {
+        val referralReason = referralReasonTextView.text.toString()
+        if (referralReason.isEmpty()) {
+            referralReasonTextView.error = getString(R.string.referral_page_referral_reason_cannot_be_empty)
+        } else {
+            referralReasonTextView.error = null
         }
     }
 }
