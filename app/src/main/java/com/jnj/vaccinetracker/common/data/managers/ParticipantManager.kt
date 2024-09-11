@@ -85,6 +85,10 @@ class ParticipantManager @Inject constructor(
         address: Address,
         picture: ImageBytes?,
         biometricsTemplateBytes: BiometricsTemplateBytes?,
+        motherName: String?,
+        childName: String?,
+        fatherName: String?,
+        childCategory: String?
     ): DraftParticipant {
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
 
@@ -99,6 +103,19 @@ class ParticipantManager @Inject constructor(
         if (birthWeight != null) {
             personAttributes[Constants.ATTRIBUTE_BIRTH_WEIGHT] = birthWeight
         }
+        if (motherName != null) {
+            personAttributes[Constants.MOTHER_NAME_ATTRIBUTE_TYPE_NAME] = motherName
+        }
+        if (childName != null) {
+            personAttributes[Constants.CHILD_NAME_ATTRIBUTE_TYPE_NAME] = childName
+        }
+        if (fatherName != null) {
+            personAttributes[Constants.FATHER_NAME_ATTRIBUTE_TYPE_NAME] = fatherName
+        }
+        if (childCategory != null) {
+            personAttributes[Constants.CHILD_CATEGORY_ATTRIBUTE_TYPE_NAME] = childCategory
+        }
+
         val request = RegisterParticipant(
             participantId = participantId,
             nin = nin,

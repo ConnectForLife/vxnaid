@@ -266,6 +266,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val motherName = mothersName.get()
         val fatherName = fathersName.get()
         val childName = name.get()
+        val childCategory = childCategory.get()
 
         val areInputsValid = validateInput(participantId, gender, birthDate, homeLocation, motherName, fatherName, childName)
         val isNinValid = isNinValueValid(nin)
@@ -315,6 +316,10 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,
+                motherName = motherName,
+                childName = childName,
+                fatherName = fatherName,
+                childCategory = childCategory?.value
             )
             loading.set(false)
 
