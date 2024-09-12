@@ -30,6 +30,7 @@ import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
+import com.soywiz.klock.until
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -202,7 +203,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             }
 
             participantUuid.set(args.participantUuid)
-            onParticipantEdit()
 
             val site = syncSettingsRepository.getSiteUuid()?.let { configurationManager.getSiteByUuid(it) }
                     ?: throw NoSiteUuidAvailableException()
@@ -210,6 +210,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val loc = configurationManager.getLocalization()
             onSiteAndConfigurationLoaded(site, configuration, loc)
             ninIdentifiers.set(configurationManager.getNinIdentifiers())
+            onParticipantEdit()
             loading.set(false)
         } catch (ex: Throwable) {
             yield()
@@ -226,7 +227,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantBase?.nin?.let { setNin(it) }
             participantBase?.birthWeight?.let { setBirthWeight(it) }
             participantBase?.gender?.let { setGender(it) }
-            setBirthDate(participantBase?.birthDate?.toDateTime(), participantBase?.isBirthDateEstimated ?: false)
+            setBirthDateOrEstimatedAge(participantBase?.birthDate?.toDateTime(), participantBase?.isBirthDateEstimated ?: false)
             participantBase?.phone?.let { setPhone(it, true) }
             participantBase?.motherName?.let { setMotherName(it) }
             participantBase?.fatherName?.let { setFatherName(it) }
@@ -569,6 +570,24 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             if (!validateParticipantId.isNullOrEmpty() && !participantIdValidator.validate(validateParticipantId)) {
                 participantIdValidationMessage.value = resourcesWrapper.getString(R.string.participant_registration_details_error_invalid_participant_id)
             }
+        }
+    }
+
+    private fun setBirthDateOrEstimatedAge(birthDate: DateTime?, isBirthDateEstimated: Boolean) {
+        if (isBirthDateEstimated && birthDate != null) {
+            val currentDate = DateTime.now()
+            val daysDifference = (currentDate - birthDate).days.toInt()
+
+            val years = daysDifference / 365
+            val remainingDaysAfterYears = daysDifference % 365
+            val months = remainingDaysAfterYears / 30
+            val remainingDaysAfterMonths = remainingDaysAfterYears % 30
+            val weeks = remainingDaysAfterMonths / 7
+
+            setEstimatedAgeText(years, months, weeks)
+            setBirthDateBasedOnEstimatedBirthdate(birthDate)
+        } else {
+            setBirthDate(birthDate)
         }
     }
 

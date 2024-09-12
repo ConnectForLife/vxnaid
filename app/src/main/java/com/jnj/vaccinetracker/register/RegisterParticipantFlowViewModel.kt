@@ -1,5 +1,7 @@
 package com.jnj.vaccinetracker.register
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.annotation.StringRes
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
@@ -57,13 +59,18 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         this.participantUuid.set(participantUuid)
         if (participantUuid != null) {
             val participantPicture = loadParticipantPicture(participantUuid)?.toUiModel()
-            if (participantPicture != null) {
+            if (participantPicture != null && !isImageEmpty(participantPicture.byteArray)) {
                 this.participantPicture.set(participantPicture)
             } else {
                 this.participantPicture.set(null)
             }
             currentScreen.set(Screen.PARTICIPANT_DETAILS)
         }
+    }
+
+    fun isImageEmpty(imageBytes: ByteArray): Boolean {
+        val bitmap: Bitmap? = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        return bitmap == null
     }
 
     private suspend fun loadParticipantPicture(participantUUID: String?): ImageBytes? {

@@ -173,6 +173,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         updateParticipantSuccessDialogEvents
             .asFlow()
             .onEach { participant ->
+                setupEditableFields()
                 UpdateParticipantSuccessfulDialog().show(childFragmentManager, TAG_UPDATE_SUCCESS_DIALOG)
             }.launchIn(lifecycleOwner)
     }
@@ -183,6 +184,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             binding.rbGenderMale.isEnabled = false
             binding.rbGenderFemale.isEnabled = false
             binding.btnScanParticipantId.visibility = View.INVISIBLE
+            if (viewModel.birthWeight.value != null) {
+                binding.editBirthWeight.isEnabled = false
+            }
         }
     }
 
