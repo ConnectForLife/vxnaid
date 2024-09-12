@@ -6,12 +6,33 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <DatePicker
-        android:id="@+id/datePicker"
+    <LinearLayout
+        android:id="@+id/layout_estimated_age"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:datePickerMode="spinner"
-        android:calendarViewShown="false" />
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- Year Picker -->
+        <NumberPicker
+            android:id="@+id/numberPicker_years"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"/>
+
+        <!-- Month Picker -->
+        <NumberPicker
+            android:id="@+id/numberPicker_months"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"/>
+
+        <!-- Weeks Picker -->
+        <NumberPicker
+            android:id="@+id/numberPicker_weeks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
     <!-- Buttons -->
     <LinearLayout

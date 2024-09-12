@@ -108,6 +108,7 @@ class ParticipantManager @Inject constructor(
         if (birthWeight != null) {
             personAttributes[Constants.ATTRIBUTE_BIRTH_WEIGHT] = birthWeight
         }
+       // mother name can't be null
         if (fatherName != null) {
             personAttributes[Constants.ATTRIBUTE_FATHER_NAME] = fatherName
         }

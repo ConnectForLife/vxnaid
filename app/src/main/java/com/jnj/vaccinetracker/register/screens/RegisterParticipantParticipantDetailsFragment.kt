@@ -44,7 +44,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     BirthDatePickerDialog.BirthDatePickerListener,
     RegisterParticipantConfirmNoTelephoneDialog.RegisterParticipationNoTelephoneConfirmationListener,
     RegisterParticipantHasChildEverVaccinatedDialog.RegisterParticipationIsChildNewbornListener,
-    RegisterParticipantSuccessfulDialog.RegisterParticipationCompletionListener {
+    RegisterParticipantSuccessfulDialog.RegisterParticipationCompletionListener,
+    EstimatedAgeDialog.EstimatedAgePickerListener {
 
     private companion object {
         private const val TAG_HOME_LOCATION_PICKER = "homeLocationPicker"
@@ -55,6 +56,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         private const val TAG_NO_MATCHING_ID = "noMatchingIdDialog"
         private const val TAG_CHILD_NEWBORN_ID = "childNewBornDialog"
         private const val REQ_BARCODE = 213
+        private const val TAG_ESTIMATED_AGE_PICKER = "estimatedAgePicker"
     }
 
     private val flowViewModel: RegisterParticipantFlowViewModel by activityViewModels { viewModelFactory }
@@ -62,10 +64,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     private lateinit var binding: FragmentRegisterParticipantParticipantDetailsBinding
 
     private var birthDatePicked: DateTime? = null
-    private var isBirthDateEstimatedChecked: Boolean = false
+    private var isBirthDateEstimated: Boolean = false
     private var yearsEstimated: Int? = null
     private var monthsEstimated: Int? = null
-    private var daysEstimated: Int? = null
+    private var weeksEstimated: Int? = null
+    private var estimatedBirthDatePicked: DateTime? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -107,14 +110,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 binding.countryCodePickerPhone.setCountryForPhoneCode(countryCode.toInt())
             }
         }
-
-//        viewModel.vaccineNames.observe(lifecycleOwner) { vaccineNames ->
-//            val adapter = ArrayAdapter(
-//                requireContext(),
-//                R.layout.item_dropdown,
-//                vaccineNames.orEmpty().map { it.display })
-//            binding.dropdownVaccine.setAdapter(adapter)
-//        }
 
         viewModel.birthWeightValidationMessage.observe(lifecycleOwner) { birthWeightValidationMessage ->
             logDebug("validate birth weight" + birthWeightValidationMessage)
@@ -242,12 +237,17 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 viewModel.homeLocation.value
             ).show(childFragmentManager, TAG_HOME_LOCATION_PICKER)
         }
-        binding.btnPickDate.setOnClickListener {
-            BirthDatePickerDialog(
 
-                    birthDatePicked, isBirthDateEstimatedChecked, yearsEstimated, monthsEstimated, daysEstimated
-            ).show(childFragmentManager, TAG_DATE_PICKER);
+        binding.btnPickDate.setOnClickListener {
+            BirthDatePickerDialog(birthDatePicked).show(childFragmentManager, TAG_DATE_PICKER);
         }
+
+        binding.btnEstimatedDate.setOnClickListener {
+            EstimatedAgeDialog(
+                birthDatePicked, yearsEstimated, monthsEstimated, weeksEstimated
+            ).show(childFragmentManager, TAG_ESTIMATED_AGE_PICKER)
+        }
+
         binding.btnSubmit.setOnClickListener {
             submitRegistration()
         }
@@ -280,13 +280,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     }
 
     private fun setupDropdowns() {
-
-//        binding.dropdownVaccine.setOnItemClickListener { _, _, position, _ ->
-//            val vaccineName =
-//                viewModel.vaccineNames.value?.get(position) ?: return@setOnItemClickListener
-//            viewModel.setSelectedVaccine(vaccineName)
-//        }
-
         binding.dropdownChildCategory.setOnItemClickListener { _, _, position, _ ->
             val childCategoryName =
                 viewModel.childCategoryNames.value?.get(position) ?: return@setOnItemClickListener
@@ -341,19 +334,25 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         submitRegistration()
     }
 
-    override fun onBirthDatePicked(
-        birthDate: DateTime?,
-        isChecked: Boolean,
+    override fun onBirthDatePicked(birthDate: DateTime?, isEstimated: Boolean) {
+        birthDatePicked = birthDate
+        isBirthDateEstimated = isEstimated
+        viewModel.setBirthDate(birthDate)
+    }
+
+    override fun onEstimatedAgePicked(
+        estimatedBirthDate: DateTime?,
         yearsEstimated: Int?,
         monthsEstimated: Int?,
-        daysEstimated: Int?
+        weeksEstimated: Int?
     ) {
-        birthDatePicked = birthDate
-        isBirthDateEstimatedChecked = isChecked
-        this.yearsEstimated=yearsEstimated
-        this.monthsEstimated=monthsEstimated
-        this.daysEstimated=daysEstimated
-        viewModel.setBirthDate(birthDate, isChecked)
+        estimatedBirthDatePicked = estimatedBirthDate
+        this.yearsEstimated = yearsEstimated
+        this.monthsEstimated = monthsEstimated
+        this.weeksEstimated = weeksEstimated
+
+        viewModel.setBirthDateBasedOnEstimatedBirthdate(estimatedBirthDate)
+        viewModel.setEstimatedAgeText(yearsEstimated, monthsEstimated, weeksEstimated)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {

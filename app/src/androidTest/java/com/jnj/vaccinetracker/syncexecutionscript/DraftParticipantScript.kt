@@ -111,7 +111,11 @@ class DraftParticipantScript {
                 language = lang,
                 address = address,
                 picture = image,
-                biometricsTemplateBytes = template
+                biometricsTemplateBytes = template,
+                "motherName",
+                "childName",
+                "fatherName",
+                "childCategory"
             )
             println("logging first visit for participant $participantId")
             val participantUuid = draftParticipant.participantUuid
