@@ -8,7 +8,9 @@ import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.models.IrisPosition
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.*
+import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.GenerateUniqueParticipantIdUseCase
+import com.jnj.vaccinetracker.common.domain.usecases.GetAddressMasterDataOrderUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.GetTempBiometricsTemplatesBytesUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
@@ -22,11 +24,13 @@ import com.jnj.vaccinetracker.common.validators.TextInputValidator
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
+import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
+import com.soywiz.klock.until
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -50,7 +54,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         private val fullPhoneFormatter: FullPhoneFormatter,
         private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
         private val textInputValidator: TextInputValidator,
-        private val ninValidator: NinValidator
+        private val ninValidator: NinValidator,
+        private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+        private val getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase,
 ) : ViewModelBase() {
 
     companion object {
@@ -88,6 +94,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val leftEyeScanned: Boolean,
             val rightEyeScanned: Boolean,
             val phoneNumber: String?,
+            val participantUuid: String?,
     )
 
     private val args = stateFlow<Args?>(null)
@@ -98,9 +105,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val registerNoMatchingIdEvents = eventFlow<Unit>()
     val registerChildNewbornEvents = eventFlow<Unit>()
     val registerParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
+    val updateParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
 
     val loading = mutableLiveBoolean()
     val participantId = mutableLiveData<String?>()
+    val participantUuid = mutableLiveData<String?>()
     val scannedParticipantId = mutableLiveData<String?>()
 
     val isManualSetParticipantID = mutableLiveBoolean()
@@ -140,8 +149,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     private val phoneCountryCode = mutableLiveData<String>()
     val phone = mutableLiveData<String>()
     val homeLocationLabel = mutableLiveData<String>()
-    private val homeLocation = mutableLiveData<Address>()
-    val selectedAddressType = mutableLiveData<HomeLocationPickerViewModel.SelectedAddressModel>()
+    val homeLocation = mutableLiveData<Address>()
     val vaccine = mutableLiveData<DisplayValue>()
     val language = mutableLiveData<DisplayValue>()
 
@@ -194,18 +202,44 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 phone.set(it)
             }
 
+            participantUuid.set(args.participantUuid)
+
             val site = syncSettingsRepository.getSiteUuid()?.let { configurationManager.getSiteByUuid(it) }
                     ?: throw NoSiteUuidAvailableException()
             val configuration = configurationManager.getConfiguration()
             val loc = configurationManager.getLocalization()
             onSiteAndConfigurationLoaded(site, configuration, loc)
-            loading.set(false)
             ninIdentifiers.set(configurationManager.getNinIdentifiers())
+            onParticipantEdit()
+            loading.set(false)
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()
             loading.set(false)
             logError("Failed to get site by uuid: ", ex)
+        }
+    }
+
+    suspend fun onParticipantEdit() {
+        if (participantUuid.value != null) {
+            val participantBase = findParticipantByParticipantUuidUseCase.findByParticipantUuid(participantUuid.value!!)
+            participantBase?.participantId?.let { setParticipantId(it) }
+            participantBase?.nin?.let { setNin(it) }
+            participantBase?.birthWeight?.let { setBirthWeight(it) }
+            participantBase?.gender?.let { setGender(it) }
+            setBirthDateOrEstimatedAge(participantBase?.birthDate?.toDateTime(), participantBase?.isBirthDateEstimated ?: false)
+            participantBase?.phone?.let { setPhone(it, true) }
+            participantBase?.motherName?.let { setMotherName(it) }
+            participantBase?.fatherName?.let { setFatherName(it) }
+            participantBase?.participantName?.let { setChildName(it) }
+            participantBase?.childCategory?.let { category ->
+                val selectedCategory = childCategoryNames.get()?.find { it.value == category }
+                if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
+            }
+            participantBase?.address?.let { address ->
+                val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
+                setHomeLocation(address, stringRepresentation)
+            }
         }
     }
 
@@ -266,7 +300,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val motherName = mothersName.get()
         val fatherName = fathersName.get()
         val childName = name.get()
-        val childCategory = childCategory.get()
+        val childUuid = participantUuid.get()
+        val childCategoryValue = childCategory.get()?.value
 
         val areInputsValid = validateInput(participantId, gender, birthDate, homeLocation, motherName, fatherName, childName)
         val isNinValid = isNinValueValid(nin)
@@ -293,7 +328,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (!areInputsValid || !isNinValid)
             return
 
-        if (!isChildNewbornQuestionAlreadyAsked) {
+        if (!isChildNewbornQuestionAlreadyAsked && participantUuid.value == null) {
             registerChildNewbornEvents.tryEmit(Unit)
             return
         }
@@ -316,10 +351,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,
-                motherName = motherName,
-                childName = childName,
-                fatherName = fatherName,
-                childCategory = childCategory?.value
+                fatherName=fatherName,
+                motherName=motherName!!,
+                participantName=childName!!,
+                childCategory=childCategoryValue,
+                participantUuid=childUuid,
             )
             loading.set(false)
 
@@ -332,6 +368,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                                 null,
                                 compressedImage?.let { ParticipantImageUiModel(it.bytes) }
             )
+
+            if (participantUuid.value != null) {
+                updateParticipantSuccessDialogEvents.tryEmit(participant)
+                return
+            }
 
             if (shouldOpenRegisterParticipantSuccessDialog) {
                 registerParticipantSuccessDialogEvents.tryEmit(participant)
@@ -532,6 +573,24 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         }
     }
 
+    private fun setBirthDateOrEstimatedAge(birthDate: DateTime?, isBirthDateEstimated: Boolean) {
+        if (isBirthDateEstimated && birthDate != null) {
+            val currentDate = DateTime.now()
+            val daysDifference = (currentDate - birthDate).days.toInt()
+
+            val years = daysDifference / 365
+            val remainingDaysAfterYears = daysDifference % 365
+            val months = remainingDaysAfterYears / 30
+            val remainingDaysAfterMonths = remainingDaysAfterYears % 30
+            val weeks = remainingDaysAfterMonths / 7
+
+            setEstimatedAgeText(years, months, weeks)
+            setBirthDateBasedOnEstimatedBirthdate(birthDate)
+        } else {
+            setBirthDate(birthDate)
+        }
+    }
+
     fun setBirthDate(birthDate: DateTime?) {
         this.birthDate.set(birthDate)
         val formattedDate = birthDate?.format(DateFormat.FORMAT_DATE)
@@ -575,9 +634,14 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         }
     }
 
-    fun setPhone(phone: String) {
+    fun setPhone(phone: String, removeCode: Boolean = false) {
         if (this.phone.get() == phone) return
-        this.phone.set(phone)
+        var modifiedPhone = phone
+        if (removeCode) {
+            // it will only work for Uganda and other 3 digit country codes
+            modifiedPhone = modifiedPhone.removeRange(0, 3)
+        }
+        this.phone.set(modifiedPhone)
         validatePhone()
     }
 
@@ -593,10 +657,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         childCategoryValidationMessage.set(null)
     }
 
-    fun setHomeLocation(homeLocation: Address, stringRepresentation: String, selectedAddressType: HomeLocationPickerViewModel.SelectedAddressModel) {
+    fun setHomeLocation(homeLocation: Address, stringRepresentation: String) {
         this.homeLocation.set(homeLocation)
         this.homeLocationLabel.set(stringRepresentation)
-        this.selectedAddressType.set(selectedAddressType)
         homeLocationValidationMessage.set(null)
     }
 }

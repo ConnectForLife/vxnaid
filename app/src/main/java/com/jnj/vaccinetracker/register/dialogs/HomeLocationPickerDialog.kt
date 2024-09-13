@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.domain.entities.Address
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.helpers.logVerbose
@@ -26,7 +27,7 @@ import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel.*
  * A dialog that allows the user to pick an address. Fields dynamically appear/disappear depending on the chosen dropdown items.
  */
 class HomeLocationPickerDialog(
-    private val selectedHomeLocation: SelectedAddressModel?
+    private val selectedHomeLocation: Address?
 ) : BaseDialogFragment() {
 
     private val viewModel: HomeLocationPickerViewModel by viewModels { viewModelFactory }
@@ -40,8 +41,8 @@ class HomeLocationPickerDialog(
             dismissAllowingStateLoss()
         }
         binding.buttonConfirm.setOnClickListener {
-            viewModel.confirmAddress(confirmationListener = { address, selectedAddressType ->
-                findParent<HomeLocationPickerListener>()?.onHomeLocationPicked(address, selectedAddressType)
+            viewModel.confirmAddress(confirmationListener = { address ->
+                findParent<HomeLocationPickerListener>()?.onHomeLocationPicked(address)
                 dismiss()
             })
         }
@@ -67,6 +68,7 @@ class HomeLocationPickerDialog(
         viewModel.addressInputFields.observe(lifecycleOwner) { inputFields ->
             logVerbose("Dynamic input fields: {}", inputFields)
             inflateAddressFields(inputFields.orEmpty())
+            viewModel.setUserInputInAddressInputFieldsFromAddress()
         }
         viewModel.country.observe(lifecycleOwner) { country ->
             country?.let { c ->
@@ -160,7 +162,7 @@ class HomeLocationPickerDialog(
     }
 
     interface HomeLocationPickerListener {
-        fun onHomeLocationPicked(address: AddressUiModel, selectedAddressType: SelectedAddressModel)
+        fun onHomeLocationPicked(address: AddressUiModel)
     }
 
 }

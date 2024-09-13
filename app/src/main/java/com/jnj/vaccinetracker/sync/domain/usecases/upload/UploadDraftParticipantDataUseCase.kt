@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 class UploadDraftParticipantDataUseCase @Inject constructor(
     private val uploadDraftParticipantUseCase: UploadDraftParticipantUseCase,
+    private val uploadUpdateDraftParticipantUseCase: UploadUpdateDraftParticipantUseCase,
     private val uploadDraftVisitUseCase: UploadDraftVisitUseCase,
     private val uploadDraftVisitEncounterUseCase: UploadDraftVisitEncounterUseCase,
     private val syncLogger: SyncLogger,
@@ -40,6 +41,9 @@ class UploadDraftParticipantDataUseCase @Inject constructor(
                     }
                     is ParticipantPendingCall.UpdateVisit -> {
                         uploadDraftVisitEncounterUseCase.upload(draftEncounter)
+                    }
+                    is ParticipantPendingCall.UpdateParticipant -> {
+                        uploadUpdateDraftParticipantUseCase.upload(draftUpdateParticipant)
                     }
                 }.also { _ ->
                     syncLogger.clearSyncError(syncErrorMetadata)

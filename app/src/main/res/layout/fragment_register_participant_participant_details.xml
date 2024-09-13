@@ -512,8 +512,9 @@
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_marginTop="8dp"
                 android:backgroundTint="@color/colorPrimary"
-                android:text="@string/participant_registration_details_action_register_participant"
+                android:text="@{viewModel.participantUuid != null ? @string/participant_registration_details_action_update_participant : @string/participant_registration_details_action_register_participant}"
                 android:textAppearance="@style/ButtonTextStyling" />
+
 
         </LinearLayout>
 

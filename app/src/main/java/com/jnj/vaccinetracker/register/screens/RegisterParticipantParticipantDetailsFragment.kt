@@ -2,17 +2,21 @@ package com.jnj.vaccinetracker.register.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.annotation.RequiresApi
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
@@ -28,6 +32,7 @@ import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.*
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /**
  * @author maartenvangiel
@@ -46,6 +51,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         private const val TAG_HOME_LOCATION_PICKER = "homeLocationPicker"
         private const val TAG_DATE_PICKER = "datePicker";
         private const val TAG_SUCCESS_DIALOG = "successDialog"
+        private const val TAG_UPDATE_SUCCESS_DIALOG = "successUpdateDialog"
         private const val TAG_NO_PHONE_DIALOG = "confirmNoPhoneDialog"
         private const val TAG_NO_MATCHING_ID = "noMatchingIdDialog"
         private const val TAG_CHILD_NEWBORN_ID = "childNewBornDialog"
@@ -80,6 +86,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         binding.flowViewModel = flowViewModel
         binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
         binding.textViewParticipantHomeLocation.movementMethod = ScrollingMovementMethod()
+
+        setHasOptionsMenu(true)
 
         setupPhoneInput()
         setupDropdowns()
@@ -121,6 +129,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             binding.genderError.requestFocus()
             binding.genderError.error = genderValidationMessage
         }
+        viewModel.participantUuid.observe(lifecycleOwner) {
+            setupEditableFields()
+        }
         observeViewModelEvents(lifecycleOwner)
     }
 
@@ -159,7 +170,26 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 RegisterParticipantSuccessfulDialog.create(participant)
                     .show(childFragmentManager, TAG_SUCCESS_DIALOG)
             }.launchIn(lifecycleOwner)
+        updateParticipantSuccessDialogEvents
+            .asFlow()
+            .onEach { participant ->
+                setupEditableFields()
+                UpdateParticipantSuccessfulDialog().show(childFragmentManager, TAG_UPDATE_SUCCESS_DIALOG)
+            }.launchIn(lifecycleOwner)
     }
+
+    private fun setupEditableFields() {
+        if (viewModel.participantUuid.value != null) {
+            binding.editParticipantId.isEnabled = false
+            binding.rbGenderMale.isEnabled = false
+            binding.rbGenderFemale.isEnabled = false
+            binding.btnScanParticipantId.visibility = View.INVISIBLE
+            if (viewModel.birthWeight.value != null) {
+                binding.editBirthWeight.isEnabled = false
+            }
+        }
+    }
+
 
     private fun setupInputListeners() {
         binding.editParticipantNin.doAfterTextChanged {
@@ -208,7 +238,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     private fun setupClickListeners() {
         binding.btnSetHomeLocation.setOnClickListener {
             HomeLocationPickerDialog(
-                viewModel.selectedAddressType.value
+                viewModel.homeLocation.value
             ).show(childFragmentManager, TAG_HOME_LOCATION_PICKER)
         }
 
@@ -270,6 +300,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 leftEyeScanned = flowViewModel.leftEyeScanned.value,
                 rightEyeScanned = flowViewModel.rightEyeScanned.value,
                 phoneNumber = flowViewModel.phoneNumber.value,
+                participantUuid = flowViewModel.participantUuid.value
             )
         )
     }
@@ -287,8 +318,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         viewModel.setGender(gender)
     }
 
-    override fun onHomeLocationPicked(address: HomeLocationPickerViewModel.AddressUiModel, selectedAddressType: HomeLocationPickerViewModel.SelectedAddressModel) {
-        viewModel.setHomeLocation(address.addressMap, address.stringRepresentation, selectedAddressType)
+    override fun onHomeLocationPicked(address: HomeLocationPickerViewModel.AddressUiModel) {
+        viewModel.setHomeLocation(address.addressMap, address.stringRepresentation)
     }
 
     override fun confirmNoTelephone() {
@@ -328,6 +359,14 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         viewModel.setEstimatedAgeText(yearsEstimated, monthsEstimated, weeksEstimated)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        if (flowViewModel.participantUuid.value != null) {
+            menu.findItem(R.id.action_cancel).isVisible = false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun continueWithParticipantVisit(participant: ParticipantSummaryUiModel) {
         (requireActivity() as BaseActivity).run {
             setResult(

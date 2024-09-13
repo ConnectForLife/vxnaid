@@ -10,13 +10,14 @@ sealed class ParticipantPendingCall : Comparable<ParticipantPendingCall> {
     abstract val locationUuid: String?
 
     enum class Type {
-        REGISTER_PARTICIPANT, CREATE_VISIT, UPDATE_VISIT;
+        REGISTER_PARTICIPANT, UPDATE_PARTICIPANT, CREATE_VISIT, UPDATE_VISIT;
     }
 
     val type
         get() = when (this) {
             is CreateVisit -> Type.CREATE_VISIT
             is RegisterParticipant -> Type.REGISTER_PARTICIPANT
+            is UpdateParticipant -> Type.UPDATE_PARTICIPANT
             is UpdateVisit -> Type.UPDATE_VISIT
         }
 
@@ -51,6 +52,19 @@ sealed class ParticipantPendingCall : Comparable<ParticipantPendingCall> {
             get() = draftParticipant.locationUuid
 
         val participantId get() = draftParticipant.participantId
+    }
+
+    data class UpdateParticipant(val draftUpdateParticipant: DraftParticipant) : ParticipantPendingCall() {
+        override val participantUuid: String
+            get() = draftUpdateParticipant.participantUuid
+
+        override val visitUuid: String?
+            get() = null
+
+        override val locationUuid: String?
+            get() = draftUpdateParticipant.locationUuid
+
+        val participantId get() = draftUpdateParticipant.participantId
     }
 
     override fun compareTo(other: ParticipantPendingCall): Int {

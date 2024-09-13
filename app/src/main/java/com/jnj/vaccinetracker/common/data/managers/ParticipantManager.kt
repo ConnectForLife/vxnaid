@@ -7,6 +7,7 @@ import com.jnj.vaccinetracker.common.domain.entities.*
 import com.jnj.vaccinetracker.common.domain.usecases.GetPersonImageUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.MatchParticipantsUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.RegisterParticipantUseCase
+import com.jnj.vaccinetracker.common.domain.usecases.UpdateParticipantUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
@@ -24,6 +25,7 @@ class ParticipantManager @Inject constructor(
     private val matchParticipantsUseCase: MatchParticipantsUseCase,
     private val getPersonImageUseCase: GetPersonImageUseCase,
     private val registerParticipantUseCase: RegisterParticipantUseCase,
+    private val updateParticipantUseCase: UpdateParticipantUseCase,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
     ) {
@@ -85,10 +87,11 @@ class ParticipantManager @Inject constructor(
         address: Address,
         picture: ImageBytes?,
         biometricsTemplateBytes: BiometricsTemplateBytes?,
-        motherName: String?,
-        childName: String?,
         fatherName: String?,
-        childCategory: String?
+        motherName: String,
+        participantName: String,
+        childCategory: String?,
+        participantUuid: String? = null
     ): DraftParticipant {
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
 
@@ -96,6 +99,8 @@ class ParticipantManager @Inject constructor(
             Constants.ATTRIBUTE_LOCATION to siteUuid,
             Constants.ATTRIBUTE_LANGUAGE to language,
             Constants.ATTRIBUTE_OPERATOR to operatorUUid,
+            Constants.ATTRIBUTE_MOTHER_NAME to motherName,
+            Constants.ATTRIBUTE_PARTICIPANT_NAME to participantName,
         )
         if (telephone != null) {
             personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
@@ -103,33 +108,43 @@ class ParticipantManager @Inject constructor(
         if (birthWeight != null) {
             personAttributes[Constants.ATTRIBUTE_BIRTH_WEIGHT] = birthWeight
         }
-        if (motherName != null) {
-            personAttributes[Constants.MOTHER_NAME_ATTRIBUTE_TYPE_NAME] = motherName
-        }
-        if (childName != null) {
-            personAttributes[Constants.CHILD_NAME_ATTRIBUTE_TYPE_NAME] = childName
-        }
+       // mother name can't be null
         if (fatherName != null) {
-            personAttributes[Constants.FATHER_NAME_ATTRIBUTE_TYPE_NAME] = fatherName
+            personAttributes[Constants.ATTRIBUTE_FATHER_NAME] = fatherName
         }
         if (childCategory != null) {
-            personAttributes[Constants.CHILD_CATEGORY_ATTRIBUTE_TYPE_NAME] = childCategory
+            personAttributes[Constants.ATTRIBUTE_CHILD_CATEGORY] = childCategory
         }
 
-        val request = RegisterParticipant(
-            participantId = participantId,
-            nin = nin,
-            gender = gender,
-            isBirthDateEstimated = isBirthDateEstimated,
-            birthDate = BirthDate(birthDate.unixMillisLong),
-            address = address,
-            attributes = personAttributes,
-            image = picture,
-            biometricsTemplate = biometricsTemplateBytes,
-            scheduleFirstVisit = createScheduleFirstVisit()
-        )
-
-        return registerParticipantUseCase.registerParticipant(request)
+        if (participantUuid == null) {
+            val request = RegisterParticipant(
+                participantId = participantId,
+                nin = nin,
+                gender = gender,
+                isBirthDateEstimated = isBirthDateEstimated,
+                birthDate = BirthDate(birthDate.unixMillisLong),
+                address = address,
+                attributes = personAttributes,
+                image = picture,
+                biometricsTemplate = biometricsTemplateBytes,
+                scheduleFirstVisit = createScheduleFirstVisit()
+            )
+            return registerParticipantUseCase.registerParticipant(request)
+        } else {
+            val request = UpdateParticipant(
+                participantUuid = participantUuid,
+                participantId = participantId,
+                nin = nin,
+                gender = gender,
+                isBirthDateEstimated = isBirthDateEstimated,
+                birthDate = BirthDate(birthDate.unixMillisLong),
+                address = address,
+                attributes = personAttributes,
+                image = picture,
+                scheduleFirstVisit = createScheduleFirstVisit()
+            )
+            return updateParticipantUseCase.updateParticipant(request)
+        }
     }
 
 }

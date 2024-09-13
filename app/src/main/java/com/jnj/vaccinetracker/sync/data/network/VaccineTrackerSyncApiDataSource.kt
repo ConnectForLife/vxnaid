@@ -54,6 +54,8 @@ interface VaccineTrackerSyncApiDataSource : VaccineTrackerApiDataSourceBase {
         biometricsTemplate: BiometricsTemplateBytes?,
     ): RegisterParticipantResponse
 
+    suspend fun updateParticipant(updateParticipantRequest: UpdateParticipantRequest)
+
     suspend fun updateVisit(visitUpdateRequest: VisitUpdateRequest)
 
     suspend fun createVisit(visitCreateRequest: VisitCreateRequest)
@@ -191,6 +193,12 @@ class VaccineTrackerSyncApiDataSourceDefault @Inject constructor(
         val biometricsTemplateFormData = biometricsTemplate?.let { getBiometricsTemplateBytesMultiPart(it) }
         return webCallSync(callName = "registerParticipant") {
             apiService.registerParticipant(registerParticipantRequest, biometricsTemplateFormData)
+        }
+    }
+
+    override suspend fun updateParticipant(updateParticipantRequest: UpdateParticipantRequest) {
+        return webCallSync(callName = "update") {
+            apiService.updateParticipant(updateParticipantRequest)
         }
     }
 

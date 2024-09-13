@@ -90,8 +90,9 @@
             android:layout_marginBottom="16dp"
             android:textAppearance="@style/ButtonTextStyling"
             android:backgroundTint="@color/colorTextOnLight"
-            android:text="@string/participant_matching_btn_new_participant"
+            android:text="@string/participant_matching_btn_edit_participant"
             android:textColor="@color/colorTextOnSecondary"
+            android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

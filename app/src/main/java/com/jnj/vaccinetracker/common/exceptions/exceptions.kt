@@ -30,6 +30,7 @@ class MatchNotFoundException : AppIoException()
 class ParticipantAlreadyExistsException(override val message: String? = null) : AppIoException()
 
 class ParticipantUuidAlreadyExistsException : AppIoException()
+class ParticipantDeletedException : AppIoException()
 
 /**
  * thrown by backend when we upload exact replica of already present template

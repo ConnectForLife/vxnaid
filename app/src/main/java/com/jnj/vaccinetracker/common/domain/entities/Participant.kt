@@ -22,6 +22,10 @@ sealed class ParticipantBase {
     val originalParticipantId: String? get() = attributes[Constants.ATTRIBUTE_ORIGINAL_PARTICIPANT_ID]
     val regimen: String? get() = attributes[Constants.ATTRIBUTE_VACCINE]
     val birthWeight: String? get() = attributes[Constants.ATTRIBUTE_BIRTH_WEIGHT]
+    val fatherName: String? get() = attributes[Constants.ATTRIBUTE_FATHER_NAME]
+    val motherName: String? get() = attributes[Constants.ATTRIBUTE_MOTHER_NAME]
+    val participantName: String? get() = attributes[Constants.ATTRIBUTE_PARTICIPANT_NAME]
+    val childCategory: String? get() = attributes[Constants.ATTRIBUTE_CHILD_CATEGORY]
 }
 
 data class Participant(
@@ -53,6 +57,7 @@ data class DraftParticipant(
     override val attributes: Map<String, String>,
     override val address: Address?,
     override val draftState: DraftState,
+    val isUpdate: Boolean = false,
 ) : ParticipantBase(), SyncBase, UploadableDraft {
     override val dateModified: DateEntity get() = registrationDate
 }

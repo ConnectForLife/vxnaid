@@ -65,6 +65,7 @@ class ParticipantFlowViewModel @Inject constructor(
 
     //id variables
     val participantId = mutableLiveData<String>()
+    val participantUuid = mutableLiveData<String>()
     private val barcodeParticipantId = mutableLiveData<String>()
     val isManualSetParticipantId = mutableLiveData<Boolean>()
     var navigationDirection = NavigationDirection.NONE
