@@ -91,6 +91,15 @@
                     app:imageUiModel="@{flowViewModel.participantPicture}"
                     app:srcCompat="@drawable/ic_avatar_operator" />
 
+                <Button
+                    android:id="@+id/btn_load_camera"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Load a camera"
+                    android:onClick="@{() -> flowViewModel.retakePicture()}" />   
+
             </LinearLayout>
 
             <View
