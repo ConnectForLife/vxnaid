@@ -4,10 +4,8 @@ import androidx.annotation.StringRes
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
-import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
-import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import javax.inject.Inject
 
 /**
@@ -19,8 +17,6 @@ class RegisterParticipantFlowViewModel @Inject constructor(override val dispatch
     var navigationDirection = NavigationDirection.NONE
     val participantPicture = mutableLiveData<ParticipantImageUiModel>()
     val participantId = mutableLiveData<String>()
-    val participant = mutableLiveData<ParticipantSummaryUiModel>()
-    val visitTypeName = mutableLiveData<String>()
     val leftEyeScanned = mutableLiveBoolean()
     val rightEyeScanned = mutableLiveBoolean()
     val isManualEnteredId = mutableLiveBoolean()
@@ -36,7 +32,6 @@ class RegisterParticipantFlowViewModel @Inject constructor(override val dispatch
         isManualEnteredId: Boolean,
     ) {
         if (currentScreen.get() == null) {
-            logInfo("...............setting registration page..................")
             currentScreen.set(Screen.PARTICIPANT_DETAILS)
         }
         this.participantId.set(participantId)
@@ -100,25 +95,11 @@ class RegisterParticipantFlowViewModel @Inject constructor(override val dispatch
         currentScreen.set(Screen.PARTICIPANT_DETAILS)
     }
 
-    fun confirmRegistrationWithCaptureVaccinesPage(participant: ParticipantSummaryUiModel) {
-        this.participant.set(participant)
-        navigationDirection = NavigationDirection.FORWARD
-        currentScreen.set(Screen.PARTICIPANT_CAPTURE_HISTORICAL_DATA)
-    }
-    fun openHistoricalDataForVisitType(visitTypeName: String) {
-        this.visitTypeName.set(visitTypeName)
-        navigationDirection = NavigationDirection.FORWARD
-        currentScreen.set(Screen.VISIT_TYPE_HISTORICAL_DATA)
-        this.visitTypeName.set(null)
-    }
-
     enum class Screen(@StringRes val title: Int) {
         CAMERA_PERMISSION(R.string.participant_registration_picture_title),
         TAKE_PICTURE(R.string.participant_registration_picture_title),
         CONFIRM_PICTURE(R.string.participant_registration_picture_title),
-        PARTICIPANT_DETAILS(R.string.participant_registration_details_title),
-        PARTICIPANT_CAPTURE_HISTORICAL_DATA(R.string.participant_registration_historical_data_title),
-        VISIT_TYPE_HISTORICAL_DATA(R.string.participant_registration_historical_data_title)
+        PARTICIPANT_DETAILS(R.string.participant_registration_details_title)
     }
 
 }
