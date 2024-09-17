@@ -127,6 +127,7 @@
     <string name="participant_registration_details_description">Please provide new Child\'s details below:</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
+    <string name="participant_registration_load_camera">Load a Camera</string>
     <string name="participant_registration_details_label_iris_id">Iris ID</string>
     <string name="participant_registration_details_label_gender">Gender</string>
     <string name="participant_registration_details_error_country_api">Could not load address fields. Please contact your administrator.</string>
