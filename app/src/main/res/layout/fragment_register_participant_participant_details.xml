@@ -91,6 +91,24 @@
                     app:imageUiModel="@{flowViewModel.participantPicture}"
                     app:srcCompat="@drawable/ic_avatar_operator" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/input_load_camera"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="155dp"
+                    android:layout_height="match_parent"
+                    android:text="Load Camera"
+                    android:paddingRight="20sp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/LabelText"/>
+
                 <Button
                     android:id="@+id/btn_load_camera"
                     style="@style/Widget.AppCompat.Button.Small"
@@ -98,7 +116,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/participant_registration_load_camera"
-                    android:onClick="@{() -> flowViewModel.retakePicture()}" />   
+                    android:onClick="@{() -> flowViewModel.retakePicture()}" />
 
             </LinearLayout>
 
