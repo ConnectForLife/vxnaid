@@ -96,8 +96,7 @@
             <LinearLayout
                 android:id="@+id/input_load_camera"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:layout_weight="1"
+                android:layout_height="50dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -109,14 +108,13 @@
                     android:gravity="center_vertical"
                     android:textAppearance="@style/LabelText"/>
 
-                <Button
+                <ImageView
                     android:id="@+id/btn_load_camera"
-                    style="@style/Widget.AppCompat.Button.Small"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/participant_registration_load_camera"
-                    android:onClick="@{() -> flowViewModel.retakePicture()}" />
+                    android:paddingLeft="0dp"
+                    android:onClick="@{() -> flowViewModel.retakePicture()}"
+                    app:srcCompat="@drawable/camera_icon1" />
 
             </LinearLayout>
 
