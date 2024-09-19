@@ -48,7 +48,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         participantUuid: String?,
     ) {
         if (currentScreen.get() == null) {
-            currentScreen.set(Screen.CAMERA_PERMISSION)
+            currentScreen.set(Screen.PARTICIPANT_DETAILS)
         }
         this.participantId.set(participantId)
         this.leftEyeScanned.set(leftEyeScanned)

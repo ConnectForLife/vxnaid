@@ -244,6 +244,7 @@
     <string name="participant_registration_label_id_not_matching_title">Ressaisir l\'identifiant du participant</string>
     <string name="participant_registration_label_id_not_matching_desc">Les identifiants de participant saisis ne correspondent pas. Veuillez corriger avant de soumettre le participant.</string>
     <string name="participant_registration_button_close_submit">D\'accord</string>
+    <string name="participant_registration_load_camera">Charger une caméra</string>
     <string name="upcoming_visit_title">Visite prochaine</string>
     <string name="upcoming_visit_type_follow_up">Suivi en personne</string>
     <string name="upcoming_visit_type_dosing">Ddosage</string>
