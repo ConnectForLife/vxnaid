@@ -421,4 +421,5 @@
     <string name="participant_update">Child Update</string>
     <string name="participant_matching_btn_edit_participant">Update Child</string>
     <string name="participant_update_label_success">Child successfully updated</string>
+    <string name="vaccine_capture_date_label">Capture Date</string>
 </resources>

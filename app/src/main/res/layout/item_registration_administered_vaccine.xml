@@ -70,7 +70,7 @@
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorPrimary"
                     android:textAppearance="@style/ButtonTextStyling"
-                    android:text="@string/participant_registration_details_action_set_birth_date" />
+                    android:text="@string/vaccine_capture_date_label" />
 
         </LinearLayout>
 
