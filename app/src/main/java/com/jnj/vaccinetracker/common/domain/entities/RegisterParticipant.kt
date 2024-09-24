@@ -5,6 +5,7 @@ import java.util.*
 data class RegisterParticipant(
     val participantId: String,
     val nin: String?,
+    val childNumber: String?,
     val gender: Gender,
     val isBirthDateEstimated: Boolean,
     val birthDate: BirthDate,
@@ -19,6 +20,7 @@ data class UpdateParticipant(
     val participantUuid: String,
     val participantId: String,
     val nin: String?,
+    val childNumber: String?,
     val gender: Gender,
     val isBirthDateEstimated: Boolean,
     val birthDate: BirthDate,

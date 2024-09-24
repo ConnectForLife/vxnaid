@@ -16,6 +16,7 @@ data class UpdateParticipantRequest(
     val participantUuid: String,
     val participantId: String?,
     val nin: String?,
+    val childNumber: String?,
     val updateDate: Date,
     val gender: Gender,
     val isBirthDateEstimated: Boolean?,

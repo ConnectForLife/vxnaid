@@ -7,6 +7,7 @@ interface ParticipantEntityBase : ParticipantUuidContainer {
     val phone: String?
     val participantId: String
     val nin: String?
+    val childNumber: String?
     val gender: GenderEntity
     val birthDate: BirthDateEntity
     val isBirthDateEstimated: Boolean?

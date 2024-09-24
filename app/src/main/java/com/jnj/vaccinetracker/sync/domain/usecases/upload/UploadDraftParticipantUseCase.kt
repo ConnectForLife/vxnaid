@@ -84,6 +84,7 @@ class UploadDraftParticipantUseCase @Inject constructor(
     private fun DraftParticipant.toDto(imageBase64: String?) = RegisterParticipantRequest(
         participantId = participantId,
         nin = nin,
+        childNumber = childNumber,
         gender = gender,
         isBirthDateEstimated = isBirthDateEstimated,
         birthdate = birthDate.toDto(),
@@ -155,6 +156,4 @@ class UploadDraftParticipantUseCase @Inject constructor(
             throw Exception("Got DuplicateRequestException but failed to verify whether template was registered", ex)
         }
     }
-
-
 }

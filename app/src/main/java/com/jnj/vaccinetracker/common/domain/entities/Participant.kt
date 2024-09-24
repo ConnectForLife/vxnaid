@@ -11,6 +11,7 @@ sealed class ParticipantBase {
     abstract val image: ParticipantImageFileBase?
     abstract val biometricsTemplate: ParticipantBiometricsTemplateFileBase?
     abstract val participantId: String
+    abstract val childNumber: String?
     abstract val gender: Gender
     abstract val isBirthDateEstimated: Boolean?
     abstract val birthDate: BirthDate
@@ -34,6 +35,7 @@ data class Participant(
     override val image: ParticipantImageFile?,
     override val biometricsTemplate: ParticipantBiometricsTemplateFile?,
     override val participantId: String,
+    override val childNumber: String?,
     override val nin: String?,
     override val gender: Gender,
     override val isBirthDateEstimated: Boolean?,
@@ -50,6 +52,7 @@ data class DraftParticipant(
     override val image: DraftParticipantImageFile?,
     override val biometricsTemplate: DraftParticipantBiometricsTemplateFile?,
     override val participantId: String,
+    override val childNumber: String?,
     override val nin: String?,
     override val gender: Gender,
     override val isBirthDateEstimated: Boolean?,
@@ -89,6 +92,7 @@ fun DraftParticipant.toParticipantWithoutAssets(): Participant = Participant(
     biometricsTemplate = null,
     participantId = participantId,
     nin = nin,
+    childNumber = childNumber,
     gender = gender,
     isBirthDateEstimated = isBirthDateEstimated,
     birthDate = birthDate,

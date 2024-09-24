@@ -379,7 +379,7 @@ class ParticipantFlowViewModel @Inject constructor(
     enum class Screen(@StringRes val title: Int) : Parcelable {
         ADD_OR_SEARCH_PARTICIPANT(R.string.match_or_register_patient_intro_title),
         INTRO(R.string.match_or_register_patient_intro_title),
-        PARTICIPANT_ID(R.string.participant_flow_participant_id_title),
+        PARTICIPANT_ID(R.string.participant_flow_child_number_title),
         PHONE(R.string.participant_flow_phone_title),
         IRIS_SCAN_LEFT_EYE(R.string.iris_scan_left_title),
         IRIS_SCAN_RIGHT_EYE(R.string.iris_scan_right_title),

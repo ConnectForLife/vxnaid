@@ -151,7 +151,8 @@ class ScanBarcodeActivity : BaseActivity() {
                             .map { it.rawValue }
                             .lastOrNull()
                         if (barcode != null) {
-                            viewModel.onBarcodeScanned(barcode, flag, SharedPreference(this).getManufracterList())
+                            setResult(Activity.RESULT_OK, Intent().putExtra(EXTRA_BARCODE, barcode))
+                            finish()
                         }
                     }
                     .addOnFailureListener {
