@@ -12,6 +12,7 @@ data class ParticipantEntity(
     @ColumnInfo(collate = ColumnInfo.NOCASE)
     override val participantId: String,
     override val nin: String?,
+    override val childNumber: String?,
     @ColumnInfo(index = true)
     override val phone: String?,
     override val birthWeight: String?, 

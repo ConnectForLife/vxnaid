@@ -77,6 +77,7 @@ class ParticipantManager @Inject constructor(
     suspend fun registerParticipant(
         participantId: String,
         nin: String?,
+        childNumber: String?,
         birthWeight: String?,
         gender: Gender,
         birthDate: DateTime,
@@ -89,7 +90,7 @@ class ParticipantManager @Inject constructor(
         biometricsTemplateBytes: BiometricsTemplateBytes?,
         fatherName: String?,
         motherName: String,
-        participantName: String,
+        participantName: String?,
         childCategory: String?,
         participantUuid: String? = null
     ): DraftParticipant {
@@ -100,8 +101,12 @@ class ParticipantManager @Inject constructor(
             Constants.ATTRIBUTE_LANGUAGE to language,
             Constants.ATTRIBUTE_OPERATOR to operatorUUid,
             Constants.ATTRIBUTE_MOTHER_NAME to motherName,
-            Constants.ATTRIBUTE_PARTICIPANT_NAME to participantName,
         )
+
+        if (participantName != null) {
+            personAttributes[Constants.ATTRIBUTE_PARTICIPANT_NAME] = participantName
+        }
+
         if (telephone != null) {
             personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
         }
@@ -120,6 +125,7 @@ class ParticipantManager @Inject constructor(
             val request = RegisterParticipant(
                 participantId = participantId,
                 nin = nin,
+                childNumber = childNumber,
                 gender = gender,
                 isBirthDateEstimated = isBirthDateEstimated,
                 birthDate = BirthDate(birthDate.unixMillisLong),
@@ -135,6 +141,7 @@ class ParticipantManager @Inject constructor(
                 participantUuid = participantUuid,
                 participantId = participantId,
                 nin = nin,
+                childNumber = childNumber,
                 gender = gender,
                 isBirthDateEstimated = isBirthDateEstimated,
                 birthDate = BirthDate(birthDate.unixMillisLong),

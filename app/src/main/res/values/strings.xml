@@ -69,7 +69,7 @@
     <string name="site_selection_btn_submit">Submit</string>
     <string name="site_selection_error_no_site_selected">Please select a site</string>
     <string name="match_or_register_patient_welcome">Welcome operator %s, you are currently at site %s</string>
-    <string name="match_or_register_patient_step_id_card">Scan or enter the Child\'s ID number</string>
+    <string name="match_or_register_patient_step_id_card">Scan or enter the Child\'s ID</string>
     <string name="match_or_register_patient_step_phone">Enter the Child\'s phone number</string>
     <string name="match_or_register_patient_step_iris_scan">Iris scan the Child\'s eye(s)</string>
     <string name="match_or_register_patient_step_identify">Identify or register the Child</string>
@@ -81,7 +81,9 @@
     <string name="iris_scan_left_title">Iris scan - Left eye</string>
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
-    <string name="participant_flow_participant_id_title">Child Number</string>
+    <string name="participant_flow_child_number_title">Child Number</string>
+    <string name="participant_flow_participant_id_title">Child ID</string>
+    <string name="participant_flow_participant_id_hint">Scan Child ID QR Code</string>
     <string name="participant_flow_participant_id_scanned">The format of the ID is not supported</string>
     <string name="participant_flow_participant_id_description">Please scan the Child vaccination card with a QR-Code or manually enter the Child ID number:</string>
     <string name="participant_flow_participant_id_label_manual_entry">Manual ID Entry</string>

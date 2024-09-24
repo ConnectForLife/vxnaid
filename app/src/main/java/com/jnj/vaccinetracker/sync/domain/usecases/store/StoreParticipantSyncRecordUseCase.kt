@@ -46,6 +46,7 @@ class StoreParticipantSyncRecordUseCase @Inject constructor(
         biometricsTemplate = null,
         participantId = participantId,
         nin = nin,
+        childNumber = childNumber,
         gender = gender,
         isBirthDateEstimated = isBirthDateEstimated,
         birthDate = birthDate.toDomain(),

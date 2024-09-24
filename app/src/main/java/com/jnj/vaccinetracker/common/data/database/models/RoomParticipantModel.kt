@@ -18,6 +18,7 @@ data class RoomParticipantModel(
     override val birthWeight: String?,
     override val participantId: String,
     override val nin: String?,
+    override val childNumber: String?,
     override val gender: GenderEntity,
     override val birthDate: BirthDateEntity,
     override val isBirthDateEstimated: Boolean?,

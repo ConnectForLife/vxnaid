@@ -102,6 +102,7 @@ class DraftParticipantScript {
             val draftParticipant = participantManager.registerParticipant(
                 participantId = participantId,
                 nin = "NIN$participantId",
+                childNumber = "Test_Child",
                 "3",
                 gender = gender,
                 birthDate = birthDate,

@@ -180,7 +180,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
     private fun setupEditableFields() {
         if (viewModel.participantUuid.value != null) {
-            binding.editParticipantId.isEnabled = false
             binding.rbGenderMale.isEnabled = false
             binding.rbGenderFemale.isEnabled = false
             binding.btnScanParticipantId.visibility = View.INVISIBLE
@@ -192,17 +191,12 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
 
     private fun setupInputListeners() {
-        binding.editParticipantNin.doAfterTextChanged {
-            viewModel.setNin(it?.toString().orEmpty())
+        binding.editTextChildNumber.doAfterTextChanged {
+            viewModel.setChildNumber(it?.toString().orEmpty())
         }
 
-        binding.editParticipantId.doAfterTextChanged {
-            val text = binding.editParticipantId.text.toString()
-            val formattedText = formatParticipantId(text)
-            if (formattedText != text) {
-                binding.editParticipantId.setTextKeepSelection(formattedText)
-            }
-            viewModel.setParticipantId(formattedText)
+        binding.editParticipantNin.doAfterTextChanged {
+            viewModel.setNin(it?.toString().orEmpty())
         }
 
         binding.editTelephone.doAfterTextChanged {
