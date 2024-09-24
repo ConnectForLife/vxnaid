@@ -74,7 +74,7 @@
                     android:maxLines="1"
                     android:hint="@string/participant_flow_participant_id_hint"
                     android:textSize="18sp"
-                    android:text=""
+                    android:text="@{viewModel.participantId}"
                     app:error="@{viewModel.participantIdValidationMessage}"/>
 
                 <ImageView

@@ -274,7 +274,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             val participantIdBarcode =
                 data?.getStringExtra(ScanBarcodeActivity.EXTRA_BARCODE) ?: return
             viewModel.onParticipantIdScanned(participantIdBarcode)
-            binding.textViewParticipantId.text = participantIdBarcode
         }
     }
 

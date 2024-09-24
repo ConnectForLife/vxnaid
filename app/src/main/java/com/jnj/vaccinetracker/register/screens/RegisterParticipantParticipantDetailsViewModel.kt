@@ -565,7 +565,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     fun setBirthWeight(birthWeight: String) {
-        if(this.birthWeight.get() == birthWeight) return
+        if (this.birthWeight.get() == birthWeight) return
         this.birthWeight.set(birthWeight)
     }
 
