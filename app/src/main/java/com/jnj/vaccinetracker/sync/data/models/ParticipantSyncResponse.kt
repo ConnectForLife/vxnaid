@@ -24,6 +24,7 @@ sealed class ParticipantSyncRecord : SyncRecordBase {
         override val dateModified: SyncDate,
         val participantId: String,
         val nin: String?,
+        val childNumber: String?,
         val gender: Gender,
         val isBirthDateEstimated: Boolean?,
         val birthDate: BirthDateDto,

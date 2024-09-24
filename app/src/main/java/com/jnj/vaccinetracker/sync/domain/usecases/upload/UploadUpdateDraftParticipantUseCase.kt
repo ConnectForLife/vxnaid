@@ -2,20 +2,13 @@ package com.jnj.vaccinetracker.sync.domain.usecases.upload
 
 import com.jnj.vaccinetracker.common.data.database.mappers.toDto
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
-import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.files.ParticipantDataFileIO
 import com.jnj.vaccinetracker.common.data.helpers.Base64
-import com.jnj.vaccinetracker.common.data.models.api.request.RegisterParticipantRequest
 import com.jnj.vaccinetracker.common.data.models.api.request.UpdateParticipantRequest
-import com.jnj.vaccinetracker.common.data.models.api.request.UpdateVisitObservationDto
-import com.jnj.vaccinetracker.common.data.models.api.request.VisitUpdateRequest
 import com.jnj.vaccinetracker.common.data.models.api.response.AttributeDto
 import com.jnj.vaccinetracker.common.data.models.toDto
 import com.jnj.vaccinetracker.common.domain.entities.DraftParticipant
 import com.jnj.vaccinetracker.common.domain.entities.DraftState
-import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
-import com.jnj.vaccinetracker.common.exceptions.DuplicateRequestException
-import com.jnj.vaccinetracker.common.exceptions.ParticipantAlreadyExistsException
 import com.jnj.vaccinetracker.common.exceptions.WebCallException
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import javax.inject.Inject
@@ -30,6 +23,7 @@ class UploadUpdateDraftParticipantUseCase @Inject constructor(
     private fun DraftParticipant.toDto(imageBase64: String?) = UpdateParticipantRequest(
         participantId = participantId,
         nin = nin,
+        childNumber = childNumber,
         gender = gender,
         isBirthDateEstimated = isBirthDateEstimated,
         birthdate = birthDate.toDto(),

@@ -24,13 +24,10 @@ import com.jnj.vaccinetracker.common.validators.TextInputValidator
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
-import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
-import com.jnj.vaccinetracker.register.dialogs.HomeLocationPickerViewModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
-import com.soywiz.klock.until
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -108,7 +105,10 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val updateParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
 
     val loading = mutableLiveBoolean()
+
     val participantId = mutableLiveData<String?>()
+    val participantIdValidationMessage = mutableLiveData<String>()
+
     val participantUuid = mutableLiveData<String?>()
     val scannedParticipantId = mutableLiveData<String?>()
 
@@ -117,6 +117,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     val nin = mutableLiveData<String?>()
     val ninValidationMessage = mutableLiveData<String>()
+
+    val childNumber = mutableLiveData<String?>()
+    val childNumberValidationMessage = mutableLiveData<String>()
 
     val name = mutableLiveData<String>()
     val nameValidationMessage = mutableLiveData<String>()
@@ -152,8 +155,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val homeLocation = mutableLiveData<Address>()
     val vaccine = mutableLiveData<DisplayValue>()
     val language = mutableLiveData<DisplayValue>()
-
-    val participantIdValidationMessage = mutableLiveData<String>()
 
     val genderValidationMessage = mutableLiveData<String>()
     val phoneValidationMessage = mutableLiveData<String>()
@@ -225,6 +226,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (participantUuid.value != null) {
             val participantBase = findParticipantByParticipantUuidUseCase.findByParticipantUuid(participantUuid.value!!)
             participantBase?.participantId?.let { setParticipantId(it) }
+            participantBase?.childNumber?.let { setChildNumber(it) }
             participantBase?.nin?.let { setNin(it) }
             participantBase?.birthWeight?.let { setBirthWeight(it) }
             participantBase?.gender?.let { setGender(it) }
@@ -247,6 +249,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     suspend fun onParticipantBack(args: Args) {
         if (args.registerDetails != null) {
             args.registerDetails.participantId.let { setParticipantId(it) }
+            args.registerDetails.childNumber?.let { setChildNumber(it) }
             args.registerDetails.nin?.let { setNin(it) }
             args.registerDetails.birthWeight?.let { setBirthWeight(it) }
             args.registerDetails.gender.let { setGender(it) }
@@ -254,7 +257,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             args.registerDetails.telephone?.let { setPhone(it, true) }
             args.registerDetails.motherName.let { setMotherName(it) }
             args.registerDetails.fatherName?.let { setFatherName(it) }
-            args.registerDetails.participantName.let { setChildName(it) }
+            args.registerDetails.participantName?.let { setChildName(it) }
             args.registerDetails.childCategory?.let { category ->
                 val selectedCategory = childCategoryNames.get()?.find { it.value == category }
                 if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
@@ -314,6 +317,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val homeLocation = homeLocation.get()
         val participantId = participantId.get()
         val nin = nin.get()
+        val childNumber = childNumber.get()
         logInfo("setting up birthweight")
         val birthWeight = birthWeight.get()
         val gender = gender.get()
@@ -359,6 +363,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val registerDetails = ParticipantManager.RegisterDetails(
                 participantId = participantId!!,
                 nin = nin,
+                childNumber = childNumber,
                 birthWeight = birthWeight,
                 gender = gender!!,
                 birthDate = birthDate!!,
@@ -371,7 +376,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 biometricsTemplateBytes = biometricsTemplateBytes,
                 fatherName = fatherName,
                 motherName = motherName!!,
-                participantName = childName!!,
+                participantName = childName,
                 childCategory = childCategoryValue,
             )
             val registerRequest = participantManager.getRegisterParticipant(registerDetails)
@@ -611,6 +616,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         this.nin.set(nin)
     }
 
+    fun setChildNumber(childNumber: String) {
+        if (this.childNumber.get() == childNumber) return
+        this.childNumber.set(childNumber)
+    }
+
     fun setMotherName(motherName: String) {
         if (this.mothersName.get() == motherName) return
         this.mothersName.set(motherName)
@@ -627,7 +637,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     fun setBirthWeight(birthWeight: String) {
-        if(this.birthWeight.get() == birthWeight) return
+        if (this.birthWeight.get() == birthWeight) return
         this.birthWeight.set(birthWeight)
     }
 

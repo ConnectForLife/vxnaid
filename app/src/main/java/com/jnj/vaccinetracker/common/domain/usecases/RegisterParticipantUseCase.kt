@@ -47,6 +47,7 @@ class RegisterParticipantUseCase @Inject constructor(
         biometricsTemplate = participantBiometricsTemplateFile,
         participantId = participantId,
         nin = nin,
+        childNumber = childNumber,
         gender = gender,
         isBirthDateEstimated = isBirthDateEstimated,
         birthDate = birthDate,

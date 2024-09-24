@@ -7,12 +7,7 @@ import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.files.ParticipantDataFileIO
 import com.jnj.vaccinetracker.common.domain.entities.*
 import com.jnj.vaccinetracker.common.exceptions.*
-import com.jnj.vaccinetracker.common.helpers.logInfo
-import com.jnj.vaccinetracker.common.helpers.logWarn
-import com.jnj.vaccinetracker.common.helpers.uuid
-import com.jnj.vaccinetracker.sync.domain.entities.SyncErrorMetadata
 import com.jnj.vaccinetracker.sync.domain.helpers.SyncLogger
-import com.jnj.vaccinetracker.sync.domain.usecases.upload.UploadDraftParticipantUseCase
 import com.jnj.vaccinetracker.sync.domain.usecases.upload.UploadUpdateDraftParticipantUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,6 +38,7 @@ class UpdateParticipantUseCase @Inject constructor(
         biometricsTemplate = participantBiometricsTemplateFile,
         participantId = participantId,
         nin = nin,
+        childNumber = childNumber,
         gender = gender,
         isBirthDateEstimated = isBirthDateEstimated,
         birthDate = birthDate,

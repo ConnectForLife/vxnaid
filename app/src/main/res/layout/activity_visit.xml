@@ -42,7 +42,7 @@
             android:layout_height="50dp"
             android:layout_marginStart="32dp"
             android:layout_marginTop="32dp"
-            android:text="@string/visit_label_participant_id"
+            android:text="@string/participant_flow_participant_id_title"
             android:textAppearance="@style/LabelText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sync_banner" />

@@ -24,10 +24,6 @@ object Constants {
     const val ATTRIBUTE_PARTICIPANT_NAME= "Child's name"
     const val ATTRIBUTE_CHILD_CATEGORY= "Child category"
     const val NIN_IDENTIFIER_TYPE_NAME = "National ID"
-    const val MOTHER_NAME_ATTRIBUTE_TYPE_NAME = "Mother's name"
-    const val CHILD_NAME_ATTRIBUTE_TYPE_NAME = "Child's name"
-    const val FATHER_NAME_ATTRIBUTE_TYPE_NAME = "Father's name"
-    const val CHILD_CATEGORY_ATTRIBUTE_TYPE_NAME = "Child category"
 
     // Visit
     const val ATTRIBUTE_VISIT_STATUS = "Visit Status"

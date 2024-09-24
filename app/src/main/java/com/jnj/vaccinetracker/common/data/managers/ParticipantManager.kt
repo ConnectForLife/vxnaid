@@ -80,7 +80,7 @@ class ParticipantManager @Inject constructor(
         language: String,
         fatherName: String?,
         motherName: String,
-        participantName: String,
+        participantName: String?,
         childCategory: String?,
     ): MutableMap<String, String> {
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
@@ -90,8 +90,12 @@ class ParticipantManager @Inject constructor(
             Constants.ATTRIBUTE_LANGUAGE to language,
             Constants.ATTRIBUTE_OPERATOR to operatorUUid,
             Constants.ATTRIBUTE_MOTHER_NAME to motherName,
-            Constants.ATTRIBUTE_PARTICIPANT_NAME to participantName,
         )
+
+        if (participantName != null) {
+            personAttributes[Constants.ATTRIBUTE_PARTICIPANT_NAME] = participantName
+        }
+
         if (telephone != null) {
             personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
         }
@@ -111,6 +115,7 @@ class ParticipantManager @Inject constructor(
     data class RegisterDetails(
         val participantId: String,
         val nin: String?,
+        val childNumber: String?,
         val birthWeight: String?,
         val gender: Gender,
         val birthDate: DateTime,
@@ -123,7 +128,7 @@ class ParticipantManager @Inject constructor(
         val biometricsTemplateBytes: BiometricsTemplateBytes?,
         val fatherName: String?,
         val motherName: String,
-        val participantName: String,
+        val participantName: String?,
         val childCategory: String?,
     )
 
@@ -146,6 +151,7 @@ class ParticipantManager @Inject constructor(
         return RegisterParticipant(
             participantId = registerDetails.participantId,
             nin = registerDetails.nin,
+            childNumber = registerDetails.childNumber,
             gender = registerDetails.gender,
             isBirthDateEstimated = registerDetails.isBirthDateEstimated,
             birthDate = BirthDate(registerDetails.birthDate.unixMillisLong),
@@ -162,6 +168,7 @@ class ParticipantManager @Inject constructor(
                 participantUuid = participantUuid,
                 participantId = registerRequest.participantId,
                 nin = registerRequest.nin,
+                childNumber = registerRequest.childNumber,
                 gender = registerRequest.gender,
                 isBirthDateEstimated = registerRequest.isBirthDateEstimated,
                 birthDate = registerRequest.birthDate,
@@ -184,6 +191,7 @@ class ParticipantManager @Inject constructor(
     suspend fun fullParticipantRegister(
         participantId: String,
         nin: String?,
+        childNumber: String?,
         birthWeight: String?,
         gender: Gender,
         birthDate: DateTime,
@@ -203,6 +211,7 @@ class ParticipantManager @Inject constructor(
             RegisterDetails(
                 participantId = participantId,
                 nin = nin,
+                childNumber = childNumber,
                 birthWeight = birthWeight,
                 gender = gender,
                 birthDate = birthDate,
@@ -225,6 +234,7 @@ class ParticipantManager @Inject constructor(
     suspend fun fullParticipantUpdate(
         participantId: String,
         nin: String?,
+        childNumber: String?,
         birthWeight: String?,
         gender: Gender,
         birthDate: DateTime,
@@ -245,6 +255,7 @@ class ParticipantManager @Inject constructor(
             RegisterDetails(
                 participantId = participantId,
                 nin = nin,
+                childNumber = childNumber,
                 birthWeight = birthWeight,
                 gender = gender,
                 birthDate = birthDate,

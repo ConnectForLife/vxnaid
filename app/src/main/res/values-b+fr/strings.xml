@@ -73,7 +73,9 @@
     <string name="iris_scan_left_title">Scan de l\'iris - œil gauche</string>
     <string name="iris_scan_right_title">Scan de l\'iris - œil droit</string>
     <string name="participant_matching_title">Reconnaissance d\'un participant</string>
-    <string name="participant_flow_participant_id_title">NIP du participant</string>
+    <string name="participant_flow_child_number_title">NIP du participant</string>
+    <string name="participant_flow_participant_id_title">Carte d\'identité de l\'enfant</string>
+    <string name="participant_flow_participant_id_hint">Scannez le code QR d\'identification de l\'enfant</string>
     <string name="participant_flow_participant_id_description">Veuillez scanner le QR-code de la carte de vaccination du participant ou entrer son NIP manuellement:</string>
     <string name="participant_flow_participant_id_label_manual_entry">Entrée manuelle du NIP</string>
     <string name="participant_flow_participant_id_input_hint">#1234567890</string>
