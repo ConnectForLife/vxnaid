@@ -73,8 +73,115 @@ class ParticipantManager @Inject constructor(
 
     }
 
+    private fun getParticipantAttributes(
+        birthWeight: String?,
+        telephone: String?,
+        siteUuid: String,
+        language: String,
+        fatherName: String?,
+        motherName: String,
+        participantName: String,
+        childCategory: String?,
+    ): MutableMap<String, String> {
+        val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
+
+        val personAttributes = mutableMapOf(
+            Constants.ATTRIBUTE_LOCATION to siteUuid,
+            Constants.ATTRIBUTE_LANGUAGE to language,
+            Constants.ATTRIBUTE_OPERATOR to operatorUUid,
+            Constants.ATTRIBUTE_MOTHER_NAME to motherName,
+            Constants.ATTRIBUTE_PARTICIPANT_NAME to participantName,
+        )
+        if (telephone != null) {
+            personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
+        }
+        if (birthWeight != null) {
+            personAttributes[Constants.ATTRIBUTE_BIRTH_WEIGHT] = birthWeight
+        }
+        // mother name can't be null
+        if (fatherName != null) {
+            personAttributes[Constants.ATTRIBUTE_FATHER_NAME] = fatherName
+        }
+        if (childCategory != null) {
+            personAttributes[Constants.ATTRIBUTE_CHILD_CATEGORY] = childCategory
+        }
+        return personAttributes
+    }
+
+    data class RegisterDetails(
+        val participantId: String,
+        val nin: String?,
+        val birthWeight: String?,
+        val gender: Gender,
+        val birthDate: DateTime,
+        val isBirthDateEstimated: Boolean,
+        val telephone: String?,
+        val siteUuid: String,
+        val language: String,
+        val address: Address,
+        val picture: ImageBytes?,
+        val biometricsTemplateBytes: BiometricsTemplateBytes?,
+        val fatherName: String?,
+        val motherName: String,
+        val participantName: String,
+        val childCategory: String?,
+    )
+
     @SuppressWarnings("LongParameterList")
-    suspend fun registerParticipant(
+    fun getRegisterParticipant(
+        registerDetails: RegisterDetails
+    ): RegisterParticipant {
+
+        val personAttributes = getParticipantAttributes(
+            birthWeight = registerDetails.birthWeight,
+            telephone = registerDetails.telephone,
+            siteUuid = registerDetails.siteUuid,
+            language = registerDetails.language,
+            fatherName = registerDetails.fatherName,
+            motherName = registerDetails.motherName,
+            participantName = registerDetails.participantName,
+            childCategory = registerDetails.childCategory
+        )
+
+        return RegisterParticipant(
+            participantId = registerDetails.participantId,
+            nin = registerDetails.nin,
+            gender = registerDetails.gender,
+            isBirthDateEstimated = registerDetails.isBirthDateEstimated,
+            birthDate = BirthDate(registerDetails.birthDate.unixMillisLong),
+            address = registerDetails.address,
+            attributes = personAttributes,
+            image = registerDetails.picture,
+            biometricsTemplate = registerDetails.biometricsTemplateBytes,
+            scheduleFirstVisit = createScheduleFirstVisit()
+        )
+    }
+
+    fun getUpdateParticipant(registerRequest: RegisterParticipant, participantUuid: String): UpdateParticipant {
+            return UpdateParticipant(
+                participantUuid = participantUuid,
+                participantId = registerRequest.participantId,
+                nin = registerRequest.nin,
+                gender = registerRequest.gender,
+                isBirthDateEstimated = registerRequest.isBirthDateEstimated,
+                birthDate = registerRequest.birthDate,
+                address = registerRequest.address,
+                attributes = registerRequest.attributes,
+                image = registerRequest.image,
+                scheduleFirstVisit = createScheduleFirstVisit()
+            )
+    }
+
+
+    suspend fun registerParticipant(request: RegisterParticipant): DraftParticipant {
+        return registerParticipantUseCase.registerParticipant(request)
+    }
+
+    suspend fun updateParticipant(request: UpdateParticipant): DraftParticipant {
+        return updateParticipantUseCase.updateParticipant(request)
+    }
+
+    suspend fun fullParticipantRegister(
         participantId: String,
         nin: String?,
         birthWeight: String?,
@@ -91,60 +198,71 @@ class ParticipantManager @Inject constructor(
         motherName: String,
         participantName: String,
         childCategory: String?,
-        participantUuid: String? = null
     ): DraftParticipant {
-        val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
-
-        val personAttributes = mutableMapOf(
-            Constants.ATTRIBUTE_LOCATION to siteUuid,
-            Constants.ATTRIBUTE_LANGUAGE to language,
-            Constants.ATTRIBUTE_OPERATOR to operatorUUid,
-            Constants.ATTRIBUTE_MOTHER_NAME to motherName,
-            Constants.ATTRIBUTE_PARTICIPANT_NAME to participantName,
+        val request = getRegisterParticipant(
+            RegisterDetails(
+                participantId = participantId,
+                nin = nin,
+                birthWeight = birthWeight,
+                gender = gender,
+                birthDate = birthDate,
+                isBirthDateEstimated = isBirthDateEstimated,
+                telephone = telephone,
+                siteUuid = siteUuid,
+                language = language,
+                address = address,
+                picture = picture,
+                biometricsTemplateBytes = biometricsTemplateBytes,
+                fatherName = fatherName,
+                motherName = motherName,
+                participantName = participantName,
+                childCategory = childCategory
+            )
         )
-        if (telephone != null) {
-            personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
-        }
-        if (birthWeight != null) {
-            personAttributes[Constants.ATTRIBUTE_BIRTH_WEIGHT] = birthWeight
-        }
-       // mother name can't be null
-        if (fatherName != null) {
-            personAttributes[Constants.ATTRIBUTE_FATHER_NAME] = fatherName
-        }
-        if (childCategory != null) {
-            personAttributes[Constants.ATTRIBUTE_CHILD_CATEGORY] = childCategory
-        }
+        return registerParticipant(request)
+    }
 
-        if (participantUuid == null) {
-            val request = RegisterParticipant(
+    suspend fun fullParticipantUpdate(
+        participantId: String,
+        nin: String?,
+        birthWeight: String?,
+        gender: Gender,
+        birthDate: DateTime,
+        isBirthDateEstimated: Boolean,
+        telephone: String?,
+        siteUuid: String,
+        language: String,
+        address: Address,
+        picture: ImageBytes?,
+        biometricsTemplateBytes: BiometricsTemplateBytes?,
+        fatherName: String?,
+        motherName: String,
+        participantName: String,
+        childCategory: String?,
+        participantUuid: String,
+    ): DraftParticipant {
+        val registerRequest = getRegisterParticipant(
+            RegisterDetails(
                 participantId = participantId,
                 nin = nin,
+                birthWeight = birthWeight,
                 gender = gender,
+                birthDate = birthDate,
                 isBirthDateEstimated = isBirthDateEstimated,
-                birthDate = BirthDate(birthDate.unixMillisLong),
+                telephone = telephone,
+                siteUuid = siteUuid,
+                language = language,
                 address = address,
-                attributes = personAttributes,
-                image = picture,
-                biometricsTemplate = biometricsTemplateBytes,
-                scheduleFirstVisit = createScheduleFirstVisit()
+                picture = picture,
+                biometricsTemplateBytes = biometricsTemplateBytes,
+                fatherName = fatherName,
+                motherName = motherName,
+                participantName = participantName,
+                childCategory = childCategory
             )
-            return registerParticipantUseCase.registerParticipant(request)
-        } else {
-            val request = UpdateParticipant(
-                participantUuid = participantUuid,
-                participantId = participantId,
-                nin = nin,
-                gender = gender,
-                isBirthDateEstimated = isBirthDateEstimated,
-                birthDate = BirthDate(birthDate.unixMillisLong),
-                address = address,
-                attributes = personAttributes,
-                image = picture,
-                scheduleFirstVisit = createScheduleFirstVisit()
-            )
-            return updateParticipantUseCase.updateParticipant(request)
-        }
+        )
+        val updateRequest = getUpdateParticipant(registerRequest, participantUuid)
+        return updateParticipant(updateRequest)
     }
 
 }

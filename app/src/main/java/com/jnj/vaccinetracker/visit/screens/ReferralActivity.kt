@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.visit.screens
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -7,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
@@ -17,6 +19,7 @@ import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateVisitUseCase
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.databinding.ActivityReferralFlowBinding
+import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -101,12 +104,16 @@ class ReferralActivity: BaseActivity() {
         }
 
         doNotReferButton.setOnClickListener {
+            val intent = Intent(this, ParticipantFlowActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
             finish()
         }
 
         referralCloseButton.setOnClickListener {
             finish()
         }
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun validateClinic() {
@@ -125,5 +132,10 @@ class ReferralActivity: BaseActivity() {
         } else {
             referralReasonTextView.error = null
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

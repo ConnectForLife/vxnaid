@@ -2,21 +2,26 @@ package com.jnj.vaccinetracker.visit.screens
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
 import com.jnj.vaccinetracker.databinding.FragmentContraindicationsBinding
+import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
-import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
+import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 class ContraindicationsActivity : BaseActivity() {
    private val participant: ParticipantSummaryUiModel by lazy {
       intent.getParcelableExtra(EXTRA_PARTICIPANT)!!
@@ -47,7 +52,24 @@ class ContraindicationsActivity : BaseActivity() {
       binding.viewModel = viewModel
       binding.lifecycleOwner = this
 
+      viewModel.errorMessage.observe(this) { errorMessage ->
+         errorSnackbar?.dismiss()
+
+         if (errorMessage == null) return@observe
+
+         errorSnackbar = Snackbar
+            .make(binding.root, errorMessage, Snackbar.LENGTH_INDEFINITE)
+            .setAction(R.string.general_label_retry) {
+               errorSnackbar?.dismiss()
+               RescheduleVisitDialog.create(participant = participant)
+                  .show(supportFragmentManager, TAG_DIALOG_RESCHEDULE_VISIT)
+            }.also {
+               it.show()
+            }
+      }
+
       setupClickListeners()
+      supportActionBar?.setDisplayHomeAsUpEnabled(true)
    }
 
    private fun setupClickListeners() {
@@ -64,8 +86,10 @@ class ContraindicationsActivity : BaseActivity() {
    }
 
    private fun startParticipantVisit(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
-      startActivity(VisitActivity.create(this, participant, newRegisteredParticipant))
-      setForwardAnimation()
+      lifecycleScope.launch {
+         startActivity(VisitActivity.create(this@ContraindicationsActivity, participant, newRegisteredParticipant))
+         setForwardAnimation()
+      }
    }
 
    override fun onSupportNavigateUp(): Boolean {
@@ -75,34 +99,21 @@ class ContraindicationsActivity : BaseActivity() {
 
    override fun onBackPressed() {
       if (newRegisteredParticipant) {
-         startActivity(SplashActivity.create(this)) // Restart the participant flow
-         finishAffinity()
+         lifecycleScope.launch {
+            val intent = ParticipantFlowActivity.create(this@ContraindicationsActivity)
+            intent.putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
+            intent.putExtra(Constants.PARTICIPANT_MATCH_ID, participant.participantId)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finishAffinity()
+         }
       } else {
          super.onBackPressed()
       }
    }
 
-   override fun onStart() {
-      super.onStart()
-      viewModel.errorMessage.observe(this) { errorMessage ->
-         errorSnackbar?.dismiss()
-
-         if (errorMessage == null) {
-            return@observe
-         }
-
-         errorSnackbar = Snackbar
-            .make(binding.root, errorMessage, Snackbar.LENGTH_INDEFINITE)
-            .setAction(R.string.general_label_retry) {
-               errorSnackbar?.dismiss()
-               RescheduleVisitDialog.create(participant = participant)
-                  .show(supportFragmentManager, TAG_DIALOG_RESCHEDULE_VISIT)
-            }.also {
-               it.show()
-            }
-      }
-   }
 
    override val syncBanner: SyncBanner
       get() = binding.syncBanner
 }
+

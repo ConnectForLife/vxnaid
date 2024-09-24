@@ -76,6 +76,7 @@ class VisitViewModel @Inject constructor(
     var selectedSubstancesWithBarcodes = MutableLiveData<MutableMap<String, Map<String, String>>>(mutableMapOf())
     var selectedOtherSubstances = MutableLiveData<MutableMap<String, String>>()
     var otherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
+    var suggestedOtherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
     var checkOtherSubstances =  MutableLiveData<Boolean>(false)
     var isAnyOtherSubstancesEmpty =  MutableLiveData<Boolean>(false)
     var visitsCounter = MutableLiveData<Int>(0)
@@ -129,6 +130,7 @@ class VisitViewModel @Inject constructor(
                 participantSummary.birthDateText,
                 configurationManager
             )
+            suggestedOtherSubstancesData.value = otherSubstancesData.value
             onVisitsLoaded(visits)
             loading.set(false)
         } catch (ex: Throwable) {
@@ -402,6 +404,7 @@ class VisitViewModel @Inject constructor(
         isSuggesting.value = checked
         selectedSubstancesData.value = suggestedSubstancesData.value
         selectedVisitType.value = suggestedVisitType.value
+        otherSubstancesData.value = this.suggestedOtherSubstancesData.value
     }
 
     fun addToSelectedSubstances(vaccine: SubstanceDataModel) {

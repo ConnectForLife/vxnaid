@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.helpers.logWarn
 import com.jnj.vaccinetracker.common.ui.BaseActivity
@@ -58,6 +59,13 @@ class ParticipantFlowActivity : BaseActivity() {
                     viewModel.onRetryClick()
                 }.also { it.show() }
 
+        }
+        val shouldNavigate = intent.getBooleanExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, false)
+        if (shouldNavigate) {
+            val participantId = intent.getStringExtra(Constants.PARTICIPANT_MATCH_ID)
+            viewModel.confirmParticipantId(participantId, true)
+            viewModel.navigationDirection = NavigationDirection.BACKWARD
+            viewModel.currentScreen.value = ParticipantFlowViewModel.Screen.PARTICIPANT_MATCHING
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }

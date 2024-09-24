@@ -115,12 +115,6 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
 
       binding.btnFinish.setOnClickListener {
          dismissAllowingStateLoss()
-
-         val intent = Intent(requireContext(), ReferralActivity::class.java).apply {
-            putExtra(CURRENT_VISIT_UUID, currentVisitUuid)
-            putExtra(PARTICIPANT_UUID, participant?.participantUuid)
-         }
-         startActivity(intent)
       }
       return binding.root
    }

@@ -13,14 +13,17 @@ import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.domain.entities.RegisterParticipant
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.zscore.HardcodedZScore
+import com.soywiz.klock.DateFormat
 
 class OtherSubstanceItemAdapter(
     private val items: MutableList<OtherSubstanceDataModel>,
     private val listener: AddSubstanceValueListener,
-    private val participant: ParticipantSummaryUiModel
+    private val participant: ParticipantSummaryUiModel? = null,
+    private val registerParticipant: RegisterParticipant? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var otherSubstanceValues: MutableMap<String, String>? = mutableMapOf()
@@ -164,8 +167,10 @@ class OtherSubstanceItemAdapter(
         var onNotEmpty: (() -> Unit)? = null
         fun bind(item: OtherSubstanceDataModel) {
             frameLayout.removeAllViews()
+            val gender = participant?.gender ?: registerParticipant?.gender!!
+            val birthDateText = participant?.birthDateText ?: registerParticipant?.birthDate!!.toDateTime().format(DateFormat.FORMAT_DATE)
             val hardcodedClass: HardcodedZScore =
-                HardcodedZScore.fromConceptName(item.conceptName, participant.gender, participant.birthDateText)
+                HardcodedZScore.fromConceptName(item.conceptName, gender, birthDateText)
             hardcodedClass.setArguments(otherSubstanceValues)
             hardcodedClass.setupView(itemView, listener)
             isEmpty = hardcodedClass.isEmpty()

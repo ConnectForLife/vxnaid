@@ -37,6 +37,7 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
 
    private val flowViewModel: RegisterParticipantFlowViewModel by activityViewModels { viewModelFactory }
    private val viewModel: RegisterParticipantHistoricalDataViewModel by activityViewModels { viewModelFactory }
+   private val registerViewModel: RegisterParticipantParticipantDetailsViewModel by activityViewModels { viewModelFactory }
    private lateinit var binding: FragmentRegisterHistoricalVisitsBinding
 
    companion object {
@@ -59,7 +60,7 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
          lifecycleOwner = viewLifecycleOwner
          flowViewModel = this@RegisterParticipantHistoricalDataFragment.flowViewModel
       }
-      viewModel.setArguments(flowViewModel.participant.value)
+      viewModel.setArguments(flowViewModel.registerParticipant.value)
       binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
 
       setupClickListeners()
@@ -87,7 +88,12 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
 
    private fun setupClickListeners() {
       binding.btnSubmit.setOnClickListener {
-         submitVaccineRegistration()
+         lifecycleScope.launch {
+            val participantUiModel = registerViewModel.doRegistrationUsingRegisterRequest(flowViewModel.registerParticipant.value!!)
+            viewModel.participant.value = participantUiModel
+            submitVaccineRegistration()
+            registerViewModel.registerParticipantSuccessDialogEvents.tryEmit(participantUiModel!!)
+         }
       }
    }
 

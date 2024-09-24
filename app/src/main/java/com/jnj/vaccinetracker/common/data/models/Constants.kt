@@ -103,4 +103,7 @@ object Constants {
     const val CONCEPT_NAME_WEIGHT_FOR_HEIGHT_Z_SCORE = "Weight for Height Vxnaid"
     const val CONCEPT_NAME_IS_OEDEMA_Z_SCORE = "Is Oedema"
     const val CONCEPT_NAME_WEIGHT_KG = "Weight (kg)"
+
+    const val CALL_NAVIGATE_TO_MATCH_SCREEN = "CALL_NAVIGATE_TO_MATCH_SCREEN"
+    const val PARTICIPANT_MATCH_ID = "PARTICIPANT_MATCH_ID"
 }
