@@ -92,15 +92,15 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val rightEyeScanned: Boolean,
             val phoneNumber: String?,
             val participantUuid: String?,
+            val registerDetails: ParticipantManager.RegisterDetails?,
     )
 
     private val args = stateFlow<Args?>(null)
 
-    val registerSuccessEvents = eventFlow<ParticipantSummaryUiModel>()
     val registerFailedEvents = eventFlow<String>()
     val registerNoPhoneEvents = eventFlow<Unit>()
     val registerNoMatchingIdEvents = eventFlow<Unit>()
-    val registerChildNewbornEvents = eventFlow<Unit>()
+    val registerChildNewbornEvents = eventFlow<ParticipantManager.RegisterDetails>()
     val registerParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
     val updateParticipantSuccessDialogEvents = eventFlow<ParticipantSummaryUiModel>()
 
@@ -168,8 +168,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     var canSkipPhone = false
     private val irisScans = ArrayMap<IrisPosition, Boolean>()
 
-    var isChildNewbornQuestionAlreadyAsked = false
-    var shouldOpenRegisterParticipantSuccessDialog = false
+    var hasChildBeenVaccinatedAlreadyAsked = false
+    var registerParticipantRequest = mutableLiveData<RegisterParticipant>()
 
     private var validatePhoneJob: Job? = null
     private var validateParticipantIdJob: Job? = null
@@ -211,6 +211,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val loc = configurationManager.getLocalization()
             onSiteAndConfigurationLoaded(site, configuration, loc)
             ninIdentifiers.set(configurationManager.getNinIdentifiers())
+            onParticipantBack(args)
             onParticipantEdit()
             loading.set(false)
         } catch (ex: Throwable) {
@@ -239,6 +240,29 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
             }
             participantBase?.address?.let { address ->
+                val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
+                setHomeLocation(address, stringRepresentation)
+            }
+        }
+    }
+
+    suspend fun onParticipantBack(args: Args) {
+        if (args.registerDetails != null) {
+            args.registerDetails.participantId.let { setParticipantId(it) }
+            args.registerDetails.childNumber?.let { setChildNumber(it) }
+            args.registerDetails.nin?.let { setNin(it) }
+            args.registerDetails.birthWeight?.let { setBirthWeight(it) }
+            args.registerDetails.gender.let { setGender(it) }
+            setBirthDateOrEstimatedAge(args.registerDetails.birthDate, args.registerDetails.isBirthDateEstimated)
+            args.registerDetails.telephone?.let { setPhone(it, true) }
+            args.registerDetails.motherName.let { setMotherName(it) }
+            args.registerDetails.fatherName?.let { setFatherName(it) }
+            args.registerDetails.participantName?.let { setChildName(it) }
+            args.registerDetails.childCategory?.let { category ->
+                val selectedCategory = childCategoryNames.get()?.find { it.value == category }
+                if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
+            }
+            args.registerDetails.address.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
                 setHomeLocation(address, stringRepresentation)
             }
@@ -331,17 +355,12 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (!areInputsValid || !isNinValid)
             return
 
-        if (!isChildNewbornQuestionAlreadyAsked && participantUuid.value == null) {
-            registerChildNewbornEvents.tryEmit(Unit)
-            return
-        }
-
         loading.set(true)
 
         try {
             val compressedImage = picture?.toDomain()?.compress()
             val biometricsTemplateBytes = getTempBiometricsTemplatesBytesUseCase.getBiometricsTemplate(irisScans)
-            val result = participantManager.registerParticipant(
+            val registerDetails = ParticipantManager.RegisterDetails(
                 participantId = participantId!!,
                 nin = nin,
                 childNumber = childNumber,
@@ -355,12 +374,26 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,
-                fatherName=fatherName,
-                motherName=motherName!!,
-                participantName=childName,
-                childCategory=childCategoryValue,
-                participantUuid=childUuid,
+                fatherName = fatherName,
+                motherName = motherName!!,
+                participantName = childName,
+                childCategory = childCategoryValue,
             )
+            val registerRequest = participantManager.getRegisterParticipant(registerDetails)
+
+            if (!hasChildBeenVaccinatedAlreadyAsked && participantUuid.value == null) {
+                registerParticipantRequest.value = registerRequest
+                registerChildNewbornEvents.tryEmit(registerDetails)
+                return
+            }
+
+            val result: DraftParticipant = if (childUuid != null) {
+                val updateRequest = participantManager.getUpdateParticipant(registerRequest, childUuid)
+                participantManager.updateParticipant(updateRequest)
+            } else {
+                participantManager.registerParticipant(registerRequest)
+            }
+
             loading.set(false)
 
             val participant = ParticipantSummaryUiModel(
@@ -378,11 +411,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 return
             }
 
-            if (shouldOpenRegisterParticipantSuccessDialog) {
-                registerParticipantSuccessDialogEvents.tryEmit(participant)
-            } else {
-                registerSuccessEvents.tryEmit(participant)
-            }
+            registerParticipantSuccessDialogEvents.tryEmit(participant)
 
         } catch (ex: Throwable) {
             yield()
@@ -405,6 +434,49 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun doRegistrationUsingRegisterRequest(
+        request: RegisterParticipant,
+    ): ParticipantSummaryUiModel? {
+        loading.set(true)
+
+        try {
+            val result = participantManager.registerParticipant(request)
+            loading.set(false)
+
+            val participant = ParticipantSummaryUiModel(
+                result.participantUuid,
+                request.participantId,
+                request.gender,
+                request.birthDate.toDateTime().format(DateFormat.FORMAT_DATE),
+                request.isBirthDateEstimated,
+                null,
+                request.image?.let { ParticipantImageUiModel(it.bytes) }
+            )
+            return participant
+        } catch (ex: Throwable) {
+            yield()
+            ex.rethrowIfFatal()
+            loading.set(false)
+            logError("Failed to register participant: ", ex)
+            when (ex) {
+                is ParticipantAlreadyExistsException -> {
+                    val errorMessage = resourcesWrapper.getString(R.string.participant_registration_details_error_participant_already_exists)
+                    participantIdValidationMessage.set(errorMessage)
+                    registerFailedEvents.tryEmit(errorMessage)
+                }
+
+                is OperatorUuidNotAvailableException -> {
+                    sessionExpiryObserver.notifySessionExpired()
+                }
+
+                else -> {
+                    registerFailedEvents.tryEmit(resourcesWrapper.getString(R.string.general_label_error))
+                }
+            }
+        }
+        return null
     }
 
     @SuppressWarnings("LongParameterList")

@@ -6,6 +6,7 @@ import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
+import com.jnj.vaccinetracker.common.domain.entities.RegisterParticipant
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
@@ -40,7 +41,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    val registerVaccinesSuccessEvents = eventFlow<ParticipantSummaryUiModel>()
    val loading = mutableLiveBoolean()
    val errorMessage = mutableLiveData<String>()
-   private val participantArg = stateFlow<ParticipantSummaryUiModel?>(null)
+   private val participantArg = stateFlow<RegisterParticipant?>(null)
+   val registerParticipant = mutableLiveData<RegisterParticipant>()
    val participant = mutableLiveData<ParticipantSummaryUiModel>()
    private val dosingVisit = mutableLiveData<VisitDetail>()
 
@@ -50,7 +52,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       participantArg
          .filterNotNull()
          .distinctUntilChanged()
-         .onEach { participant.value = it }
+         .onEach { registerParticipant.value = it }
          .launchIn(scope)
    }
 
@@ -82,12 +84,10 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    }
 
    private suspend fun doRegisterVisit(visitTypeData: MutableMap<String, MutableMap<String, String>>) {
-      val participant = participantArg.value ?: run {
+      val participant = participant.value ?: run {
          logError("No participant available.")
          return
       }
-      this.participant.value = participant
-
       val visits = visitManager.getVisitsForParticipant(participant.participantUuid)
       onVisitsLoaded(visits)
 
@@ -149,7 +149,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       } ?: logError("No participant to emit success event.")
    }
 
-   fun setArguments(participant: ParticipantSummaryUiModel?) {
+   fun setArguments(participant: RegisterParticipant?) {
       participantArg.value = participant
    }
 

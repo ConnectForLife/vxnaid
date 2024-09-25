@@ -136,11 +136,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     }
 
     private fun observeViewModelEvents(lifecycleOwner: LifecycleOwner) = viewModel.apply {
-        registerSuccessEvents
-            .asFlow()
-            .onEach { participant ->
-                flowViewModel.confirmRegistrationWithCaptureVaccinesPage(participant)
-            }.launchIn(lifecycleOwner)
         registerNoPhoneEvents
             .asFlow()
             .onEach {
@@ -161,6 +156,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         registerChildNewbornEvents
             .asFlow()
             .onEach {
+                flowViewModel.registerDetails.value = it
                 RegisterParticipantHasChildEverVaccinatedDialog()
                     .show(childFragmentManager, TAG_CHILD_NEWBORN_ID)
             }.launchIn(lifecycleOwner)
@@ -294,7 +290,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 leftEyeScanned = flowViewModel.leftEyeScanned.value,
                 rightEyeScanned = flowViewModel.rightEyeScanned.value,
                 phoneNumber = flowViewModel.phoneNumber.value,
-                participantUuid = flowViewModel.participantUuid.value
+                participantUuid = flowViewModel.participantUuid.value,
+                registerDetails = flowViewModel.registerDetails.value
             )
         )
     }
@@ -322,14 +319,12 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     }
 
     override fun continueRegistrationWithSuccessDialog() {
-        viewModel.isChildNewbornQuestionAlreadyAsked = true
-        viewModel.shouldOpenRegisterParticipantSuccessDialog = true
+        viewModel.hasChildBeenVaccinatedAlreadyAsked = true
         submitRegistration()
     }
 
     override fun continueRegistrationWithCaptureVaccinesPage() {
-        viewModel.isChildNewbornQuestionAlreadyAsked = true
-        submitRegistration()
+        flowViewModel.confirmRegistrationWithCaptureVaccinesPage(viewModel.registerParticipantRequest.value!!)
     }
 
     override fun onBirthDatePicked(birthDate: DateTime?, isEstimated: Boolean) {

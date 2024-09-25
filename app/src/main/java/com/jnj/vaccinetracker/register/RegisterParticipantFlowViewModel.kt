@@ -6,7 +6,9 @@ import androidx.annotation.StringRes
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
+import com.jnj.vaccinetracker.common.domain.entities.DraftParticipant
 import com.jnj.vaccinetracker.common.domain.entities.ImageBytes
+import com.jnj.vaccinetracker.common.domain.entities.RegisterParticipant
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.logDebug
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
@@ -30,6 +32,8 @@ class RegisterParticipantFlowViewModel @Inject constructor(
     val participantId = mutableLiveData<String>()
     val participantUuid = mutableLiveData<String>()
     val participant = mutableLiveData<ParticipantSummaryUiModel>()
+    val registerParticipant = mutableLiveData<RegisterParticipant>()
+    val registerDetails = mutableLiveData<ParticipantManager.RegisterDetails>()
     val visitTypeName = mutableLiveData<String>()
     val leftEyeScanned = mutableLiveBoolean()
     val rightEyeScanned = mutableLiveBoolean()
@@ -137,12 +141,8 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         currentScreen.set(Screen.PARTICIPANT_DETAILS)
     }
 
-    fun confirmRegistrationWithCaptureVaccinesPage(participant: ParticipantSummaryUiModel) {
-       if (participantUuid.value != null) {
-          requestFinish.value = true
-          return
-       }
-       this.participant.set(participant)
+    fun confirmRegistrationWithCaptureVaccinesPage(registerParticipant: RegisterParticipant) {
+       this.registerParticipant.set(registerParticipant)
         navigationDirection = NavigationDirection.FORWARD
         currentScreen.set(Screen.PARTICIPANT_CAPTURE_HISTORICAL_DATA)
     }
