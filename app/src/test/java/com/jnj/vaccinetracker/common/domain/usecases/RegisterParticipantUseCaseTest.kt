@@ -42,6 +42,8 @@ class RegisterParticipantUseCaseTest : FunSpec({
     )
 
     val participantUuid = uuid()
+    // Exact format unspecified
+    val childNumber = uuid()
     val date = dateNow()
 
 
@@ -63,6 +65,7 @@ class RegisterParticipantUseCaseTest : FunSpec({
         image = ImageBytes(ByteArray(1)),
         biometricsTemplate = BiometricsTemplateBytes(ByteArray(1)),
         participantId = participantUuid,
+        childNumber = childNumber,
         nin = participantUuid,
         gender = Gender.MALE,
         isBirthDateEstimated = false,
@@ -86,6 +89,7 @@ class RegisterParticipantUseCaseTest : FunSpec({
         image = DraftParticipantImageFile(participantUuid, "$participantUuid.jpg", DraftState.UPLOAD_PENDING),
         biometricsTemplate = DraftParticipantBiometricsTemplateFile(participantUuid, "$participantUuid.dat", DraftState.UPLOAD_PENDING, dateNow()),
         participantId = registerParticipant.participantId,
+        childNumber = registerParticipant.childNumber,
         nin = "NIN$registerParticipant.participantId",
         gender = registerParticipant.gender,
         isBirthDateEstimated = false,
@@ -101,6 +105,7 @@ class RegisterParticipantUseCaseTest : FunSpec({
         image = DraftParticipantImageFile(participantUuid, "$participantUuid.jpg", DraftState.UPLOADED),
         biometricsTemplate = DraftParticipantBiometricsTemplateFile(participantUuid, "$participantUuid.dat", DraftState.UPLOADED, dateNow()),
         participantId = registerParticipant.participantId,
+        childNumber = registerParticipant.childNumber,
         nin = "NIN$registerParticipant.participantId",
         gender = registerParticipant.gender,
         isBirthDateEstimated = false,

@@ -5,8 +5,8 @@ import de.codecentric.androidtestktx.common.assertFalse
 import de.codecentric.androidtestktx.common.assertTrue
 
 
-fun UiObject.isVisibleFor(milliseconds: Int) {
-    device.waitFor(1000)
+fun UiObject.isVisibleFor(milliseconds: Long) {
+    device.waitFor(milliseconds)
 }
 
 /**

@@ -34,7 +34,7 @@ class SecureStorageTest {
             }
         }
         launch(Dispatchers.IO) {
-            repeat(1000) { i ->
+            repeat(1000) {
                 prefs.remove("test")
             }
         }
