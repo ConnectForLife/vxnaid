@@ -3,13 +3,12 @@ buildscript {
     apply from: './dependencies.gradle'
 
     repositories {
-        maven { url 'https://maven.google.com' }
         google()
         mavenCentral()
-        maven { url 'https://repo1.maven.org/maven2/' }
-        maven { url "https://jitpack.io" }
-        maven { url "https://plugins.gradle.org/m2/" }
-        maven { url "https://dl.bintray.com/icapps/maven" }
+        maven { url 'https://jcenter.bintray.com/' }
+        gradlePluginPortal()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 
     dependencies {
@@ -22,13 +21,12 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://maven.google.com' }
         google()
         mavenCentral()
-        maven { url 'https://repo1.maven.org/maven2/' }
-        maven { url "https://jitpack.io" }
-        maven { url "https://plugins.gradle.org/m2/" }
-        maven { url "https://dl.bintray.com/icapps/maven" }
+        maven { url 'https://jcenter.bintray.com/' }
+        gradlePluginPortal()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

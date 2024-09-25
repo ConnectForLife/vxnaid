@@ -73,7 +73,6 @@ class DraftParticipantScript {
     fun bulkParticipantRegistrationScript(): Unit = runBlocking {
         // Participant Settings
         val siteUuid = syncSettingsRepository.getSiteUuid() ?: throw NoSiteUuidAvailableException()
-        val vaccine = findVaccine("Covid 3D vaccine")
         val address = Address(
             address1 = "Koekoekstraat",
             address2 = "40",
@@ -89,9 +88,7 @@ class DraftParticipantScript {
         val telephone: String? = null
         val birthDate = DateTime(1999, 6, 6)
         val isBirthDateEstimated = false
-        val birthWeight = 2
-        val weight = 6
-        val height = 77
+        val birthWeight = "2"
         val lang = "en"
         val gender = Gender.MALE
         val template: BiometricsTemplateBytes? = readAssetsTemplate()
@@ -99,37 +96,36 @@ class DraftParticipantScript {
         (startNumber..endNumber).forEach { participantNumber ->
             val participantId = formatParticipantId(participantNumber)
             println("creating participant with id: $participantId")
-            val draftParticipant = participantManager.registerParticipant(
-                participantId = participantId,
-                nin = "NIN$participantId",
-                childNumber = "Test_Child",
-                "3",
-                gender = gender,
-                birthDate = birthDate,
-                isBirthDateEstimated = isBirthDateEstimated,
-                telephone = telephone,
-                siteUuid = siteUuid,
-                language = lang,
-                address = address,
-                picture = image,
-                biometricsTemplateBytes = template,
-                "motherName",
-                "childName",
-                "fatherName",
-                "childCategory"
+            val registerParticipant = participantManager.getRegisterParticipant(
+                ParticipantManager.RegisterDetails(
+                    participantId = participantId,
+                    nin = "NIN$participantId",
+                    childNumber = "Test_Child",
+                    birthWeight = birthWeight,
+                    gender = gender,
+                    birthDate = birthDate,
+                    isBirthDateEstimated = isBirthDateEstimated,
+                    telephone = telephone,
+                    siteUuid = siteUuid,
+                    language = lang,
+                    address = address,
+                    picture = image,
+                    biometricsTemplateBytes = template,
+                    "fatherName",
+                    "motherName",
+                    "childName",
+                    "childCategory"
+                )
             )
             println("logging first visit for participant $participantId")
-            val participantUuid = draftParticipant.participantUuid
+            val participantUuid = registerParticipant.participantId
             val visits = visitManager.getVisitsForParticipant(participantUuid = participantUuid)
             val firstScheduledDosingVisit = visits.find {
                 it.visitType == Constants.VISIT_TYPE_DOSING
                         && it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && it.dosingNumber == 1
             } ?: error("can't find first scheduled dosing visit for participant $participantId")
-            val vialCode = "vial-$participantId"
-            val manufacturerName = "AstraZenica"
-            val manufacturer = findManufacturer(draftParticipant, manufacturer = manufacturerName)
             visitManager.registerDosingVisit(
-                participantUuid = draftParticipant.participantUuid,
+                participantUuid = registerParticipant.participantId,
                 encounterDatetime = dateNow(),
                 visitUuid = firstScheduledDosingVisit.uuid,
                 dosingNumber = firstScheduledDosingVisit.dosingNumber!!,
@@ -223,12 +219,6 @@ class DraftParticipantScript {
     private suspend fun findVaccine(vaccineName: String): String {
         val vaccines = configurationManager.getConfiguration().vaccines
         return vaccines.find { it.name.equals(vaccineName, ignoreCase = true) }?.name ?: error("vaccine $vaccineName doesn't exist")
-    }
-
-    private suspend fun findManufacturer(draftParticipant: DraftParticipant, manufacturer: String): String {
-        val regimen = requireNotNull(draftParticipant.regimen) { "draft participant ${draftParticipant.participantId} doesn't have a regimen" }
-        val manufacturers = configurationManager.getVaccineManufacturers(regimen)
-        return manufacturers.find { it.equals(manufacturer, ignoreCase = true) } ?: error("Couldn't find $manufacturer in $manufacturers")
     }
 
     class MatchingSuccess(val hasPicture: Boolean, val isTemplateMatched: Boolean, val hasTemplateDownloaded: Boolean, val isFound: Boolean, val checkTemplate: Boolean) {
