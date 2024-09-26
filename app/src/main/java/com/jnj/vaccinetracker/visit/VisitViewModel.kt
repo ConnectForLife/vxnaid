@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.visit
 
 import android.os.Build
+import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.R
@@ -19,6 +20,7 @@ import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.dateDayStart
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
+import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
@@ -88,6 +90,8 @@ class VisitViewModel @Inject constructor(
     var visitLocation = MutableLiveData<String>()
     var isVisitLocationSelected = MutableLiveData(false)
     var checkVisitLocation = MutableLiveData(false)
+
+    var isReferring = MutableLiveData<Boolean>(false)
 
     init {
         initState()

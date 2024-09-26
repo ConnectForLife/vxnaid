@@ -33,7 +33,6 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.ScheduleVisitDatePickerDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
-import com.jnj.vaccinetracker.visit.screens.ReferralActivity
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
@@ -53,7 +52,6 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         private const val ARG_NEXT_VISIT = "next_visit"
         private const val PARTICIPANT = "participant"
         private const val CURRENT_VISIT_UUID = "currentVisitUuid"
-        private const val PARTICIPANT_UUID = "participantUuid"
 
         fun create(nextVisit: UpcomingVisit?, participant: ParticipantSummaryUiModel?, currentVisitUuid: String?): VisitRegisteredSuccessDialog {
             return VisitRegisteredSuccessDialog().apply { arguments = bundleOf(ARG_NEXT_VISIT to nextVisit, PARTICIPANT to participant, CURRENT_VISIT_UUID to currentVisitUuid) }
@@ -70,6 +68,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     private lateinit var proposedDateTextVisit: TextView
     private val nextVisit: UpcomingVisit? by lazy { requireArguments().getParcelable(ARG_NEXT_VISIT) }
     private var visitDate: DateTime? = null
+    private var canFinish: Boolean = false
     private val participant: ParticipantSummaryUiModel? by lazy { requireArguments().getParcelable(PARTICIPANT) }
     private val currentVisitUuid: String? by lazy { requireArguments().getString(CURRENT_VISIT_UUID) }
     @Inject lateinit var createVisitUseCase: CreateVisitUseCase
@@ -125,6 +124,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                        val layoutParams = closeButton.layoutParams as ConstraintLayout.LayoutParams
                        layoutParams.horizontalBias = 0.5f
                        closeButton.layoutParams = layoutParams
+                       canFinish = true
                    }
                } catch (ex: Exception) {
                    visitScheduleResultTextView.text = getString(R.string.visit_schedule_visit_failed)
@@ -134,13 +134,11 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         }
 
         binding.btnFinish.setOnClickListener {
-            dismissAllowingStateLoss()
-
-            val intent = Intent(requireContext(), ReferralActivity::class.java).apply {
-                putExtra(CURRENT_VISIT_UUID, currentVisitUuid)
-                putExtra(PARTICIPANT_UUID, participant?.participantUuid)
+            if (canFinish) {
+                dismissAllowingStateLoss()
+            } else {
+                dismiss()
             }
-            startActivity(intent)
         }
         return binding.root
     }

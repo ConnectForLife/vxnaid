@@ -39,27 +39,11 @@ class VisitCaptureDataFragment :
     VisitRegisteredSuccessDialog.VisitRegisteredSuccessDialogListener,
     OtherSubstanceItemAdapter.AddSubstanceValueListener
 {
-
-    private companion object {
-        private const val TAG_DIALOG_SUCCESS = "successDialog"
-    }
-
     private val viewModel: VisitViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: FragmentVisitCaptureDataBinding
     private lateinit var otherSubstancesAdapter: OtherSubstanceItemAdapter
 
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
-        viewModel.previousDosingVisits.observe(lifecycleOwner) { visits ->
-            binding.linearLayoutVisitHistory.removeAllViews()
-            if (!visits.isNullOrEmpty()) {
-                val v = DataBindingUtil.inflate<ItemVisitHistoryTitleBinding>(layoutInflater, R.layout.item_visit_history_title, binding.linearLayoutVisitHistory, true)
-                v.title = resourcesWrapper.getString(R.string.visit_vaccination_history)
-                visits.forEach { visit ->
-                    val view = DataBindingUtil.inflate<ItemVisitPreviousDoseBinding>(layoutInflater, R.layout.item_visit_previous_dose, binding.linearLayoutVisitHistory, true)
-                    view.visit = visit
-                }
-            }
-        }
         viewModel.otherSubstancesData.observe(lifecycleOwner) { otherSubstances ->
             otherSubstancesAdapter.updateItemsList(otherSubstances)
         }
@@ -95,6 +79,7 @@ class VisitCaptureDataFragment :
             val selectedValue = selectedRadioButton?.text.toString()
             viewModel.setVisitLocationValue(selectedValue)
             viewModel.isVisitLocationSelected.value = true
+            binding.textViewVisitLocationTitle.error = null
         }
 
         setOtherSubstancesRecyclerView()

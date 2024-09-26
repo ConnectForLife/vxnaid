@@ -22,6 +22,7 @@
     <color name="barcode_field_box_stroke">#757575</color>
     <color name="barcode_scan_overlay_color">#80000000</color>
     <color name="shutter_active">#FFFFFFFF</color>
+    <color name="white">#FFFFFFFF</color>
     <color name="shutter_focused">#DDFFFFFF</color>
     <color name="shutter_pressed">#AAFFFFFF</color>
     <color name="time_window_inside">#43A047</color>

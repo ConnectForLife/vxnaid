@@ -1,10 +1,12 @@
 package com.jnj.vaccinetracker.register.dialogs
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
@@ -15,10 +17,11 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantUiModel
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
-import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
+import com.jnj.vaccinetracker.visit.VisitActivity
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.O)
 class TransferClinicDialog(
     private var participant: ParticipantUiModel,
     private var currentLocationUuid: String
@@ -41,7 +44,7 @@ class TransferClinicDialog(
         binding.btnTransferAndContinueVisit.setOnClickListener {
             lifecycleScope.launch {
                 try {
-                    startParticipantVisitContraindications(participantSummaryUiModel, false)
+                    startParticipantVisitContraindications(participantSummaryUiModel)
                     vaccineTrackerSyncApiDataSource.updateParticipantLocation(participant.participantUUID!!, currentLocationUuid)
                 } catch (e: Exception) {
                     Log.e("TransferClinicDialog", "Something went wrong during updating participant location", e)
@@ -51,15 +54,15 @@ class TransferClinicDialog(
         }
 
         binding.btnJustVisit.setOnClickListener {
-            startParticipantVisitContraindications(participantSummaryUiModel, false)
+            startParticipantVisitContraindications(participantSummaryUiModel)
             dismissAllowingStateLoss()
         }
 
         return binding.root
     }
 
-    private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
-        startActivity(ContraindicationsActivity.create(requireContext(), participant, newRegisteredParticipant))
+    private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel) {
+        startActivity(VisitActivity.create(requireContext(), participant, newRegisteredParticipant = false))
         (requireActivity() as BaseActivity).setForwardAnimation()
     }
 }

@@ -36,11 +36,6 @@ class VisitVaccinesFragment : BaseFragment(),
         DialogVaccineBarcode.ConfirmSubstanceListener,
         DialogVaccineBarcode.RemoveSubstanceListener
 {
-
-    private companion object {
-        private const val TAG_DIALOG_SUCCESS = "successDialog"
-    }
-
     private val viewModel: VisitViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: FragmentVisitVaccinesBinding
     private lateinit var adapter: VisitSubstanceItemAdapter
@@ -74,14 +69,6 @@ class VisitVaccinesFragment : BaseFragment(),
     }
 
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
-        viewModel.visitEvents
-                .asFlow()
-                .onEach { success ->
-                    if (success)
-                        onDosingVisitRegistrationSuccessful()
-                    else
-                        onDosingVisitRegistrationFailed()
-                }.launchIn(lifecycleOwner)
         viewModel.selectedSubstancesData.observe(lifecycleOwner) { substances ->
             adapter.updateList(substances)
         }
@@ -94,15 +81,6 @@ class VisitVaccinesFragment : BaseFragment(),
         viewModel.suggestedSubstancesData.observe(lifecycleOwner) {suggestedSubstances ->
             adapter.setSuggestedSubstances(suggestedSubstances)
         }
-    }
-
-    private fun onDosingVisitRegistrationSuccessful() {
-        val dosingVisit = viewModel.dosingVisit.value
-        VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value, viewModel.participant.value, dosingVisit!!.uuid).show(childFragmentManager, TAG_DIALOG_SUCCESS)
-    }
-
-    private fun onDosingVisitRegistrationFailed() {
-        Snackbar.make(binding.root, R.string.general_label_error, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onVisitRegisteredSuccessDialogClosed() {
