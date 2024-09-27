@@ -5,5 +5,6 @@ data class OtherSubstanceDataModel(
     val label: String,
     val category: String,
     val inputType: String,
-    val options: List<String>
+    val options: List<String>,
+    var value: String? = null
 )

@@ -20,6 +20,8 @@ import com.jnj.vaccinetracker.register.adapters.SubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
+import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
+import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 class HistoricalDataForVisitTypeFragment :
@@ -68,6 +70,14 @@ class HistoricalDataForVisitTypeFragment :
       setupRecyclerViews()
       setupClickListeners()
 
+      viewModel.substancesData.observe(viewLifecycleOwner) { substances ->
+         substanceAdapter.updateList(substances)
+      }
+
+      viewModel.otherSubstancesData.observe(viewLifecycleOwner) { otherSubstances ->
+         otherSubstanceAdapter.updateItemsList(otherSubstances)
+      }
+
       return binding.root
    }
 
@@ -78,6 +88,32 @@ class HistoricalDataForVisitTypeFragment :
       allDataViewModel.visitTypesData.value?.get(visitTypeName)?.let { visitTypeData ->
          viewModel.substancesAndDates.value = visitTypeData[Constants.SUBSTANCES_AND_DATES_STR]
          viewModel.otherSubstancesAndValues.value = visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]
+
+         val substanceDataList = visitTypeData[Constants.SUBSTANCES_AND_DATES_STR]?.map { (conceptName, date) ->
+            SubstanceDataModel(
+               conceptName = conceptName,
+               label = "notNeeded",
+               category = "notNeeded",
+               routeOfAdministration = "notNeeded",
+               group = "notNeeded",
+               maximumAgeInWeeks = null,
+               minimumWeeksNumberAfterPreviousDose = null,
+               obsDate = date
+            )
+         } ?: emptyList()
+         viewModel.substancesData.value = substanceDataList
+
+         val otherSubstancesDataList = visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]?.map { (conceptName, value) ->
+            OtherSubstanceDataModel(
+               conceptName = conceptName,
+               label = conceptName,
+               category = "notNeeded",
+               inputType = "notNeeded",
+               options = emptyList(),
+               value = value
+            )
+         } ?: emptyList()
+         viewModel.otherSubstancesData.value = otherSubstancesDataList
       }
    }
 

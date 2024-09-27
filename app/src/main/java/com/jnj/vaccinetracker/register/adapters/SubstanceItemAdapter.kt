@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentManager
@@ -42,9 +41,16 @@ class SubstanceItemAdapter(
    override fun getItemCount(): Int = items.size
 
    fun updateList(newSubstances: List<SubstanceDataModel>?) {
+      val existingItemsMap = items.associateBy { it.conceptName }
       items.clear()
       if (newSubstances != null) {
-         items.addAll(newSubstances)
+         newSubstances.forEach { newItem ->
+            val existingItem = existingItemsMap[newItem.conceptName]
+            if (existingItem != null) {
+               newItem.obsDate = existingItem.obsDate
+            }
+            items.add(newItem)
+         }
       } else {
          items.addAll(emptyList())
       }
@@ -65,14 +71,12 @@ class SubstanceItemAdapter(
          substanceName.text = substance.label
          val substanceDateStr = substance.obsDate?.format(DateFormat.FORMAT_DATE) ?: ""
          vaccineDateText.text = substanceDateStr
-         if (substanceDateStr == "") {
-            btnPickDate.setOnClickListener {
-               // nice to have calculate
-               AlreadyAdministeredVaccineDatePickerDialog(null, this).show(
-                  supportFragmentManager,
-                  DIALOG_TAG
-               )
-            }
+         btnPickDate.setOnClickListener {
+            // nice to have calculate
+            AlreadyAdministeredVaccineDatePickerDialog(null, this).show(
+               supportFragmentManager,
+               DIALOG_TAG
+            )
          }
       }
 
