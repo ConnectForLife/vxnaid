@@ -32,6 +32,7 @@
     <color name="sync_offline">#2196F3</color>
     <color name="sync_offline_out_of_sync">#FF9800</color>
     <color name="sync_error">#B71C1C</color>
+    <color name="black">#000000</color>
     <drawable name="alert_background">@color/alertLight</drawable>
     <drawable name="error_background">@color/errorLight</drawable>
 </resources>

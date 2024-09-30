@@ -108,6 +108,9 @@ class VisitSubstanceItemAdapter(
          btnBarcode.setOnClickListener {
             DialogVaccineBarcode(substance, barcode, manufacturerName).show(supportFragmentManager, TAG_VISIT_VACCINE_DIALOG)
          }
+         layout.setOnClickListener {
+            DialogVaccineBarcode(substance, barcode, manufacturerName).show(supportFragmentManager, TAG_VISIT_VACCINE_DIALOG)
+         }
          layout.setBackgroundColor(if (isBarcode(substance)) green else grey)
          layout.backgroundTintList = if (isSuggested(substance) && !isBarcode(substance)) ColorStateList.valueOf(colorAccent) else null
          if (isSuggesting) {
