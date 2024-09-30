@@ -45,13 +45,15 @@ class DraftParticipantRepository @Inject constructor(
         isBirthDateEstimated = isBirthDateEstimated,
         birthDate = birthDate,
         address = address?.toDomain(),
+        childFirstName = childFirstName,
+        childLastName = childLastName,
         registrationDate = registrationDate,
         attributes = attributes.toMap()
             .withPhone(phone)
             .withLocationUuid(locationUuid)
             .withBirthWeight(birthWeight),
         draftState = draftState,
-        isUpdate = isUpdate ?: false
+        isUpdate = isUpdate ?: false,
     )
 
     private fun DraftParticipant.toPersistence() = DraftParticipantEntity(
@@ -67,7 +69,9 @@ class DraftParticipantRepository @Inject constructor(
         draftState = DraftState.initialState(),
         registrationDate = dateModified,
         locationUuid = locationUuid,
-        isUpdate = isUpdate
+        isUpdate = isUpdate,
+        childFirstName = childFirstName,
+        childLastName = childLastName
     )
 
     override suspend fun findAllByPhone(phone: String?): List<DraftParticipant> {

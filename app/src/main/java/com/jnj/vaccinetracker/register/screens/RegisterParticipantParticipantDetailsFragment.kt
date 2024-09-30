@@ -207,16 +207,28 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.setBirthWeight(it?.toString().orEmpty())
         }
 
-        binding.editMotherName.doAfterTextChanged {
-            viewModel.setMotherName(it?.toString().orEmpty())
+        binding.editMotherFirstName.doAfterTextChanged {
+            viewModel.setMotherFirstName(it?.toString().orEmpty())
         }
 
-        binding.editFathersName.doAfterTextChanged {
-            viewModel.setFatherName(it?.toString().orEmpty())
+        binding.editMotherLastName.doAfterTextChanged {
+            viewModel.setMotherLastName(it?.toString().orEmpty())
         }
 
-        binding.editChildName.doAfterTextChanged {
-            viewModel.setChildName(it?.toString().orEmpty())
+        binding.editFatherFirstName.doAfterTextChanged {
+            viewModel.setFatherFirstName(it?.toString().orEmpty())
+        }
+
+        binding.editFatherLastName.doAfterTextChanged {
+            viewModel.setFatherLastName(it?.toString().orEmpty())
+        }
+
+        binding.editChildFirstName.doAfterTextChanged {
+            viewModel.setChildFirstName(it?.toString().orEmpty())
+        }
+
+        binding.editChildLastName.doAfterTextChanged {
+            viewModel.setChildLastName(it?.toString().orEmpty())
         }
     }
 

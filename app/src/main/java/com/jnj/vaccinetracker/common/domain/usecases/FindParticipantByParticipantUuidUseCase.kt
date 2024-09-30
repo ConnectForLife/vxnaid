@@ -33,7 +33,9 @@ class FindParticipantByParticipantUuidUseCase @Inject constructor(
             isBirthDateEstimated = isBirthDateEstimated,
             birthDate = birthDate.toDomain(),
             attributes = attributes.toMap(),
-            address = address
+            address = address,
+            childFirstName = childFirstName,
+            childLastName = childLastName
         )
     }
 

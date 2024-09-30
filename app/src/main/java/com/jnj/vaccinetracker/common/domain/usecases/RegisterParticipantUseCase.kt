@@ -54,6 +54,8 @@ class RegisterParticipantUseCase @Inject constructor(
         attributes = attributes,
         address = address,
         draftState = DraftState.initialState(),
+        childFirstName = childFirstName,
+        childLastName = childLastName
     )
 
     private suspend fun writeImageToDisk(file: DraftParticipantImageFile, imageBytes: ImageBytes) {

@@ -24,6 +24,8 @@ data class ParticipantEntity(
     override val dateModified: DateEntity,
     @ColumnInfo(index = true)
     override val locationUuid: String?,
+    override val childFirstName: String?,
+    override val childLastName: String?
 ) : ParticipantEntityBase, ParticipantSyncBase {
     companion object {
         const val ID = ParticipantUuidContainer.COL_PARTICIPANT_UUID

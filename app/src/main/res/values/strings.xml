@@ -152,7 +152,8 @@
     <string name="participant_registration_details_error_no_participant_id">Please enter a Child ID</string>
     <string name="participant_registration_details_error_invalid_participant_id">Please enter a valid Child ID</string>
     <string name="participant_registration_details_error_not_same_participant_id">Child Number\'s do not match</string>
-    <string name="participant_registration_details_error_no_mother_name">Please enter a mother\'s name</string>
+    <string name="participant_registration_details_error_no_mother_first_name">Please enter a mother\'s first name</string>
+    <string name="participant_registration_details_error_no_mother_last_name">Please enter a mother\'s last name</string>
     <string name="participant_registration_details_error_no_gender">Please select a gender</string>
     <string name="participant_registration_details_error_no_year_of_birth">Please enter a valid year of birth</string>
     <string name="participant_registration_details_error_no_phone">Please enter a valid phone number with only numbers and spaces</string>
@@ -346,6 +347,8 @@
     <string name="participant_registration_details_label_child_name">Name of Child</string>
     <string name="participant_registration_details_label_mother_name">Name of Mother</string>
     <string name="participant_registration_details_label_father_name">Name of Father</string>
+    <string name="participant_registration_details_hint_first_name">First Name</string>
+    <string name="participant_registration_details_hint_last_name">Last Name</string>
     <string name="participant_registration_details_label_child_category">Child category</string>
     <string name="participant_registration_details_label_select_child_category">Select child category</string>
     <string name="participant_registration_details_label_date_of_birth">Date of birth</string>

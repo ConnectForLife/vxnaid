@@ -17,15 +17,18 @@ sealed class ParticipantBase {
     abstract val birthDate: BirthDate
     abstract val attributes: Map<String, String>
     abstract val address: Address?
+    abstract val childFirstName: String?
+    abstract val childLastName: String?
 
     val phone: String? get() = attributes[Constants.ATTRIBUTE_TELEPHONE]
     val locationUuid: String? get() = attributes[Constants.ATTRIBUTE_LOCATION]
     val originalParticipantId: String? get() = attributes[Constants.ATTRIBUTE_ORIGINAL_PARTICIPANT_ID]
     val regimen: String? get() = attributes[Constants.ATTRIBUTE_VACCINE]
     val birthWeight: String? get() = attributes[Constants.ATTRIBUTE_BIRTH_WEIGHT]
-    val fatherName: String? get() = attributes[Constants.ATTRIBUTE_FATHER_NAME]
-    val motherName: String? get() = attributes[Constants.ATTRIBUTE_MOTHER_NAME]
-    val participantName: String? get() = attributes[Constants.ATTRIBUTE_PARTICIPANT_NAME]
+    val fatherFirstname: String? get() = attributes[Constants.ATTRIBUTE_FATHER_FIRST_NAME]
+    val fatherLastName: String? get() = attributes[Constants.ATTRIBUTE_FATHER_LAST_NAME]
+    val motherFirstName: String? get() = attributes[Constants.ATTRIBUTE_MOTHER_FIRST_NAME]
+    val motherLastName: String? get() = attributes[Constants.ATTRIBUTE_MOTHER_LAST_NAME]
     val childCategory: String? get() = attributes[Constants.ATTRIBUTE_CHILD_CATEGORY]
 }
 
@@ -42,6 +45,8 @@ data class Participant(
     override val birthDate: BirthDate,
     override val attributes: Map<String, String>,
     override val address: Address?,
+    override val childFirstName: String?,
+    override val childLastName: String?
 ) : ParticipantBase(), SyncBase {
 
 }
@@ -59,6 +64,8 @@ data class DraftParticipant(
     override val birthDate: BirthDate,
     override val attributes: Map<String, String>,
     override val address: Address?,
+    override val childFirstName: String?,
+    override val childLastName: String?,
     override val draftState: DraftState,
     val isUpdate: Boolean = false,
 ) : ParticipantBase(), SyncBase, UploadableDraft {
@@ -97,5 +104,7 @@ fun DraftParticipant.toParticipantWithoutAssets(): Participant = Participant(
     isBirthDateEstimated = isBirthDateEstimated,
     birthDate = birthDate,
     attributes = attributes,
-    address = address
+    address = address,
+    childFirstName = childFirstName,
+    childLastName = childLastName
 )

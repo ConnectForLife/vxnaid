@@ -52,6 +52,8 @@ class StoreParticipantSyncRecordUseCase @Inject constructor(
         birthDate = birthDate.toDomain(),
         attributes = attributes.toMap(),
         address = address,
+        childFirstName = childFirstName,
+        childLastName = childLastName
     )
 
     private suspend fun deleteUploadedDraftParticipant(participant: Participant) {

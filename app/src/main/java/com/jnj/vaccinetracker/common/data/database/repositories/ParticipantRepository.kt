@@ -44,6 +44,8 @@ class ParticipantRepository @Inject constructor(
         isBirthDateEstimated = isBirthDateEstimated,
         birthDate = birthDate,
         address = address?.toDomain(),
+        childFirstName = childFirstName,
+        childLastName = childLastName,
         dateModified = dateModified,
         attributes = attributes.toMap()
             .withPhone(phone)
@@ -65,6 +67,8 @@ class ParticipantRepository @Inject constructor(
         birthWeight = birthWeight,
         locationUuid = locationUuid,
         isBirthDateEstimated = isBirthDateEstimated,
+        childFirstName = childFirstName,
+        childLastName = childLastName
     )
 
     override suspend fun findAllByPhone(phone: String?): List<Participant> {

@@ -17,6 +17,8 @@ data class RegisterParticipantRequest(
     val participantId: String?,
     val nin: String?,
     val childNumber: String?,
+    val childFirstName: String?,
+    val childLastName: String?,
     val registrationDate: Date,
     val gender: Gender,
     val isBirthDateEstimated: Boolean?,

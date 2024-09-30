@@ -29,6 +29,8 @@ data class DraftParticipantEntity(
     @ColumnInfo(index = true)
     override val locationUuid: String?,
     override val isUpdate: Boolean? = false,
+    override val childFirstName: String?,
+    override val childLastName: String?
 
 ) : DraftParticipantEntityBase {
     companion object {
