@@ -100,9 +100,16 @@ class OtherSubstanceItemAdapter(
     }
 
     fun updateItemsList(otherSubstances: List<OtherSubstanceDataModel>?) {
+        val existingItemsMap = items.associateBy { it.conceptName }
         items.clear()
         if (otherSubstances != null) {
-            items.addAll(otherSubstances)
+            otherSubstances.forEach { newItem ->
+                val existingItem = existingItemsMap[newItem.conceptName]
+                if (existingItem != null) {
+                    newItem.value = existingItem.value
+                }
+                items.add(newItem)
+            }
         } else {
             items.addAll(emptyList())
         }
@@ -152,8 +159,10 @@ class OtherSubstanceItemAdapter(
 
         fun bind(item: OtherSubstanceDataModel) {
             labelTextView.text = item.label
+            inputEditText.setText(item.value)
             inputEditText.addTextChangedListener { editable ->
                 val value = editable.toString()
+                item.value = value
                 listener.addOtherSubstance(item.conceptName, value)
                 labelTextView.error = null
             }
@@ -186,11 +195,16 @@ class OtherSubstanceItemAdapter(
         fun bind(item: OtherSubstanceDataModel) {
             labelTextView.text = item.label
             radioGroup.removeAllViews()
+
             item.options.forEachIndexed { index, option ->
                 val radioButton = RadioButton(itemView.context).apply {
                     text = option
                     id = View.generateViewId()
                     tag = index
+
+                    if (option == item.value) {
+                        isChecked = true
+                    }
                 }
                 radioGroup.addView(radioButton)
             }
@@ -199,6 +213,7 @@ class OtherSubstanceItemAdapter(
                 val selectedRadioButton = radioGroup.findViewById<RadioButton>(checkedId)
                 val selectedIndex = selectedRadioButton.tag as Int
                 val selectedValue = item.options[selectedIndex]
+                item.value = selectedValue
                 listener.addOtherSubstance(item.conceptName, selectedValue)
                 labelTextView.error = null
             }
@@ -210,7 +225,7 @@ class OtherSubstanceItemAdapter(
         private val checkboxGroup: LinearLayout = itemView.findViewById(R.id.linearLayout_checkBoxGroup)
 
         fun bind(item: OtherSubstanceDataModel) {
-            val selectedValues = mutableSetOf<String>()
+            val selectedValues = item.value?.split(",")?.map { it.trim() }?.toMutableSet() ?: mutableSetOf()
             labelTextView.text = item.label
             checkboxGroup.removeAllViews()
 
@@ -219,6 +234,7 @@ class OtherSubstanceItemAdapter(
                     text = option
                     id = View.generateViewId()
                     tag = index
+                    isChecked = selectedValues.contains(option)
                 }
 
                 checkBox.setOnCheckedChangeListener { _, isChecked ->
@@ -227,14 +243,14 @@ class OtherSubstanceItemAdapter(
                     } else {
                         selectedValues.remove(option)
                     }
-                    listener.addOtherSubstance(item.conceptName, selectedValues.toString())
+                    item.value = selectedValues.joinToString(",")
+                    listener.addOtherSubstance(item.conceptName, selectedValues.joinToString(","))
                 }
 
                 checkboxGroup.addView(checkBox)
             }
         }
     }
-
 
     interface AddSubstanceValueListener {
         fun addOtherSubstance(substanceName: String, value: String)
