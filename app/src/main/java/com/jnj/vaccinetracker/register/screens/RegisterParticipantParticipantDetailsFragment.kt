@@ -202,9 +202,33 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         binding.editTelephone.doAfterTextChanged {
             viewModel.setPhone(it?.toString().orEmpty())
         }
-        
-        binding.editBirthWeight.doAfterTextChanged {
-            viewModel.setBirthWeight(it?.toString().orEmpty())
+
+
+
+        binding.editBirthWeight.doAfterTextChanged { editable ->
+            val currentText = editable?.toString().orEmpty()
+            val weightText = currentText.replace("kg", "").trim()
+
+            if (weightText.isEmpty()) {
+                // If empty, clear the EditText and ViewModel
+                viewModel.setBirthWeight("")
+                return@doAfterTextChanged
+            }
+
+            val updatedWeightTextInKg = "$weightText kg"
+
+            if (currentText != updatedWeightTextInKg) {
+                val cursorPosition = binding.editBirthWeight.selectionStart
+                binding.editBirthWeight.setText(updatedWeightTextInKg)
+                binding.editBirthWeight.setSelection(
+                    if (cursorPosition < weightText.length) {
+                        cursorPosition
+                    } else {
+                        updatedWeightTextInKg.length
+                    }
+                )
+            }
+            viewModel.setBirthWeight(weightText)
         }
 
         binding.editMotherName.doAfterTextChanged {
