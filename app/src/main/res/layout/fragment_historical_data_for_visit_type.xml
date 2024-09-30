@@ -35,8 +35,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/btn_submit"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="NestedWeights">
+            app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
                 android:id="@+id/textView_intro"
@@ -57,7 +56,8 @@
             <LinearLayout
                 android:id="@+id/vaccine_items_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 android:orientation="vertical">
@@ -65,9 +65,9 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="vertical" />
-
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical"
+                    android:fadeScrollbars="false" />
             </LinearLayout>
 
             <TextView
@@ -89,7 +89,8 @@
             <LinearLayout
                 android:id="@+id/linearLayout_otherSubstances"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="5dp"
                 android:orientation="vertical">
@@ -97,8 +98,9 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView_otherSubstances"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical"
+                    android:fadeScrollbars="false" />
             </LinearLayout>
 
         </LinearLayout>
@@ -113,8 +115,7 @@
             android:textAppearance="@style/ButtonTextStyling"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout_content" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <ProgressBar
             android:id="@+id/loading_indicator"
