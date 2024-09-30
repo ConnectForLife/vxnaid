@@ -426,4 +426,5 @@
     <string name="vaccine_capture_date_label">Capture Date</string>
     <string name="visit_schedule_next_visit_schedule_new_visit_button_label">Schedule New Visit</string>
     <string name="refer_finish_visit_text">----  choose how to finish the visit  ----</string>
+    <string name="label_change_visit_type">Change Visit Type</string>
 </resources>
