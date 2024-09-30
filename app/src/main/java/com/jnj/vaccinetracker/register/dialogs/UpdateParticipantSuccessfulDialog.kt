@@ -4,16 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
-import com.jnj.vaccinetracker.databinding.DialogRegisterParticipantSuccessfulBinding
 import com.jnj.vaccinetracker.databinding.DialogUpdateParticipantSuccessfulBinding
-import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
-import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
-import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
 
 /**
  * @author maartenvangiel

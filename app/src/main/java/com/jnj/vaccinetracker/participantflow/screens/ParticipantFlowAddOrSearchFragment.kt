@@ -2,11 +2,13 @@ package com.jnj.vaccinetracker.participantflow.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -23,11 +25,12 @@ import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.update.UpdateDialog
-import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
+import com.jnj.vaccinetracker.visit.VisitActivity
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 
+@RequiresApi(Build.VERSION_CODES.O)
 class ParticipantFlowAddOrSearchFragment: BaseFragment() {
    private companion object {
       private const val TAG_UPDATE_DIALOG = "updateDialog"
@@ -117,7 +120,7 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
    }
 
    private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel) {
-      startActivity(ContraindicationsActivity.create(requireContext(), participant, true))
+      startActivity(VisitActivity.create(requireContext(), participant, true))
       (requireActivity() as BaseActivity).setForwardAnimation()
    }
 

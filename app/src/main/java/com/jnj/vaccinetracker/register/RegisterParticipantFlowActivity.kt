@@ -25,6 +25,7 @@ import com.jnj.vaccinetracker.register.screens.RegisterParticipantHistoricalData
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDetailsFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantPicturePreviewFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantTakePictureFragment
+import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
 import kotlinx.coroutines.launch
 
 /**
@@ -32,7 +33,9 @@ import kotlinx.coroutines.launch
  * @version 1
  */
 @RequiresApi(Build.VERSION_CODES.O)
-class RegisterParticipantFlowActivity : BaseActivity() {
+class RegisterParticipantFlowActivity : BaseActivity(),
+    RescheduleVisitDialog.RescheduleVisitListener
+{
 
     companion object {
         private const val EXTRA_IRIS_LEFT = "irisScannedLeft"
@@ -148,5 +151,9 @@ class RegisterParticipantFlowActivity : BaseActivity() {
 
     override val syncBanner: SyncBanner
         get() = binding.syncBanner
+
+    override fun onRescheduleVisitListener() {
+        finish()
+    }
 
 }

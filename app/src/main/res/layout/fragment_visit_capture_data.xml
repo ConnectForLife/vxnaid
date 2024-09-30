@@ -133,18 +133,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linearLayout_visitHistory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="32dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toTopOf="@+id/linearLayout_otherSubstances"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout_visitLocation"
-                    tools:layout_editor_absoluteX="297dp" />
-
-                <LinearLayout
                     android:id="@+id/linearLayout_otherSubstances"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -153,7 +141,7 @@
                     android:layout_marginEnd="32dp"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout_visitHistory">
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout_visitLocation">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerView_otherSubstances"

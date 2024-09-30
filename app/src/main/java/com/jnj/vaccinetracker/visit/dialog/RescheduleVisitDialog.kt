@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,12 +14,12 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
@@ -27,13 +28,13 @@ import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
+import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.DialogRescheduleVisitBinding
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.ScheduleVisitDatePickerDialog
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
-import com.jnj.vaccinetracker.visit.screens.ContraindicationsViewModel
-import com.jnj.vaccinetracker.visit.screens.ReferralActivity
+import com.jnj.vaccinetracker.visit.screens.ReferralFragment
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
@@ -42,7 +43,6 @@ import javax.inject.Inject
 
 class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), ScheduleVisitDatePickerDialog.OnDateSelectedListener {
    private lateinit var binding: DialogRescheduleVisitBinding
-   private val viewModel: ContraindicationsViewModel by activityViewModels { viewModelFactory }
    private lateinit var rescheduleReasonEditText: EditText
    private lateinit var visitDateTextView: TextView
    private var visitDate: DateTime? = null
@@ -59,6 +59,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
       private const val PARTICIPANT = "participant"
       private const val CURRENT_VISIT_UUID = "currentVisitUuid"
       private const val PARTICIPANT_UUID = "participantUuid"
+      const val TAG_DIALOG_RESCHEDULE_VISIT = "rescheduleVisitDialog"
 
       fun create(participant: ParticipantSummaryUiModel?): RescheduleVisitDialog {
          return RescheduleVisitDialog().apply { arguments = bundleOf(PARTICIPANT to participant) }
@@ -101,14 +102,11 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
 
                   dismissAllowingStateLoss()
 
-                  val intent = Intent(requireContext(), ReferralActivity::class.java).apply {
-                     putExtra(CURRENT_VISIT_UUID, currentVisitUuid)
-                     putExtra(PARTICIPANT_UUID, participant?.participantUuid)
-                  }
-                  startActivity(intent)
+                  findParent<RescheduleVisitListener>()?.onRescheduleVisitListener()
                }
             } catch (ex: Exception) {
-               viewModel.errorMessage.set(getString(R.string.reschedule_visit_failed))
+               Log.e("RescheduleVisitDialog", "Something went wrong during rescheduling a visit", ex)
+               com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(getString(R.string.reschedule_visit_failed))
             }
          }
       }
@@ -162,6 +160,10 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
 
    interface VisitRegisteredSuccessDialogListener {
       fun onVisitRegisteredSuccessDialogClosed()
+   }
+
+   interface RescheduleVisitListener {
+      fun onRescheduleVisitListener()
    }
 
    private fun List<VisitDetail>.findDosingVisit(): VisitDetail? {

@@ -61,8 +61,6 @@
             android:name="com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.jnj.vaccinetracker.visit.VisitActivity" />
-        <activity android:name="com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity" />
-        <activity android:name="com.jnj.vaccinetracker.visit.screens.ReferralActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

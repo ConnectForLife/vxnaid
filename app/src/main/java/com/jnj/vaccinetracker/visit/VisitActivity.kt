@@ -10,22 +10,31 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.barcode.ScanBarcodeViewModel
+import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
+import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.ActivityVisitBinding
+import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
-import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
+import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
 import java.util.Date
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
+import com.jnj.vaccinetracker.visit.screens.ContraindicationsFragment
+import com.jnj.vaccinetracker.visit.screens.ReferralFragment
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
@@ -37,16 +46,20 @@ class VisitActivity :
     BaseActivity(),
     DosingOutOfWindowDialog.DosingOutOfWindowDialogListener,
     DialogScheduleMissingSubstances.DialogScheduleMissingSubstancesListener,
-    VaccineDialog.AddVaccineListener
+    VaccineDialog.AddVaccineListener,
+    ReferralFragment.OnReferralPageFinishListener
 {
 
     companion object {
         private const val EXTRA_PARTICIPANT = "participant"
-        private const val EXTRA_TYPE = "newParticipantRegistration"
         private const val TAG_DIALOG_SUCCESS = "successDialog"
+        private const val EXTRA_TYPE = "newParticipantRegistration"
         private const val TAG_DIALOG_DOSING_OUT_OF_WINDOW = "dosingOutOfWindowDialog"
         private const val TAG_DIALOG_SCHEDULE_MISSING_SUBSTANCES = "scheduleMissingSubstances"
         private const val TAG_VACCINE_PICKER = "vaccinePicker"
+        const val CURRENT_VISIT_UUID = "currentVisitUuid"
+        const val PARTICIPANT_UUID = "participantUuid"
+        const val IS_AFTER_VISIT = "isAfterVisit"
 
         fun create(context: Context, participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean): Intent {
             return Intent(context, VisitActivity::class.java)
@@ -55,8 +68,8 @@ class VisitActivity :
         }
     }
 
-    private val participant: ParticipantSummaryUiModel by lazy { intent.getParcelableExtra(EXTRA_PARTICIPANT)!! }
-    private val newRegisteredParticipant: Boolean by lazy { intent.getBooleanExtra(EXTRA_TYPE, false) }
+    private val participantArg: ParticipantSummaryUiModel by lazy { intent.getParcelableExtra(EXTRA_PARTICIPANT)!! }
+    private val newRegisteredParticipantArg: Boolean by lazy { intent.getBooleanExtra(EXTRA_TYPE, false) }
     private val viewModel: VisitViewModel by viewModels { viewModelFactory }
     private val scanModel:ScanBarcodeViewModel by viewModels{ viewModelFactory }
     private lateinit var binding: ActivityVisitBinding
@@ -67,8 +80,8 @@ class VisitActivity :
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        scanModel.setArguments(participant)
-        viewModel.setArguments(participant)
+        scanModel.setArguments(participantArg)
+        viewModel.setArguments(participantArg)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_visit)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
@@ -76,8 +89,16 @@ class VisitActivity :
         binding.tabLayout.setupWithViewPager(binding.viewPagerVisit)
         setupClickListeners()
 
+        if (savedInstanceState == null) {
+            val fragment = ContraindicationsFragment()
+            supportFragmentManager.commit {
+                replace(R.id.fragment_container, fragment)
+                addToBackStack(null)
+            }
+        }
+
         setTitle(R.string.visit_label_title)
-        supportActionBar?.setDisplayHomeAsUpEnabled(!newRegisteredParticipant)
+        supportActionBar?.setDisplayHomeAsUpEnabled(!newRegisteredParticipantArg)
     }
 
     private fun setupClickListeners() {
@@ -148,6 +169,14 @@ class VisitActivity :
                     it.show()
                 }
         }
+        viewModel.visitEvents
+            .asFlow()
+            .onEach { success ->
+                if (success)
+                    onDosingVisitRegistrationSuccessful()
+                else
+                    onDosingVisitRegistrationFailed()
+            }.launchIn(this)
         viewModel.isSuggesting.observe(this) {isSuggesting ->
             onSuggestingSwitch(isSuggesting)
         }
@@ -160,20 +189,6 @@ class VisitActivity :
         val adapter =
             ArrayAdapter(this, R.layout.item_dropdown, visitTypes?.distinct().orEmpty())
         binding.dropdownVisitTypes.setAdapter(adapter)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
-    }
-
-    override fun onBackPressed() {
-        if (newRegisteredParticipant) {
-            startActivity(SplashActivity.create(this)) // Restart the participant flow
-            finishAffinity()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     private fun submitDosingVisit(overrideOutsideWindowCheck: Boolean = false,
@@ -241,14 +256,37 @@ class VisitActivity :
     }
 
     private fun onSubmit() {
-        viewModel.checkIfAnyOtherSubstancesEmpty()
-        viewModel.checkVisitLocationSelection()
-        if (viewModel.isAnyOtherSubstancesEmpty.value == true || !viewModel.isVisitLocationValid()) {
+        if (!validateSubmission()) {
             viewModel.isAnyOtherSubstancesEmpty.value = false
             binding.tabLayout.getTabAt(0)?.select()
             return
         }
-        submitDosingVisit()
+        navigateToReferralFragment()
+    }
+
+
+    private fun validateSubmission(): Boolean {
+        viewModel.checkIfAnyOtherSubstancesEmpty()
+        viewModel.checkVisitLocationSelection()
+        return viewModel.isAnyOtherSubstancesEmpty.value != true && viewModel.isVisitLocationValid()
+    }
+
+
+    private fun navigateToReferralFragment() {
+        val dosingVisit = viewModel.dosingVisit.value
+        val referralFragment = ReferralFragment().apply {
+            arguments = Bundle().apply {
+                putString(CURRENT_VISIT_UUID, dosingVisit!!.uuid)
+                putString(PARTICIPANT_UUID, viewModel.participant.value!!.participantUuid)
+                putBoolean(IS_AFTER_VISIT, true)
+            }
+        }
+
+        supportFragmentManager.beginTransaction()
+            .animateNavigationDirection(NavigationDirection.FORWARD)
+            .replace(R.id.fragment_container, referralFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun onSuggestingSwitch(suggestingValue: Boolean) {
@@ -273,25 +311,100 @@ class VisitActivity :
 
     private fun onBtnAddVaccine() {
         val allSubstances = viewModel.substancesDataAll.value.orEmpty()
-        val selectedSubstances = viewModel.selectedSubstancesData.value?.map{ substance ->
-            substance.conceptName
-        }?.toSet() ?: setOf()
-        val filteredSubstances = allSubstances.filter { substance ->
-            substance.conceptName !in selectedSubstances
-        }
+        val selectedSubstances = viewModel.selectedSubstancesData.value?.map { it.conceptName }?.toSet() ?: setOf()
+        val filteredSubstances = allSubstances.filter { it.conceptName !in selectedSubstances }
         VaccineDialog(filteredSubstances).show(supportFragmentManager, TAG_VACCINE_PICKER)
     }
 
     private fun updateSelectedVisitType(name: String?) {
-        if (name == viewModel.selectedVisitType.value) return
-        val text = name ?: ""
-        viewModel.selectedVisitType.value = text
+        if (name != viewModel.selectedVisitType.value) {
+            viewModel.selectedVisitType.value = name.orEmpty()
+        }
     }
-
-    override val syncBanner: SyncBanner
-        get() = binding.syncBanner
 
     override fun addVaccine(vaccine: SubstanceDataModel) {
         viewModel.addToSelectedSubstances(vaccine)
     }
+
+    override fun onReferralPageFinish() {
+        submitDosingVisit()
+    }
+
+    private fun onDosingVisitRegistrationSuccessful() {
+        if (viewModel.isReferring.value == true) {
+            val fragment =
+                supportFragmentManager.findFragmentById(R.id.fragment_container) as? ReferralFragment
+            fragment?.onReferButtonClicked(saveVisit = false)
+        }
+        val dosingVisit = viewModel.dosingVisit.value
+        VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value, viewModel.participant.value, dosingVisit!!.uuid).show(supportFragmentManager,
+            TAG_DIALOG_SUCCESS
+        )
+    }
+
+    private fun onDosingVisitRegistrationFailed() {
+        Snackbar.make(binding.root, R.string.general_label_error, Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onBackPressed() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        handleOnBackPressed(currentFragment)
+    }
+
+    private fun handleOnBackPressed(currentFragment: Fragment?) {
+        when {
+            currentFragment is ContraindicationsFragment && currentFragment.isVisible -> {
+                // When in ContraindicationsFragment, launch ParticipantFlowActivity
+                handleContraindicationsFragmentBackPress()
+            }
+            currentFragment is ReferralFragment && currentFragment.isVisible -> {
+                handleReferralFragmentBackPress(currentFragment)
+            }
+            else -> {
+                // When in other activity or fragment
+                navigateToContraindicationsFragment()
+            }
+        }
+    }
+
+    private fun handleContraindicationsFragmentBackPress() {
+        lifecycleScope.launch {
+            val intent = ParticipantFlowActivity.create(this@VisitActivity).apply {
+                putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
+                putExtra(Constants.PARTICIPANT_MATCH_ID, viewModel.participant.value!!.participantId)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            startActivity(intent)
+            finish()
+        }
+    }
+
+    private fun handleReferralFragmentBackPress(currentFragment: ReferralFragment) {
+        if (currentFragment.isAfterVisit) {
+            supportFragmentManager.beginTransaction()
+                .animateNavigationDirection(NavigationDirection.BACKWARD)
+                .remove(currentFragment)
+                .commit()
+        } else {
+            navigateToContraindicationsFragment()
+        }
+    }
+
+    private fun navigateToContraindicationsFragment() {
+        val fragment = ContraindicationsFragment()
+        supportFragmentManager.beginTransaction()
+            .animateNavigationDirection(NavigationDirection.BACKWARD)
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    override val syncBanner: SyncBanner
+        get() = binding.syncBanner
 }

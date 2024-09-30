@@ -27,6 +27,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.Metadata
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -95,6 +96,8 @@ class RegisterParticipantTakePictureFragment : BaseFragment() {
         binding.btnSkip.setOnClickListener {
             flowViewModel.skipPicture()
         }
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(false)
         return binding.root
     }
 

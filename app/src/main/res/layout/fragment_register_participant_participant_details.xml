@@ -52,8 +52,9 @@
 
                 <TextView
                     android:id="@+id/label_participant_id"
-                    android:layout_width="155dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:maxLines="1"
                     android:text="@string/participant_flow_participant_id_title"
                     android:textAppearance="@style/LabelText" />
@@ -69,13 +70,14 @@
 
                 <TextView
                     android:id="@+id/textView_participant_id"
-                    android:layout_width="500dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
+                    android:layout_weight="3"
                     android:hint="@string/participant_flow_participant_id_hint"
-                    android:textSize="18sp"
+                    android:maxLines="1"
                     android:text="@{viewModel.participantId}"
-                    app:error="@{viewModel.participantIdValidationMessage}"/>
+                    android:textSize="18sp"
+                    app:error="@{viewModel.participantIdValidationMessage}" />
 
                 <ImageView
                     android:id="@+id/img_participant_picture"
@@ -84,31 +86,18 @@
                     android:layout_marginTop="16dp"
                     app:imageUiModel="@{flowViewModel.participantPicture}"
                     app:srcCompat="@drawable/ic_avatar_operator" />
-            </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/input_load_camera"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="155dp"
-                    android:layout_height="match_parent"
-                    android:text="Load Camera"
-                    android:paddingRight="20sp"
-                    android:gravity="center_vertical"
-                    android:textAppearance="@style/LabelText"/>
-
-                <ImageView
+                <ImageButton
                     android:id="@+id/btn_load_camera"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="0dp"
+                    android:background="@null"
+                    android:focusable="true"
                     android:onClick="@{() -> flowViewModel.retakePicture()}"
-                    app:srcCompat="@drawable/camera_icon1" />
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/camera_icon2" />
             </LinearLayout>
+
 
             <View
                 android:id="@+id/separator"
@@ -324,11 +313,11 @@
                     android:layout_weight="1"
                     android:hint="@string/participant_registration_details_home_location_hint"
                     android:maxHeight="70sp"
+                    android:scrollbars="vertical"
                     android:text="@{viewModel.homeLocationLabel == null ? `` : viewModel.homeLocationLabel}"
                     android:textColor="@{viewModel.homeLocationValidationMessage == null ?  @color/colorPrimary : @color/errorLight}"
                     android:textColorHint="@{viewModel.homeLocationValidationMessage == null ?  @color/colorPrimary : @color/errorLight}"
                     android:textSize="18sp"
-                    android:scrollbars="vertical"
                     app:error="@{viewModel.homeLocationValidationMessage}" />
 
                 <Button
@@ -362,10 +351,10 @@
                     android:id="@+id/country_code_picker_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:ccp_clickable="false"
                     app:ccp_countryPreference="UG"
                     app:ccp_defaultNameCode="UG"
-                    app:ccp_showArrow="false"
-                    app:ccp_clickable="false"/>
+                    app:ccp_showArrow="false" />
 
                 <EditText
                     android:id="@+id/edit_telephone"
@@ -402,10 +391,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:maxHeight="70sp"
                     android:hint="@string/participant_registration_details_error_birth_date_cannot_be_empty"
-                    android:textColorHint="@{viewModel.birthDateValidationMessage == null ?  @color/colorPrimary : @color/errorLight}"
+                    android:maxHeight="70sp"
                     android:text='@{viewModel.birthDateText != null ? viewModel.birthDateText : ""}'
+                    android:textColorHint="@{viewModel.birthDateValidationMessage == null ?  @color/colorPrimary : @color/errorLight}"
                     android:textSize="18sp"
                     app:error="@{viewModel.birthDateValidationMessage}" />
 
@@ -416,8 +405,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorPrimary"
-                    android:textAppearance="@style/ButtonTextStyling"
-                    android:text="@string/participant_registration_details_action_set_birth_date" />
+                    android:text="@string/participant_registration_details_action_set_birth_date"
+                    android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
             <LinearLayout
@@ -441,9 +430,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
+                    android:hint="@string/participant_registration_details_error_birth_date_cannot_be_empty"
                     android:maxHeight="70sp"
                     android:text="@{viewModel.estimatedAgeText}"
-                    android:hint="@string/participant_registration_details_error_birth_date_cannot_be_empty"
                     android:textColorHint="@{viewModel.estimatedAgeValidationMessage == null ? @color/colorPrimary : @color/errorLight}"
                     android:textSize="18sp"
                     app:error="@{viewModel.estimatedAgeValidationMessage}" />
@@ -455,8 +444,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorPrimary"
-                    android:textAppearance="@style/ButtonTextStyling"
-                    android:text="@string/participant_registration_details_action_set_estimated_age" />
+                    android:text="@string/participant_registration_details_action_set_estimated_age"
+                    android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
             <LinearLayout

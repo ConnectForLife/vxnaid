@@ -2,10 +2,12 @@ package com.jnj.vaccinetracker.participantflow.screens
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -26,7 +28,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
-import com.jnj.vaccinetracker.visit.screens.ContraindicationsActivity
+import com.jnj.vaccinetracker.visit.VisitActivity
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -34,6 +36,7 @@ import javax.inject.Inject
  * @author maartenvangiel
  * @version 1
  */
+@RequiresApi(Build.VERSION_CODES.O)
 class ParticipantFlowMatchingFragment : BaseFragment() {
 
     private companion object {
@@ -156,7 +159,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
     }
 
     private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
-        startActivity(ContraindicationsActivity.create(requireContext(), participant, newRegisteredParticipant))
+        startActivity(VisitActivity.create(requireContext(), participant, newRegisteredParticipant))
         (requireActivity() as BaseActivity).setForwardAnimation()
     }
 

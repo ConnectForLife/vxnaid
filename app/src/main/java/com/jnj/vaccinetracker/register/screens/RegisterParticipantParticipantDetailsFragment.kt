@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -93,6 +94,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         setupDropdowns()
         setupClickListeners()
         setupInputListeners()
+
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(true)
 
         return binding.root
     }
