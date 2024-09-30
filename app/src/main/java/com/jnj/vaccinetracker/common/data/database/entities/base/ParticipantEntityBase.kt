@@ -13,6 +13,8 @@ interface ParticipantEntityBase : ParticipantUuidContainer {
     val isBirthDateEstimated: Boolean?
     val locationUuid: String?
     val birthWeight: String?
+    val childFirstName: String?
+    val childLastName: String?
 
     companion object {
         const val COL_PHONE = "phone"

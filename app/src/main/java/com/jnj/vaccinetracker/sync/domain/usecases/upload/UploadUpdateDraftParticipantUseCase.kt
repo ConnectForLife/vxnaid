@@ -31,7 +31,9 @@ class UploadUpdateDraftParticipantUseCase @Inject constructor(
         attributes = attributes.map { AttributeDto(it.key, it.value) },
         image = imageBase64,
         updateDate = registrationDate,
-        participantUuid = participantUuid
+        participantUuid = participantUuid,
+        childFirstName = childFirstName,
+        childLastName = childLastName
     )
 
     private suspend fun DraftParticipant.readImageBase64(): String? {

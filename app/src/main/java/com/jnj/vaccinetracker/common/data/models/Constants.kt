@@ -19,9 +19,11 @@ object Constants {
     const val ATTRIBUTE_ORIGINAL_PARTICIPANT_ID = "originalParticipantId"
     const val ATTRIBUTE_IS_BIRTH_DATE_ESTIMATED = "Is Birth Date Estimated"
     const val ATTRIBUTE_BIRTH_WEIGHT= "Birth Weight"
-    const val ATTRIBUTE_MOTHER_NAME= "Mother's Name"
-    const val ATTRIBUTE_FATHER_NAME= "Father's name"
-    const val ATTRIBUTE_PARTICIPANT_NAME= "Child's name"
+    const val ATTRIBUTE_MOTHER_FIRST_NAME= "Mother's first name"
+    const val ATTRIBUTE_MOTHER_LAST_NAME= "Mother's last name"
+    const val ATTRIBUTE_FATHER_FIRST_NAME= "Father's first name"
+    const val ATTRIBUTE_FATHER_LAST_NAME= "Father's last name"
+
     const val ATTRIBUTE_CHILD_CATEGORY= "Child category"
     const val NIN_IDENTIFIER_TYPE_NAME = "National ID"
 

@@ -121,17 +121,28 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val childNumber = mutableLiveData<String?>()
     val childNumberValidationMessage = mutableLiveData<String>()
 
-    val name = mutableLiveData<String>()
-    val nameValidationMessage = mutableLiveData<String>()
+    val childFirstName = mutableLiveData<String>()
+    val childFirstNameValidationMessage = mutableLiveData<String>()
+    val childLastName = mutableLiveData<String>()
+    val childLastNameValidationMessage = mutableLiveData<String>()
 
-    val mothersName = mutableLiveData<String>()
-    val mothersNameValidationMessage = mutableLiveData<String>()
+    val motherFirstName = mutableLiveData<String>()
+    val motherFirstNameValidationMessage = mutableLiveData<String>()
+    val motherLastName = mutableLiveData<String>()
+    val motherLastNameValidationMessage = mutableLiveData<String>()
+
+    val fatherFirstName = mutableLiveData<String>()
+    val fatherFirstNameValidationMessage = mutableLiveData<String>()
+    val fatherLastName = mutableLiveData<String>()
+    var fatherLastNameValidationMessage = mutableLiveData<String>()
 
     val birthWeight = mutableLiveData<String>()
     val birthWeightValidationMessage = mutableLiveData<String>()
 
     val fathersName = mutableLiveData<String>()
     val fathersNameValidationMessage = mutableLiveData<String>()
+
+
 
     val childCategory = mutableLiveData<DisplayValue>()
     val childCategoryValidationMessage = mutableLiveData<String>()
@@ -232,9 +243,12 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantBase?.gender?.let { setGender(it) }
             setBirthDateOrEstimatedAge(participantBase?.birthDate?.toDateTime(), participantBase?.isBirthDateEstimated ?: false)
             participantBase?.phone?.let { setPhone(it, true) }
-            participantBase?.motherName?.let { setMotherName(it) }
-            participantBase?.fatherName?.let { setFatherName(it) }
-            participantBase?.participantName?.let { setChildName(it) }
+            participantBase?.motherFirstName?.let { setMotherFirstName(it) }
+            participantBase?.motherLastName?.let { setMotherLastName(it) }
+            participantBase?.fatherFirstname?.let { setFatherFirstName(it) }
+            participantBase?.fatherLastName?.let { setFatherLastName(it) }
+            participantBase?.childFirstName?.let { setChildFirstName(it) }
+            participantBase?.childLastName?.let { setChildLastName(it) }
             participantBase?.childCategory?.let { category ->
                 val selectedCategory = childCategoryNames.get()?.find { it.value == category }
                 if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
@@ -255,9 +269,12 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             args.registerDetails.gender.let { setGender(it) }
             setBirthDateOrEstimatedAge(args.registerDetails.birthDate, args.registerDetails.isBirthDateEstimated)
             args.registerDetails.telephone?.let { setPhone(it, true) }
-            args.registerDetails.motherName.let { setMotherName(it) }
-            args.registerDetails.fatherName?.let { setFatherName(it) }
-            args.registerDetails.participantName?.let { setChildName(it) }
+            args.registerDetails.motherFirstName.let { setMotherFirstName(it) }
+            args.registerDetails.motherLastName.let { setMotherLastName(it) }
+            args.registerDetails.fatherFirstName.let { setFatherFirstName(it) }
+            args.registerDetails.fatherLastName.let { setFatherLastName(it) }
+            args.registerDetails.childFirstName?.let { setChildFirstName(it) }
+            args.registerDetails.childLastName?.let { setChildLastName(it) }
             args.registerDetails.childCategory?.let { category ->
                 val selectedCategory = childCategoryNames.get()?.find { it.value == category }
                 if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
@@ -324,13 +341,16 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val birthDate = birthDate.get()
         val isBirthDateEstimated = isBirthDateEstimated.get()
         val fullPhoneNumber = createFullPhone()
-        val motherName = mothersName.get()
-        val fatherName = fathersName.get()
-        val childName = name.get()
+        val motherFirstName = motherFirstName.get()
+        val motherLastName = motherLastName.get()
+        val fatherFirstName = fatherFirstName.get()
+        val fatherLastName = fatherLastName.get()
+        val childFirstName = childFirstName.get()
+        val childLastName = childLastName.get()
         val childUuid = participantUuid.get()
         val childCategoryValue = childCategory.get()?.value
 
-        val areInputsValid = validateInput(participantId, gender, birthDate, homeLocation, motherName, fatherName, childName)
+        val areInputsValid = validateInput(participantId, gender, birthDate, homeLocation, motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName, childLastName)
         val isNinValid = isNinValueValid(nin)
 
         var phoneNumberToSubmit: String? = null
@@ -374,9 +394,12 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,
-                fatherName = fatherName,
-                motherName = motherName!!,
-                participantName = childName,
+                motherFirstName = motherFirstName!!,
+                motherLastName = motherLastName!!,
+                fatherFirstName = fatherFirstName,
+                fatherLastName = fatherLastName,
+                childFirstName = childFirstName,
+                childLastName = childLastName,
                 childCategory = childCategoryValue,
             )
             val registerRequest = participantManager.getRegisterParticipant(registerDetails)
@@ -485,9 +508,12 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             gender: Gender?,
             birthDate: DateTime?,
             homeLocation: Address?,
-            motherName: String?,
-            fatherName: String?,
-            childName: String?
+            motherFirstName: String?,
+            motherLastName: String?,
+            fatherFirstName: String?,
+            fatherLastName: String?,
+            childFirstName: String?,
+            childLastName: String?
     ): Boolean {
         var isValid = true
         resetValidationMessages()
@@ -521,25 +547,47 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             estimatedAgeValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_birth_date_cannot_be_empty))
         }
 
-        if (motherName.isNullOrEmpty()) {
+        if (motherFirstName.isNullOrEmpty()) {
             isValid = false
-            mothersNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_mother_name))
-        } else if (!textInputValidator.validate(motherName)) {
+            motherFirstNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_mother_first_name))
+        } else if (!textInputValidator.validate(motherFirstName)) {
             isValid = false
-            mothersNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
+            motherFirstNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
         }
 
-        if (!fatherName.isNullOrEmpty()) {
-            if (!textInputValidator.validate(fatherName)) {
+        if (motherLastName.isNullOrEmpty()) {
+            isValid = false
+            motherLastNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_mother_last_name))
+        } else if (!textInputValidator.validate(motherLastName)) {
+            isValid = false
+            motherLastNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
+        }
+
+        if (!fatherFirstName.isNullOrEmpty()) {
+            if (!textInputValidator.validate(fatherFirstName)) {
                 isValid = false
-                fathersNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
+                fatherFirstNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
             }
         }
 
-        if (!childName.isNullOrEmpty()) {
-            if (!textInputValidator.validate(childName)) {
+        if (!fatherLastName.isNullOrEmpty()) {
+            if (!textInputValidator.validate(fatherLastName)) {
                 isValid = false
-                nameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
+                fatherLastNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
+            }
+        }
+
+        if (!childFirstName.isNullOrEmpty()) {
+            if (!textInputValidator.validate(childFirstName)) {
+                isValid = false
+                childFirstNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
+            }
+        }
+
+        if (!childLastName.isNullOrEmpty()) {
+            if (!textInputValidator.validate(childLastName)) {
+                isValid = false
+                childLastNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
             }
         }
 
@@ -582,9 +630,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         phoneValidationMessage.set(null)
         homeLocationValidationMessage.set(null)
         languageValidationMessage.set(null)
-        mothersNameValidationMessage.set(null)
+        motherFirstNameValidationMessage.set(null)
+        motherLastNameValidationMessage.set(null)
         fathersNameValidationMessage.set(null)
-        nameValidationMessage.set(null)
+        childFirstNameValidationMessage.set(null)
+        childLastNameValidationMessage.set(null)
     }
 
     fun setGender(gender: Gender) {
@@ -621,19 +671,34 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         this.childNumber.set(childNumber)
     }
 
-    fun setMotherName(motherName: String) {
-        if (this.mothersName.get() == motherName) return
-        this.mothersName.set(motherName)
+    fun setMotherFirstName(motherFirstName: String?) {
+        if (this.motherFirstName.get() == motherFirstName) return
+        this.motherFirstName.set(motherFirstName)
     }
 
-    fun setFatherName(fatherName: String) {
-        if (this.fathersName.get() == fatherName) return
-        this.fathersName.set(fatherName)
+    fun setMotherLastName(motherLastName: String?) {
+        if (this.motherLastName.get() == motherLastName) return
+        this.motherLastName.set(motherLastName)
     }
 
-    fun setChildName(childName: String) {
-        if (this.name.get() == childName) return
-        this.name.set(childName)
+    fun setFatherFirstName(fatherFirstName: String?) {
+        if (this.fatherFirstName.get() == fatherFirstName) return
+        this.fatherFirstName.set(fatherFirstName)
+    }
+
+    fun setFatherLastName(fatherLastName: String?) {
+        if (this.fatherLastName.get() == fatherLastName) return
+        this.fatherLastName.set(fatherLastName)
+    }
+
+    fun setChildFirstName(childFirstName: String) {
+        if (this.childFirstName.get() == childFirstName) return
+        this.childFirstName.set(childFirstName)
+    }
+
+    fun setChildLastName(childLastName: String) {
+        if (this.childLastName.get() == childLastName) return
+        this.childLastName.set(childLastName)
     }
 
     fun setBirthWeight(birthWeight: String) {

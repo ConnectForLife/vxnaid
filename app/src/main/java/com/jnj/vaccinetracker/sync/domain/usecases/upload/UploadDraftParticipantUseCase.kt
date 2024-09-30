@@ -85,6 +85,8 @@ class UploadDraftParticipantUseCase @Inject constructor(
         participantId = participantId,
         nin = nin,
         childNumber = childNumber,
+        childFirstName = childFirstName,
+        childLastName = childLastName,
         gender = gender,
         isBirthDateEstimated = isBirthDateEstimated,
         birthdate = birthDate.toDto(),

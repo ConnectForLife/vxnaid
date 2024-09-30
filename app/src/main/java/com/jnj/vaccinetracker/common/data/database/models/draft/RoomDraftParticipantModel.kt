@@ -29,4 +29,6 @@ data class RoomDraftParticipantModel(
     override val registrationDate: DateEntity,
     override val locationUuid: String?,
     override val isUpdate: Boolean? = false,
+    override val childFirstName: String?,
+    override val childLastName: String?
 ) : DraftParticipantEntityBase

@@ -31,6 +31,8 @@ sealed class ParticipantSyncRecord : SyncRecordBase {
         val attributes: List<AttributeDto>,
         @Json(name = "addresses")
         val address: AddressDto?,
+        val childFirstName: String?,
+        val childLastName: String?
     ) : ParticipantSyncRecord() {
         val locationUuid: String? = attributes.find { it.type == Constants.ATTRIBUTE_LOCATION }?.value
     }

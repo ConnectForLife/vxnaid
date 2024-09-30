@@ -78,9 +78,10 @@ class ParticipantManager @Inject constructor(
         telephone: String?,
         siteUuid: String,
         language: String,
-        fatherName: String?,
-        motherName: String,
-        participantName: String?,
+        fatherFirstName: String?,
+        fatherLastName: String?,
+        motherFirstName: String,
+        motherLastName: String,
         childCategory: String?,
     ): MutableMap<String, String> {
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
@@ -89,12 +90,9 @@ class ParticipantManager @Inject constructor(
             Constants.ATTRIBUTE_LOCATION to siteUuid,
             Constants.ATTRIBUTE_LANGUAGE to language,
             Constants.ATTRIBUTE_OPERATOR to operatorUUid,
-            Constants.ATTRIBUTE_MOTHER_NAME to motherName,
+            Constants.ATTRIBUTE_MOTHER_FIRST_NAME to motherFirstName,
+            Constants.ATTRIBUTE_MOTHER_LAST_NAME to motherLastName
         )
-
-        if (participantName != null) {
-            personAttributes[Constants.ATTRIBUTE_PARTICIPANT_NAME] = participantName
-        }
 
         if (telephone != null) {
             personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
@@ -102,10 +100,15 @@ class ParticipantManager @Inject constructor(
         if (birthWeight != null) {
             personAttributes[Constants.ATTRIBUTE_BIRTH_WEIGHT] = birthWeight
         }
-        // mother name can't be null
-        if (fatherName != null) {
-            personAttributes[Constants.ATTRIBUTE_FATHER_NAME] = fatherName
+
+        if (fatherFirstName != null) {
+            personAttributes[Constants.ATTRIBUTE_FATHER_FIRST_NAME] = fatherFirstName
         }
+
+        if (fatherLastName != null) {
+            personAttributes[Constants.ATTRIBUTE_FATHER_LAST_NAME] = fatherLastName
+        }
+
         if (childCategory != null) {
             personAttributes[Constants.ATTRIBUTE_CHILD_CATEGORY] = childCategory
         }
@@ -126,9 +129,12 @@ class ParticipantManager @Inject constructor(
         val address: Address,
         val picture: ImageBytes?,
         val biometricsTemplateBytes: BiometricsTemplateBytes?,
-        val fatherName: String?,
-        val motherName: String,
-        val participantName: String?,
+        val motherFirstName: String,
+        val motherLastName: String,
+        val fatherFirstName: String?,
+        val fatherLastName: String?,
+        val childFirstName: String?,
+        val childLastName: String?,
         val childCategory: String?,
     )
 
@@ -142,9 +148,10 @@ class ParticipantManager @Inject constructor(
             telephone = registerDetails.telephone,
             siteUuid = registerDetails.siteUuid,
             language = registerDetails.language,
-            fatherName = registerDetails.fatherName,
-            motherName = registerDetails.motherName,
-            participantName = registerDetails.participantName,
+            fatherFirstName = registerDetails.fatherFirstName,
+            fatherLastName = registerDetails.fatherLastName,
+            motherFirstName = registerDetails.motherFirstName,
+            motherLastName = registerDetails.motherLastName,
             childCategory = registerDetails.childCategory
         )
 
@@ -159,7 +166,9 @@ class ParticipantManager @Inject constructor(
             attributes = personAttributes,
             image = registerDetails.picture,
             biometricsTemplate = registerDetails.biometricsTemplateBytes,
-            scheduleFirstVisit = createScheduleFirstVisit()
+            scheduleFirstVisit = createScheduleFirstVisit(),
+            childFirstName = registerDetails.childFirstName,
+            childLastName = registerDetails.childLastName
         )
     }
 
@@ -175,7 +184,9 @@ class ParticipantManager @Inject constructor(
                 address = registerRequest.address,
                 attributes = registerRequest.attributes,
                 image = registerRequest.image,
-                scheduleFirstVisit = createScheduleFirstVisit()
+                scheduleFirstVisit = createScheduleFirstVisit(),
+                childFirstName = registerRequest.childFirstName,
+                childLastName = registerRequest.childLastName
             )
     }
 
@@ -202,9 +213,12 @@ class ParticipantManager @Inject constructor(
         address: Address,
         picture: ImageBytes?,
         biometricsTemplateBytes: BiometricsTemplateBytes?,
-        fatherName: String?,
-        motherName: String,
-        participantName: String,
+        fatherFirstName: String?,
+        fatherLastName: String?,
+        motherFirstName: String,
+        motherLastName: String,
+        childFirstName: String?,
+        childLastName: String?,
         childCategory: String?,
     ): DraftParticipant {
         val request = getRegisterParticipant(
@@ -222,9 +236,12 @@ class ParticipantManager @Inject constructor(
                 address = address,
                 picture = picture,
                 biometricsTemplateBytes = biometricsTemplateBytes,
-                fatherName = fatherName,
-                motherName = motherName,
-                participantName = participantName,
+                fatherFirstName = fatherFirstName,
+                fatherLastName = fatherLastName,
+                motherFirstName = motherFirstName,
+                motherLastName = motherLastName,
+                childFirstName = childFirstName,
+                childLastName = childLastName,
                 childCategory = childCategory
             )
         )
@@ -245,9 +262,12 @@ class ParticipantManager @Inject constructor(
         address: Address,
         picture: ImageBytes?,
         biometricsTemplateBytes: BiometricsTemplateBytes?,
-        fatherName: String?,
-        motherName: String,
-        participantName: String,
+        fatherFirstName: String?,
+        fatherLastName: String?,
+        motherFirstName: String,
+        motherLastName: String,
+        childFirstName: String?,
+        childLastName: String?,
         childCategory: String?,
         participantUuid: String,
     ): DraftParticipant {
@@ -266,9 +286,12 @@ class ParticipantManager @Inject constructor(
                 address = address,
                 picture = picture,
                 biometricsTemplateBytes = biometricsTemplateBytes,
-                fatherName = fatherName,
-                motherName = motherName,
-                participantName = participantName,
+                fatherFirstName = fatherFirstName,
+                fatherLastName = fatherLastName,
+                motherFirstName = motherFirstName,
+                motherLastName = motherLastName,
+                childFirstName = childFirstName,
+                childLastName = childLastName,
                 childCategory = childCategory
             )
         )
