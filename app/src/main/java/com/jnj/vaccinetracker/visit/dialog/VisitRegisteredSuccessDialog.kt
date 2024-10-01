@@ -84,7 +84,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_vist_registered_success, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_visit_registered_success, container, false)
         binding.nextVisit = nextVisit
         binding.executePendingBindings()
         visitDateTextView = binding.root.findViewById(R.id.next_visit_date_value)
