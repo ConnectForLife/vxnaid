@@ -74,7 +74,6 @@ class SubstancesDataUtil {
             visitType: String,
             configurationManager: ConfigurationManager
         ): List<SubstanceDataModel> {
-            val substancesGroupConfig = configurationManager.getSubstancesGroupConfig()
             val visitTypeInWeeks = getWeeksBetweenDateAndTodayFromVisitType(visitType)
             val substancesConfig = configurationManager.getSubstancesConfig()
             val substanceDataModelList = mutableListOf<SubstanceDataModel>()
@@ -83,11 +82,14 @@ class SubstancesDataUtil {
                 val maxWeekNumber = substance.weeksAfterBirth + substance.weeksAfterBirthUpWindow
                 if (visitTypeInWeeks in minWeekNumber..maxWeekNumber) {
                     substanceDataModelList.add(
-                        getSingleSubstanceData(
-                            substance,
-                            substancesGroupConfig,
-                            null,
-                            substancesConfig
+                        SubstanceDataModel(
+                            substance.conceptName,
+                            substance.label,
+                            substance.category,
+                            substance.routeOfAdministration,
+                            substance.group,
+                            substance.maximumAgeInWeeks,
+                            substance.maximumAgeInWeeks
                         )
                     )
                 }
