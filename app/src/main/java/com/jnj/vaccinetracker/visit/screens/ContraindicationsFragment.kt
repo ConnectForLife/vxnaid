@@ -17,6 +17,8 @@ import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.FragmentContraindicationsBinding
 import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.visit.VisitViewModel
+import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
+import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ContraindicationsFragment : BaseFragment() {
@@ -50,13 +52,21 @@ class ContraindicationsFragment : BaseFragment() {
 
    private fun setupClickListeners() {
       binding.btnYes.setOnClickListener {
-         navigateToReferralFragment()
+         showRescheduleVisitDialog()
       }
 
       binding.btnNo.setOnClickListener {
          closeFragment()
+         if (!viewModel.dosingVisitIsInsideTimeWindow.value) {
+            showOutsideTimeWindowConfirmationDialog()
+         }
       }
    }
+   private fun showRescheduleVisitDialog() {
+      RescheduleVisitDialog.create(participant = viewModel.participant.value, isAfterContraIndications = true)
+         .show(parentFragmentManager, RescheduleVisitDialog.TAG_DIALOG_RESCHEDULE_VISIT)
+   }
+
 
    private fun navigateToReferralFragment() {
       val dosingVisit = viewModel.dosingVisit.value
@@ -84,6 +94,12 @@ class ContraindicationsFragment : BaseFragment() {
          .animateNavigationDirection(NavigationDirection.FORWARD)
          .remove(this)
          .commit()
+   }
+
+   private fun showOutsideTimeWindowConfirmationDialog() {
+      DosingOutOfWindowDialog().show(requireActivity().supportFragmentManager,
+         VisitActivity.TAG_DIALOG_DOSING_OUT_OF_WINDOW
+      )
    }
 }
 

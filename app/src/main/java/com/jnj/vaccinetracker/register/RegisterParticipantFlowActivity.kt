@@ -9,11 +9,9 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
-import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.helpers.logWarn
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
@@ -26,6 +24,7 @@ import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDet
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantPicturePreviewFragment
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantTakePictureFragment
 import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
+import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
 
 /**
@@ -152,7 +151,7 @@ class RegisterParticipantFlowActivity : BaseActivity(),
     override val syncBanner: SyncBanner
         get() = binding.syncBanner
 
-    override fun onRescheduleVisitListener() {
+    override fun onRescheduleVisitListener(newVisitDate: DateTime, rescheduleReasonText: String) {
         finish()
     }
 

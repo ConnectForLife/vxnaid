@@ -47,6 +47,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
    private lateinit var visitDateTextView: TextView
    private var visitDate: DateTime? = null
    private val participant: ParticipantSummaryUiModel? by lazy { requireArguments().getParcelable(PARTICIPANT) }
+   private val isAfterContraindications: Boolean by lazy { requireArguments().getBoolean(IS_AFTER_CONTRAINDICATIONS) }
    @Inject lateinit var createVisitUseCase: CreateVisitUseCase
    @Inject lateinit var userRepository: UserRepository
    @Inject lateinit var syncSettingsRepository: SyncSettingsRepository
@@ -58,11 +59,11 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
    companion object {
       private const val PARTICIPANT = "participant"
       private const val CURRENT_VISIT_UUID = "currentVisitUuid"
-      private const val PARTICIPANT_UUID = "participantUuid"
+      private const val IS_AFTER_CONTRAINDICATIONS = "isAfterContraIndications"
       const val TAG_DIALOG_RESCHEDULE_VISIT = "rescheduleVisitDialog"
 
-      fun create(participant: ParticipantSummaryUiModel?): RescheduleVisitDialog {
-         return RescheduleVisitDialog().apply { arguments = bundleOf(PARTICIPANT to participant) }
+      fun create(participant: ParticipantSummaryUiModel?, isAfterContraIndications: Boolean = false): RescheduleVisitDialog {
+         return RescheduleVisitDialog().apply { arguments = bundleOf(PARTICIPANT to participant, IS_AFTER_CONTRAINDICATIONS to isAfterContraIndications) }
       }
    }
 
@@ -93,16 +94,27 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
             try {
                validateDate()
                if (visitDate != null) {
-                  createVisitUseCase.createVisit(buildNextVisitObject(participant, Date(visitDate!!.unixMillisLong)))
+                  if (!isAfterContraindications){
+                     createVisitUseCase.createVisit(
+                        buildNextVisitObject(
+                           participant,
+                           Date(visitDate!!.unixMillisLong)
+                        )
+                     )
 
-                  if (rescheduleReasonEditText.text.toString().isNotEmpty()) {
-                     val attributesToAdd = mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to rescheduleReasonEditText.text.toString())
-                     vaccineTrackerSyncApiDataSource.updateVisitAttributes(currentVisitUuid, attributesToAdd)
+                     if (rescheduleReasonEditText.text.toString().isNotEmpty()) {
+                        val attributesToAdd =
+                           mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to rescheduleReasonEditText.text.toString())
+                        vaccineTrackerSyncApiDataSource.updateVisitAttributes(
+                           currentVisitUuid,
+                           attributesToAdd
+                        )
+                     }
                   }
 
                   dismissAllowingStateLoss()
 
-                  findParent<RescheduleVisitListener>()?.onRescheduleVisitListener()
+                  findParent<RescheduleVisitListener>()?.onRescheduleVisitListener(visitDate!!, rescheduleReasonEditText.text.toString())
                }
             } catch (ex: Exception) {
                Log.e("RescheduleVisitDialog", "Something went wrong during rescheduling a visit", ex)
@@ -163,7 +175,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
    }
 
    interface RescheduleVisitListener {
-      fun onRescheduleVisitListener()
+      fun onRescheduleVisitListener(newVisitDate: DateTime, rescheduleReasonText: String)
    }
 
    private fun List<VisitDetail>.findDosingVisit(): VisitDetail? {

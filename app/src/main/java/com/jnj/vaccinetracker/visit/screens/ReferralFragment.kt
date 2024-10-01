@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
-class ReferralFragment : BaseFragment(), RescheduleVisitDialog.RescheduleVisitListener {
+class ReferralFragment : BaseFragment() {
 
     private lateinit var binding: FragmentReferralBinding
     private val viewModel: VisitViewModel by activityViewModels { viewModelFactory }
@@ -46,8 +46,6 @@ class ReferralFragment : BaseFragment(), RescheduleVisitDialog.RescheduleVisitLi
     private lateinit var allVisits: List<VisitDetail>
     private var currentVisitUuid: String? = null
     private var participantUuid: String? = null
-
-    private var referAfterDialogSave: Boolean = false
 
     val isAfterVisit: Boolean by lazy {
         requireArguments().getBoolean(IS_AFTER_VISIT, false)
@@ -112,7 +110,7 @@ class ReferralFragment : BaseFragment(), RescheduleVisitDialog.RescheduleVisitLi
         com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(message)
     }
 
-    fun onReferButtonClicked(saveVisit: Boolean = true) {
+    fun onReferButtonClicked() {
         val selectedClinic = binding.dropdownClinics.text.toString()
         val referralReason = binding.editTextAdditionalInfo.text.toString()
 
@@ -122,11 +120,15 @@ class ReferralFragment : BaseFragment(), RescheduleVisitDialog.RescheduleVisitLi
 
         lifecycleScope.launch {
             try {
-                if (isAfterVisit && saveVisit) {
-                    onRefer(referralObservations, selectedClinic)
-                } else if (!isAfterVisit) {
-                    referAfterDialogSave = true
-                    showRescheduleVisitDialog()
+                vaccineTrackerSyncApiDataSource.updateEncounterObservationsByVisit(
+                    currentVisitUuid!!,
+                    referralObservations
+                )
+                onRefer(selectedClinic)
+                if (isAfterVisit) {
+                    findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish()
+                } else {
+                    findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish()
                 }
             } catch (e: Exception) {
                 Log.e("ReferralFragment", "Referral failed", e)
@@ -135,8 +137,7 @@ class ReferralFragment : BaseFragment(), RescheduleVisitDialog.RescheduleVisitLi
         }
     }
 
-    private suspend fun onRefer(referralObservations: Map<String, String>, selectedClinic: String) {
-        vaccineTrackerSyncApiDataSource.updateEncounterObservationsByVisit(currentVisitUuid!!, referralObservations)
+    fun onRefer(selectedClinic: String) {
         binding.textViewReferralResult.text = "${getString(R.string.referral_page_success_referral_text)} $selectedClinic"
         binding.textViewReferralResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.successDark))
         binding.btnSaveReferral.visibility = View.GONE
@@ -149,18 +150,11 @@ class ReferralFragment : BaseFragment(), RescheduleVisitDialog.RescheduleVisitLi
     private fun onDoNotReferClicked() {
         lifecycleScope.launch {
             if (isAfterVisit) {
-                viewModel.isReferring.value = false
-                findParent<OnReferralPageFinishListener>()?.onReferralPageFinish()
+                findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish()
             } else {
-                referAfterDialogSave = false
-                showRescheduleVisitDialog()
+                findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish()
             }
         }
-    }
-
-    private fun showRescheduleVisitDialog() {
-        RescheduleVisitDialog.create(participant = viewModel.participant.value)
-            .show(parentFragmentManager, RescheduleVisitDialog.TAG_DIALOG_RESCHEDULE_VISIT)
     }
 
     private fun createReferralObservations(selectedClinic: String, referralReason: String): Map<String, String> {
@@ -190,22 +184,9 @@ class ReferralFragment : BaseFragment(), RescheduleVisitDialog.RescheduleVisitLi
         return isValid
     }
 
-    private fun goToSplashActivity() {
-        val intent = Intent(requireContext(), SplashActivity::class.java)
-        startActivity(intent)
-        requireActivity().finishAffinity()
-    }
-
 
     interface OnReferralPageFinishListener {
-        fun onReferralPageFinish()
-    }
-
-    override fun onRescheduleVisitListener() {
-        if (referAfterDialogSave) {
-            onReferButtonClicked(saveVisit = false)
-        } else {
-            goToSplashActivity()
-        }
+        fun onReferralAfterVisitPageFinish()
+        fun onReferralAfterContraindicationsPageFinish()
     }
 }
