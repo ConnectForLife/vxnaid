@@ -24,10 +24,12 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
+import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
+import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
@@ -55,6 +57,7 @@ class VisitViewModel @Inject constructor(
     private val createVisitUseCase: CreateVisitUseCase,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
+    private val vaccineTrackerSyncApiDataSource: VaccineTrackerSyncApiDataSource
     ) : ViewModelBase() {
 
     /**
@@ -67,7 +70,7 @@ class VisitViewModel @Inject constructor(
     val participant = mutableLiveData<ParticipantSummaryUiModel>()
     val participantImage = mutableLiveData<ParticipantImageUiModel>()
     val dosingVisit = mutableLiveData<VisitDetail>()
-    val dosingVisitIsInsideTimeWindow = mutableLiveBoolean()
+    val dosingVisitIsInsideTimeWindow = mutableLiveBoolean(true)
     val previousDosingVisits = mutableLiveData<List<VisitDetail>>()
     val errorMessage = mutableLiveData<String>()
     val upcomingVisit = mutableLiveData<UpcomingVisit?>()
@@ -91,7 +94,9 @@ class VisitViewModel @Inject constructor(
     var isVisitLocationSelected = MutableLiveData(false)
     var checkVisitLocation = MutableLiveData(false)
 
-    var isReferring = MutableLiveData<Boolean>(false)
+    var missingSubstancesVisitDate = MutableLiveData<Date>(null)
+    var contraindicationsRescheduleDate = MutableLiveData<DateTime>(null)
+    var contraindicationsRescheduleReasonText = MutableLiveData<String>(null)
 
     init {
         initState()
@@ -230,40 +235,20 @@ class VisitViewModel @Inject constructor(
     /**
      * Submit a dosing visit encounter
      *
-     * @param outsideTimeWindowConfirmationListener Callback function for when the current time is outside the dosing window
-     * @param missingSubstancesListener             Callback function for when some of the selected vaccines were not administered
-     * @param overrideOutsideTimeWindowCheck        Indicate if the time window check should be skipped
      * @param newVisitDate                          Specify next visit date
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    @SuppressWarnings("LongParameterList")
-    fun submitDosingVisit(
-        outsideTimeWindowConfirmationListener: () -> Unit,
-        missingSubstancesListener: (List<String>) -> Unit,
-        overrideOutsideTimeWindowCheck: Boolean = false,
-        newVisitDate: Date? = null
-    ) {
+    fun submitDosingVisit(newVisitDate: Date? = null) {
         val participant = participant.get()
         val dosingVisit = dosingVisit.get()
         val visitsCounter = visitsCounter.value
         val substancesObservations = selectedSubstancesWithBarcodes.value ?: mapOf()
         val otherSubstancesObservations = selectedOtherSubstances.value ?: mapOf()
-        val missingSubstances = getMissingSubstanceLabels()
         val visitLocationValue = visitLocation.value
 
         if (participant == null || dosingVisit == null) {
             logError("No participant or dosing visit in memory!")
             visitEvents.tryEmit(false)
-            return
-        }
-
-        if (!overrideOutsideTimeWindowCheck && !dosingVisitIsInsideTimeWindow.get() && newVisitDate == null) {
-            outsideTimeWindowConfirmationListener()
-            return
-        }
-
-        if (newVisitDate == null && missingSubstances.isNotEmpty()) {
-            missingSubstancesListener(missingSubstances)
             return
         }
 
@@ -281,8 +266,9 @@ class VisitViewModel @Inject constructor(
                     visitLocation = visitLocationValue
                 )
 
-                // schedule next visit after submitting current one
-                createNextVisit(participant, newVisitDate)
+                if (newVisitDate != null) {
+                    createNextVisit(participant, newVisitDate)
+                }
 
                 onVisitLogged()
                 loading.set(false)
@@ -301,9 +287,29 @@ class VisitViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun createNextVisit(participant: ParticipantSummaryUiModel, newVisitDate: Date? = null) {
-        val visitDate = newVisitDate ?: getNextVisitDate(participant)
-        createVisitUseCase.createVisit(buildVisitObject(participant, visitDate!!))
+    fun validateDosingVisit(
+        missingSubstancesListener: (List<String>) -> Unit,
+    ): Boolean {
+        val participant = participant.get()
+        val dosingVisit = dosingVisit.get()
+        val missingSubstances = getMissingSubstanceLabels()
+
+        if (participant == null || dosingVisit == null) {
+            logError("No participant or dosing visit in memory!")
+            visitEvents.tryEmit(false)
+            return false
+        }
+
+        if (missingSubstances.isNotEmpty()) {
+            missingSubstancesListener(missingSubstances)
+            return false
+        }
+        return true
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun createNextVisit(participant: ParticipantSummaryUiModel, newVisitDate: Date) {
+        createVisitUseCase.createVisit(buildVisitObject(participant, newVisitDate))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -450,6 +456,46 @@ class VisitViewModel @Inject constructor(
 
     fun checkVisitLocationSelection() {
         checkVisitLocation.value = true
+    }
+
+    suspend fun onReferralAfterContraindications() {
+        createVisitUseCase.createVisit(
+            buildNextVisitObject(
+                participant.value,
+                Date(contraindicationsRescheduleDate.value!!.unixMillisLong)
+            )
+        )
+
+        val contraindicationsRescheduleReasonText = contraindicationsRescheduleReasonText.value
+        if (!contraindicationsRescheduleReasonText.isNullOrEmpty()) {
+            val attributesToAdd =
+                mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to contraindicationsRescheduleReasonText)
+            vaccineTrackerSyncApiDataSource.updateVisitAttributes(
+                dosingVisit.value!!.uuid,
+                attributesToAdd
+            )
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun buildNextVisitObject(
+        participant: ParticipantSummaryUiModel?,
+        visitDate: Date
+    ): CreateVisit {
+        val operatorUuid = userRepository.getUser()?.uuid
+            ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
+        val locationUuid = syncSettingsRepository.getSiteUuid()
+            ?: throw NoSiteUuidAvailableException("Location not available")
+        return CreateVisit(
+            participantUuid = participant!!.participantUuid,
+            visitType = Constants.VISIT_TYPE_DOSING,
+            startDatetime = visitDate,
+            locationUuid = locationUuid,
+            attributes = mapOf(
+                Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
+                Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+            )
+        )
     }
 }
 

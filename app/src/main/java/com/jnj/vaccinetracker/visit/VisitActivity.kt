@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -27,13 +29,16 @@ import com.jnj.vaccinetracker.databinding.ActivityVisitBinding
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
+import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
+import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
 import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
 import java.util.Date
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
 import com.jnj.vaccinetracker.visit.screens.ContraindicationsFragment
 import com.jnj.vaccinetracker.visit.screens.ReferralFragment
+import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
@@ -47,14 +52,15 @@ class VisitActivity :
     DosingOutOfWindowDialog.DosingOutOfWindowDialogListener,
     DialogScheduleMissingSubstances.DialogScheduleMissingSubstancesListener,
     VaccineDialog.AddVaccineListener,
-    ReferralFragment.OnReferralPageFinishListener
+    ReferralFragment.OnReferralPageFinishListener,
+    RescheduleVisitDialog.RescheduleVisitListener
 {
 
     companion object {
         private const val EXTRA_PARTICIPANT = "participant"
         private const val TAG_DIALOG_SUCCESS = "successDialog"
         private const val EXTRA_TYPE = "newParticipantRegistration"
-        private const val TAG_DIALOG_DOSING_OUT_OF_WINDOW = "dosingOutOfWindowDialog"
+        const val TAG_DIALOG_DOSING_OUT_OF_WINDOW = "dosingOutOfWindowDialog"
         private const val TAG_DIALOG_SCHEDULE_MISSING_SUBSTANCES = "scheduleMissingSubstances"
         private const val TAG_VACCINE_PICKER = "vaccinePicker"
         const val CURRENT_VISIT_UUID = "currentVisitUuid"
@@ -191,19 +197,9 @@ class VisitActivity :
         binding.dropdownVisitTypes.setAdapter(adapter)
     }
 
-    private fun submitDosingVisit(overrideOutsideWindowCheck: Boolean = false,
-                                  newVisitDate: Date? = null) {
-        viewModel.submitDosingVisit(
-            outsideTimeWindowConfirmationListener = ::showOutsideTimeWindowConfirmationDialog,
-            missingSubstancesListener = ::showScheduleMissingSubstancesDialog,
-            overrideOutsideTimeWindowCheck = overrideOutsideWindowCheck,
-            newVisitDate = newVisitDate
-        )
-    }
-
-    private fun showOutsideTimeWindowConfirmationDialog() {
-        DosingOutOfWindowDialog().show(supportFragmentManager,
-            TAG_DIALOG_DOSING_OUT_OF_WINDOW
+    private fun validateDosingVisit(): Boolean {
+        return viewModel.validateDosingVisit(
+            missingSubstancesListener = ::showScheduleMissingSubstancesDialog
         )
     }
 
@@ -213,12 +209,13 @@ class VisitActivity :
         )
     }
 
-    override fun onOutOfWindowDosingConfirmed() {
-        submitDosingVisit(overrideOutsideWindowCheck = true)
+    override fun onOutOfWindowDosingCanceled() {
+        goToMatchParticipantFragment()
     }
 
     override fun onDialogScheduleMissingSubstancesConfirmed(date: Date) {
-        submitDosingVisit(newVisitDate = date)
+        viewModel.missingSubstancesVisitDate.value = date
+        navigateToReferralFragment(isAfterVisit = true)
     }
 
     fun makeSubmitBtnVisible() {
@@ -261,7 +258,10 @@ class VisitActivity :
             binding.tabLayout.getTabAt(0)?.select()
             return
         }
-        navigateToReferralFragment()
+        val isValid = validateDosingVisit()
+        if (isValid) {
+            navigateToReferralFragment(isAfterVisit = true)
+        }
     }
 
 
@@ -272,13 +272,13 @@ class VisitActivity :
     }
 
 
-    private fun navigateToReferralFragment() {
+    private fun navigateToReferralFragment(isAfterVisit: Boolean) {
         val dosingVisit = viewModel.dosingVisit.value
         val referralFragment = ReferralFragment().apply {
             arguments = Bundle().apply {
                 putString(CURRENT_VISIT_UUID, dosingVisit!!.uuid)
                 putString(PARTICIPANT_UUID, viewModel.participant.value!!.participantUuid)
-                putBoolean(IS_AFTER_VISIT, true)
+                putBoolean(IS_AFTER_VISIT, isAfterVisit)
             }
         }
 
@@ -326,16 +326,30 @@ class VisitActivity :
         viewModel.addToSelectedSubstances(vaccine)
     }
 
-    override fun onReferralPageFinish() {
-        submitDosingVisit()
+    override fun onReferralAfterVisitPageFinish() {
+        val missingSubstanceVisitDate = viewModel.missingSubstancesVisitDate.value
+        viewModel.submitDosingVisit(newVisitDate = missingSubstanceVisitDate)
     }
 
-    private fun onDosingVisitRegistrationSuccessful() {
-        if (viewModel.isReferring.value == true) {
-            val fragment =
-                supportFragmentManager.findFragmentById(R.id.fragment_container) as? ReferralFragment
-            fragment?.onReferButtonClicked(saveVisit = false)
+    override fun onReferralAfterContraindicationsPageFinish() {
+        val context = this
+        lifecycleScope.launch {
+            try {
+            viewModel.onReferralAfterContraindications()
+            goToSplashActivity()
+            } catch (e: Exception) {
+                Log.e("Rescheduling a visit", "Reschedule has failed failed", e)
+                com.jnj.vaccinetracker.common.dialogs.AlertDialog(context).showAlertDialog(getString(R.string.reschedule_visit_failed))
+            }
         }
+    }
+
+    private fun goToSplashActivity() {
+        val intent = Intent(this, SplashActivity::class.java)
+        startActivity(intent)
+        finishAffinity()
+    }
+    private fun onDosingVisitRegistrationSuccessful() {
         val dosingVisit = viewModel.dosingVisit.value
         VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value, viewModel.participant.value, dosingVisit!!.uuid).show(supportFragmentManager,
             TAG_DIALOG_SUCCESS
@@ -360,7 +374,7 @@ class VisitActivity :
         when {
             currentFragment is ContraindicationsFragment && currentFragment.isVisible -> {
                 // When in ContraindicationsFragment, launch ParticipantFlowActivity
-                handleContraindicationsFragmentBackPress()
+                goToMatchParticipantFragment()
             }
             currentFragment is ReferralFragment && currentFragment.isVisible -> {
                 handleReferralFragmentBackPress(currentFragment)
@@ -372,7 +386,7 @@ class VisitActivity :
         }
     }
 
-    private fun handleContraindicationsFragmentBackPress() {
+    private fun goToMatchParticipantFragment() {
         lifecycleScope.launch {
             val intent = ParticipantFlowActivity.create(this@VisitActivity).apply {
                 putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
@@ -407,4 +421,10 @@ class VisitActivity :
 
     override val syncBanner: SyncBanner
         get() = binding.syncBanner
+
+    override fun onRescheduleVisitListener(newVisitDate: DateTime, rescheduleReasonText: String) {
+        viewModel.contraindicationsRescheduleDate.value = newVisitDate
+        viewModel.contraindicationsRescheduleReasonText.value = rescheduleReasonText
+        navigateToReferralFragment(isAfterVisit = false)
+    }
 }

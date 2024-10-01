@@ -28,17 +28,17 @@ class DosingOutOfWindowDialog : BaseDialogFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_dosing_out_of_window, container, false)
         binding.executePendingBindings()
         binding.btnConfirm.setOnClickListener {
-            findParent<DosingOutOfWindowDialogListener>()?.onOutOfWindowDosingConfirmed()
             dismissAllowingStateLoss()
         }
         binding.btnCancel.setOnClickListener {
             dismissAllowingStateLoss()
+            findParent<DosingOutOfWindowDialogListener>()?.onOutOfWindowDosingCanceled()
         }
         return binding.root
     }
 
     interface DosingOutOfWindowDialogListener {
-        fun onOutOfWindowDosingConfirmed()
+        fun onOutOfWindowDosingCanceled()
     }
 
 }
