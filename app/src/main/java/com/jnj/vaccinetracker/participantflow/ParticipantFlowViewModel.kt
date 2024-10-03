@@ -19,6 +19,7 @@ import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.model.SiteUiModel
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
+import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.neurotec.biometrics.NSubject
 import com.neurotec.io.NFile
@@ -69,6 +70,8 @@ class ParticipantFlowViewModel @Inject constructor(
     private val barcodeParticipantId = mutableLiveData<String>()
     val isManualSetParticipantId = mutableLiveData<Boolean>()
     var navigationDirection = NavigationDirection.NONE
+
+    var selectedParticipant = mutableLiveData<ParticipantSummaryUiModel>()
 
     // Phone variables
     val phoneCountryCode = mutableLiveData<String>()
@@ -179,6 +182,7 @@ class ParticipantFlowViewModel @Inject constructor(
         }
 
         result += Screen.PARTICIPANT_MATCHING
+        result += Screen.ADVERSE_EFFECTS
         return result
     }
 
@@ -338,6 +342,10 @@ class ParticipantFlowViewModel @Inject constructor(
         return false
     }
 
+    fun onStartAdverseEffects() {
+        navigateForward()
+    }
+
     override fun saveInstanceState(outState: Bundle) {
         outState.putParcelableArrayList(STATE_SCREENS, ArrayList(screens))
         outState.putParcelable(STATE_CURRENT_SCREEN, currentScreen.get())
@@ -383,7 +391,8 @@ class ParticipantFlowViewModel @Inject constructor(
         PHONE(R.string.participant_flow_phone_title),
         IRIS_SCAN_LEFT_EYE(R.string.iris_scan_left_title),
         IRIS_SCAN_RIGHT_EYE(R.string.iris_scan_right_title),
-        PARTICIPANT_MATCHING(R.string.participant_matching_title);
+        PARTICIPANT_MATCHING(R.string.participant_matching_title),
+        ADVERSE_EFFECTS(R.string.adverse_effects_title);
 
         constructor(parcel: Parcel) : this(parcel.readInt())
 

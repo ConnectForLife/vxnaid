@@ -43,6 +43,7 @@ import com.jnj.vaccinetracker.sync.presentation.SyncAndroidService
 import com.jnj.vaccinetracker.update.UpdateDialog
 import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.common.dialogs.DatePickerDialog
+import com.jnj.vaccinetracker.participantflow.dialogs.AdverseEffectsSuccessfulDialog
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
@@ -99,6 +100,9 @@ interface AndroidModule {
     fun bindParticipantFlowAddOrSearchFragment(): ParticipantFlowAddOrSearchFragment
 
     @ContributesAndroidInjector
+    fun bindAdverseEffectsFragment(): AdverseEffectsFragment
+
+    @ContributesAndroidInjector
     fun bindRegisterParticipantAdministeredVaccinesFragment(): HistoricalDataForVisitTypeFragment
 
     @ContributesAndroidInjector
@@ -112,6 +116,9 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindUpdateDialog(): UpdateDialog
+
+    @ContributesAndroidInjector
+    fun bindAdverseEffectsSuccessfulDialog(): AdverseEffectsSuccessfulDialog
 
     @ContributesAndroidInjector
     fun bindRefreshSessionDialog(): RefreshSessionDialog

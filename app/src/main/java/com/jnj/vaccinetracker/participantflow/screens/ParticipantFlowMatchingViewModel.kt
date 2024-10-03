@@ -278,14 +278,32 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
         })
     }
 
-    fun setSelectedParticipant(matchingListItem: MatchingListItem) {
+    fun setSelectedParticipant(matchingListItem: MatchingListItem): ParticipantSummaryUiModel? {
       if (matchingListItem is ParticipantItem) {
           selectedParticipant.set(matchingListItem.participant)
           selectedParticipantImage.set(matchingListItem.picture)
+          return ParticipantSummaryUiModel(
+              participantUuid = matchingListItem.participant.participantUUID!!,
+              participantId = matchingListItem.participant.participantId!!,
+              gender = matchingListItem.participant.gender!!,
+              birthDateText = matchingListItem.participant.birthDateText!!,
+              isBirthDateEstimated = matchingListItem.participant.isBirthDateEstimated!!,
+              vaccine = null,
+              participantPicture = matchingListItem.picture
+          )
       } else if (matchingListItem is OtherSiteParticipantItem) {
           selectedParticipant.set(matchingListItem.participant)
+          return ParticipantSummaryUiModel(
+              participantUuid = matchingListItem.participant.participantUUID!!,
+              participantId = matchingListItem.participant.participantId!!,
+              gender = matchingListItem.participant.gender!!,
+              birthDateText = matchingListItem.participant.birthDateText!!,
+              isBirthDateEstimated = matchingListItem.participant.isBirthDateEstimated!!,
+              vaccine = null,
+              participantPicture = null
+          )
       } else {
-          return
+          return null
       }
     }
 
