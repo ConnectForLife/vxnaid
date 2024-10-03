@@ -430,4 +430,16 @@
     <string name="visit_schedule_next_visit_schedule_new_visit_button_label">Schedule New Visit</string>
     <string name="refer_finish_visit_text">----  choose how to finish the visit  ----</string>
     <string name="label_change_visit_type">Change Visit Type</string>
+<<<<<<< HEAD
+=======
+    <string name="adverse_effects_page_failed_text">Reporting of adverse effects failed.</string>
+    <string name="adverse_effects_page_additional_info_title">Adverse effect:</string>
+    <string name="adverse_effect_page_additional_info_hint">Enter adverse effects</string>
+    <string name="adverse_adverse_effect_page_save_button_title">Report Adverse Effects</string>
+    <string name="adverse_effects_page_cannot_be_empty">Adverse effects cannot be empty</string>
+    <string name="report_adverse_effects_successfull_text">Adverse effects successfully reported.</string>
+    <string name="participant_matching_btn_report_adverse_effects">Adverse Effects</string>
+    <string name="adverse_effects_title">Report Adverse Effects</string>
+    <string name="dialog_historical_visit_text">When did the visit take place?</string>
+>>>>>>> effe245 (VRVU-154: add historical visit date dialog)
 </resources>

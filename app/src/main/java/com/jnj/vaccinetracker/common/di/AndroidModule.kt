@@ -43,6 +43,11 @@ import com.jnj.vaccinetracker.sync.presentation.SyncAndroidService
 import com.jnj.vaccinetracker.update.UpdateDialog
 import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.common.dialogs.DatePickerDialog
+<<<<<<< HEAD
+=======
+import com.jnj.vaccinetracker.participantflow.dialogs.AdverseEffectsSuccessfulDialog
+import com.jnj.vaccinetracker.register.dialogs.HistoricalVisitDateDialog
+>>>>>>> effe245 (VRVU-154: add historical visit date dialog)
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
@@ -169,6 +174,9 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindVaccineDialog(): VaccineDialog
+
+    @ContributesAndroidInjector
+    fun bindHistoricalVisitDateDialog(): HistoricalVisitDateDialog
 
     @ContributesAndroidInjector
     fun bindRegisterParticipantConfirmNoTelephoneDialog(): RegisterParticipantConfirmNoTelephoneDialog
