@@ -17,11 +17,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
-import com.jnj.vaccinetracker.barcode.formatParticipantId
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.BaseActivity
@@ -33,7 +31,6 @@ import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.*
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 /**
  * @author maartenvangiel
@@ -189,46 +186,101 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
-
     private fun setupInputListeners() {
         binding.editTextChildNumber.doAfterTextChanged {
-            viewModel.setChildNumber(it?.toString().orEmpty())
+            val childNumber = it?.toString().orEmpty()
+            viewModel.setChildNumber(childNumber)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(childNumber = childNumber)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.editParticipantNin.doAfterTextChanged {
-            viewModel.setNin(it?.toString().orEmpty())
+            val nin = it?.toString().orEmpty()
+            viewModel.setNin(nin)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(nin = nin)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.editTelephone.doAfterTextChanged {
-            viewModel.setPhone(it?.toString().orEmpty())
+            val phoneNumber = it?.toString().orEmpty()
+            viewModel.setPhone(phoneNumber)
+            flowViewModel.phoneNumber.set(phoneNumber)
         }
         
         binding.editBirthWeight.doAfterTextChanged {
-            viewModel.setBirthWeight(it?.toString().orEmpty())
+            val birthWeight = it?.toString().orEmpty()
+            viewModel.setBirthWeight(birthWeight)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(birthWeight = birthWeight)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.editMotherFirstName.doAfterTextChanged {
-            viewModel.setMotherFirstName(it?.toString().orEmpty())
+            val motherFirstName = it?.toString().orEmpty()
+            viewModel.setMotherFirstName(motherFirstName)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(motherFirstName = motherFirstName)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.editMotherLastName.doAfterTextChanged {
-            viewModel.setMotherLastName(it?.toString().orEmpty())
+            val motherLastName = it?.toString().orEmpty()
+            viewModel.setMotherLastName(motherLastName)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(motherLastName = motherLastName)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.editFatherFirstName.doAfterTextChanged {
-            viewModel.setFatherFirstName(it?.toString().orEmpty())
+            val fatherFirstName = it?.toString().orEmpty()
+            viewModel.setFatherFirstName(fatherFirstName)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(fatherFirstName = fatherFirstName)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.editFatherLastName.doAfterTextChanged {
-            viewModel.setFatherLastName(it?.toString().orEmpty())
+            val fatherLastName = it?.toString().orEmpty()
+            viewModel.setFatherLastName(fatherLastName)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(fatherLastName = fatherLastName)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.editChildFirstName.doAfterTextChanged {
-            viewModel.setChildFirstName(it?.toString().orEmpty())
+            val childFirstName = it?.toString().orEmpty()
+            viewModel.setChildFirstName(childFirstName)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(childFirstName = childFirstName)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.editChildLastName.doAfterTextChanged {
-            viewModel.setChildLastName(it?.toString().orEmpty())
+            val childLastName = it?.toString().orEmpty()
+            viewModel.setChildLastName(childLastName)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(childLastName = childLastName)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
     }
 
@@ -286,6 +338,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             val participantIdBarcode =
                 data?.getStringExtra(ScanBarcodeActivity.EXTRA_BARCODE) ?: return
             viewModel.onParticipantIdScanned(participantIdBarcode)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(participantId = participantIdBarcode)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
     }
 
@@ -294,6 +351,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             val childCategoryName =
                 viewModel.childCategoryNames.value?.get(position) ?: return@setOnItemClickListener
             viewModel.setSelectedChildCategory(childCategoryName)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(childCategory = childCategoryName.value)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
     }
 
@@ -323,10 +385,21 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             else -> return
         }
         viewModel.setGender(gender)
+        val currentDetails = flowViewModel.registerDetails.value
+        if (currentDetails != null) {
+            val updatedDetails = currentDetails.copy(gender = gender)
+            flowViewModel.registerDetails.set(updatedDetails)
+        }
     }
 
     override fun onHomeLocationPicked(address: HomeLocationPickerViewModel.AddressUiModel) {
         viewModel.setHomeLocation(address.addressMap, address.stringRepresentation)
+
+        val currentDetails = flowViewModel.registerDetails.value
+        if (currentDetails != null) {
+            val updatedDetails = currentDetails.copy(address = address.addressMap)
+            flowViewModel.registerDetails.set(updatedDetails)
+        }
     }
 
     override fun confirmNoTelephone() {
@@ -347,6 +420,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         birthDatePicked = birthDate
         isBirthDateEstimated = isEstimated
         viewModel.setBirthDate(birthDate)
+        val currentDetails = flowViewModel.registerDetails.value
+        if (currentDetails != null) {
+            val updatedDetails = currentDetails.copy(birthDate = birthDate!!, isBirthDateEstimated = false)
+            flowViewModel.registerDetails.set(updatedDetails)
+        }
     }
 
     override fun onEstimatedAgePicked(
@@ -362,6 +440,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
         viewModel.setBirthDateBasedOnEstimatedBirthdate(estimatedBirthDate)
         viewModel.setEstimatedAgeText(yearsEstimated, monthsEstimated, weeksEstimated)
+        val currentDetails = flowViewModel.registerDetails.value
+        if (currentDetails != null) {
+            val updatedDetails = currentDetails.copy(birthDate = estimatedBirthDate!!, isBirthDateEstimated = true)
+            flowViewModel.registerDetails.set(updatedDetails)
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {

@@ -6,7 +6,8 @@ import androidx.annotation.StringRes
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
-import com.jnj.vaccinetracker.common.domain.entities.DraftParticipant
+import com.jnj.vaccinetracker.common.domain.entities.Address
+import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.domain.entities.ImageBytes
 import com.jnj.vaccinetracker.common.domain.entities.RegisterParticipant
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
@@ -16,6 +17,7 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
+import com.soywiz.klock.DateTime
 import javax.inject.Inject
 
 /**
@@ -23,7 +25,7 @@ import javax.inject.Inject
  */
 class RegisterParticipantFlowViewModel @Inject constructor(
     override val dispatchers: AppCoroutineDispatchers,
-    private val participantManager: ParticipantManager,
+    private val participantManager: ParticipantManager
 ) : ViewModelBase() {
 
     val currentScreen = mutableLiveData<Screen>()
@@ -33,7 +35,30 @@ class RegisterParticipantFlowViewModel @Inject constructor(
     val participantUuid = mutableLiveData<String>()
     val participant = mutableLiveData<ParticipantSummaryUiModel>()
     val registerParticipant = mutableLiveData<RegisterParticipant>()
-    val registerDetails = mutableLiveData<ParticipantManager.RegisterDetails>()
+    val registerDetails = mutableLiveData<ParticipantManager.RegisterDetails>().apply {
+        value = ParticipantManager.RegisterDetails(
+            participantId = "",
+            nin = "",
+            childNumber = "",
+            birthWeight = "",
+            gender = Gender.MALE,
+            birthDate = DateTime.now(),
+            isBirthDateEstimated = false,
+            telephone = "",
+            siteUuid = "",
+            language = "",
+            address = Address("", "", "", "", "", "", ""),
+            picture = null,
+            biometricsTemplateBytes = null,
+            motherFirstName = "",
+            motherLastName = "",
+            fatherFirstName = "",
+            fatherLastName = "",
+            childFirstName = "",
+            childLastName = "",
+            childCategory = ""
+        )
+    }
     val visitTypeName = mutableLiveData<String>()
     val leftEyeScanned = mutableLiveBoolean()
     val rightEyeScanned = mutableLiveBoolean()
@@ -141,6 +166,19 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         currentScreen.set(Screen.PARTICIPANT_DETAILS)
     }
 
+    fun onChildPictureClicked() {
+        if (participantPicture.get() != null) {
+            currentScreen.set(Screen.CONFIRM_PICTURE)
+        } else {
+            currentScreen.set(Screen.TAKE_PICTURE)
+        }
+    }
+
+    fun backToRegistrationPage() {
+        navigationDirection = NavigationDirection.FORWARD
+        currentScreen.set(Screen.PARTICIPANT_DETAILS)
+    }
+
     fun confirmRegistrationWithCaptureVaccinesPage(registerParticipant: RegisterParticipant) {
        this.registerParticipant.set(registerParticipant)
         navigationDirection = NavigationDirection.FORWARD
@@ -161,5 +199,4 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         PARTICIPANT_CAPTURE_HISTORICAL_DATA(R.string.participant_registration_historical_data_title),
         VISIT_TYPE_HISTORICAL_DATA(R.string.participant_registration_historical_data_title)
     }
-
 }

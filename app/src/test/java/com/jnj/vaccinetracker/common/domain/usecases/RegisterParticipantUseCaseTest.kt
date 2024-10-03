@@ -81,6 +81,8 @@ class RegisterParticipantUseCaseTest : FunSpec({
         ),
         scheduleFirstVisit = createScheduleFirstVisit(),
         attributes = emptyMap(),
+        childFirstName = "childFirstName",
+        childLastName = "childLastName"
     )
 
     val uploadedDraftParticipantTemplatesPending = DraftParticipant(
@@ -96,7 +98,9 @@ class RegisterParticipantUseCaseTest : FunSpec({
         birthDate = registerParticipant.birthDate,
         attributes = registerParticipant.attributes,
         address = registerParticipant.address,
-        draftState = DraftState.UPLOADED
+        draftState = DraftState.UPLOADED,
+        childFirstName = "childFirstName",
+        childLastName = "childLastName"
     )
 
     val uploadedDraftParticipantTemplatesUploaded = DraftParticipant(
@@ -112,7 +116,9 @@ class RegisterParticipantUseCaseTest : FunSpec({
         birthDate = registerParticipant.birthDate,
         attributes = registerParticipant.attributes,
         address = registerParticipant.address,
-        draftState = DraftState.UPLOADED
+        draftState = DraftState.UPLOADED,
+        childFirstName = "childFirstName",
+        childLastName = "childLastName"
     )
 
     val draftVisit = DraftVisit(

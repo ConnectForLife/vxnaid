@@ -96,8 +96,10 @@ class RegisterParticipantTakePictureFragment : BaseFragment() {
         binding.btnSkip.setOnClickListener {
             flowViewModel.skipPicture()
         }
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(false)
+
+        setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -106,6 +108,16 @@ class RegisterParticipantTakePictureFragment : BaseFragment() {
         // Make sure that all permissions are still present, since the user could have removed them while the app was in paused state.
         if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             flowViewModel.navigateBack()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                flowViewModel.backToRegistrationPage()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
