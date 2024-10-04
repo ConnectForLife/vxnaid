@@ -89,7 +89,8 @@ class SubstancesDataUtil {
                             substance.routeOfAdministration,
                             substance.group,
                             substance.maximumAgeInWeeks,
-                            substance.maximumAgeInWeeks
+                            substance.minimumWeeksNumberAfterPreviousDose,
+                            substance.visitType
                         )
                     )
                 }
@@ -158,7 +159,8 @@ class SubstancesDataUtil {
                         substance.routeOfAdministration,
                         substance.group,
                         substance.maximumAgeInWeeks,
-                        substance.minimumWeeksNumberAfterPreviousDose
+                        substance.minimumWeeksNumberAfterPreviousDose,
+                        substance.visitType
                     )
                 )
             }
@@ -262,7 +264,8 @@ class SubstancesDataUtil {
                 substanceToBeAdministeredObject?.routeOfAdministration ?: "",
                 substanceToBeAdministeredObject?.group ?: "",
                 substanceToBeAdministeredObject?.maximumAgeInWeeks,
-                substanceToBeAdministeredObject?.minimumWeeksNumberAfterPreviousDose
+                substanceToBeAdministeredObject?.minimumWeeksNumberAfterPreviousDose,
+                substanceToBeAdministeredObject?.visitType
             )
         }
 

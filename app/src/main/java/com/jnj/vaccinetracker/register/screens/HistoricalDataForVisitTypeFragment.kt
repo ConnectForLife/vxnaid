@@ -107,6 +107,7 @@ class HistoricalDataForVisitTypeFragment :
                group = "notNeeded",
                maximumAgeInWeeks = null,
                minimumWeeksNumberAfterPreviousDose = null,
+               visitType = "notNeeded",
                obsDate = date
             )
          } ?: emptyList()

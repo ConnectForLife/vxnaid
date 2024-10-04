@@ -20,5 +20,6 @@ data class Substance(
     val minimumWeeksNumberAfterPreviousDose: Int?,
     val group: String,
     val routeOfAdministration: String,
-    val category: String
+    val category: String,
+    val visitType: String
 )
