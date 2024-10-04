@@ -111,10 +111,14 @@ class DraftParticipantScript {
                     address = address,
                     picture = image,
                     biometricsTemplateBytes = template,
-                    "fatherName",
-                    "motherName",
-                    "childName",
-                    "childCategory"
+                    motherFirstName = "motherFirstName",
+                    motherLastName = "motherLastName",
+                    fatherFirstName = "fatherFirstName",
+                    fatherLastName = "fatherLastName",
+                    childFirstName = "childFirstName",
+                    childLastName = "childLastName",
+                    childCategory = "childCategory"
+
                 )
             )
             println("logging first visit for participant $participantId")

@@ -139,11 +139,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val birthWeight = mutableLiveData<String>()
     val birthWeightValidationMessage = mutableLiveData<String>()
 
-    val fathersName = mutableLiveData<String>()
-    val fathersNameValidationMessage = mutableLiveData<String>()
-
-
-
     val childCategory = mutableLiveData<DisplayValue>()
     val childCategoryValidationMessage = mutableLiveData<String>()
     val childCategoryNames = mutableLiveData<List<DisplayValue>>()
@@ -204,7 +199,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                     scannedParticipantId.value = participantId.value
                 }
             }
-
             leftIrisScanned.set(args.leftEyeScanned)
             rightIrisScanned.set(args.rightEyeScanned)
             irisScans[IrisPosition.LEFT] = args.leftEyeScanned
@@ -268,7 +262,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             args.registerDetails.birthWeight?.let { setBirthWeight(it) }
             args.registerDetails.gender.let { setGender(it) }
             setBirthDateOrEstimatedAge(args.registerDetails.birthDate, args.registerDetails.isBirthDateEstimated)
-            args.registerDetails.telephone?.let { setPhone(it, true) }
             args.registerDetails.motherFirstName.let { setMotherFirstName(it) }
             args.registerDetails.motherLastName.let { setMotherLastName(it) }
             args.registerDetails.fatherFirstName.let { setFatherFirstName(it) }
@@ -298,7 +291,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     private fun onSiteAndConfigurationLoaded(site: Site, configuration: Configuration, loc: TranslationMap) {
-
         defaultPhoneCountryCode.set(site.countryCode)
         if (phoneCountryCode.get() == null) phoneCountryCode.set(site.countryCode)
 
@@ -306,8 +298,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             DisplayValue(vaccine.name, loc[vaccine.name])
         })
         val categories = listOf("National", "Foreigner", "Refugee")
-        val childCategoryDisplayValue = categories.map { categories ->
-            DisplayValue(categories, loc[categories])
+        val childCategoryDisplayValue = categories.map { category ->
+            DisplayValue(category, loc[category])
         }
         childCategoryNames.set(childCategoryDisplayValue)
 
@@ -632,7 +624,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         languageValidationMessage.set(null)
         motherFirstNameValidationMessage.set(null)
         motherLastNameValidationMessage.set(null)
-        fathersNameValidationMessage.set(null)
+        fatherFirstName.set(null)
+        fatherLastName.set(null)
         childFirstNameValidationMessage.set(null)
         childLastNameValidationMessage.set(null)
     }
@@ -784,10 +777,13 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (this.phone.get() == phone) return
         var modifiedPhone = phone
         if (removeCode) {
-            // it will only work for Uganda and other 3 digit country codes
-            modifiedPhone = modifiedPhone.removeRange(0, 3)
+            if (modifiedPhone.length >= 3) {
+                // it will only work for Uganda and other 3 digit country codes
+                modifiedPhone = modifiedPhone.removeRange(0, 3)
+            }
         }
         this.phone.set(modifiedPhone)
+
         validatePhone()
     }
 
