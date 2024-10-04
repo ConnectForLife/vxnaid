@@ -124,16 +124,20 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
          setTextColor(ContextCompat.getColorStateList(context, R.color.colorTextOnPrimary))
          background = ContextCompat.getDrawable(context, R.drawable.rounded_button_30dp)
          backgroundTintList = getButtonBackgroundTint(name)
+      // Apply fixed 50% opacity
+         alpha = 0.5f
          setOnClickListener { onButtonClicked(name) }
       }
    }
 
+
    private fun createButtonLayoutParams(): FrameLayout.LayoutParams {
-      val size = 200.dpToPx
+      val size = 100.dpToPx
       return FrameLayout.LayoutParams(size, size).apply {
          setMargins(32.dpToPx, 32.dpToPx, 32.dpToPx, 32.dpToPx)
       }
    }
+
 
    private fun getButtonBackgroundTint(visitTypeName: String) = if (viewModel.visitTypesData.value?.containsKey(visitTypeName) == true) {
       ContextCompat.getColorStateList(requireContext(), R.color.colorPrimary)

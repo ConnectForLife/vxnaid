@@ -3,6 +3,7 @@
     <color name="ic_launcher_background">#FFFFFF</color>
     <color name="colorPrimary">#1E6746</color>
     <color name="colorPrimaryLight">#819ca9</color>
+    <color name="colorPrimaryGreen">#008000</color>
     <color name="colorPrimaryLighter">#F2F2F2</color>
     <color name="colorPrimaryDark">#13422d</color>
     <color name="colorAccent">#1E6746</color>
