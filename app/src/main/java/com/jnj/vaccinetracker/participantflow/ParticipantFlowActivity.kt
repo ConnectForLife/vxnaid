@@ -2,9 +2,11 @@ package com.jnj.vaccinetracker.participantflow
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
@@ -21,6 +23,7 @@ import com.jnj.vaccinetracker.participantflow.screens.*
  * @author maartenvangiel
  * @version 1
  */
+@RequiresApi(Build.VERSION_CODES.O)
 class ParticipantFlowActivity : BaseActivity() {
 
     companion object {
@@ -85,6 +88,7 @@ class ParticipantFlowActivity : BaseActivity() {
             ParticipantFlowViewModel.Screen.IRIS_SCAN_LEFT_EYE -> ParticipantFlowIrisScanLeftFragment()
             ParticipantFlowViewModel.Screen.IRIS_SCAN_RIGHT_EYE -> ParticipantFlowIrisScanRightFragment()
             ParticipantFlowViewModel.Screen.PARTICIPANT_MATCHING -> ParticipantFlowMatchingFragment()
+            ParticipantFlowViewModel.Screen.ADVERSE_EFFECTS -> AdverseEffectsFragment()
             else -> null
         }
         screen?.let { title = getString(it.title) }

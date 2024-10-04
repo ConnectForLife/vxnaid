@@ -16,10 +16,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.IrisPosition
+import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
+import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.FragmentParticipantFlowMatchingBinding
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
@@ -71,6 +73,10 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
                 viewModel.getSelectedParticipantSummary()?.let { startParticipantVisitContraindications(it, false) }
             }
 
+        }
+
+        binding.btnReportAdverseEffects.setOnClickListener {
+            viewModel.getSelectedParticipantSummary()?.let {startParticipantReportAdverseEffects(it)}
         }
 
         return binding.root
@@ -134,7 +140,10 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
     }
 
     private fun onItemSelected(matchingListItem: ParticipantFlowMatchingViewModel.MatchingListItem) {
-        viewModel.setSelectedParticipant(matchingListItem)
+        val selectedParticipant = viewModel.setSelectedParticipant(matchingListItem)
+        if (selectedParticipant != null) {
+            flowViewModel.selectedParticipant.value = selectedParticipant
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -161,6 +170,10 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
     private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
         startActivity(VisitActivity.create(requireContext(), participant, newRegisteredParticipant))
         (requireActivity() as BaseActivity).setForwardAnimation()
+    }
+
+    private fun startParticipantReportAdverseEffects(participant: ParticipantSummaryUiModel) {
+        flowViewModel.onStartAdverseEffects()
     }
 
     private fun startParticipantEdit(participant: ParticipantSummaryUiModel) {

@@ -28,7 +28,7 @@ import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
-import com.jnj.vaccinetracker.databinding.DialogVistRegisteredSuccessBinding
+import com.jnj.vaccinetracker.databinding.DialogVisitRegisteredSuccessBinding
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.ScheduleVisitDatePickerDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
@@ -58,7 +58,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         }
     }
 
-    private lateinit var binding: DialogVistRegisteredSuccessBinding
+    private lateinit var binding: DialogVisitRegisteredSuccessBinding
     private lateinit var visitDateTextView: TextView
     private lateinit var visitScheduleResultTextView: TextView
     private lateinit var nextVisitDateContainerLinearLayout: LinearLayout
