@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.LinearLayout
+import android.widget.GridLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -221,8 +221,8 @@ class OtherSubstanceItemAdapter(
     }
 
     inner class MultipleRadioViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val labelTextView: TextView = itemView.findViewById(R.id.label_otherSubstance)
-        private val checkboxGroup: LinearLayout = itemView.findViewById(R.id.linearLayout_checkBoxGroup)
+        private val labelTextView: TextView = itemView.findViewById(R.id.label_otherSubstance)
+        private val checkboxGroup: GridLayout = itemView.findViewById(R.id.gridLayout_checkBoxGroup)
 
         fun bind(item: OtherSubstanceDataModel) {
             val selectedValues = item.value?.split(",")?.map { it.trim() }?.toMutableSet() ?: mutableSetOf()

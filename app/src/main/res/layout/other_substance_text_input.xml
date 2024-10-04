@@ -12,7 +12,10 @@
            android:id="@+id/label_otherSubstance"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:text="@string/general_label_label" />
+           android:text="@string/general_label_label"
+           android:textStyle="bold"
+           android:textSize="18sp"
+           android:textColor="@android:color/black" />
 
        <EditText
            android:id="@+id/editText_otherSubstance"

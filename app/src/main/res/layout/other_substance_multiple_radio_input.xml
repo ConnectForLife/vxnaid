@@ -12,13 +12,17 @@
             android:id="@+id/label_otherSubstance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/general_label_label" />
+            android:text="@string/general_label_label"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout_checkBoxGroup"
+        <GridLayout
+            android:id="@+id/gridLayout_checkBoxGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:columnCount="2"
+            android:orientation="horizontal" />
 
     </LinearLayout>
 </layout>
