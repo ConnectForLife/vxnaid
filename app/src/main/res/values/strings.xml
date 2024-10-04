@@ -438,4 +438,5 @@
     <string name="report_adverse_effects_successfull_text">Adverse effects successfully reported.</string>
     <string name="participant_matching_btn_report_adverse_effects">Adverse Effects</string>
     <string name="adverse_effects_title">Report Adverse Effects</string>
+    <string name="dialog_historical_visit_text">When did the visit take place?</string>
 </resources>
