@@ -20,13 +20,17 @@ import com.jnj.vaccinetracker.register.adapters.SubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
+import com.jnj.vaccinetracker.register.dialogs.HistoricalVisitDateDialog
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
+import com.soywiz.klock.DateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 class HistoricalDataForVisitTypeFragment :
    BaseFragment(),
-   OtherSubstanceItemAdapter.AddSubstanceValueListener {
+   OtherSubstanceItemAdapter.AddSubstanceValueListener,
+   HistoricalVisitDateDialog.HistoricalVisitDateListener
+{
 
    private val viewModel: HistoricalDataForVisitTypeViewModel by viewModels { viewModelFactory }
    private val allDataViewModel: RegisterParticipantHistoricalDataViewModel by activityViewModels { viewModelFactory }
@@ -37,6 +41,7 @@ class HistoricalDataForVisitTypeFragment :
 
    companion object {
       private const val ARG_VISIT_TYPE_NAME = "visitTypeName"
+      private const val TAG_HISTORICAL_VISIT_DATE = "historicalVisitDateDialog"
 
       fun create(visitTypeName: String?): HistoricalDataForVisitTypeFragment {
          return HistoricalDataForVisitTypeFragment().apply {
@@ -76,6 +81,10 @@ class HistoricalDataForVisitTypeFragment :
 
       viewModel.otherSubstancesData.observe(viewLifecycleOwner) { otherSubstances ->
          otherSubstanceAdapter.updateItemsList(otherSubstances)
+      }
+
+      if (!doesSubstancesHaveAnyDates()) {
+         HistoricalVisitDateDialog().show(childFragmentManager, TAG_HISTORICAL_VISIT_DATE)
       }
 
       return binding.root
@@ -122,7 +131,7 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private fun setupRecyclerViews() {
-      substanceAdapter = SubstanceItemAdapter(mutableListOf(), viewModel, requireActivity().supportFragmentManager)
+      substanceAdapter = SubstanceItemAdapter(mutableListOf(), viewModel, requireActivity().supportFragmentManager, requireContext())
       binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
       binding.recyclerView.adapter = substanceAdapter
 
@@ -160,7 +169,20 @@ class HistoricalDataForVisitTypeFragment :
       }
    }
 
+   private fun doesSubstancesHaveAnyDates(): Boolean {
+      val substancesAndDates = viewModel.substancesAndDates.value
+      if (substancesAndDates.isNullOrEmpty()) {
+         return false
+      }
+      return substancesAndDates.values.any { it.isNotEmpty() }
+   }
+
    override fun addOtherSubstance(substanceName: String, value: String) {
       viewModel.addObsToOtherSubstancesObsMap(substanceName, value)
+   }
+
+   override fun onDatePicked(date: DateTime) {
+      viewModel.visitDate.value = date
+      substanceAdapter.reload()
    }
 }

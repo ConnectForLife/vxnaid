@@ -12,6 +12,7 @@ import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
+import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,6 +36,7 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
    val otherSubstancesAndValues = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
    val loading = MutableLiveData<Boolean>()
    val errorMessage = MutableLiveData<String>()
+   val visitDate = MutableLiveData<DateTime>()
 
    init {
       observeArgs()
@@ -53,6 +55,14 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
 
    fun addVaccineDate(conceptName: String, dateValue: String) {
       updateMap(substancesAndDates, conceptName, dateValue)
+   }
+
+   fun removeVaccineDate(conceptName: String) {
+      val substancesAndDatesValue = substancesAndDates.value?.toMutableMap() ?: mutableMapOf()
+      if (substancesAndDatesValue.containsKey(conceptName)) {
+         substancesAndDatesValue.remove(conceptName)
+         substancesAndDates.postValue(substancesAndDatesValue)
+      }
    }
 
    private suspend fun loadData(args: Args) {
