@@ -119,6 +119,7 @@ class HistoricalDataForVisitTypeFragment :
                label = conceptName,
                category = "notNeeded",
                inputType = "notNeeded",
+               visitType = "notNeeded",
                options = emptyList(),
                value = value
             )

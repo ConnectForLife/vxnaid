@@ -87,9 +87,9 @@ class VisitViewModel @Inject constructor(
     var visitsCounter = MutableLiveData<Int>(0)
 
     var isSuggesting =  MutableLiveData<Boolean>(true)
-    var selectedVisitType =  MutableLiveData<String>(Constants.VISIT_TYPES[0])
-    var suggestedVisitType =  MutableLiveData<String>(Constants.VISIT_TYPES[0])
-    var visitTypes =  MutableLiveData<List<String>>(Constants.VISIT_TYPES)
+    var selectedVisitType =  MutableLiveData<String>()
+    var suggestedVisitType =  MutableLiveData<String>()
+    var visitTypes =  MutableLiveData<List<String>>()
     var visitLocation = MutableLiveData<String>()
     var isVisitLocationSelected = MutableLiveData(false)
     var checkVisitLocation = MutableLiveData(false)
@@ -124,6 +124,7 @@ class VisitViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun load(participantSummary: ParticipantSummaryUiModel) {
         try {
+            visitTypes.value = configurationManager.getSubstancesConfig().map { it.visitType }.distinct()
             val visits = visitManager.getVisitsForParticipant(participantSummary.participantUuid)
             visitsCounter.value = visits.count()
             suggestedVisitType.value = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantSummary.birthDateText)

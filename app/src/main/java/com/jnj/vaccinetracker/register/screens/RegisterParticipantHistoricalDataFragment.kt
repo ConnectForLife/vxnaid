@@ -10,14 +10,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.helpers.dpToPx
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
 import com.jnj.vaccinetracker.common.ui.BaseActivity
@@ -30,6 +29,7 @@ import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantSuccessfulDial
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 class RegisterParticipantHistoricalDataFragment : BaseFragment(),
@@ -39,6 +39,7 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    private val viewModel: RegisterParticipantHistoricalDataViewModel by activityViewModels { viewModelFactory }
    private val registerViewModel: RegisterParticipantParticipantDetailsViewModel by activityViewModels { viewModelFactory }
    private lateinit var binding: FragmentRegisterHistoricalVisitsBinding
+   @Inject lateinit var configurationManager: ConfigurationManager
 
    companion object {
       private const val TAG_SUCCESS_DIALOG = "successDialog"
@@ -64,7 +65,6 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
       binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
 
       setupClickListeners()
-      setupButtons()
 
       return binding.root
    }
@@ -110,8 +110,13 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    private fun setupButtons() {
       binding.buttonGrid.apply {
          removeAllViews()
-         Constants.VISIT_TYPES.forEach { visitTypeName ->
-            addView(createButton(visitTypeName))
+         lifecycleScope.launch {
+            configurationManager.getSubstancesConfig()
+               .map { it.visitType }
+               .distinct()
+               .forEach { visitTypeName ->
+                  addView(createButton(visitTypeName))
+               }
          }
       }
    }
@@ -124,12 +129,9 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
          setTextColor(ContextCompat.getColorStateList(context, R.color.colorTextOnPrimary))
          background = ContextCompat.getDrawable(context, R.drawable.rounded_button_30dp)
          backgroundTintList = getButtonBackgroundTint(name)
-      // Apply fixed 50% opacity
-         alpha = 0.5f
          setOnClickListener { onButtonClicked(name) }
       }
    }
-
 
    private fun createButtonLayoutParams(): FrameLayout.LayoutParams {
       val size = 100.dpToPx
@@ -137,7 +139,6 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
          setMargins(32.dpToPx, 32.dpToPx, 32.dpToPx, 32.dpToPx)
       }
    }
-
 
    private fun getButtonBackgroundTint(visitTypeName: String) = if (viewModel.visitTypesData.value?.containsKey(visitTypeName) == true) {
       ContextCompat.getColorStateList(requireContext(), R.color.colorPrimary)
