@@ -193,7 +193,7 @@
     <string name="visit_label_visit_type">Please select the appropriate visit type</string>
     <string name="visit_label_title">Visit</string>
     <string name="visit_dosing_label_scan_or_manual_entry">Please scan the barcode vial or enter it manually below:</string>
-    <string name="visit_dosing_label_visit_number">Visit number:</string>
+    <string name="visit_dosing_label_visit_number">Visit counter:</string>
     <string name="visit_dosing_label_time_window">Scheduled date:</string>
     <string name="visit_dosing_label_visit_location">Visit location:</string>
     <string name="visit_vaccination_history">Vaccination History:</string>

@@ -127,28 +127,34 @@ class VisitViewModel @Inject constructor(
             visitTypes.value = configurationManager.getSubstancesConfig().map { it.visitType }.distinct()
             val visits = visitManager.getVisitsForParticipant(participantSummary.participantUuid)
             visitsCounter.value = visits.count()
-            suggestedVisitType.value = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantSummary.birthDateText)
-            selectedVisitType.value = suggestedVisitType.value
-            suggestedSubstancesData.value = SubstancesDataUtil.getSubstancesDataForCurrentVisit(
+
+            val suggestedVisitTypeFromConfig = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantSummary.birthDateText, visits, configurationManager)
+            suggestedVisitType.value = suggestedVisitTypeFromConfig
+            selectedVisitType.value = suggestedVisitTypeFromConfig
+
+            val suggestedSubstancesFromConfig = SubstancesDataUtil.getSubstancesDataForCurrentVisit(
                 participantSummary.birthDateText,
                 visits,
                 configurationManager
             )
-            selectedSubstancesData.value = suggestedSubstancesData.value
+            suggestedSubstancesData.value = suggestedSubstancesFromConfig
+            selectedSubstancesData.value = suggestedSubstancesFromConfig
+
             substancesDataAll.value = SubstancesDataUtil.getAllSubstances(configurationManager)
-            otherSubstancesData.value = SubstancesDataUtil.getOtherSubstancesDataForCurrentVisit(
-                participantSummary.birthDateText,
+            otherSubstancesData.value = SubstancesDataUtil.getOtherSubstancesDataForVisitType(
+                suggestedVisitTypeFromConfig,
                 configurationManager
             )
             suggestedOtherSubstancesData.value = otherSubstancesData.value
+
             onVisitsLoaded(visits)
-            loading.set(false)
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()
-            loading.set(false)
             errorMessage.set(resourcesWrapper.getString(R.string.general_label_error))
             logError("Failed to load visits for participant: ", ex)
+        } finally {
+            loading.set(false)
         }
 
         loadImage(participantSummary)

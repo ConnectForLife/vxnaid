@@ -61,13 +61,80 @@ class SubstancesDataUtil {
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun getVisitTypeForCurrentVisit(
+        suspend fun getVisitTypeForCurrentVisit(
             participantBirthDate: String,
+            participantVisits: List<VisitDetail>,
+            configurationManager: ConfigurationManager
         ): String {
-            val childAgeInWeeks = getWeeksBetweenDateAndToday(participantBirthDate)
-            val visitType = getVisitTypeFromChildAgeInWeeks(childAgeInWeeks)
-            return visitType
+            val allSubstancesConfig = configurationManager.getSubstancesConfig()
+            val visitTypesOrdered = getVisitTypesInOrder(allSubstancesConfig)
+            val suggestedSubstancesForChild = getSubstancesDataForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
+
+            return when {
+                // Case 1: If there are suggested substances for the child
+                suggestedSubstancesForChild.isNotEmpty() -> {
+                    val visitTypesInSuggestedSubstances = getVisitTypesFromSubstances(suggestedSubstancesForChild)
+                    getBestVisitType(visitTypesInSuggestedSubstances, visitTypesOrdered)
+                }
+                // Case 2: If no suggested substances, check for the last visit
+                else -> getLastVisitType(participantVisits, allSubstancesConfig, visitTypesOrdered) ?: ""
+            }
         }
+
+        private fun getBestVisitType(visitTypesInSuggestedSubstances: List<String>, visitTypesOrdered: List<String>): String {
+            return when {
+                visitTypesInSuggestedSubstances.size == 1 -> visitTypesInSuggestedSubstances[0]
+                visitTypesInSuggestedSubstances.size > 1 -> visitTypesInSuggestedSubstances.maxByOrNull { visitTypesOrdered.indexOf(it) } ?: ""
+                else -> ""
+            }
+        }
+
+        private fun getLastVisitType(
+            participantVisits: List<VisitDetail>,
+            allSubstancesConfig: List<Substance>,
+            visitTypesOrdered: List<String>
+        ): String? {
+            val lastVisit = participantVisits.filter{it.visitStatus == Constants.VISIT_STATUS_OCCURRED}.maxByOrNull { it.visitDate }
+
+
+            lastVisit?.let {
+                val substanceNames = extractSubstanceNamesFromObservations(it)
+                val visitTypesFromLastVisit = getVisitTypesFromSubstanceNames(substanceNames, allSubstancesConfig)
+                val lastVisitType = visitTypesFromLastVisit.maxByOrNull { visitTypesOrdered.indexOf(it) }
+                val nextVisitIndex = lastVisitType?.let { visitTypesOrdered.indexOf(it) + 1 }
+
+                return nextVisitIndex?.takeIf { it < visitTypesOrdered.size }?.let { visitTypesOrdered[it] }
+            }
+
+            return null
+        }
+
+        private fun extractSubstanceNamesFromObservations(visit: VisitDetail): List<String> {
+            return visit.observations.mapNotNull { (key, _) ->
+                if (key.endsWith(" ${Constants.DATE_STR}")) key.split(" ${Constants.DATE_STR}")[0] else null
+            }
+        }
+
+        private fun getVisitTypesFromSubstanceNames(
+            substanceNames: List<String>,
+            allSubstancesConfig: List<Substance>
+        ): List<String> {
+            return substanceNames.mapNotNull { substanceName ->
+                allSubstancesConfig.find { it.conceptName == substanceName }?.visitType
+            }
+        }
+
+        private fun getVisitTypesInOrder(substances: List<Substance>): List<String> {
+            return substances
+                .groupBy { it.weeksAfterBirth }
+                .toSortedMap()
+                .map { it.value.first().visitType }
+        }
+
+        private fun getVisitTypesFromSubstances(substances: List<SubstanceDataModel>): List<String> {
+            return substances.map { it.visitType.toString() }
+        }
+
 
         @RequiresApi(Build.VERSION_CODES.O)
         suspend fun getSubstancesDataForVisitType(
@@ -273,32 +340,6 @@ class SubstancesDataUtil {
             val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toDouble()
 
             return ceil(daysBetween / 7).toInt()
-        }
-
-        private fun getWeeksBetweenDateAndTodayFromVisitType(visitType: String): Int {
-            return when (visitType) {
-                Constants.VISIT_TYPE_AT_BIRTH -> 1
-                Constants.VISIT_TYPE_SIX_WEEKS -> 6
-                Constants.VISIT_TYPE_TEN_WEEKS -> 10
-                Constants.VISIT_TYPE_FOURTEEN_WEEKS -> 14
-                Constants.VISIT_TYPE_NINE_MONTHS -> 36
-                Constants.VISIT_TYPE_EIGHTEEN_MONTHS -> 72
-                Constants.VISIT_TYPE_TWO_YEARS -> 96
-                else -> 1
-            }
-        }
-
-        private fun getVisitTypeFromChildAgeInWeeks(ageInWeeks: Int): String {
-            return when {
-                ageInWeeks in 0..4 -> Constants.VISIT_TYPE_AT_BIRTH       // 0-4 weeks: Birth visit
-                ageInWeeks in 5..8 -> Constants.VISIT_TYPE_SIX_WEEKS      // 5-8 weeks: Six weeks visit
-                ageInWeeks in 9..12 -> Constants.VISIT_TYPE_TEN_WEEKS     // 9-12 weeks: Ten weeks visit
-                ageInWeeks in 13..34 -> Constants.VISIT_TYPE_FOURTEEN_WEEKS // 13-34 weeks: Fourteen weeks visit
-                ageInWeeks in 35..70 -> Constants.VISIT_TYPE_NINE_MONTHS  // 35-70 weeks: Nine months visit
-                ageInWeeks in 71..94 -> Constants.VISIT_TYPE_EIGHTEEN_MONTHS // 71-94 weeks: Eighteen months visit
-                ageInWeeks >= 95 -> Constants.VISIT_TYPE_TWO_YEARS        // 95+ weeks: Two years visit
-                else -> Constants.VISIT_TYPE_AT_BIRTH                    // Default to Birth visit
-            }
         }
 
         private fun isSubstanceAlreadyApplied(
