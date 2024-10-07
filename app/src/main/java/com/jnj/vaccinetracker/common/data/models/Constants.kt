@@ -31,7 +31,6 @@ object Constants {
     const val ATTRIBUTE_VISIT_STATUS = "Visit Status"
     const val ATTRIBUTE_VISIT_DAYS_AFTER = "Up Window"
     const val ATTRIBUTE_VISIT_DAYS_BEFORE = "Low Window"
-    const val ATTRIBUTE_VISIT_VACCINE_MANUFACTURER = "Vaccine Manufacturer"
     const val ATTRIBUTE_VISIT_DOSE_NUMBER = "Dose number"
     const val ATTRIBUTE_VISIT_LOCATION = "Visit Location"
     const val VISIT_TYPE_DOSING = "Dosing"
@@ -39,12 +38,7 @@ object Constants {
     const val VISIT_STATUS_OCCURRED = "OCCURRED"
     const val VISIT_STATUS_MISSED = "MISSED"
     const val VISIT_STATUS_SCHEDULED = "SCHEDULED"
-    const val OBSERVATION_TYPE_BARCODE = "Barcode"
     const val OBSERVATION_TYPE_MANUFACTURER = "Vaccine Manufacturer"
-    const val OBSERVATION_TYPE_VISIT_WEIGHT = "Weight (kg)"
-    const val OBSERVATION_TYPE_VISIT_HEIGHT = "Height (cm)"
-    const val OBSERVATION_TYPE_VISIT_MUAC = "MUAC"
-    const val OBSERVATION_TYPE_VISIT_OEDEMA = "Is Oedema"
     const val RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME = "Reschedule Visit Reason"
 
     // common attributes
@@ -70,14 +64,6 @@ object Constants {
     const val BARCODE_STR = "Barcode"
     const val MANUFACTURER_NAME_STR = "Manufacturer"
     const val DATE_STR = "Date"
-
-    const val VISIT_TYPE_AT_BIRTH = "At Birth"
-    const val VISIT_TYPE_SIX_WEEKS = "6 weeks"
-    const val VISIT_TYPE_TEN_WEEKS = "10 weeks"
-    const val VISIT_TYPE_FOURTEEN_WEEKS = "14 weeks"
-    const val VISIT_TYPE_NINE_MONTHS = "9 months"
-    const val VISIT_TYPE_EIGHTEEN_MONTHS = "18 months"
-    const val VISIT_TYPE_TWO_YEARS = "2 years"
 
     const val REFERRAL_CLINIC_CONCEPT_NAME = "Referral Clinic Vxnaid";
     const val REFERRAL_ADDITIONAL_INFO_CONCEPT_NAME = "Referral Additional Info Vxnaid";
