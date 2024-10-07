@@ -5,7 +5,11 @@ import javax.inject.Inject
 class NinValidator @Inject constructor() {
 
     companion object {
-        private val NIN_REGEX = Regex("^[a-zA-Z][MF]\\d{2}[a-zA-Z\\d]{7}[a-zA-Z]{3}$")
+        /**
+         * The regex ^[A-Z0-9]{14}$ matches exactly 14 alphanumeric characters (letters or digits)
+         * with case insensitivity due to RegexOption.IGNORE_CASE 
+         */       
+        private val NIN_REGEX = Regex("^[A-Z0-9]{14}$", RegexOption.IGNORE_CASE)
     }
 
     fun validate(valueToValidate: String): Boolean {
