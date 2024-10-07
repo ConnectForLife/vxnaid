@@ -345,8 +345,7 @@ class VisitViewModel @Inject constructor(
     private fun buildVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
-        val locationUuid = syncSettingsRepository.getSiteUuid()
-            ?: throw NoSiteUuidAvailableException("Location not available")
+        val locationUuid = getLocationUuid()
 
         return CreateVisit(
             participantUuid = participant.participantUuid,
@@ -465,6 +464,10 @@ class VisitViewModel @Inject constructor(
         checkVisitLocation.value = true
     }
 
+    fun getLocationUuid(): String {
+        return syncSettingsRepository.getSiteUuidOrThrow()
+    }
+
     suspend fun onReferralAfterContraindications() {
         createVisitUseCase.createVisit(
             buildNextVisitObject(
@@ -491,8 +494,7 @@ class VisitViewModel @Inject constructor(
     ): CreateVisit {
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
-        val locationUuid = syncSettingsRepository.getSiteUuid()
-            ?: throw NoSiteUuidAvailableException("Location not available")
+        val locationUuid = getLocationUuid()
         return CreateVisit(
             participantUuid = participant!!.participantUuid,
             visitType = Constants.VISIT_TYPE_DOSING,

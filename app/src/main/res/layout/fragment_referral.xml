@@ -17,12 +17,45 @@
             tools:ignore="NestedWeights">
 
             <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/textView_refer_within_clinic_switch_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="15dp"
+                    android:text="@string/refer_within_clinic_switch_label"
+                    android:textAppearance="@style/LabelText"
+                    android:textColor="@color/colorPrimary" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_refer_within_clinic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:id="@+id/textView_refer_outside_clinic_switch_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="15dp"
+                    android:text="@string/refer_outside_clinic_switch_label"
+                    android:textAppearance="@style/LabelText" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/linearLayout_clinic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="18dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/textView_clinicLabel"
@@ -71,9 +104,9 @@
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
                     android:hint="@string/referral_page_additional_info_hint"
-                    android:minLines="4"
                     android:inputType="textMultiLine"
                     android:maxHeight="70sp"
+                    android:minLines="4"
                     android:text=""
                     android:textSize="18sp" />
             </LinearLayout>
@@ -90,8 +123,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text=""
                     android:gravity="center_horizontal"
+                    android:text=""
                     android:textAppearance="@style/PopupTitle" />
             </LinearLayout>
 
@@ -120,15 +153,15 @@
                     android:backgroundTint="@color/colorPrimary"
                     android:text="@string/general_label_close"
                     android:textAppearance="@style/ButtonTextStyling"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/textView_save_visit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
                     android:text="@string/refer_finish_visit_text"
-                    android:gravity="center_horizontal" />
+                    android:textSize="20sp" />
 
                 <Space
                     android:layout_width="0dp"

@@ -439,4 +439,6 @@
     <string name="participant_matching_btn_report_adverse_effects">Adverse Effects</string>
     <string name="adverse_effects_title">Report Adverse Effects</string>
     <string name="dialog_historical_visit_text">When did the visit take place?</string>
+    <string name="refer_within_clinic_switch_label">Refer within the clinic</string>
+    <string name="refer_outside_clinic_switch_label">Refer outside the clinic</string>
 </resources>

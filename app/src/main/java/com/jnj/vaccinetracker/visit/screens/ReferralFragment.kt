@@ -1,6 +1,5 @@
 package com.jnj.vaccinetracker.visit.screens
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -17,14 +16,13 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentReferralBinding
-import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.visit.VisitViewModel
-import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,6 +44,11 @@ class ReferralFragment : BaseFragment() {
     private lateinit var allVisits: List<VisitDetail>
     private var currentVisitUuid: String? = null
     private var participantUuid: String? = null
+    private var adapter: ArrayAdapter<String>? = null
+    private var locationUuid: String = ""
+    private var locations: List<Site> = listOf()
+    private var currentSite: Site? = null
+    private var isReferWithin: Boolean = true
 
     val isAfterVisit: Boolean by lazy {
         requireArguments().getBoolean(IS_AFTER_VISIT, false)
@@ -71,7 +74,11 @@ class ReferralFragment : BaseFragment() {
 
         initializeViews()
         setupListeners()
-        fetchLocations()
+        lifecycleScope.launch {
+            fetchLocations()
+            getVisitsForParticipant()
+            setupAdapter()
+        }
 
         return binding.root
     }
@@ -89,16 +96,18 @@ class ReferralFragment : BaseFragment() {
             btnSaveReferral.setOnClickListener { onReferButtonClicked() }
             btnCancelReferral.setOnClickListener { onDoNotReferClicked() }
             btnCloseReferral.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
+            switchReferWithinClinic.setOnCheckedChangeListener { _, isChecked ->
+                onSwitchChange(isChecked)
+            }
         }
     }
 
     private fun fetchLocations() {
         lifecycleScope.launch {
             try {
-                val locations = configurationManager.getSites()
-                val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, locations.map { it.name })
-                binding.dropdownClinics.setAdapter(adapter)
-                allVisits = visitManager.getVisitsForParticipant(participantUuid!!)
+                locations = configurationManager.getSites()
+                locationUuid = viewModel.getLocationUuid()
+                currentSite = locations.firstOrNull { it.uuid == locationUuid }
             } catch (e: Exception) {
                 Log.e("ReferralFragment", "Locations fetching failed", e)
                 showErrorMessage(getString(R.string.referral_page_failed_referral_text))
@@ -106,12 +115,41 @@ class ReferralFragment : BaseFragment() {
         }
     }
 
+    private fun getVisitsForParticipant() {
+        lifecycleScope.launch {
+            try {
+                allVisits = visitManager.getVisitsForParticipant(participantUuid!!)
+            } catch (e: Exception) {
+                Log.e("ReferralFragment", "Visits fetching failed", e)
+                showErrorMessage(getString(R.string.referral_page_failed_referral_text))
+            }
+        }
+    }
+
+    private fun setupAdapter() {
+        val locationWithoutCurrentSite = locations.filter { it.uuid != locationUuid }
+        adapter = if (locationWithoutCurrentSite.isNotEmpty()) {
+            ArrayAdapter(
+                requireContext(),
+                R.layout.item_dropdown,
+                locationWithoutCurrentSite.map { it.name })
+        } else {
+            ArrayAdapter(
+                requireContext(),
+                R.layout.item_dropdown,
+                listOf()
+            )
+        }
+        binding.dropdownClinics.setAdapter(adapter)
+        setHomeSiteInDropdown()
+    }
+
     private fun showErrorMessage(message: String) {
         com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(message)
     }
 
-    fun onReferButtonClicked() {
-        val selectedClinic = binding.dropdownClinics.text.toString()
+    private fun onReferButtonClicked() {
+        val selectedClinic = if (isReferWithin && currentSite != null) currentSite!!.name else binding.dropdownClinics.text.toString()
         val referralReason = binding.editTextAdditionalInfo.text.toString()
 
         if (!validateInputs(selectedClinic, referralReason)) return
@@ -145,6 +183,40 @@ class ReferralFragment : BaseFragment() {
         if (!isAfterVisit) {
             binding.btnCloseReferral.visibility = View.VISIBLE
         }
+    }
+
+    private fun onSwitchChange(isChecked: Boolean) {
+        if (isChecked) {
+            isReferWithin = false
+            setNullInDropdown()
+            binding.linearLayoutClinic.visibility = View.VISIBLE
+            binding.textViewReferOutsideClinicSwitchLabel.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+            )
+            binding.textViewReferWithinClinicSwitchLabel.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.colorTextOnLight)
+            )
+        } else {
+            isReferWithin = true
+            binding.linearLayoutClinic.visibility = View.GONE
+            binding.textViewReferOutsideClinicSwitchLabel.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.colorTextOnLight)
+            )
+            binding.textViewReferWithinClinicSwitchLabel.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+            )
+        }
+    }
+
+    private fun setHomeSiteInDropdown() {
+        val selectedIndex = locations.indexOfFirst { it.uuid == locationUuid }
+        if (selectedIndex != -1) {
+            binding.dropdownClinics.setText(adapter!!.getItem(selectedIndex), false)
+        }
+    }
+
+    private fun setNullInDropdown() {
+        binding.dropdownClinics.setText(null, false)
     }
 
     private fun onDoNotReferClicked() {
