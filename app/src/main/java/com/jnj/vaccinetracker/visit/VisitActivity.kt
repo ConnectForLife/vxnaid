@@ -336,18 +336,11 @@ class VisitActivity :
         lifecycleScope.launch {
             try {
             viewModel.onReferralAfterContraindications()
-            goToSplashActivity()
             } catch (e: Exception) {
                 Log.e("Rescheduling a visit", "Reschedule has failed failed", e)
                 com.jnj.vaccinetracker.common.dialogs.AlertDialog(context).showAlertDialog(getString(R.string.reschedule_visit_failed))
             }
         }
-    }
-
-    private fun goToSplashActivity() {
-        val intent = Intent(this, SplashActivity::class.java)
-        startActivity(intent)
-        finishAffinity()
     }
     private fun onDosingVisitRegistrationSuccessful() {
         val dosingVisit = viewModel.dosingVisit.value
