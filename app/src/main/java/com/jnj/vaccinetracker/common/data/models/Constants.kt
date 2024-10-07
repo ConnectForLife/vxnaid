@@ -79,16 +79,6 @@ object Constants {
     const val VISIT_TYPE_EIGHTEEN_MONTHS = "18 months"
     const val VISIT_TYPE_TWO_YEARS = "2 years"
 
-    val VISIT_TYPES = listOf(
-        VISIT_TYPE_AT_BIRTH,
-        VISIT_TYPE_SIX_WEEKS,
-        VISIT_TYPE_TEN_WEEKS,
-        VISIT_TYPE_FOURTEEN_WEEKS,
-        VISIT_TYPE_NINE_MONTHS,
-        VISIT_TYPE_EIGHTEEN_MONTHS,
-        VISIT_TYPE_TWO_YEARS
-    )
-
     const val REFERRAL_CLINIC_CONCEPT_NAME = "Referral Clinic Vxnaid";
     const val REFERRAL_ADDITIONAL_INFO_CONCEPT_NAME = "Referral Additional Info Vxnaid";
 

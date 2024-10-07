@@ -18,5 +18,6 @@ data class OtherSubstance(
     val weeksAfterBirthUpWindow: Int,
     val category: String,
     val inputType: String,
+    val visitType: String,
     val options: List<String>
 )

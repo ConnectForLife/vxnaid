@@ -74,27 +74,25 @@ class SubstancesDataUtil {
             visitType: String,
             configurationManager: ConfigurationManager
         ): List<SubstanceDataModel> {
-            val visitTypeInWeeks = getWeeksBetweenDateAndTodayFromVisitType(visitType)
-            val substancesConfig = configurationManager.getSubstancesConfig()
+            val filteredSubstancesByVisitType = configurationManager.getSubstancesConfig()
+                .filter { substance -> substance.visitType == visitType }
             val substanceDataModelList = mutableListOf<SubstanceDataModel>()
-            substancesConfig.forEach { substance ->
-                val minWeekNumber = substance.weeksAfterBirth - substance.weeksAfterBirthLowWindow
-                val maxWeekNumber = substance.weeksAfterBirth + substance.weeksAfterBirthUpWindow
-                if (visitTypeInWeeks in minWeekNumber..maxWeekNumber) {
-                    substanceDataModelList.add(
-                        SubstanceDataModel(
-                            substance.conceptName,
-                            substance.label,
-                            substance.category,
-                            substance.routeOfAdministration,
-                            substance.group,
-                            substance.maximumAgeInWeeks,
-                            substance.minimumWeeksNumberAfterPreviousDose,
-                            substance.visitType
-                        )
+
+            filteredSubstancesByVisitType.forEach { substance ->
+                substanceDataModelList.add(
+                    SubstanceDataModel(
+                        substance.conceptName,
+                        substance.label,
+                        substance.category,
+                        substance.routeOfAdministration,
+                        substance.group,
+                        substance.maximumAgeInWeeks,
+                        substance.minimumWeeksNumberAfterPreviousDose,
+                        substance.visitType
                     )
-                }
+                )
             }
+
             return substanceDataModelList.filter { it.conceptName != "" }.distinctBy { it.conceptName }
         }
 
@@ -188,6 +186,7 @@ class SubstancesDataUtil {
                             otherSubstance.label,
                             otherSubstance.category,
                             otherSubstance.inputType,
+                            otherSubstance.visitType,
                             otherSubstance.options
                         )
                     )
@@ -202,25 +201,22 @@ class SubstancesDataUtil {
             visitType: String,
             configurationManager: ConfigurationManager
         ): List<OtherSubstanceDataModel> {
-            val otherSubstancesConfig = configurationManager.getOtherSubstancesConfig()
-            val visitTypeInWeeks = getWeeksBetweenDateAndTodayFromVisitType(visitType)
             val otherSubstancesDataModelList = mutableListOf<OtherSubstanceDataModel>()
-            otherSubstancesConfig.forEach { otherSubstance ->
-                val minWeekNumber =
-                    otherSubstance.weeksAfterBirth - otherSubstance.weeksAfterBirthLowWindow
-                val maxWeekNumber =
-                    otherSubstance.weeksAfterBirth + otherSubstance.weeksAfterBirthUpWindow
-                if (visitTypeInWeeks in minWeekNumber..maxWeekNumber) {
-                    otherSubstancesDataModelList.add(
-                        OtherSubstanceDataModel(
-                            otherSubstance.conceptName,
-                            otherSubstance.label,
-                            otherSubstance.category,
-                            otherSubstance.inputType,
-                            otherSubstance.options
-                        )
+            val filteredOtherSubstancesByVisitType =
+                configurationManager.getOtherSubstancesConfig().filter { it.visitType == visitType }
+                    .distinct()
+
+            filteredOtherSubstancesByVisitType.forEach { otherSubstance ->
+                otherSubstancesDataModelList.add(
+                    OtherSubstanceDataModel(
+                        otherSubstance.conceptName,
+                        otherSubstance.label,
+                        otherSubstance.category,
+                        otherSubstance.inputType,
+                        otherSubstance.visitType,
+                        otherSubstance.options
                     )
-                }
+                )
             }
 
             return otherSubstancesDataModelList
