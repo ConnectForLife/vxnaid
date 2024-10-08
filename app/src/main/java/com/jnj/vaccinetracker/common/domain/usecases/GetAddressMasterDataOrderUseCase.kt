@@ -12,7 +12,7 @@ class GetAddressMasterDataOrderUseCase @Inject constructor(private val getConfig
      * if [onlyDropDowns] is true then only dropdown fields will be returned
      */
     suspend fun getAddressMasterDataOrder(country: String?, isUseDefaultAsAlternative: Boolean, onlyDropDowns: Boolean): List<AddressValueType> {
-        if (country == null) {
+        if (country.isNullOrEmpty()) {
             if (isUseDefaultAsAlternative)
                 return AddressValueType.defaultOrder()
             else

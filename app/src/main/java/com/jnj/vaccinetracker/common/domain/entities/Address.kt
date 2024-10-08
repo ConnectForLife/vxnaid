@@ -35,7 +35,7 @@ data class Address(
         getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase
     ): String {
         val loc = configurationManager.getLocalization()
-        val masterDataFields = getAddressMasterDataOrderUseCase.getAddressMasterDataOrder(country, isUseDefaultAsAlternative = false, onlyDropDowns = false)
+        val masterDataFields = getAddressMasterDataOrderUseCase.getAddressMasterDataOrder(country, isUseDefaultAsAlternative = true, onlyDropDowns = false)
         return this.toStringList(masterDataFields).joinToString(" | ") { loc[it] }
     }
 }

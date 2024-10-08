@@ -108,8 +108,7 @@
             android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btn_new_participant"
-            app:layout_constraintEnd_toStartOf="@+id/btn_match_participant"
-            />
+            app:layout_constraintEnd_toStartOf="@+id/btn_match_participant" />
 
         <Button
             android:id="@+id/btn_new_participant"
