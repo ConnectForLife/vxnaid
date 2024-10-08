@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.net.InetAddress
+import java.net.URI
+import java.net.URISyntaxException
 import java.net.UnknownHostException
 import javax.inject.Inject
 
@@ -22,27 +24,22 @@ class InternetConnectivity @Inject constructor(
 
         @Suppress("BlockingMethodInNonBlockingContext")
         fun hasIpAddress(url: String): Boolean {
-            val urlFormatted = formatBackendUrl(url)
             return try {
-                val address = InetAddress.getByName(urlFormatted)
+                val uri = URI(url)
+                val host = uri.host ?: return false
+                val address = InetAddress.getByName(host)
                 !address.equals("")
             } catch (e: UnknownHostException) {
                 // no-op
+                false
+            } catch (ex: URISyntaxException) {
+                logError("URI Syntax Error occurred while fetching IP address for URL: $url. Exception message: ${ex.message}", ex)
                 false
             } catch (ex: Exception) {
                 logError("unknown error occurred while fetching ip address for $url", ex)
                 false
             }
         }
-
-        private fun formatBackendUrl(backendUrl: String): String {
-            return backendUrl
-                .removePrefix("http://")
-                .removePrefix("https://")
-                .removePrefix("www.")
-                .removeSuffix("/")
-        }
-
     }
 
     private val internetConnectivityFlow = MutableStateFlow(true)
