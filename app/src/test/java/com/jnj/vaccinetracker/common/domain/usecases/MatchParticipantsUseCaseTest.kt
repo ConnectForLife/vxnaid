@@ -65,7 +65,7 @@ class MatchParticipantsUseCaseTest : FunSpec({
 
     fun participant(uuid: String = uuid(), participantId: String = "", nin: String = "", childNumber: String? = null, phone: String? = null, gender: Gender = Gender.MALE, withTemplate: Boolean = true) =
         Participant(uuid, DateEntity(), null, if (withTemplate) ParticipantBiometricsTemplateFile.newFile(uuid) else null, participantId, childNumber, nin, gender, false,
-            BirthDate.yearOfBirth(2000), mapOf<String,String>().withBirthWeight("3").withPhone(phone), null)
+            BirthDate.yearOfBirth(2000), mapOf<String,String>().withBirthWeight("3").withPhone(phone), null, "childFirstName", "childLastName")
 
     fun draftParticipant(uuid: String = uuid(), participantId: String = "", childNumber: String = "", nin: String = "", phone: String? = null, gender: Gender = Gender.FEMALE, withTemplate: Boolean = true) =
         DraftParticipant(
@@ -81,6 +81,8 @@ class MatchParticipantsUseCaseTest : FunSpec({
             BirthDate.yearOfBirth(2000),
             mapOf<String, String>().withPhone(phone),
             null,
+            "childFirstName",
+            "childLastName",
             DraftState.initialState()
         )
     test("when remote api successfully returns result then return that") {
