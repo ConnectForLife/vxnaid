@@ -59,12 +59,12 @@ class FindParticipantByParticipantUuidUseCase @Inject constructor(
      * Returns null if the participant is not found or has been deleted.
      */
     suspend fun findByParticipantUuid(participantUuid: String): ParticipantBase? {
-        val localParticipant = participantRepository.findByParticipantUuid(participantUuid)
+        val draftParticipant = draftParticipantRepository.findByParticipantUuid(participantUuid)
 
-        val draftParticipant = localParticipant ?: draftParticipantRepository.findByParticipantUuid(participantUuid)
+        val participant = draftParticipant ?: participantRepository.findByParticipantUuid(participantUuid)
 
-        if (draftParticipant != null) {
-            return draftParticipant
+        if (participant != null) {
+            return participant
         }
 
         val remoteResponse = api.getParticipantsByUuids(GetParticipantsByUuidsRequest(listOf(participantUuid)))

@@ -118,7 +118,7 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
         launchRegistrationFlowEvents.tryEmit(Unit)
     }
 
-    private fun initState() {
+    fun initState() {
         errorMessage.set(null)
         matchCount.set(null)
         loading.set(true)

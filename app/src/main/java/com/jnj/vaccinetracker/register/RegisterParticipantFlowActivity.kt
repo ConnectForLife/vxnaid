@@ -116,6 +116,7 @@ class RegisterParticipantFlowActivity : BaseActivity(),
 
     private fun finishIfEdit() {
         if (viewModel.participantUuid.value != null) {
+            setResult(RESULT_OK)
             finish()
         }
     }

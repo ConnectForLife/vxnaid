@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.participantflow.screens
 
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Build
@@ -12,8 +13,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.IrisPosition
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
@@ -31,7 +34,9 @@ import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.visit.VisitActivity
+import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -43,6 +48,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
 
     private companion object {
         private const val TAG_MISSING_IDENTIFIERS = "missingIdentifiersDialog"
+        private const val REQ_RELOAD = 55
     }
 
     private val viewModel: ParticipantFlowMatchingViewModel by viewModels { viewModelFactory }
@@ -164,6 +170,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
             Constants.REQ_VISIT -> {
                 flowViewModel.reset()
             }
+            REQ_RELOAD -> { viewModel.initState() }
         }
     }
 
@@ -177,7 +184,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
     }
 
     private fun startParticipantEdit(participant: ParticipantSummaryUiModel) {
-        startActivity(
+        startActivityForResult(
             RegisterParticipantFlowActivity.create(
                 context = requireContext(),
                 participantId = null,
@@ -187,7 +194,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
                 countryCode = null,
                 phoneNumber = null,
                 participantUuid = participant.participantUuid
-            )
+            ), REQ_RELOAD
         )
         (requireActivity() as BaseActivity).setForwardAnimation()
     }
