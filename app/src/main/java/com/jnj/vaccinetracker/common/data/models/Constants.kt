@@ -80,4 +80,11 @@ object Constants {
 
     const val CALL_NAVIGATE_TO_MATCH_SCREEN = "CALL_NAVIGATE_TO_MATCH_SCREEN"
     const val PARTICIPANT_MATCH_ID = "PARTICIPANT_MATCH_ID"
+
+    const val VISIT_PLACE_STATIC = "Static"
+    const val VISIT_PLACE_OUTREACH = "Outreach"
+    const val VISIT_PLACE_SCHOOL = "School"
+
+    const val USER_PREFERENCES_FILE_NAME = "user_preferences"
+    const val VISIT_PLACE_FILE_KEY = "visit_place"
 }
