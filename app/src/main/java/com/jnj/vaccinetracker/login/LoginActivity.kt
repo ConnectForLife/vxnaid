@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
@@ -58,6 +60,19 @@ class LoginActivity : BaseActivity() {
                 false
             }
         }
+
+        val visitPlaces = listOf(
+            Constants.VISIT_PLACE_STATIC,
+            Constants.VISIT_PLACE_OUTREACH,
+            Constants.VISIT_PLACE_SCHOOL
+        )
+        val adapter = ArrayAdapter(
+            this,
+            R.layout.item_dropdown,
+            visitPlaces
+        )
+        binding.dropdownLoginVisitPlace.setAdapter(adapter)
+
         binding.root.setOnClickListener { hideKeyboard() }
         binding.btnUpdate.setOnClickListener { showUpdateDialog() }
         observeViewModel(this)
@@ -113,7 +128,9 @@ class LoginActivity : BaseActivity() {
     private fun login() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
-        viewModel.login(username, password)
+        val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
+        saveVisitPlaceToMemory(visitPlace)
+        viewModel.login(username, password, visitPlace)
     }
 
     private fun onLoginCompleted() {
@@ -121,4 +138,10 @@ class LoginActivity : BaseActivity() {
         finish()
     }
 
+    private fun saveVisitPlaceToMemory(visitPlace: String) {
+        val sharedPreferences = getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString(Constants.VISIT_PLACE_FILE_KEY, visitPlace)
+        editor.apply()
+    }
 }

@@ -90,10 +90,6 @@ class VisitViewModel @Inject constructor(
     var selectedVisitType =  MutableLiveData<String>()
     var suggestedVisitType =  MutableLiveData<String>()
     var visitTypes =  MutableLiveData<List<String>>()
-    var visitLocation = MutableLiveData<String>()
-    var isVisitLocationSelected = MutableLiveData(false)
-    var checkVisitLocation = MutableLiveData(false)
-
     var missingSubstancesVisitDate = MutableLiveData<Date>(null)
     var contraindicationsRescheduleDate = MutableLiveData<DateTime>(null)
     var contraindicationsRescheduleReasonText = MutableLiveData<String>(null)
@@ -245,13 +241,12 @@ class VisitViewModel @Inject constructor(
      * @param newVisitDate                          Specify next visit date
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun submitDosingVisit(newVisitDate: Date? = null) {
+    fun submitDosingVisit(newVisitDate: Date? = null, visitPlace: String? = null) {
         val participant = participant.get()
         val dosingVisit = dosingVisit.get()
         val visitsCounter = visitsCounter.value
         val substancesObservations = selectedSubstancesWithBarcodes.value ?: mapOf()
         val otherSubstancesObservations = selectedOtherSubstances.value ?: mapOf()
-        val visitLocationValue = visitLocation.value
 
         if (participant == null || dosingVisit == null) {
             logError("No participant or dosing visit in memory!")
@@ -270,7 +265,7 @@ class VisitViewModel @Inject constructor(
                     dosingNumber = visitsCounter ?: 0,
                     substanceObservations = substancesObservations.toMap(),
                     otherSubstanceObservations = otherSubstancesObservations.toMap(),
-                    visitLocation = visitLocationValue
+                    visitLocation = visitPlace
                 )
 
                 if (newVisitDate != null) {
@@ -450,18 +445,6 @@ class VisitViewModel @Inject constructor(
             key !in conceptNames
         }
         selectedOtherSubstances.value = currentData ?: mutableMapOf()
-    }
-
-    fun setVisitLocationValue(locationValue: String) {
-        visitLocation.value = locationValue
-    }
-
-    fun isVisitLocationValid() : Boolean {
-        return isVisitLocationSelected.value == true
-    }
-
-    fun checkVisitLocationSelection() {
-        checkVisitLocation.value = true
     }
 
     fun getLocationUuid(): String {
