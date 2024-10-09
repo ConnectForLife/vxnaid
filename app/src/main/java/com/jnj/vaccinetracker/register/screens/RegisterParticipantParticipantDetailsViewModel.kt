@@ -627,8 +627,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         languageValidationMessage.set(null)
         motherFirstNameValidationMessage.set(null)
         motherLastNameValidationMessage.set(null)
-        fatherFirstName.set(null)
-        fatherLastName.set(null)
+        fatherFirstNameValidationMessage.set(null)
+        fatherLastNameValidationMessage.set(null)
         childFirstNameValidationMessage.set(null)
         childLastNameValidationMessage.set(null)
     }
