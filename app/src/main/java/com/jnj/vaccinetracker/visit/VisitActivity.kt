@@ -267,8 +267,7 @@ class VisitActivity :
 
     private fun validateSubmission(): Boolean {
         viewModel.checkIfAnyOtherSubstancesEmpty()
-        viewModel.checkVisitLocationSelection()
-        return viewModel.isAnyOtherSubstancesEmpty.value != true && viewModel.isVisitLocationValid()
+        return viewModel.isAnyOtherSubstancesEmpty.value != true
     }
 
 
@@ -328,7 +327,12 @@ class VisitActivity :
 
     override fun onReferralAfterVisitPageFinish() {
         val missingSubstanceVisitDate = viewModel.missingSubstancesVisitDate.value
-        viewModel.submitDosingVisit(newVisitDate = missingSubstanceVisitDate)
+        val visitPlace =
+            getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE).getString(
+                Constants.VISIT_PLACE_FILE_KEY,
+                Constants.VISIT_PLACE_STATIC
+            )
+        viewModel.submitDosingVisit(newVisitDate = missingSubstanceVisitDate, visitPlace = visitPlace)
     }
 
     override fun onReferralAfterContraindicationsPageFinish() {

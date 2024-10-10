@@ -41,6 +41,7 @@ class LoginViewModel @Inject constructor(
     val loading = mutableLiveBoolean()
     val usernameValidationMessage = mutableLiveData<String>()
     val passwordValidationMessage = mutableLiveData<String>()
+    val visitPlaceValidationMessage = mutableLiveData<String>()
     val errorMessage = mutableLiveData<String>()
     val prefillUsername = mutableLiveData<String>()
     val versionNumber = mutableLiveData<String>()
@@ -105,8 +106,9 @@ class LoginViewModel @Inject constructor(
     fun login(
         username: String,
         password: String,
+        visitPlace: String,
     ) {
-        if (!validateInput(username, password)) return
+        if (!validateInput(username, password, visitPlace)) return
         scope.launch {
             doLogin(username, password)
         }
@@ -150,6 +152,7 @@ class LoginViewModel @Inject constructor(
     private fun validateInput(
         username: String,
         password: String,
+        visitPlace: String,
     ): Boolean {
         var validated = true
         usernameValidationMessage.set(null)
@@ -163,6 +166,11 @@ class LoginViewModel @Inject constructor(
         if (password.isEmpty()) {
             validated = false
             passwordValidationMessage.set(resourcesWrapper.getString(R.string.login_label_validation_no_password))
+        }
+
+        if (visitPlace.isEmpty()) {
+            validated = false
+            visitPlaceValidationMessage.set(resourcesWrapper.getString(R.string.login_label_validation_no_visit_place))
         }
 
         return validated

@@ -54,16 +54,6 @@ class VisitCaptureDataFragment :
             }
         }
 
-        viewModel.checkVisitLocation.observe(lifecycleOwner) {
-            if (viewModel.checkVisitLocation.value == true) {
-                if (!viewModel.isVisitLocationValid()) {
-                    binding.textViewVisitLocationTitle.error = "Please fill before submitting"
-                } else {
-                    binding.textViewVisitLocationTitle.error = null
-                }
-
-            }
-        }
         viewModel.selectedOtherSubstances.observe(lifecycleOwner) {value ->
             otherSubstancesAdapter.otherSubstanceValues = value
         }
@@ -73,14 +63,6 @@ class VisitCaptureDataFragment :
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visit_capture_data, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-
-        binding.radioLocations.setOnCheckedChangeListener { group, checkedId ->
-            val selectedRadioButton = binding.root.findViewById<RadioButton>(checkedId)
-            val selectedValue = selectedRadioButton?.text.toString()
-            viewModel.setVisitLocationValue(selectedValue)
-            viewModel.isVisitLocationSelected.value = true
-            binding.textViewVisitLocationTitle.error = null
-        }
 
         setOtherSubstancesRecyclerView()
         return binding.root

@@ -21,6 +21,7 @@
     <string name="login_label_sign_in">Se connecter</string>
     <string name="login_label_username">Nom d\'utilisateur</string>
     <string name="login_label_password">Mot de passe</string>
+    <string name="login_label_visit_location_hint">Sélectionnez le lieu de visite</string>
     <string name="settings_label_backend_url">URL back-end</string>
     <string name="settings_label_licenses">Licenses de biométrie</string>
     <string name="settings_label_deviceId">Numéro de référence de l\'appareil</string>
@@ -50,6 +51,7 @@
     <string name="login_label_error_not_authenticated">Échec de la connexion (erreur d\'authentification). Veuillez réessayer.</string>
     <string name="login_label_validation_no_username">Veuillez entrer votre nom d\'utilisateur</string>
     <string name="login_label_validation_no_password">Veuillez entrer votre mot de passe</string>
+    <string name="login_label_validation_no_visit_place">Veuillez sélectionner le lieu de la visite</string>
     <string name="login_label_validation_no_backend_url">Veuillez entrer une URL back-end valide</string>
     <string name="dialog_login_title">Votre session a expiré</string>
     <string name="dialog_login_description">Votre session a expiré. Veuillez entrer le mot de passe opérateur pour vous reconnecter ou terminer la session en cours.</string>
