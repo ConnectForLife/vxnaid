@@ -2,10 +2,14 @@ package com.jnj.vaccinetracker.register.screens
 
 import androidx.collection.ArrayMap
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftParticipantDao
+import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.helpers.delaySafe
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.IrisPosition
+import com.jnj.vaccinetracker.common.data.models.api.response.IdentifierDTO
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.*
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
@@ -54,6 +58,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         private val ninValidator: NinValidator,
         private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
         private val getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase,
+        private val draftParticipantDao: DraftParticipantDao
 ) : ViewModelBase() {
 
     companion object {
@@ -218,7 +223,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val configuration = configurationManager.getConfiguration()
             val loc = configurationManager.getLocalization()
             onSiteAndConfigurationLoaded(site, configuration, loc)
-            ninIdentifiers.set(configurationManager.getNinIdentifiers())
+            setNinIdentifiers()
             onParticipantBack(args)
             onParticipantEdit()
             loading.set(false)
@@ -228,6 +233,20 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             loading.set(false)
             logError("Failed to get site by uuid: ", ex)
         }
+    }
+
+    private suspend fun setNinIdentifiers() {
+        val remoteNINs = configurationManager.getNinIdentifiers();
+        val localNINs = draftParticipantDao.findAllByDraftState(DraftState.UPLOAD_PENDING)
+            .filter { draftParticipant -> draftParticipant?.nin != null }
+            .map { draftParticipant ->
+                IdentifierDTO(
+                    draftParticipant!!.participantUuid,
+                    Constants.NIN_IDENTIFIER_TYPE_NAME,
+                    draftParticipant.nin ?: ""
+                )
+            }
+        ninIdentifiers.set(remoteNINs + localNINs)
     }
 
     suspend fun onParticipantEdit() {
