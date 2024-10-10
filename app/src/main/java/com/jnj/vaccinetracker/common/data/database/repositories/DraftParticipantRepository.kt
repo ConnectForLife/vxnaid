@@ -164,7 +164,6 @@ class DraftParticipantRepository @Inject constructor(
             if (orReplace) {
                 //we assume due to foreign keys, the related child rows will be deleted as well
                 val isDeleted = draftParticipantDao.deleteByParticipantUuid(model.participantUuid) > 0
-                // TODO if deleted not registered it should register then
                 if (isDeleted) {
                     logInfo("deleted draft participant for replace ${model.participantUuid}")
                 }
