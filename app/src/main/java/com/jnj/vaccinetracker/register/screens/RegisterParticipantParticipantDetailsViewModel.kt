@@ -182,6 +182,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     private var validatePhoneJob: Job? = null
     private var validateParticipantIdJob: Job? = null
 
+    private var originalNinValue: String? = null
+
     init {
         initState()
     }
@@ -221,6 +223,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             ninIdentifiers.set(configurationManager.getNinIdentifiers())
             onParticipantBack(args)
             onParticipantEdit()
+            originalNinValue = nin.value
             loading.set(false)
         } catch (ex: Throwable) {
             yield()
@@ -590,6 +593,10 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     private fun isNinValueValid(ninValue: String?): Boolean {
+        if (isEditMode() && originalNinValue == ninValue) {
+            return true;
+        }
+
         var isValid = true
 
         if (!ninValue.isNullOrEmpty()) {
@@ -806,5 +813,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         this.homeLocation.set(homeLocation)
         this.homeLocationLabel.set(stringRepresentation)
         homeLocationValidationMessage.set(null)
+    }
+
+    fun isEditMode(): Boolean {
+        return participantUuid.value != null;
     }
 }
