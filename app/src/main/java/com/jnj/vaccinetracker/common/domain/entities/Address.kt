@@ -38,4 +38,9 @@ data class Address(
         val masterDataFields = getAddressMasterDataOrderUseCase.getAddressMasterDataOrder(country, isUseDefaultAsAlternative = true, onlyDropDowns = false)
         return this.toStringList(masterDataFields).joinToString(" | ") { loc[it] }
     }
+
+    fun isWholeAddressEmpty(): Boolean {
+        return listOf(address1, address2, cityVillage, stateProvince, country, countyDistrict, postalCode)
+            .all { it.isNullOrBlank() }
+    }
 }

@@ -534,7 +534,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             birthWeightValidationMessage.set("Please enter birth weight as integer")
         }
 
-        if (homeLocation?.isEmpty() != false) {
+        if (homeLocation?.isWholeAddressEmpty() == true) {
             isValid = false
             homeLocationValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_home_location))
         }
