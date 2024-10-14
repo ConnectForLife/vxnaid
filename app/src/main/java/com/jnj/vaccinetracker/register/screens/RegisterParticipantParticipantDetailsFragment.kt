@@ -346,14 +346,33 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
-    private fun setupDropdowns() {
+   private fun setupDropdowns() {
+        viewModel.childCategoryNames.observe(viewLifecycleOwner) { categoryList ->
+            if (categoryList != null && categoryList.isNullOrEmpty()) {
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList.map { it.display }
+                )
+                Log.d("SetupDropdown", "Categories: ${categoryList.map { it.display }}")
+                binding.dropdownChildCategory.setAdapter(adapter)
+
+                val selectedCategoryValue = flowViewModel.registerDetails.value?.childCategory
+
+                if (selectedCategoryValue != null) {
+                    val selectedCategory = categoryList.find { it.value == selectedCategoryValue }
+                    if (selectedCategory != null) {
+                        binding.dropdownChildCategory.setText(selectedCategory.display, false)
+                    }
+                }
+            }
+        }
+
         binding.dropdownChildCategory.setOnItemClickListener { _, _, position, _ ->
-            val childCategoryName =
-                viewModel.childCategoryNames.value?.get(position) ?: return@setOnItemClickListener
-            viewModel.setSelectedChildCategory(childCategoryName)
+            val selectedCategory = viewModel.childCategoryNames.value?.get(position) ?: return@setOnItemClickListener
+
+            viewModel.setSelectedChildCategory(selectedCategory)
+
             val currentDetails = flowViewModel.registerDetails.value
             if (currentDetails != null) {
-                val updatedDetails = currentDetails.copy(childCategory = childCategoryName.value)
+                val updatedDetails = currentDetails.copy(childCategory = selectedCategory.value) // Store the internal value
                 flowViewModel.registerDetails.set(updatedDetails)
             }
         }
