@@ -401,24 +401,23 @@
     <string name="reschedule_hint">Enter the reason here</string>
     <string name="general_label_kg">kg</string>
     <string name="visit_dosing_label_visit_type">Visit Type</string>
-    <string name="visit_dosing_label_suggest">Suggest</string>
     <string name="general_label_enter_text">Enter text</string>
     <string name="general_label_label">Label</string>
     <string name="participant_registration_description_success">Does the child require vaccination?</string>
     <string name="participant_registration_historic_visits_title">Please complete the data for all past visits:</string>
     <string name="vaccine_never_administered">Never administered</string>
     <string name="participant_registration_historical_data_description">Please capture historical data:</string>
-    <string name="referral_page_title">Refer to clinic</string>
+    <string name="referral_page_title">Refer to Health Facility</string>
     <string name="referral_page_refer_button_title">Refer</string>
     <string name="referral_page_cancel_button_title">Do not refer</string>
     <string name="referral_page_clinic_title">Refer to</string>
     <string name="referral_page_additional_info_title">Reason for referral</string>
     <string name="referral_page_additional_info_hint">Enter a reason for referral</string>
-    <string name="referral_page_referral_clinic_cannot_be_empty">Referral clinic cannot be empty</string>
+    <string name="referral_page_referral_clinic_cannot_be_empty">Referral to Health Facility cannot be empty</string>
     <string name="referral_page_referral_reason_cannot_be_empty">Referral reason cannot be empty</string>
-    <string name="referral_page_success_referral_text">Child successfully referred to clinic:</string>
+    <string name="referral_page_success_referral_text">Child successfully referred to Health Facility:</string>
     <string name="referral_page_failed_referral_text">Error while referring a child</string>
-    <string name="transfer_clinic_question">Would you like to transfer child to your clinic?</string>
+    <string name="transfer_clinic_question">Would you like to transfer  this child to your Health Facility?</string>
     <string name="transfer_clinic_transfer_and_continue">Transfer and continue with visit</string>
     <string name="transfer_clinic_just_visit">Just a visit</string>
     <string name="general_label_enter_number">Enter number</string>
@@ -441,6 +440,6 @@
     <string name="participant_matching_btn_report_adverse_effects">Adverse Effects</string>
     <string name="adverse_effects_title">Report Adverse Effects</string>
     <string name="dialog_historical_visit_text">When did the visit take place?</string>
-    <string name="refer_within_clinic_switch_label">Refer within the clinic</string>
-    <string name="refer_outside_clinic_switch_label">Refer outside the clinic</string>
+    <string name="refer_within_clinic_switch_label">Refer within the Health Facility</string>
+    <string name="refer_outside_clinic_switch_label">Refer outside the Health Facility</string>
 </resources>

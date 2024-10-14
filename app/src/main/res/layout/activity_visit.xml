@@ -197,15 +197,6 @@
                     android:backgroundTint="@color/colorAccent"
                     android:checked="@{viewModel.isSuggesting}" />
 
-                <TextView
-                    android:id="@+id/label_suggest"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/visit_dosing_label_suggest"
-                    android:textAppearance="@style/GeneralText"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
