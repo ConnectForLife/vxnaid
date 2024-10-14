@@ -414,11 +414,11 @@
     <string name="referral_page_clinic_title">Refer to</string>
     <string name="referral_page_additional_info_title">Reason for referral</string>
     <string name="referral_page_additional_info_hint">Enter a reason for referral</string>
-    <string name="referral_page_referral_clinic_cannot_be_empty">Referral to health facility cannot be empty</string>
+    <string name="referral_page_referral_clinic_cannot_be_empty">Referral to Health Facility cannot be empty</string>
     <string name="referral_page_referral_reason_cannot_be_empty">Referral reason cannot be empty</string>
     <string name="referral_page_success_referral_text">Child successfully referred to Health Facility:</string>
     <string name="referral_page_failed_referral_text">Error while referring a child</string>
-    <string name="transfer_clinic_question">Would you like to transfer  thischild to your Health Facility?</string>
+    <string name="transfer_clinic_question">Would you like to transfer  this child to your Health Facility?</string>
     <string name="transfer_clinic_transfer_and_continue">Transfer and continue with visit</string>
     <string name="transfer_clinic_just_visit">Just a visit</string>
     <string name="general_label_enter_number">Enter number</string>
