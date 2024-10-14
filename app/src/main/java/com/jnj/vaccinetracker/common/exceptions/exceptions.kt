@@ -85,6 +85,7 @@ class SyncScopeEntityNotFoundException : DatabaseException()
 class ReplaceSyncScopeException(override val message: String, override val cause: Throwable? = null) : AppException()
 
 class OperatorUuidNotAvailableException(override val message: String = "Operator Uuid is not available in preferences") : AppException()
+class VisitNotFound(override val message: String = "Visit not found") : AppException()
 
 class OperatorAuthenticationException(override val message: String? = null, override val cause: Throwable? = null, val reason: Reason) : AppException() {
     enum class Reason {

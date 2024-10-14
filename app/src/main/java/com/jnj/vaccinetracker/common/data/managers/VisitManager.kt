@@ -12,6 +12,7 @@ import com.jnj.vaccinetracker.common.domain.usecases.GetUpcomingVisitUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
+import com.jnj.vaccinetracker.common.exceptions.VisitNotFound
 import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
@@ -105,4 +106,42 @@ class VisitManager @Inject constructor(
     }
 
     suspend fun getUpcomingVisit(participantUuid: String): UpcomingVisit? = getUpcomingVisitUseCase.getUpcomingVisit(participantUuid, date = dateNow())
+
+    suspend fun updateVisitAttributes(visit: VisitDetail?, participantUuid: String, visitAttributes: Map<String, String>) {
+        val locationUuid = syncSettingsRepository.getSiteUuid()
+            ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
+
+        val request = visit?.let{
+            val appendedVisitAttributes = it.attributes + visitAttributes
+            val parsedObservations: Map<String, String> = it.observations.mapValues { entry -> entry.value.value }
+            UpdateVisit(
+                visitUuid = it.uuid,
+                participantUuid = participantUuid,
+                startDatetime = it.startDate,
+                locationUuid = locationUuid,
+                observations = parsedObservations,
+                attributes = appendedVisitAttributes
+            )
+        } ?: throw VisitNotFound()
+        updateVisitUseCase.updateVisitAndReplace(request)
+    }
+
+    suspend fun updateVisitObservations(visit: VisitDetail?, participantUuid: String, visitObservations: Map<String, String>) {
+        val locationUuid = syncSettingsRepository.getSiteUuid()
+            ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
+
+        val request = visit?.let{
+            val parsedObservations: Map<String, String> = it.observations.mapValues { entry -> entry.value.value }
+            val appendedObservations = parsedObservations + visitObservations
+            UpdateVisit(
+                visitUuid = it.uuid,
+                participantUuid = participantUuid,
+                startDatetime = it.startDate,
+                locationUuid = locationUuid,
+                observations = appendedObservations,
+                attributes = it.attributes
+            )
+        } ?: throw VisitNotFound()
+        updateVisitUseCase.updateVisitAndReplace(request)
+    }
 }

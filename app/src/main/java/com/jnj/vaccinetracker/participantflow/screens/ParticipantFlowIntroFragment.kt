@@ -107,9 +107,4 @@ class ParticipantFlowIntroFragment : BaseFragment() {
     }
 
     private fun Int.toPx() = this * resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.action_cancel).isVisible = false
-    }
 }

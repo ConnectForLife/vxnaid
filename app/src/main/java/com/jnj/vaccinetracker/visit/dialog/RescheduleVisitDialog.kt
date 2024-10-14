@@ -26,6 +26,7 @@ import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
+import com.jnj.vaccinetracker.common.helpers.findDosingVisit
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
@@ -54,7 +55,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
    @Inject lateinit var configurationManager: ConfigurationManager
    @Inject lateinit var visitManager: VisitManager
    @Inject lateinit var vaccineTrackerSyncApiDataSource: VaccineTrackerSyncApiDataSource
-   private lateinit var currentVisitUuid: String
+   private var currentVisit: VisitDetail? = null
 
    companion object {
       private const val PARTICIPANT = "participant"
@@ -73,7 +74,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
       isCancelable = false
       lifecycleScope.launch {
          val allVisits = visitManager.getVisitsForParticipant(participant!!.participantUuid)
-         currentVisitUuid = allVisits.findDosingVisit()!!.uuid
+         currentVisit = allVisits.findDosingVisit()
       }
    }
 
@@ -105,8 +106,9 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
                      if (rescheduleReasonEditText.text.toString().isNotEmpty()) {
                         val attributesToAdd =
                            mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to rescheduleReasonEditText.text.toString())
-                        vaccineTrackerSyncApiDataSource.updateVisitAttributes(
-                           currentVisitUuid,
+                        visitManager.updateVisitAttributes(
+                           currentVisit,
+                           participant!!.participantUuid,
                            attributesToAdd
                         )
                      }
@@ -176,15 +178,5 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
 
    interface RescheduleVisitListener {
       fun onRescheduleVisitListener(newVisitDate: DateTime, rescheduleReasonText: String)
-   }
-
-   private fun List<VisitDetail>.findDosingVisit(): VisitDetail? {
-      return findLast { visit ->
-         visit.visitType == Constants.VISIT_TYPE_DOSING && hasNotOccurredYet(visit)
-      }
-   }
-
-   private fun hasNotOccurredYet(visit: VisitDetail): Boolean {
-      return visit.visitStatus != Constants.VISIT_STATUS_MISSED && visit.visitStatus != Constants.VISIT_STATUS_OCCURRED
    }
 }

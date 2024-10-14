@@ -4,10 +4,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -18,6 +20,7 @@ import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
+import com.jnj.vaccinetracker.common.helpers.findDosingVisit
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentReferralBinding
@@ -42,7 +45,7 @@ class ReferralFragment : BaseFragment() {
     lateinit var visitManager: VisitManager
 
     private lateinit var allVisits: List<VisitDetail>
-    private var currentVisitUuid: String? = null
+    private var currentVisit: VisitDetail? = null
     private var participantUuid: String? = null
     private var adapter: ArrayAdapter<String>? = null
     private var locationUuid: String = ""
@@ -80,14 +83,23 @@ class ReferralFragment : BaseFragment() {
             setupAdapter()
         }
 
+        setHasOptionsMenu(true)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         return binding.root
     }
 
     private fun initializeViews() {
         with(binding) {
-            if (!isAfterVisit) textViewSaveVisit.visibility = View.INVISIBLE
-            currentVisitUuid = arguments?.getString("currentVisitUuid")
+            if (!isAfterVisit) textViewSaveVisit.visibility = View.GONE
+            val currentVisitUuid = arguments?.getString("currentVisitUuid")
             participantUuid = arguments?.getString("participantUuid")
+            lifecycleScope.launch {
+                if (participantUuid != null) {
+                    val allVisits = visitManager.getVisitsForParticipant(participantUuid!!)
+                    currentVisit = allVisits.findDosingVisit()
+                }
+            }
         }
     }
 
@@ -95,7 +107,7 @@ class ReferralFragment : BaseFragment() {
         with(binding) {
             btnSaveReferral.setOnClickListener { onReferButtonClicked() }
             btnCancelReferral.setOnClickListener { onDoNotReferClicked() }
-            btnCloseReferral.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
+            btnCloseReferral.setOnClickListener { requireActivity().finish() }
             switchReferWithinClinic.setOnCheckedChangeListener { _, isChecked ->
                 onSwitchChange(isChecked)
             }
@@ -158,8 +170,9 @@ class ReferralFragment : BaseFragment() {
 
         lifecycleScope.launch {
             try {
-                vaccineTrackerSyncApiDataSource.updateEncounterObservationsByVisit(
-                    currentVisitUuid!!,
+                visitManager.updateVisitObservations(
+                    currentVisit,
+                    participantUuid = participantUuid!!,
                     referralObservations
                 )
                 onRefer(selectedClinic)
@@ -225,8 +238,10 @@ class ReferralFragment : BaseFragment() {
                 findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish()
             } else {
                 findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish()
+                requireActivity().finish()
             }
         }
+
     }
 
     private fun createReferralObservations(selectedClinic: String, referralReason: String): Map<String, String> {
@@ -260,5 +275,10 @@ class ReferralFragment : BaseFragment() {
     interface OnReferralPageFinishListener {
         fun onReferralAfterVisitPageFinish()
         fun onReferralAfterContraindicationsPageFinish()
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.action_cancel).isVisible = false
     }
 }

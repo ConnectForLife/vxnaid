@@ -384,16 +384,7 @@ class VisitActivity :
     }
 
     private fun goToMatchParticipantFragment() {
-        lifecycleScope.launch {
-            val intent = ParticipantFlowActivity.create(this@VisitActivity).apply {
-                putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
-                putExtra(Constants.PARTICIPANT_MATCH_ID, viewModel.participant.value!!.participantId)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            startActivity(intent)
-            finish()
-        }
+        finish()
     }
 
     private fun handleReferralFragmentBackPress(currentFragment: ReferralFragment) {
