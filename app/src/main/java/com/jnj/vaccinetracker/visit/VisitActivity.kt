@@ -293,7 +293,6 @@ class VisitActivity :
             val generalColor = ContextCompat.getColorStateList(this, R.color.colorTextOnLight)
             binding.tabLayout.backgroundTintList = null
             binding.viewPagerVisit.backgroundTintList = null
-          //  binding.labelSuggest.setTextColor(generalColor)
             makeAddVaccineButtonVisible()
             makeVisitTypeDropdownVisible()
             makeVisitTypeLabelGone()
@@ -301,7 +300,6 @@ class VisitActivity :
             val colorAccent = ContextCompat.getColorStateList(this, R.color.colorAccent)
             binding.tabLayout.backgroundTintList = colorAccent
             binding.viewPagerVisit.backgroundTintList = colorAccent
-           // binding.labelSuggest.setTextColor(colorAccent)
             makeAddVaccineButtonInvisible()
             makeVisitTypeDropdownGone()
             makeVisitTypeLabelVisible()
