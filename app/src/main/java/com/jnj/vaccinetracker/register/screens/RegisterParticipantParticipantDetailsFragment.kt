@@ -346,18 +346,35 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
-    private fun setupDropdowns() {
-        binding.dropdownChildCategory.setOnItemClickListener { _, _, position, _ ->
-            val childCategoryName =
-                viewModel.childCategoryNames.value?.get(position) ?: return@setOnItemClickListener
-            viewModel.setSelectedChildCategory(childCategoryName)
-            val currentDetails = flowViewModel.registerDetails.value
-            if (currentDetails != null) {
-                val updatedDetails = currentDetails.copy(childCategory = childCategoryName.value)
-                flowViewModel.registerDetails.set(updatedDetails)
+ private fun setupDropdowns() {
+    viewModel.childCategoryNames.observe(viewLifecycleOwner) { categoryList ->
+        if (categoryList != null) {
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList.map { it.display })
+            binding.dropdownChildCategory.setAdapter(adapter)
+
+            val selectedCategoryValue = flowViewModel.registerDetails.value?.childCategory
+            if (selectedCategoryValue != null) {
+                val index = categoryList.indexOfFirst { it.value == selectedCategoryValue } 
+                if (index >= 0) {
+                    binding.dropdownChildCategory.setText(categoryList[index].display, false)
+                }
             }
         }
     }
+
+    binding.dropdownChildCategory.setOnItemClickListener { _, _, position, _ ->
+        val selectedCategory = viewModel.childCategoryNames.value?.get(position) ?: return@setOnItemClickListener
+        viewModel.setSelectedChildCategory(selectedCategory)
+
+        val currentDetails = flowViewModel.registerDetails.value
+        if (currentDetails != null) {
+            val updatedDetails = currentDetails.copy(childCategory = selectedCategory.value) 
+            flowViewModel.registerDetails.set(updatedDetails)
+        }
+    }
+}
+
+
 
     override fun onStart() {
         super.onStart()

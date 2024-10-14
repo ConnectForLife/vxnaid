@@ -303,6 +303,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         vaccineNames.set(configuration.vaccines.map { vaccine ->
             DisplayValue(vaccine.name, loc[vaccine.name])
         })
+        
         val categories = listOf("National", "Foreigner", "Refugee")
         val childCategoryDisplayValue = categories.map { category ->
             DisplayValue(category, loc[category])
