@@ -45,6 +45,10 @@ interface DraftParticipantDao : DraftParticipantDaoBase<DraftParticipantEntity, 
     @Transaction
     suspend fun findFirstByDraftState(draftState: DraftState): RoomDraftParticipantModel?
 
+    @Query("select * from draft_participant where draftState=:draftState")
+    @Transaction
+    suspend fun findAllByDraftState(draftState: DraftState): List<RoomDraftParticipantModel?>
+
     @Query("select count(*) from draft_participant")
     override fun observeChanges(): Flow<Long>
 
