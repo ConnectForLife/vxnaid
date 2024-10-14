@@ -346,10 +346,12 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
-  private fun setupDropdowns() {
+   private fun setupDropdowns() {
         viewModel.childCategoryNames.observe(viewLifecycleOwner) { categoryList ->
-            if (categoryList != null) {
-                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList.map { it.display })
+            if (categoryList != null && categoryList.isNullOrEmpty()) {
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList.map { it.display }
+                )
+                Log.d("SetupDropdown", "Categories: ${categoryList.map { it.display }}")
                 binding.dropdownChildCategory.setAdapter(adapter)
 
                 val selectedCategoryValue = flowViewModel.registerDetails.value?.childCategory
@@ -375,7 +377,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             }
         }
     }
-
 
     override fun onStart() {
         super.onStart()
