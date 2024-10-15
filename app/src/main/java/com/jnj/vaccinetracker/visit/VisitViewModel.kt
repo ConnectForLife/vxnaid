@@ -57,7 +57,6 @@ class VisitViewModel @Inject constructor(
     private val createVisitUseCase: CreateVisitUseCase,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
-    private val vaccineTrackerSyncApiDataSource: VaccineTrackerSyncApiDataSource
     ) : ViewModelBase() {
 
     /**
@@ -205,15 +204,6 @@ class VisitViewModel @Inject constructor(
 
 
     /**
-     * Find the open dosing visit
-     */
-    private fun List<VisitDetail>.findDosingVisit(): VisitDetail? {
-        return findLast { visit ->
-            visit.visitType == Constants.VISIT_TYPE_DOSING && hasNotOccurredYet(visit)
-        }
-    }
-
-    /**
      * Find previously completed dosing visits, ordered by dosing number
      */
     private fun List<VisitDetail>.findPreviousDosingVisits(): List<VisitDetail> {
@@ -226,13 +216,6 @@ class VisitViewModel @Inject constructor(
 
         return previousDosingVisits.sortedBy { it.dosingNumber }
 
-    }
-
-    /**
-     * Check if visit has not occurred yet
-     */
-    private fun hasNotOccurredYet(visit: VisitDetail): Boolean {
-        return visit.visitStatus != Constants.VISIT_STATUS_MISSED && visit.visitStatus != Constants.VISIT_STATUS_OCCURRED
     }
 
     /**
@@ -463,8 +446,9 @@ class VisitViewModel @Inject constructor(
         if (!contraindicationsRescheduleReasonText.isNullOrEmpty()) {
             val attributesToAdd =
                 mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to contraindicationsRescheduleReasonText)
-            vaccineTrackerSyncApiDataSource.updateVisitAttributes(
-                dosingVisit.value!!.uuid,
+            visitManager.updateVisitAttributes(
+                dosingVisit.value,
+                participant.value!!.participantUuid,
                 attributesToAdd
             )
         }

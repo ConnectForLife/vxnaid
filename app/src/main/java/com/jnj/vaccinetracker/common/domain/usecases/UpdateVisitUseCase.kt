@@ -26,4 +26,10 @@ class UpdateVisitUseCase @Inject constructor(
         draftVisitEncounterRepository.insert(visitEncounter, orReplace = false)
         return visitEncounter
     }
+
+    suspend fun updateVisitAndReplace(updateVisit: UpdateVisit): DraftVisitEncounter {
+        val visitEncounter = updateVisit.toDomain()
+        draftVisitEncounterRepository.insert(visitEncounter, orReplace = true)
+        return visitEncounter
+    }
 }
