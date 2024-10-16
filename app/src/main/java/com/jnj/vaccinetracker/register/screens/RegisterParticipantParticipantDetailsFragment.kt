@@ -351,7 +351,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             if (categoryList != null && categoryList.isNullOrEmpty()) {
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList.map { it.display }
                 )
-                Log.d("SetupDropdown", "Categories: ${categoryList.map { it.display }}")
                 binding.dropdownChildCategory.setAdapter(adapter)
 
                 val selectedCategoryValue = flowViewModel.registerDetails.value?.childCategory
