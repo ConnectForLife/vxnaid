@@ -128,7 +128,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                    }
                } catch (ex: Exception) {
                    visitScheduleResultTextView.text = getString(R.string.visit_schedule_visit_failed)
-                   visitScheduleResultTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.design_default_color_error))
+                   visitScheduleResultTextView.setTextColor(ContextCompat.getColor(requireContext(), com.google.android.material.R.color.design_default_color_error))
                }
            }
         }
