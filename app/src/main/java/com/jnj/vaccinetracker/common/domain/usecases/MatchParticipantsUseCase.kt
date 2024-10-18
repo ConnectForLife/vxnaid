@@ -262,6 +262,7 @@ class MatchParticipantsUseCase @Inject constructor(
             matchingScore = matchingScore,
             gender = gender,
             birthDate = birthDate,
+            childNumber = childNumber,
             address = address,
             attributes = attributes,
         )

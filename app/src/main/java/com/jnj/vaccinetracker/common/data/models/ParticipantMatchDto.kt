@@ -15,6 +15,7 @@ data class ParticipantMatchDto(
     val matchingScore: Int?,
     val gender: Gender,
     val birthDate: BirthDateDto,
+    val childNumber: String?,
     @Json(name = "addresses") val address: AddressDto?,
     val attributes: List<AttributeDto>,
 ) {
@@ -28,6 +29,7 @@ fun ParticipantMatchDto.toDomain() = ParticipantMatch(
     matchingScore = matchingScore,
     gender = gender,
     birthDate = birthDate.toDomain(),
+    childNumber = childNumber,
     address = address,
     attributes = attributes.toMap()
 )

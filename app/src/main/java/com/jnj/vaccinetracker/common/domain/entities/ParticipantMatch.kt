@@ -10,6 +10,7 @@ data class ParticipantMatch(
     val matchingScore: Int?,
     val gender: Gender,
     val birthDate: BirthDate,
+    val childNumber: String?,
     @Json(name = "addresses") val address: AddressDto?,
     val attributes: Map<String, String>,
 ) {
@@ -27,6 +28,12 @@ data class ParticipantMatch(
 
     val isBirthDateEstimated: Boolean
         get() = attributes[Constants.ATTRIBUTE_IS_BIRTH_DATE_ESTIMATED].toBoolean()
+
+    val motherFirstName: String?
+        get() = attributes[Constants.ATTRIBUTE_MOTHER_FIRST_NAME]
+
+    val motherLastName: String?
+        get() = attributes[Constants.ATTRIBUTE_MOTHER_LAST_NAME]
 
     val yearOfBirth: Int = birthDate.year
 

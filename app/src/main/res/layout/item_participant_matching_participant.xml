@@ -41,33 +41,44 @@
             app:srcCompat="@drawable/ic_avatar_operator" />
 
         <TextView
-            android:id="@+id/textView_participantId"
+            android:id="@+id/textView_childNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@{item.participant.participantId}"
+            android:text='@{"Child Number:      " + (item.participant.childNumber != null ? item.participant.childNumber : "")}'
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/textView_gender"
+            app:layout_constraintBottom_toTopOf="@+id/motherName"
             app:layout_constraintStart_toEndOf="@+id/imageView_participantPhoto"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="9857432839845764832" />
+            tools:text="98574328" />
 
         <TextView
-            android:id="@+id/textView_gender"
+            android:id="@+id/textView_phoneNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.participant.gender == null ? `` : context.getString(item.participant.gender.translation)}"
+            android:text='@{"Mobile Phone:      " + (item.participant.telephone != null ? item.participant.telephone : "")}'
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/motherName"
+            app:layout_constraintStart_toStartOf="@+id/textView_childNumber"
+            app:layout_constraintTop_toBottomOf="@+id/textView_childNumber"
+            tools:text="777123456" />
+
+        <TextView
+            android:id="@+id/motherName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{"Mother Name:      " + (item.participant.motherFirstName != null ? item.participant.motherFirstName : "") + " " + (item.participant.motherLastName != null ? item.participant.motherLastName : "")}'
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/textView_yearOfBirth"
-            app:layout_constraintStart_toStartOf="@+id/textView_participantId"
-            app:layout_constraintTop_toBottomOf="@+id/textView_participantId"
-            tools:text="Male" />
+            app:layout_constraintStart_toStartOf="@+id/textView_childNumber"
+            app:layout_constraintTop_toBottomOf="@+id/textView_phoneNumber"
+            tools:text="Mother Name" />
 
         <TextView
             android:id="@+id/textView_homeLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{item.participant.homeLocation}"
+            android:text='@{"Address:                " + item.participant.homeLocation}'
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/textView_vaccine"
@@ -92,11 +103,11 @@
             android:id="@+id/textView_yearOfBirth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text='@{item.participant.isBirthDateEstimated ? "~ " + item.participant.birthDateText : item.participant.birthDateText}'
+            android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:      ~" + item.participant.birthDateText : "Date of Birth:        " + item.participant.birthDateText}'
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/textView_homeLocation"
-            app:layout_constraintStart_toStartOf="@+id/textView_gender"
-            app:layout_constraintTop_toBottomOf="@+id/textView_gender"
+            app:layout_constraintStart_toStartOf="@+id/motherName"
+            app:layout_constraintTop_toBottomOf="@+id/motherName"
             tools:text="1992" />
 
         <Button

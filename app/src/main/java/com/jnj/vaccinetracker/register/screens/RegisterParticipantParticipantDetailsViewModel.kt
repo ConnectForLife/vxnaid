@@ -29,6 +29,7 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
+import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime

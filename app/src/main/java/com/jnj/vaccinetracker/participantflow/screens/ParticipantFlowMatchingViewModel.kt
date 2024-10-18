@@ -218,12 +218,15 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                         } else {
                             participant.birthDate.toDateTime().format(DateFormat.FORMAT_DATE)
                         }),
-                        isBirthDateEstimated=participant.isBirthDateEstimated,
+                        isBirthDateEstimated = participant.isBirthDateEstimated,
                         gender = participant.gender,
                         telephone = participant.telephoneNumber,
                         homeLocation = participant.address?.toDomain()?.toStringList(addressMasterDataOrder)?.translate(),
                         vaccine = participant.vaccine?.let { DisplayValue(it, loc[it]) },
-                        siteUUID = participantLocationUuid
+                        siteUUID = participantLocationUuid,
+                        motherFirstName = participant.motherFirstName,
+                        motherLastName = participant.motherLastName,
+                        childNumber = participant.childNumber
                     ),
                     picture = null,
                     isCurrentSite = true,
@@ -248,7 +251,10 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                         telephone = participant.telephoneNumber,
                         homeLocation = participant.address?.toDomain()?.toStringList(addressMasterDataOrder)?.translate(),
                         vaccine = participant.vaccine?.let { DisplayValue(it, loc[it]) },
-                        siteUUID = participantLocationUuid
+                        siteUUID = participantLocationUuid,
+                        motherFirstName = participant.motherFirstName,
+                        motherLastName = participant.motherLastName,
+                        childNumber = participant.childNumber
                     ),
                     isCurrentSite = false,
                     siteName = site

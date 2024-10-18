@@ -14,12 +14,15 @@ data class ParticipantUiModel(
     val homeLocation: String?,
     val vaccine: DisplayValue?,
     val siteUUID: String?,
+    val motherFirstName: String?,
+    val motherLastName: String?,
+    val childNumber: String?
 ) {
 
     constructor(
         participantId: String?,
         matchingScore: Int?,
         siteUUID: String?,
-    ) : this(null, participantId, matchingScore, null, null, null, null, null, null, siteUUID)
+    ) : this(null, participantId, matchingScore, null, null, null, null, null, null, siteUUID, null, null, null)
 
 }

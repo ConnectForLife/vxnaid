@@ -26,48 +26,48 @@
         app:selected="@{selected}">
 
         <TextView
-            android:id="@+id/textView_participantId"
+            android:id="@+id/textView_childNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="@{item.participant.participantId}"
+            android:text='@{"Child Number:      " + (item.participant.childNumber != null ? item.participant.childNumber : "")}'
             android:textAppearance="@style/GeneralText"
-            tools:text="9857432839845764832" />
-
-        <TextView
-            android:id="@+id/textView_birthDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text='@{item.participant.isBirthDateEstimated ? "~ " + item.participant.birthDateText : item.participant.birthDateText}'
-            android:textAppearance="@style/GeneralText"
-            tools:text="2024-01-01" />
-
-        <TextView
-            android:id="@+id/textView_siteLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="@{item.siteName.display}"
-            android:textAppearance="@style/GeneralText"
-            tools:text="UZA Antwerpen" />
+            tools:text="98574328" />
 
         <TextView
             android:id="@+id/textView_telephone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@{item.participant.telephone}"
+            android:text='@{"Mobile Phone:      " + (item.participant.telephone != null ? item.participant.telephone : "")}'
             android:textAppearance="@style/GeneralText"
             tools:text="111222333" />
+
+        <TextView
+            android:id="@+id/textView_birthDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:      ~" + item.participant.birthDateText : "Date of Birth:        " + item.participant.birthDateText}'
+            android:textAppearance="@style/GeneralText"
+            tools:text="2024-01-01" />
+
+        <TextView
+            android:id="@+id/motherName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text='@{"Mother Name:      " + (item.participant.motherFirstName != null ? item.participant.motherFirstName : "") + " " + (item.participant.motherLastName != null ? item.participant.motherLastName : "")}'
+            android:textAppearance="@style/GeneralText"
+            tools:text="Mother Name" />
 
         <TextView
             android:id="@+id/textView_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@{item.participant.homeLocation}"
+            android:text='@{"Address:                " + item.participant.homeLocation}'
             android:textAppearance="@style/GeneralText"
             tools:text="Uganda,KYAMUSWA,KYAMUSWA,BUZINGO,NAKIBANGA" />
 
