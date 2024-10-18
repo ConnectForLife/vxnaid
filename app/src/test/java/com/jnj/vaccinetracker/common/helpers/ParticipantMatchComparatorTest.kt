@@ -8,7 +8,7 @@ class ParticipantMatchComparatorTest : FunSpec({
 
     fun createComparator(criteria: ParticipantIdentificationCriteria) = ParticipantMatchComparator(criteria)
     fun createMatch(uuid: String = uuid(), participantId: String, phone: String?, matchingScore: Int? = null) =
-        ParticipantMatch(uuid, participantId, matchingScore, Gender.FEMALE, BirthDate.Companion.yearOfBirth(1994), null, emptyMap<String, String>().withPhone(phone))
+        ParticipantMatch(uuid, participantId, matchingScore, Gender.FEMALE, BirthDate.Companion.yearOfBirth(1994), null, null, emptyMap<String, String>().withPhone(phone))
 
     context("without biometrics") {
         fun createCriteria(participantId: String, phone: String?) = ParticipantIdentificationCriteria(participantId, phone, null)
