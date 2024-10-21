@@ -3,7 +3,6 @@ package com.jnj.vaccinetracker.register.screens
 import androidx.collection.ArrayMap
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftParticipantDao
-import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.helpers.delaySafe
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
@@ -29,7 +28,6 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
-import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime

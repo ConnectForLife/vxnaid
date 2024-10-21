@@ -112,42 +112,29 @@ class HomeLocationPickerDialog(
 
     private fun bindDropdownItemView(inputField: AddressInputField, view: ItemHomeLocationAddressFieldBinding) {
         val dropdownValues = inputField.dropdownValues.orEmpty()
-        view.spinner.adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, dropdownValues.map { it.display })
+        val autoCompleteTextView = view.autoCompleteTextView
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, dropdownValues.map { it.display })
+        autoCompleteTextView.setAdapter(adapter)
+        autoCompleteTextView.threshold = 0
 
-        val errorView = view.spinner.selectedView
-        val textViewListItem = errorView as? TextView
-        val textViewInvisibleError: TextView = view.tvInvisibleError
-
-        logInfo("Test log")
-
-        if (!inputField.errorMessage.isNullOrEmpty()) {
-            logInfo("Error not null")
-            logInfo(textViewInvisibleError.toString())
-            logInfo(inputField.errorMessage)
-            textViewListItem?.error = inputField.errorMessage
-            textViewListItem?.requestFocus()
-
-            textViewInvisibleError.requestFocus()
-            textViewInvisibleError.error = inputField.errorMessage
-        } else {
-            textViewListItem?.error = null
-            textViewInvisibleError.error = null
+        autoCompleteTextView.setOnClickListener {
+            autoCompleteTextView.showDropDown()
         }
 
-
-
-        view.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (position == 0) return
-                val selectedItem = dropdownValues[position].value
-                viewModel.onAddressFieldSelected(inputField, selectedItem, isDropdownValue = true)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // No-op
+        autoCompleteTextView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                autoCompleteTextView.showDropDown()
             }
         }
-        view.spinner.post {
+
+        autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+            val selectedOption = parent.getItemAtPosition(position) as String
+            val selectedOptionValue = dropdownValues.firstOrNull { it.display == selectedOption }?.value
+            if (selectedOptionValue.isNullOrEmpty()) return@setOnItemClickListener
+            viewModel.onAddressFieldSelected(inputField, selectedOptionValue, isDropdownValue = true)
+        }
+
+        view.autoCompleteTextView.post {
             inputField.userInput?.let { input ->
                 val inputToMatch = when (input) {
                     is UserInput.Dropdown.Item, is UserInput.FreeInput -> input.value
@@ -155,14 +142,21 @@ class HomeLocationPickerDialog(
                 }
                 val index = dropdownValues.map { it.value }.indexOfFirst { dropdownValue -> dropdownValue == inputToMatch }
                 if (index in dropdownValues.indices) {
-                    view.spinner.setSelection(index)
+                    autoCompleteTextView.setText(dropdownValues[index].display, false)
                 }
             }
+        }
+
+        val errorView = view.autoCompleteTextView
+        if (!inputField.errorMessage.isNullOrEmpty()) {
+            errorView.error = inputField.errorMessage
+            errorView.requestFocus()
+        } else {
+            errorView.error = null
         }
     }
 
     interface HomeLocationPickerListener {
         fun onHomeLocationPicked(address: AddressUiModel)
     }
-
 }

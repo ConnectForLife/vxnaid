@@ -29,16 +29,17 @@
             android:text="@{addressField.displayName}"
             android:textAppearance="@style/LabelText"
             tools:text="Country" />
-      <Spinner
-                android:id="@+id/spinner"
-                style="@android:style/Widget.Material.Spinner.Underlined"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:minHeight="74dp"
-                android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
 
-            <!-- Fake TextView to use to set in an error state to allow an error to be shown for the TextView -->
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="74dp"
+            android:hint="@{addressField.displayName}"
+            android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
+
+        <!-- Fake TextView to use to set in an error state to allow an error to be shown for the TextView -->
         <android.widget.TextView
             android:id="@+id/tvInvisibleError"
             android:layout_width="1dp"
