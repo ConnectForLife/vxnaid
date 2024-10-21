@@ -10,20 +10,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.*
 import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.visit.VisitViewModel
-import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.adapters.VisitSubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
 import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
-import kotlinx.coroutines.flow.onEach
-import java.util.Date
 
 /**
  * @author maartenvangiel
@@ -72,9 +68,13 @@ class VisitVaccinesFragment : BaseFragment(),
         viewModel.selectedSubstancesData.observe(lifecycleOwner) { substances ->
             adapter.updateList(substances)
         }
+
+        // Uncomment below section to activate barcode scanning functionality
+        /*
         viewModel.selectedSubstancesWithBarcodes.observe(lifecycleOwner) { substances ->
             adapter.colorItems(substances)
         }
+         */
         viewModel.isSuggesting.observe(lifecycleOwner) {isSuggesting ->
             adapter.setSuggestingMode(isSuggesting)
         }

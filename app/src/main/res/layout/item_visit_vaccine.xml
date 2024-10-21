@@ -65,6 +65,21 @@
                 android:textStyle="bold"
                 tools:text="Vaccine Date" />
 
+            <CheckBox
+                android:id="@+id/vaccineCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:buttonTint="@color/colorPrimaryLight"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:padding="10dp"
+                tools:ignore="ContentDescription" />
+
+<!-- Uncomment below section to activate barcode scanning functionality -->
+        <!--
             <ImageButton
                 android:id="@+id/imageButton_barcodeScanner"
                 android:layout_width="wrap_content"
@@ -75,7 +90,7 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_barcodescan_65dp"
                 tools:ignore="ContentDescription" />
-
+        -->
         </LinearLayout>
 
         <Button

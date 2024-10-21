@@ -6,7 +6,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -75,9 +75,11 @@ class VisitSubstanceItemAdapter(
 
    inner class SubstanceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
       private val substanceName: TextView = itemView.findViewById(R.id.textView_substance_name)
-      private val btnBarcode: ImageButton = itemView.findViewById(R.id.imageButton_barcodeScanner)
+      // Uncomment below line to activate barcode scanning functionality
+      //private val btnBarcode: ImageButton = itemView.findViewById(R.id.imageButton_barcodeScanner)
       private val layout: LinearLayout = itemView.findViewById(R.id.linearLayout_item)
       private val btnRemove: ImageButton = itemView.findViewById(R.id.btnRemove)
+      private val btnCheckbox: CheckBox = itemView.findViewById(R.id.vaccineCheckbox)
 
       private val grey = ContextCompat.getColor(context, R.color.greyed_out)
       private val green = ContextCompat.getColor(context, R.color.colorSecondaryLight)
@@ -103,6 +105,22 @@ class VisitSubstanceItemAdapter(
 
       fun bind(substance: SubstanceDataModel, viewModel: VisitViewModel) {
          substanceName.text = substance.label
+         layout.backgroundTintList = if (isSuggested(substance)) ColorStateList.valueOf(colorAccent) else null
+
+         btnCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+               viewModel.addObsToObsMap(substance.conceptName, "", "")
+               layout.backgroundTintList = null
+               layout.setBackgroundColor(green)
+            } else {
+               viewModel.removeObsFromMap(substance.conceptName)
+               layout.setBackgroundColor(grey)
+               layout.backgroundTintList = if (isSuggested(substance)) ColorStateList.valueOf(colorAccent) else null
+            }
+         }
+
+   // Uncomment below section to activate barcode scanning functionality
+   /*
          val barcode = getBarcode(substance)
          val manufacturerName = getManufacturer(substance)
          btnBarcode.setOnClickListener {
@@ -113,6 +131,7 @@ class VisitSubstanceItemAdapter(
          }
          layout.setBackgroundColor(if (isBarcode(substance)) green else grey)
          layout.backgroundTintList = if (isSuggested(substance) && !isBarcode(substance)) ColorStateList.valueOf(colorAccent) else null
+    */
          if (isSuggesting) {
             btnRemove.visibility = View.GONE
          } else {
