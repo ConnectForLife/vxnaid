@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.devtools.ksp'
 apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 apply plugin: 'org.jetbrains.dokka'
@@ -25,11 +26,11 @@ android {
         applicationId "com.jnj.vaccinetracker"
         minSdkVersion config.buildConfig.minSdkVersion
         targetSdkVersion config.buildConfig.targetSdkVersion
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+            arg("room.incremental", "true")
+        }
         kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas".toString())
-                arg("room.incremental", "true")
-            }
             correctErrorTypes = true
             useBuildCache = true
         }
@@ -121,8 +122,8 @@ android {
             manifest.srcFile 'src/debug/AndroidManifest.xml'
         }
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
-        androidTest.java.srcDirs += [file("$buildDir/generated/source/kapt/androidTest")]
-        androidTest.java.srcDirs += [file("$buildDir/generated/source/kaptKotlin/androidTest")]
+        androidTest.java.srcDirs += [file("$buildDir/generated/source/ksp/androidTest")]
+        androidTest.java.srcDirs += [file("$buildDir/generated/source/kspKotlin/androidTest")]
     }
 }
 
@@ -154,11 +155,11 @@ dependencies {
     }
 
     deps.annotationProcessors.each { name, dep ->
-        kapt dep
+        ksp dep
     }
 
     deps.androidTestAnnotationProcessors.each { name, dep ->
-        kaptAndroidTest dep
+        kspAndroidTest dep
     }
 
     deps.testImplementation.each { name, dep ->
