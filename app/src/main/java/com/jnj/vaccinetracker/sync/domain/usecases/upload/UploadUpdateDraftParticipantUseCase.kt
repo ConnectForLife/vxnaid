@@ -30,7 +30,7 @@ class UploadUpdateDraftParticipantUseCase @Inject constructor(
         addresses = listOfNotNull(address?.toDto()),
         attributes = attributes.map { AttributeDto(it.key, it.value) },
         image = imageBase64,
-        updateDate = registrationDate,
+        updateDate = dateModified,
         participantUuid = participantUuid,
         childFirstName = childFirstName,
         childLastName = childLastName

@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.common.domain.entities
 import com.jnj.vaccinetracker.common.data.database.entities.base.SyncBase
 import com.jnj.vaccinetracker.common.data.database.entities.base.UploadableDraft
 import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.models.Constants
 
 sealed class ParticipantBase {
@@ -69,7 +70,7 @@ data class DraftParticipant(
     override val draftState: DraftState,
     val isUpdate: Boolean = false,
 ) : ParticipantBase(), SyncBase, UploadableDraft {
-    override val dateModified: DateEntity get() = registrationDate
+    override val dateModified: DateEntity get() = (if (isUpdate) dateNow() else registrationDate)
 }
 
 fun Map<String, String>.withOriginalParticipantId(participantId: String?): Map<String, String> {
