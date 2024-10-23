@@ -424,7 +424,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:hint="@string/participant_registration_details_error_birth_date_cannot_be_empty"
+                    android:hint=""
                     android:maxHeight="70sp"
                     android:text='@{viewModel.birthDateText != null ? viewModel.birthDateText : ""}'
                     android:textColorHint="@{viewModel.birthDateValidationMessage == null ?  @color/colorPrimary : @color/errorLight}"
@@ -463,7 +463,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:hint="@string/participant_registration_details_error_birth_date_cannot_be_empty"
+                    android:hint=""
                     android:maxHeight="70sp"
                     android:text="@{viewModel.estimatedAgeText}"
                     android:textColorHint="@{viewModel.estimatedAgeValidationMessage == null ? @color/colorPrimary : @color/errorLight}"
