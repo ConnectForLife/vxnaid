@@ -1,5 +1,5 @@
 def versions = [
-        buildtools       : '8.5.0',
+        buildtools       : '8.4.1',
         kotlin           : '2.0.21',
         detekt           : '1.20.0-RC1',
         fragmentKtx      : '1.2.5',
