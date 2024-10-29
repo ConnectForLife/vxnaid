@@ -20,10 +20,12 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
+import com.jnj.vaccinetracker.common.ui.model.DisplayValue
 import com.jnj.vaccinetracker.databinding.FragmentRegisterParticipantParticipantDetailsBinding
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
@@ -88,7 +90,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         setHasOptionsMenu(true)
 
         setupPhoneInput()
-        setupDropdowns()
         setupClickListeners()
         setupInputListeners()
 
@@ -117,13 +118,10 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
            // binding.birthWeightError.requestFocus()
         }
 
-        viewModel.childCategoryNames.observe(lifecycleOwner) { childCategoryNames ->
-            val adapter = ArrayAdapter(
-                requireContext(),
-                R.layout.item_dropdown,
-                childCategoryNames.orEmpty().map { it.display })
-            binding.dropdownChildCategory.setAdapter(adapter)
+        viewModel.childCategory.observe(lifecycleOwner) {
+            setupChildCategoryDropdown()
         }
+
         viewModel.genderValidationMessage.observe(lifecycleOwner) { genderValidationMessage ->
             logDebug("validate gender" + genderValidationMessage)
 
@@ -346,32 +344,22 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
-   private fun setupDropdowns() {
-        viewModel.childCategoryNames.observe(viewLifecycleOwner) { categoryList ->
-            if (categoryList != null && categoryList.isNullOrEmpty()) {
-                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList.map { it.display }
-                )
-                binding.dropdownChildCategory.setAdapter(adapter)
+   private fun setupChildCategoryDropdown() {
+       val categories = listOf(Constants.CHILD_CATEGORY_NATIONAL,
+           Constants.CHILD_CATEGORY_FOREIGNER, Constants.CHILD_CATEGORY_REFUGEE)
+       val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, categories)
+       binding.dropdownChildCategory.setAdapter(adapter)
 
-                val selectedCategoryValue = flowViewModel.registerDetails.value?.childCategory
-
-                if (selectedCategoryValue != null) {
-                    val selectedCategory = categoryList.find { it.value == selectedCategoryValue }
-                    if (selectedCategory != null) {
-                        binding.dropdownChildCategory.setText(selectedCategory.display, false)
-                    }
-                }
-            }
-        }
+       viewModel.childCategory.value?.let { category ->
+           binding.dropdownChildCategory.setText(category.display, false)
+       }
 
         binding.dropdownChildCategory.setOnItemClickListener { _, _, position, _ ->
-            val selectedCategory = viewModel.childCategoryNames.value?.get(position) ?: return@setOnItemClickListener
-
-            viewModel.setSelectedChildCategory(selectedCategory)
-
+            val selectedCategory = categories[position]
+            viewModel.setSelectedChildCategory(DisplayValue(selectedCategory, selectedCategory))
             val currentDetails = flowViewModel.registerDetails.value
             if (currentDetails != null) {
-                val updatedDetails = currentDetails.copy(childCategory = selectedCategory.value) // Store the internal value
+                val updatedDetails = currentDetails.copy(childCategory = selectedCategory)
                 flowViewModel.registerDetails.set(updatedDetails)
             }
         }
