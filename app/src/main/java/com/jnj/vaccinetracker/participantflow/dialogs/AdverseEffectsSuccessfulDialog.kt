@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogReportAdverseEffectsSuccessfulBinding
 import com.jnj.vaccinetracker.databinding.DialogUpdateParticipantSuccessfulBinding
@@ -27,6 +28,7 @@ class AdverseEffectsSuccessfulDialog : BaseDialogFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_report_adverse_effects_successful, container, false)
         binding.btnOk.setOnClickListener {
             dismissAllowingStateLoss()
+            findParent<OnAdverseEffectsSuccess>()?.onAdverseEffectsSuccess()
         }
         return binding.root
     }

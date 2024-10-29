@@ -17,7 +17,13 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.data.repositories.UserRepository
+import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
+import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
+import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
+import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
+import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentReferralBinding
@@ -29,9 +35,12 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantUiModel
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantHistoricalDataViewModel
 import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDetailsFragment
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
+import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.visit.VisitViewModel
 import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
+import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -50,6 +59,15 @@ class AdverseEffectsFragment : BaseFragment(),
 
     @Inject
     lateinit var visitManager: VisitManager
+
+    @Inject
+    lateinit var createVisitUseCase: CreateVisitUseCase
+
+    @Inject
+    lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var syncSettingsRepository: SyncSettingsRepository
 
     companion object {
         private const val TAG_ADVERSE_EFFECTS_SUCCESS_DIALOG = "successAdverseEffectsDialog"
@@ -85,14 +103,37 @@ class AdverseEffectsFragment : BaseFragment(),
 
         lifecycleScope.launch {
             try {
-                // todo Dawid please finish the api call
-                vaccineTrackerSyncApiDataSource.reportAdverseEffectForPatient(flowViewModel.selectedParticipant.value!!.participantUuid, adverseEffectText)
+                if (adverseEffectText.isNotEmpty()) {
+                    val emptyVisit = createVisitUseCase.createVisit(
+                        buildAdverseEffectsVisitObject(
+                            flowViewModel.selectedParticipant.value,
+                            Date()
+                        )
+                    )
+                    val obsToAdd =
+                        mutableMapOf(Constants.ADVERSE_EFFECTS_OBSERVATION to adverseEffectText)
+                    visitManager.updateVisitObservations(
+                        emptyVisit.toVisitDetail(),
+                        flowViewModel.selectedParticipant.value!!.participantUuid,
+                        obsToAdd
+                    )
+                }
                 AdverseEffectsSuccessfulDialog().show(childFragmentManager, TAG_ADVERSE_EFFECTS_SUCCESS_DIALOG)
             } catch (e: Exception) {
                 Log.e("ReportAdverseEffects", "Reporting of adverse effects failed", e)
                 showErrorMessage(getString(R.string.adverse_effects_page_failed_text))
             }
         }
+    }
+
+    private fun DraftVisit.toVisitDetail(): VisitDetail {
+        return VisitDetail(
+            uuid = visitUuid,
+            visitType = visitType,
+            visitDate = startDatetime,
+            attributes = attributes,
+            observations = mapOf()
+        )
     }
 
     private fun validateInputs(adverseEffectsText: String): Boolean {
@@ -108,7 +149,28 @@ class AdverseEffectsFragment : BaseFragment(),
         return isValid
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun buildAdverseEffectsVisitObject(
+        participant: ParticipantSummaryUiModel?,
+        visitDate: Date
+    ): CreateVisit {
+        val operatorUuid = userRepository.getUser()?.uuid
+            ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
+        val locationUuid = syncSettingsRepository.getSiteUuid()
+            ?: throw NoSiteUuidAvailableException("Location not available")
+        return CreateVisit(
+            participantUuid = participant!!.participantUuid,
+            visitType = Constants.VISIT_TYPE_ADVERSE_EFFECTS,
+            startDatetime = visitDate,
+            locationUuid = locationUuid,
+            attributes = mapOf(
+                Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
+                Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+            )
+        )
+    }
+
     override fun onAdverseEffectsSuccess() {
-        requireActivity().finish()
+        flowViewModel.navigateBack()
     }
 }
