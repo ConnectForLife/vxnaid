@@ -26,7 +26,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
             <TextView
                 android:id="@+id/label_title"
                 android:layout_width="wrap_content"
@@ -128,8 +127,6 @@
                     android:textAppearance="@style/ButtonTextStyling"
                     android:text="@string/general_label_close" />
             </LinearLayout>
-
-
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
