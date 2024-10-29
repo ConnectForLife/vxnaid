@@ -41,7 +41,7 @@ object Constants {
     const val VISIT_STATUS_SCHEDULED = "SCHEDULED"
     const val OBSERVATION_TYPE_MANUFACTURER = "Vaccine Manufacturer"
     const val RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME = "Reschedule Visit Reason"
-    const val ADVERSE_EFFECTS_OBSERVATION = VISIT_TYPE_ADVERSE_EFFECTS
+    const val ADVERSE_EFFECTS_OBSERVATION = "Adverse Effects Vxnaid"
 
     // common attributes
     const val ATTRIBUTE_OPERATOR = "operatorUuid"
