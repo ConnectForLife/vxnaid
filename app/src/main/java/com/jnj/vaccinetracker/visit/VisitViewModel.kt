@@ -1,7 +1,6 @@
 package com.jnj.vaccinetracker.visit
 
 import android.os.Build
-import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.R
@@ -14,17 +13,14 @@ import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
-import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.dateDayStart
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
-import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
-import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
@@ -81,11 +77,12 @@ class VisitViewModel @Inject constructor(
     var selectedOtherSubstances = MutableLiveData<MutableMap<String, String>>()
     var otherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
     var suggestedOtherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
-    var checkOtherSubstances =  MutableLiveData<Boolean>(false)
-    var isAnyOtherSubstancesEmpty =  MutableLiveData<Boolean>(false)
-    var visitsCounter = MutableLiveData<Int>(0)
+    var checkOtherSubstances =  MutableLiveData(false)
+    var isAnyOtherSubstancesEmpty =  MutableLiveData(false)
+    var visitsCounter = MutableLiveData(0)
+    val patientVisits = MutableLiveData<List<VisitDetail>>(listOf())
 
-    var isSuggesting =  MutableLiveData<Boolean>(true)
+    var isSuggesting =  MutableLiveData(true)
     var selectedVisitType =  MutableLiveData<String>()
     var suggestedVisitType =  MutableLiveData<String>()
     var visitTypes =  MutableLiveData<List<String>>()
@@ -120,29 +117,34 @@ class VisitViewModel @Inject constructor(
     private suspend fun load(participantSummary: ParticipantSummaryUiModel) {
         try {
             visitTypes.value = configurationManager.getSubstancesConfig().map { it.visitType }.distinct()
-            val visits = visitManager.getVisitsForParticipant(participantSummary.participantUuid)
-            visitsCounter.value = visits.count()
 
-            val suggestedVisitTypeFromConfig = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantSummary.birthDateText, visits, configurationManager)
+            patientVisits.value = visitManager.getVisitsForParticipant(participantSummary.participantUuid)
+            visitsCounter.value = patientVisits.value?.count()
+
+            val suggestedVisitTypeFromConfig = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantSummary.birthDateText, patientVisits.value!!, configurationManager)
             suggestedVisitType.value = suggestedVisitTypeFromConfig
             selectedVisitType.value = suggestedVisitTypeFromConfig
 
             val suggestedSubstancesFromConfig = SubstancesDataUtil.getSubstancesDataForCurrentVisit(
                 participantSummary.birthDateText,
-                visits,
+                patientVisits.value!!,
                 configurationManager
             )
             suggestedSubstancesData.value = suggestedSubstancesFromConfig
             selectedSubstancesData.value = suggestedSubstancesFromConfig
 
             substancesDataAll.value = SubstancesDataUtil.getAllSubstances(configurationManager)
-            otherSubstancesData.value = SubstancesDataUtil.getOtherSubstancesDataForVisitType(
+
+            val otherSubstancesList = SubstancesDataUtil.getOtherSubstancesDataForVisitType(
                 suggestedVisitTypeFromConfig,
                 configurationManager
             )
+            val filteredOtherSubstancesList = filterOtherSubstancesByLLIN(otherSubstancesList)
+
+            otherSubstancesData.value = filteredOtherSubstancesList
             suggestedOtherSubstancesData.value = otherSubstancesData.value
 
-            onVisitsLoaded(visits)
+            onVisitsLoaded(patientVisits.value!!)
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()
@@ -414,10 +416,14 @@ class VisitViewModel @Inject constructor(
             selectedVisitType.value ?: "",
             configurationManager
         )
-        otherSubstancesData.value = SubstancesDataUtil.getOtherSubstancesDataForVisitType(
+
+        val otherSubstancesList = SubstancesDataUtil.getOtherSubstancesDataForVisitType(
             selectedVisitType.value ?: "",
             configurationManager
         )
+        val filteredOtherSubstancesList = filterOtherSubstancesByLLIN(otherSubstancesList)
+
+        otherSubstancesData.value = filteredOtherSubstancesList
         removeSelectedOtherSubstancesIfNotRelatedToVisitType()
     }
 
@@ -432,6 +438,20 @@ class VisitViewModel @Inject constructor(
 
     fun getLocationUuid(): String {
         return syncSettingsRepository.getSiteUuidOrThrow()
+    }
+
+    private fun filterOtherSubstancesByLLIN(otherSubstancesList: List<OtherSubstanceDataModel>) : List<OtherSubstanceDataModel> {
+        return if (isLLINAlreadyAdministered() == true) {
+            otherSubstancesList.filter { it.conceptName != Constants.CONCEPT_NAME_RECEIVED_LLIN }
+        } else {
+            otherSubstancesList
+        }
+    }
+
+    private fun isLLINAlreadyAdministered(): Boolean? {
+        return patientVisits.value?.any { visit ->
+            visit.observations[Constants.CONCEPT_NAME_RECEIVED_LLIN]?.value == "Yes"
+        }
     }
 
     suspend fun onReferralAfterContraindications() {
