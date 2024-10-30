@@ -115,7 +115,7 @@ class VisitActivity :
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 if (tab.position == 0) {
-                    makeSubmitBtnInvisible()
+                    makeSubmitBtnVisible()
                     makeAddVaccineButtonInvisible()
                     isFirstTab = true
                 } else if (tab.position == 1) {
