@@ -201,9 +201,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="0dp"
@@ -233,13 +230,6 @@
                 tools:text="Placeholder tab" />
 
         </com.google.android.material.tabs.TabLayout>
-
-
-
-
-
-
-
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager_visit"
