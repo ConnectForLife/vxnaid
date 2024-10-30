@@ -442,4 +442,6 @@
     <string name="dialog_historical_visit_text">When did the visit take place?</string>
     <string name="refer_within_clinic_switch_label">Refer within the Health Facility</string>
     <string name="refer_outside_clinic_switch_label">Refer outside the Health Facility</string>
+    <string name="validation_error_dialog_message">Please resolve the following issues:</string>
+    <string name="participant_registration_details_error_no_birth_date">Please enter birth weight as integer</string>
 </resources>

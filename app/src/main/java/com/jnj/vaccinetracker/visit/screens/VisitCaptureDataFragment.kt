@@ -86,7 +86,13 @@ class VisitCaptureDataFragment :
     }
 
     private fun checkIfAnyOtherDataEmpty(): Boolean {
-        return otherSubstancesAdapter.checkIfAnyItemsEmpty(viewModel.selectedOtherSubstances.value, binding.recyclerViewOtherSubstances)
+        val errorList = otherSubstancesAdapter.checkIfAnyItemsEmpty(viewModel.selectedOtherSubstances.value, binding.recyclerViewOtherSubstances)
+        return if (errorList.isEmpty()) {
+            false
+        } else {
+            displayValidationErrorDialog(errorList)
+            true
+        }
     }
 
 }

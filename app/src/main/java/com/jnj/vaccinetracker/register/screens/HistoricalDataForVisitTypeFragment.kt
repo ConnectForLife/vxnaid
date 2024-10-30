@@ -161,13 +161,16 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private fun submitHistoricalData() {
-      if (otherSubstanceAdapter.checkIfAnyItemsEmpty(viewModel.otherSubstancesAndValues.value, binding.recyclerViewOtherSubstances).not()) {
+      val errorList = otherSubstanceAdapter.checkIfAnyItemsEmpty(viewModel.otherSubstancesAndValues.value, binding.recyclerViewOtherSubstances)
+      if (errorList.isEmpty()) {
          allDataViewModel.addVisitTypeData(
             viewModel.visitTypeName.value!!,
             viewModel.substancesAndDates.value,
             viewModel.otherSubstancesAndValues.value!!
          )
          flowViewModel.navigateBack()
+      } else {
+         displayValidationErrorDialog(errorList)
       }
    }
 

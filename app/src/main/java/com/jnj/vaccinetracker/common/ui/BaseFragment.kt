@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
+import com.jnj.vaccinetracker.common.ui.dialog.ValidationErrorDialog
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -13,6 +14,9 @@ import javax.inject.Inject
  * @version 1
  */
 abstract class BaseFragment : DaggerFragment(), ResourcesWrapper, MvvmView, UiFlowExt {
+    private companion object {
+        private const val TAG_VALIDATION_ERROR_DIALOG = "validationErrorDialog"
+    }
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -46,4 +50,7 @@ abstract class BaseFragment : DaggerFragment(), ResourcesWrapper, MvvmView, UiFl
         //make this function optional
     }
 
+    fun displayValidationErrorDialog(errorList: List<String>) {
+        ValidationErrorDialog.create(errorList).show(childFragmentManager, TAG_VALIDATION_ERROR_DIALOG)
+    }
 }

@@ -49,7 +49,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
     private companion object {
         private const val TAG_HOME_LOCATION_PICKER = "homeLocationPicker"
-        private const val TAG_DATE_PICKER = "datePicker";
+        private const val TAG_DATE_PICKER = "datePicker"
         private const val TAG_SUCCESS_DIALOG = "successDialog"
         private const val TAG_UPDATE_SUCCESS_DIALOG = "successUpdateDialog"
         private const val TAG_NO_PHONE_DIALOG = "confirmNoPhoneDialog"
@@ -130,6 +130,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
         viewModel.participantUuid.observe(lifecycleOwner) {
             setupEditableFields()
+        }
+        viewModel.validationErrors.observe(lifecycleOwner) { errorList ->
+            if (!errorList.isNullOrEmpty()) {
+                displayValidationErrorDialog(errorList)
+            }
         }
         observeViewModelEvents(lifecycleOwner)
     }

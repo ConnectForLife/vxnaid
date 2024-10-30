@@ -15,7 +15,7 @@ data class BirthDate(val time: Long) {
     }
 
     fun toDateTime(): DateTime {
-        return DateTime(year, month, day);
+        return DateTime(year, month, day)
     }
 
     companion object {

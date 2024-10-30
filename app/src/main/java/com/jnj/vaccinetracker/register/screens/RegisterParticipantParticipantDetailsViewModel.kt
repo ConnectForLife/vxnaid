@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.register.screens
 
 import androidx.collection.ArrayMap
+import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftParticipantDao
 import com.jnj.vaccinetracker.common.data.helpers.delaySafe
@@ -24,6 +25,7 @@ import com.jnj.vaccinetracker.common.validators.NinValidator
 import com.jnj.vaccinetracker.common.validators.ParticipantIdValidator
 import com.jnj.vaccinetracker.common.validators.PhoneValidator
 import com.jnj.vaccinetracker.common.validators.TextInputValidator
+import com.jnj.vaccinetracker.common.viewmodel.MutableLiveDataUnique
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
@@ -238,7 +240,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     private suspend fun setNinIdentifiers() {
-        val remoteNINs = configurationManager.getNinIdentifiers();
+        val remoteNINs = configurationManager.getNinIdentifiers()
         val localNINs = draftParticipantDao.findAllByDraftState(DraftState.UPLOAD_PENDING)
             .filter { draftParticipant -> draftParticipant?.nin != null }
             .map { draftParticipant ->
@@ -513,95 +515,79 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     @SuppressWarnings("LongParameterList")
     private suspend fun validateInput(
-            participantId: String?,
-            gender: Gender?,
-            birthDate: DateTime?,
-            homeLocation: Address?,
-            motherFirstName: String?,
-            motherLastName: String?,
-            fatherFirstName: String?,
-            fatherLastName: String?,
-            childFirstName: String?,
-            childLastName: String?
+        participantId: String?,
+        gender: Gender?,
+        birthDate: DateTime?,
+        homeLocation: Address?,
+        motherFirstName: String?,
+        motherLastName: String?,
+        fatherFirstName: String?,
+        fatherLastName: String?,
+        childFirstName: String?,
+        childLastName: String?
     ): Boolean {
         var isValid = true
+        val validationErrors: MutableList<String> = mutableListOf()
+
         resetValidationMessages()
+        resetValidationErrors()
 
-        if (participantId.isNullOrEmpty()) {
-            isValid = false
-            participantIdValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_participant_id))
-        } else if (!participantIdValidator.validate(participantId)) {
-            isValid = false
-            participantIdValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_invalid_participant_id))
+        fun addValidationError(isValidField: Boolean, errorMessageResId: Int, liveDataField: MutableLiveDataUnique<String>?) {
+            if (!isValidField) {
+                isValid = false
+                val errorMessage = resourcesWrapper.getString(errorMessageResId)
+                validationErrors.add(errorMessage)
+                liveDataField?.set(errorMessage)
+            }
         }
 
-        if (gender == null) {
-            isValid = false
-            genderValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_gender))
-        }
+        addValidationError(
+            !participantId.isNullOrEmpty() && participantIdValidator.validate(participantId),
+            if (participantId.isNullOrEmpty()) R.string.participant_registration_details_error_no_participant_id
+            else R.string.participant_registration_details_error_invalid_participant_id,
+            participantIdValidationMessage
+        )
 
-        if (birthWeight == null ) {
-            isValid = false
-            birthWeightValidationMessage.set("Please enter birth weight as integer")
-        }
+        addValidationError(gender != null, R.string.participant_registration_details_error_no_gender, genderValidationMessage)
 
-        if (homeLocation?.isWholeAddressEmpty() == true) {
-            isValid = false
-            homeLocationValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_home_location))
-        }
+        addValidationError(birthDate != null, R.string.participant_registration_details_error_birth_date_cannot_be_empty, birthDateValidationMessage)
+        addValidationError(birthDate != null, R.string.participant_registration_details_error_birth_date_cannot_be_empty, estimatedAgeValidationMessage)
 
-        if (birthDate == null) {
-            isValid = false
-            birthDateValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_birth_date_cannot_be_empty))
-            estimatedAgeValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_birth_date_cannot_be_empty))
-        }
+        addValidationError(homeLocation?.isWholeAddressEmpty() == false, R.string.participant_registration_details_error_no_home_location, homeLocationValidationMessage)
 
-        if (motherFirstName.isNullOrEmpty()) {
-            isValid = false
-            motherFirstNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_mother_first_name))
-        } else if (!textInputValidator.validate(motherFirstName)) {
-            isValid = false
-            motherFirstNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
-        }
+        addValidationError(
+            !motherFirstName.isNullOrEmpty() && textInputValidator.validate(motherFirstName),
+            if (motherFirstName.isNullOrEmpty()) R.string.participant_registration_details_error_no_mother_first_name
+            else R.string.participant_registration_details_error_no_letters_used,
+            motherFirstNameValidationMessage
+        )
 
-        if (motherLastName.isNullOrEmpty()) {
-            isValid = false
-            motherLastNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_mother_last_name))
-        } else if (!textInputValidator.validate(motherLastName)) {
-            isValid = false
-            motherLastNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
-        }
+        addValidationError(
+            !motherLastName.isNullOrEmpty() && textInputValidator.validate(motherLastName),
+            if (motherLastName.isNullOrEmpty()) R.string.participant_registration_details_error_no_mother_last_name
+            else R.string.participant_registration_details_error_no_letters_used,
+            motherLastNameValidationMessage
+        )
 
         if (!fatherFirstName.isNullOrEmpty()) {
-            if (!textInputValidator.validate(fatherFirstName)) {
-                isValid = false
-                fatherFirstNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
-            }
+            addValidationError(textInputValidator.validate(fatherFirstName), R.string.participant_registration_details_error_no_letters_used, fatherFirstNameValidationMessage)
         }
-
         if (!fatherLastName.isNullOrEmpty()) {
-            if (!textInputValidator.validate(fatherLastName)) {
-                isValid = false
-                fatherLastNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
-            }
+            addValidationError(textInputValidator.validate(fatherLastName), R.string.participant_registration_details_error_no_letters_used, fatherLastNameValidationMessage)
         }
 
         if (!childFirstName.isNullOrEmpty()) {
-            if (!textInputValidator.validate(childFirstName)) {
-                isValid = false
-                childFirstNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
-            }
+            addValidationError(textInputValidator.validate(childFirstName), R.string.participant_registration_details_error_no_letters_used, childFirstNameValidationMessage)
+        }
+        if (!childLastName.isNullOrEmpty()) {
+            addValidationError(textInputValidator.validate(childLastName), R.string.participant_registration_details_error_no_letters_used, childLastNameValidationMessage)
         }
 
-        if (!childLastName.isNullOrEmpty()) {
-            if (!textInputValidator.validate(childLastName)) {
-                isValid = false
-                childLastNameValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_letters_used))
-            }
-        }
+        this.validationErrors.value = validationErrors
 
         return isValid
     }
+
 
     private fun isNinValueValid(ninValue: String?): Boolean {
         if (isEditMode() && originalNinValue == ninValue) {
