@@ -116,45 +116,63 @@ class OtherSubstanceItemAdapter(
         notifyDataSetChanged()
     }
 
-    fun checkIfAnyItemsEmpty(itemsValues: MutableMap<String, String>?, recyclerView: RecyclerView): Boolean {
-        var hasEmptyItems = false
+    fun checkIfAnyItemsEmpty(itemsValues: MutableMap<String, String>?, recyclerView: RecyclerView): List<String> {
+        val errorList = mutableListOf<String>()
+
         items.forEachIndexed { index, item ->
             val itemValue = itemsValues?.get(item.conceptName)
+
             when (getItemViewType(index)) {
-                TYPE_TEXT, TYPE_NUMBER, TYPE_NUMBER_DECIMAL -> {
-                    val holder = recyclerView.findViewHolderForAdapterPosition(index) as? TextViewHolder
-                    if (itemValue.isNullOrEmpty()) {
-                        holder?.inputEditText?.error = "Please fill before submitting"
-                        hasEmptyItems = true
-                    } else {
-                        holder?.inputEditText?.error = null
-                    }
-                }
-                TYPE_RADIO -> {
-                    val holder = recyclerView.findViewHolderForAdapterPosition(index) as? RadioViewHolder
-                    if (itemValue.isNullOrEmpty()) {
-                        holder?.labelTextView?.error = "Please select an option before submitting"
-                        hasEmptyItems = true
-                    } else {
-                        holder?.labelTextView?.error = null
-                    }
-                }
-                TYPE_HARDCODED_Z_SCORE -> {
-                    val holder = recyclerView.findViewHolderForAdapterPosition(index) as? HardcodedZScoreViewHolder
-                    if (holder?.isEmpty == true) {
-                        holder.onEmpty?.invoke()
-                        hasEmptyItems = true
-                    } else {
-                        holder?.onNotEmpty?.invoke()
-                    }
-                }
+                TYPE_TEXT, TYPE_NUMBER, TYPE_NUMBER_DECIMAL -> handleTextInputValidation(index, itemValue, recyclerView, errorList)
+                TYPE_RADIO -> handleRadioValidation(index, itemValue, recyclerView, errorList)
+                TYPE_HARDCODED_Z_SCORE -> handleZScoreValidation(index, recyclerView, errorList)
             }
         }
-        return hasEmptyItems
+        return errorList
     }
 
+    private fun handleTextInputValidation(index: Int, itemValue: String?, recyclerView: RecyclerView, errorList: MutableList<String>) {
+        val holder = recyclerView.findViewHolderForAdapterPosition(index) as? TextViewHolder
+        val label = holder?.labelTextView?.text
+        val errorMessage = "Please fill $label before submitting"
+
+        if (itemValue.isNullOrEmpty()) {
+            holder?.inputEditText?.error = errorMessage
+            errorList.add(errorMessage)
+        } else {
+            holder?.inputEditText?.error = null
+        }
+    }
+
+    private fun handleRadioValidation(index: Int, itemValue: String?, recyclerView: RecyclerView, errorList: MutableList<String>) {
+        val holder = recyclerView.findViewHolderForAdapterPosition(index) as? RadioViewHolder
+        val label = holder?.labelTextView?.text
+        val errorMessage = "Please select $label option before submitting"
+
+        if (itemValue.isNullOrEmpty()) {
+            holder?.labelTextView?.error = errorMessage
+            errorList.add(errorMessage)
+        } else {
+            holder?.labelTextView?.error = null
+        }
+    }
+
+    private fun handleZScoreValidation(index: Int, recyclerView: RecyclerView, errorList: MutableList<String>) {
+        val holder = recyclerView.findViewHolderForAdapterPosition(index) as? HardcodedZScoreViewHolder
+        val label = holder?.label
+        val errorMessage = "Please fill $label before submitting"
+
+        if (holder?.isEmpty == true) {
+            holder.onEmpty?.invoke()
+            errorList.add(errorMessage)
+        } else {
+            holder?.onNotEmpty?.invoke()
+        }
+    }
+
+
     inner class TextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val labelTextView: TextView = itemView.findViewById(R.id.label_otherSubstance)
+        val labelTextView: TextView = itemView.findViewById(R.id.label_otherSubstance)
         val inputEditText: EditText = itemView.findViewById(R.id.editText_otherSubstance)
 
         fun bind(item: OtherSubstanceDataModel) {
@@ -171,6 +189,7 @@ class OtherSubstanceItemAdapter(
 
     inner class HardcodedZScoreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val frameLayout: FrameLayout = itemView.findViewById(R.id.frameLayout_hardcoded)
+        var label: String = ""
         var isEmpty: Boolean = true
         var onEmpty: (() -> Unit)? = null
         var onNotEmpty: (() -> Unit)? = null
@@ -185,6 +204,7 @@ class OtherSubstanceItemAdapter(
             isEmpty = hardcodedClass.isEmpty()
             onEmpty = hardcodedClass.onEmpty()
             onNotEmpty = hardcodedClass.onNotEmpty()
+            label = item.label
         }
     }
 

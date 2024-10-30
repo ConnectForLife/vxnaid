@@ -27,7 +27,7 @@ class ParticipantFlowPhoneRobot : BaseRobot() {
         onView(ofViewType<RecyclerView>())
             .check(matches(isDisplayed()))
             .inRoot(isDialog())
-            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click));
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click))
     }
 
     fun phone(phone: String) {

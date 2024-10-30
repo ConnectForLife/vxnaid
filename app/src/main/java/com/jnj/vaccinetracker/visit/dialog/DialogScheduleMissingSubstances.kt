@@ -8,11 +8,11 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.adapters.StringItemAdapter
 import com.jnj.vaccinetracker.common.dialogs.DatePickerDialog
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogScheduleMissingSubstancesBinding
-import com.jnj.vaccinetracker.visit.adapters.MissingSubstanceItemAdapter
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import java.util.Date
@@ -60,7 +60,7 @@ class DialogScheduleMissingSubstances(
    }
 
    private fun setupRecyclerView() {
-      val adapter = MissingSubstanceItemAdapter(missingSubstanceLabels)
+      val adapter = StringItemAdapter(missingSubstanceLabels)
       binding.recyclerViewMissingSubstances.layoutManager = LinearLayoutManager(requireContext())
       binding.recyclerViewMissingSubstances.adapter = adapter
    }

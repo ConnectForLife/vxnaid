@@ -17,6 +17,8 @@ abstract class ViewModelBase : ViewModel() {
 
     protected abstract val dispatchers: AppCoroutineDispatchers
 
+    val validationErrors = MutableLiveData<List<String>>(listOf())
+
     protected val scope
         get() = CoroutineScope(dispatchers.mainImmediate + job)
 
@@ -31,6 +33,10 @@ abstract class ViewModelBase : ViewModel() {
     protected inline fun <reified T> mutableLiveData(value: T? = null) = MutableLiveDataUnique(value, dispatchers, scope)
     protected fun mutableLiveInt(value: Int = 0) = MutableLiveDataUniqueNonNull(value, dispatchers, scope)
     protected fun mutableLiveBoolean(value: Boolean = false) = MutableLiveDataUniqueNonNull(value, dispatchers, scope)
+
+    internal fun resetValidationErrors() {
+        validationErrors.value = listOf()
+    }
 
 }
 
