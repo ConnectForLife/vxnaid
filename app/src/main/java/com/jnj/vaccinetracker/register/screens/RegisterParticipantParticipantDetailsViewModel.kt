@@ -268,8 +268,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantBase?.childFirstName?.let { setChildFirstName(it) }
             participantBase?.childLastName?.let { setChildLastName(it) }
             participantBase?.childCategory?.let { category ->
-                val selectedCategory = childCategoryNames.get()?.find { it.value == category }
-                if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
+                setSelectedChildCategory(DisplayValue(category, category))
             }
             participantBase?.address?.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
@@ -293,8 +292,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             args.registerDetails.childFirstName?.let { setChildFirstName(it) }
             args.registerDetails.childLastName?.let { setChildLastName(it) }
             args.registerDetails.childCategory?.let { category ->
-                val selectedCategory = childCategoryNames.get()?.find { it.value == category }
-                if (selectedCategory != null) setSelectedChildCategory(selectedCategory)
+                setSelectedChildCategory(DisplayValue(category, category))
             }
             args.registerDetails.address.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
@@ -321,12 +319,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         vaccineNames.set(configuration.vaccines.map { vaccine ->
             DisplayValue(vaccine.name, loc[vaccine.name])
         })
-
-      val categories = listOf("National", "Foreigner", "Refugee")
-        val childCategoryDisplayValue = categories.map { category ->
-            DisplayValue(category, loc[category] ?: category)
-        }
-        childCategoryNames.postValue(childCategoryDisplayValue)
 
         languages.set(configuration.personLanguages.map { language ->
             DisplayValue(language.name, loc[language.name]) })

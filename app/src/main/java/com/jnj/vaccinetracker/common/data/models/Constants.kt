@@ -90,4 +90,8 @@ object Constants {
 
     const val USER_PREFERENCES_FILE_NAME = "user_preferences"
     const val VISIT_PLACE_FILE_KEY = "visit_place"
+
+    const val CHILD_CATEGORY_NATIONAL = "National"
+    const val CHILD_CATEGORY_FOREIGNER = "Foreigner"
+    const val CHILD_CATEGORY_REFUGEE = "Refugee"
 }

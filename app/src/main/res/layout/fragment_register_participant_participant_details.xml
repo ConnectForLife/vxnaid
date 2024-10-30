@@ -317,8 +317,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/participant_registration_details_label_select_child_category"
-                        android:inputType="none"
-                        android:text="@{viewModel.childCategory.display}" />
+                        android:inputType="none" />
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
