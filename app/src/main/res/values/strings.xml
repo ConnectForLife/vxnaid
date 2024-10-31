@@ -160,7 +160,7 @@
     <string name="participant_registration_details_error_no_year_of_birth">Please enter a valid year of birth</string>
     <string name="participant_registration_details_error_no_phone">Please enter a valid phone number with only numbers and spaces</string>
     <string name="participant_registration_details_error_no_letters_used">Please use letters only</string>
-    <string name="participant_registration_details_error_no_home_location">Please select a address</string>
+    <string name="participant_registration_details_error_no_home_location">Please select an address</string>
     <string name="participant_registration_details_error_no_vaccine">Please select a regimen</string>
     <string name="participant_registration_details_error_no_language">Please select a language</string>
     <string name="participant_registration_details_error_participant_already_exists">A Child with this ID already exists</string>
@@ -445,4 +445,27 @@
     <string name="refer_outside_clinic_switch_label">Refer outside the Health Facility</string>
     <string name="validation_error_dialog_message">Please resolve the following issues:</string>
     <string name="participant_registration_details_error_no_birth_date">Please enter birth weight as integer</string>
+    <string name="visits_overview_title">Visits Overview</string>
+    <string name="visits_overview_scheduled_visits_title">Scheduled Visits</string>
+    <string name="visits_overview_historical_visits_title">Historical Visits</string>
+    <string name="visits_overview_missed_visits_title">Missed Visits</string>
+    <string name="visits_overview_start_date_label">Start Date</string>
+    <string name="visits_overview_end_date_label">End Date</string>
+    <string name="visits_overview_not_set_label">Not set</string>
+    <string name="visits_overview_search_hint">Search by Client ID or name</string>
+    <string name="visits_overview_visit_date_column_label">Visit Date</string>
+    <string name="visits_overview_client_id_column_label">Client ID</string>
+    <string name="visits_overview_client_name_column_label">Client Name</string>
+    <string name="visits_overview_details_visit_date_label">Visit Date:</string>
+    <string name="visits_overview_details_scheduled_visit_date_label">Scheduled Visit Date:</string>
+    <string name="visits_overview_details_historical_visit_date_label">Historical Visit Date:</string>
+    <string name="visits_overview_details_missed_visit_date_label">Missed Visit Date:</string>
+    <string name="visits_overview_details_scheduled_visits_vaccines_label">Vaccine(s) to be administered:</string>
+    <string name="visits_overview_details_historical_visits_vaccines_label">Vaccine(s) administered:</string>
+    <string name="visits_overview_details_missed_visits_vaccines_label">Vaccine(s) administered:</string>
+    <string name="visits_overview_details_general_vaccines_label">Vaccines:</string>
+    <string name="visits_overview_details_phone_number_label">Phone Number:</string>
+    <string name="visits_overview_details_client_id_label">Client ID:</string>
+    <string name="visits_overview_details_client_name_label">Client Name:</string>
+    <string name="visits_overview_details_close_button_label">Close</string>
 </resources>

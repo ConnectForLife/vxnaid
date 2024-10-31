@@ -57,6 +57,10 @@ import com.jnj.vaccinetracker.visit.screens.ContraindicationsFragment
 import com.jnj.vaccinetracker.visit.screens.ReferralFragment
 import com.jnj.vaccinetracker.visit.screens.VisitVaccinesFragment
 import com.jnj.vaccinetracker.visit.screens.VisitCaptureDataFragment
+import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewFlowActivity
+import com.jnj.vaccinetracker.visitsoverview.dialog.VisitDetailsDialog
+import com.jnj.vaccinetracker.visitsoverview.screens.VisitsListFragment
+import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -262,4 +266,17 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindTransferClinicDialog(): TransferClinicDialog
+
+    @ContributesAndroidInjector
+    fun bindVisitsOverviewFragment(): VisitsOverviewFragment
+
+    @ContributesAndroidInjector
+    fun bindVisitsListFragment(): VisitsListFragment
+
+    @ContributesAndroidInjector
+    fun bindVisitsOverviewFlowActivity(): VisitsOverviewFlowActivity
+
+    @ContributesAndroidInjector
+    fun bindVisitDetailsDialog(): VisitDetailsDialog
+
 }

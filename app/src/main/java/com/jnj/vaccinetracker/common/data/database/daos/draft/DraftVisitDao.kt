@@ -11,6 +11,7 @@ import com.jnj.vaccinetracker.common.data.database.models.delete.RoomDeleteVisit
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantDataToUploadModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftVisitModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.update.RoomUpdateVisitDraftStateModel
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.domain.entities.DraftState
 import kotlinx.coroutines.flow.Flow
 
@@ -32,6 +33,18 @@ interface DraftVisitDao : DraftVisitDaoBase<DraftVisitEntity, RoomDraftVisitMode
     @Query("select * from draft_visit where visitUuid=:visitUuid")
     @Transaction
     override suspend fun findByVisitUuid(visitUuid: String): RoomDraftVisitModel?
+
+    @Query("select * from draft_visit")
+    @Transaction
+    override suspend fun findAllVisits(): List<RoomDraftVisitModel>
+
+    @Query("SELECT * FROM draft_visit WHERE startDatetime >= :date ORDER BY startDatetime ASC")
+    @Transaction
+    override suspend fun findVisitsAfterDate(date: DateEntity): List<RoomDraftVisitModel>
+
+    @Query("SELECT * FROM draft_visit WHERE startDatetime < :date ORDER BY startDatetime DESC")
+    @Transaction
+    override suspend fun findVisitsBeforeDate(date: DateEntity): List<RoomDraftVisitModel>
 
     @Query("select * from draft_visit where draftState=:draftState LIMIT 1")
     @Transaction

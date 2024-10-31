@@ -29,6 +29,8 @@ import com.jnj.vaccinetracker.setup.screens.p2p.transfer.server.SetupP2pDeviceSe
 import com.jnj.vaccinetracker.splash.SplashViewModel
 import com.jnj.vaccinetracker.update.UpdateViewModel
 import com.jnj.vaccinetracker.visit.VisitViewModel
+import com.jnj.vaccinetracker.visitsoverview.VisitsListViewModel
+import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -177,4 +179,14 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(HistoricalDataForVisitTypeViewModel::class)
     fun bindRegisterParticipantAdministeredVaccinesViewModel(model: HistoricalDataForVisitTypeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(VisitsOverviewViewModel::class)
+    fun bindVisitsOverviewViewModel(model: VisitsOverviewViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(VisitsListViewModel::class)
+    fun bindVisitsListViewModel(model: VisitsListViewModel): ViewModel
 }

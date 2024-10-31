@@ -60,6 +60,7 @@ object Constants {
 
     const val REQ_REGISTER_PARTICIPANT = 453
     const val REQ_VISIT = 12
+    const val REQ_VISITS_OVERVIEW = 312
 
     const val UTC_TIME_ZONE_NAME = "UTC"
 
@@ -94,4 +95,8 @@ object Constants {
     const val CHILD_CATEGORY_NATIONAL = "National"
     const val CHILD_CATEGORY_FOREIGNER = "Foreigner"
     const val CHILD_CATEGORY_REFUGEE = "Refugee"
+
+    const val VISITS_OVERVIEW_SCHEDULED_VISITS_KEY = "Scheduled Visits"
+    const val VISITS_OVERVIEW_HISTORICAL_VISITS_KEY = "Historical Visits"
+    const val VISITS_OVERVIEW_MISSED_VISITS_KEY = "Missed Visits"
 }
