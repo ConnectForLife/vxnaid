@@ -30,6 +30,9 @@ import com.jnj.vaccinetracker.visitsoverview.model.VisitDetailsDTO
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -116,7 +119,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
 
     private fun setupDownloadButtons() {
         binding.btnDownloadExcel.setOnClickListener {
-
+            exportToExcel(visitsAdapter.currentList)
         }
 
         binding.btnDownloadCsv.setOnClickListener {
@@ -124,11 +127,43 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         }
     }
 
+    private fun exportToExcel(visits: List<VisitDataDTO>) {
+        val fileName = "${buildFileName()}.xls"
+        val filePath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName)
+
+        val workbook = HSSFWorkbook()
+        val sheet = workbook.createSheet(visitsKey.replace(" ", "_"))
+
+        val headerRow = sheet.createRow(0)
+        headerRow.createCell(0).setCellValue(Constants.VISIT_DATE_FILE_COLUMN_HEADER)
+        headerRow.createCell(1).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
+        headerRow.createCell(2).setCellValue(Constants.CLIENT_NAME_FILE_COLUMN_HEADER)
+        headerRow.createCell(3).setCellValue(Constants.PHONE_NUMBER_FILE_COLUMN_HEADER)
+
+        visits.forEachIndexed { index, visit ->
+            val row = sheet.createRow(index + 1)
+            row.createCell(0).setCellValue(visit.formattedStartDateTime)
+            row.createCell(1).setCellValue(visit.participant.participantId)
+            row.createCell(2).setCellValue(visit.participant.fullName)
+            row.createCell(3).setCellValue(visit.participant.phone)
+        }
+
+        try {
+            FileOutputStream(filePath).use { outputStream ->
+                workbook.write(outputStream)
+                workbook.close()
+            }
+            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_success_message), Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_failure_message), Toast.LENGTH_LONG).show()
+        }
+    }
+
     private fun exportToCSV(visits: List<VisitDataDTO>) {
         val resolver = requireContext().contentResolver
         val fileName = "${buildFileName()}.csv"
         val mimeType = "text/csv"
-        val titleRowColumns = "Visit Date, Client ID, Client name, Phone Number \n"
+        val titleRowColumns = "${Constants.VISIT_DATE_FILE_COLUMN_HEADER}, ${Constants.CLIENT_ID_FILE_COLUMN_HEADER}, ${Constants.CLIENT_NAME_FILE_COLUMN_HEADER}, ${Constants.PHONE_NUMBER_FILE_COLUMN_HEADER} \n"
         val contentValues = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, fileName)
             put(MediaStore.Downloads.MIME_TYPE, mimeType)
@@ -145,10 +180,10 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
                     }
                 }
             }
-            Toast.makeText(requireContext(), "File saved in Downloads directory", Toast.LENGTH_LONG)
+            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_success_message), Toast.LENGTH_LONG)
                 .show()
-        } ?: kotlin.run {
-            Toast.makeText(requireContext(), "Failed when saving file", Toast.LENGTH_SHORT).show()
+        } ?: run {
+            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_failure_message), Toast.LENGTH_LONG).show()
         }
     }
 

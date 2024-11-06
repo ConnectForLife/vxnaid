@@ -99,4 +99,9 @@ object Constants {
     const val VISITS_OVERVIEW_SCHEDULED_VISITS_KEY = "Scheduled Visits"
     const val VISITS_OVERVIEW_HISTORICAL_VISITS_KEY = "Historical Visits"
     const val VISITS_OVERVIEW_MISSED_VISITS_KEY = "Missed Visits"
+
+    const val VISIT_DATE_FILE_COLUMN_HEADER = "Visit Date"
+    const val CLIENT_ID_FILE_COLUMN_HEADER = "Client ID"
+    const val CLIENT_NAME_FILE_COLUMN_HEADER = "Client Name"
+    const val PHONE_NUMBER_FILE_COLUMN_HEADER = "Phone Number"
 }
