@@ -11,7 +11,7 @@ import com.jnj.vaccinetracker.databinding.ItemVisitRecordBinding
 import com.jnj.vaccinetracker.visitsoverview.model.VisitDataDTO
 
 class VisitsAdapter(
-    private val onVisitClick: (VisitDataDTO) -> Unit
+    private val onEyeIconClick: (VisitDataDTO) -> Unit
 ) : ListAdapter<VisitDataDTO, VisitsAdapter.VisitViewHolder>(VisitDataDTODiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VisitViewHolder {
@@ -37,8 +37,8 @@ class VisitsAdapter(
 
             binding.root.setBackgroundColor(backgroundColor)
 
-            itemView.setOnClickListener {
-                onVisitClick(visit)
+            binding.iconEye.setOnClickListener {
+                onEyeIconClick(visit)
             }
         }
     }

@@ -466,4 +466,5 @@
     <string name="visits_overview_details_client_name_label">Client Name:</string>
     <string name="visits_overview_details_close_button_label">Close</string>
     <string name="visits_overview_total_visit_count_label">Total Visit Count: %1$d</string>
+    <string name="visits_overview_view_details_label">View Details</string>
 </resources>

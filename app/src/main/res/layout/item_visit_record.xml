@@ -25,7 +25,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_clientId"
-            app:layout_constraintWidth_percent="0.33" />
+            app:layout_constraintWidth_percent="0.28" />
 
         <TextView
             android:id="@+id/tv_clientId"
@@ -39,7 +39,7 @@
             app:layout_constraintStart_toEndOf="@id/tv_visit_date"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_clientName"
-            app:layout_constraintWidth_percent="0.33" />
+            app:layout_constraintWidth_percent="0.28" />
 
         <TextView
             android:id="@+id/tv_clientName"
@@ -53,7 +53,20 @@
             app:layout_constraintStart_toEndOf="@id/tv_clientId"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_percent="0.33" />
+            app:layout_constraintWidth_percent="0.28" />
+
+        <ImageView
+            android:id="@+id/icon_eye"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/visits_overview_view_details_label"
+            android:src="@drawable/eye_icon"
+            app:tint="@color/colorAccent"
+            app:layout_constraintStart_toEndOf="@id/tv_clientName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.16" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
