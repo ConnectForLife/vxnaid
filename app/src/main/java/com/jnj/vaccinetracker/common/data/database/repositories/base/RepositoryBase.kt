@@ -1,8 +1,10 @@
 package com.jnj.vaccinetracker.common.data.database.repositories.base
 
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.domain.entities.DateModifiedOccurrence
 import com.jnj.vaccinetracker.common.domain.entities.DraftState
 import com.jnj.vaccinetracker.common.domain.entities.ParticipantBiometricsTemplateFileBase
+import com.jnj.vaccinetracker.common.domain.entities.Visit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -68,6 +70,9 @@ interface DraftParticipantDataFileRepositoryBase<T> : ParticipantDataFileReposit
 
 interface VisitRepositoryBase<T> : RepositoryBase<T> {
     suspend fun findByVisitUuid(visitUuid: String): T?
+    suspend fun findAllVisits(): List<T>
+    suspend fun findVisitsAfterDate(date: DateEntity): List<T>
+    suspend fun findVisitsBeforeDate(date: DateEntity): List<T>
     suspend fun findAllByParticipantUuid(participantUuid: String): List<T>
     suspend fun deleteByVisitUuid(visitUuid: String): Boolean
 }

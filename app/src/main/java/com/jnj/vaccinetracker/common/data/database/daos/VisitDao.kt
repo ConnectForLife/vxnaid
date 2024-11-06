@@ -14,6 +14,7 @@ import com.jnj.vaccinetracker.common.data.database.entities.VisitObservationEnti
 import com.jnj.vaccinetracker.common.data.database.models.RoomDateModifiedOccurrenceModel
 import com.jnj.vaccinetracker.common.data.database.models.RoomVisitModel
 import com.jnj.vaccinetracker.common.data.database.models.delete.RoomDeleteVisitModel
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -22,6 +23,18 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
     @Query("select * from visit where participantUuid=:participantUuid")
     @Transaction
     override suspend fun findAllByParticipantUuid(participantUuid: String): List<RoomVisitModel>
+
+    @Query("select * from visit")
+    @Transaction
+    override suspend fun findAllVisits(): List<RoomVisitModel>
+
+    @Query("SELECT * FROM visit WHERE startDatetime >= :date ORDER BY startDatetime ASC")
+    @Transaction
+    override suspend fun findVisitsAfterDate(date: DateEntity): List<RoomVisitModel>
+
+    @Query("SELECT * FROM visit WHERE startDatetime < :date ORDER BY startDatetime DESC")
+    @Transaction
+    override suspend fun findVisitsBeforeDate(date: DateEntity): List<RoomVisitModel>
 
     @Query("select * from visit where visitUuid=:visitUuid")
     @Transaction

@@ -26,6 +26,8 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.update.UpdateDialog
 import com.jnj.vaccinetracker.visit.VisitActivity
+import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewFlowActivity
+import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
@@ -38,6 +40,7 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
 
    private val viewModel: ParticipantFlowViewModel by activityViewModels { viewModelFactory }
    private val viewModelParticipantFlow: ParticipantFlowMatchingViewModel by viewModels { viewModelFactory }
+   private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
 
    private lateinit var binding: FragmentParticipantAddOrSearchBinding
 
@@ -50,6 +53,10 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
       }
       binding.btnNewParticipant.setOnClickListener {
          viewModelParticipantFlow.onNewParticipantButtonClick()
+      }
+
+      binding.btnVisitsOverview.setOnClickListener {
+         visitsOverviewViewModel.onVisitsOverviewClick()
       }
 
       setHasOptionsMenu(true)
@@ -79,6 +86,13 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
                phoneNumber = null
             ), Constants.REQ_REGISTER_PARTICIPANT
          )
+         (requireActivity() as BaseActivity).setForwardAnimation()
+      }.launchIn(lifecycleOwner)
+
+      visitsOverviewViewModel.launchVisitsOverviewFragmentFlowEvent.asFlow().onEach {
+         startActivityForResult(VisitsOverviewFlowActivity.create(
+            context = requireContext()
+         ), Constants.REQ_VISITS_OVERVIEW)
          (requireActivity() as BaseActivity).setForwardAnimation()
       }.launchIn(lifecycleOwner)
    }
@@ -113,6 +127,11 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
             }
             requireActivity().finish()
          }
+
+         Constants.REQ_VISITS_OVERVIEW -> {
+            startActivity(VisitsOverviewFlowActivity.create(requireContext()))
+         }
+
          Constants.REQ_VISIT -> {
             viewModel.reset()
          }

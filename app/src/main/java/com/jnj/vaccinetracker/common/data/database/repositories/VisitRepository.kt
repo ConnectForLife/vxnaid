@@ -15,6 +15,7 @@ import com.jnj.vaccinetracker.common.data.database.models.delete.RoomDeleteVisit
 import com.jnj.vaccinetracker.common.data.database.repositories.base.SyncRepositoryBase
 import com.jnj.vaccinetracker.common.data.database.repositories.base.VisitRepositoryBase
 import com.jnj.vaccinetracker.common.data.database.transaction.ParticipantDbTransactionRunner
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.DateModifiedOccurrence
 import com.jnj.vaccinetracker.common.domain.entities.Visit
@@ -54,6 +55,18 @@ class VisitRepository @Inject constructor(
     override suspend fun findMostRecentDateModifiedOccurrence(): DateModifiedOccurrence? = visitDao.findMostRecentDateModifiedOccurrence().toDomain()
     override suspend fun findAllByParticipantUuid(participantUuid: String): List<Visit> {
         return visitDao.findAllByParticipantUuid(participantUuid).map { it.toDomain() }
+    }
+
+    override suspend fun findAllVisits(): List<Visit> {
+        return visitDao.findAllVisits().map { it.toDomain() }
+    }
+
+    override suspend fun findVisitsAfterDate(date: DateEntity): List<Visit> {
+        return visitDao.findVisitsAfterDate(date).map { it.toDomain() }
+    }
+
+    override suspend fun findVisitsBeforeDate(date: DateEntity): List<Visit> {
+        return visitDao.findVisitsBeforeDate(date).map { it.toDomain() }
     }
 
     override suspend fun deleteByVisitUuid(visitUuid: String): Boolean {

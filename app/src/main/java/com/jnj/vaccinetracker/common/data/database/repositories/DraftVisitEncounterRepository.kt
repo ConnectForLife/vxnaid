@@ -14,6 +14,7 @@ import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftVisitEn
 import com.jnj.vaccinetracker.common.data.database.models.draft.update.RoomUpdateVisitDraftStateModel
 import com.jnj.vaccinetracker.common.data.database.repositories.base.DraftVisitRepositoryBase
 import com.jnj.vaccinetracker.common.data.database.transaction.ParticipantDbTransactionRunner
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.domain.entities.DraftState
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.exceptions.InsertEntityException
@@ -71,6 +72,12 @@ class DraftVisitEncounterRepository @Inject constructor(
     }
 
     override suspend fun findByVisitUuid(visitUuid: String): DraftVisitEncounter? = draftVisitEncounterDao.findByVisitUuid(visitUuid)?.toDomain()
+
+    override suspend fun findAllVisits(): List<DraftVisitEncounter> = draftVisitEncounterDao.findAllVisits().map { it.toDomain() }
+
+    override suspend fun findVisitsAfterDate(date: DateEntity): List<DraftVisitEncounter> = draftVisitEncounterDao.findVisitsBeforeDate(date).map { it.toDomain() }
+
+    override suspend fun findVisitsBeforeDate(date: DateEntity): List<DraftVisitEncounter> = draftVisitEncounterDao.findVisitsBeforeDate(date).map { it.toDomain() }
 
     override suspend fun insert(model: DraftVisitEncounter, orReplace: Boolean) = transactionRunner.withTransaction {
         try {

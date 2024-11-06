@@ -65,10 +65,6 @@ class DialogScheduleMissingSubstances(
       binding.recyclerViewMissingSubstances.adapter = adapter
    }
 
-   interface DialogScheduleMissingSubstancesListener {
-      fun onDialogScheduleMissingSubstancesConfirmed(date: Date)
-   }
-
    private fun validateDate() {
       if (datePicked == null) {
          val dateValidationText = getString(R.string.dialog_missing_substances_empty_date_validation_message)
@@ -88,5 +84,9 @@ class DialogScheduleMissingSubstances(
 
       val hintTextColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
       binding.textViewDate.setHintTextColor(hintTextColor)
+   }
+
+   interface DialogScheduleMissingSubstancesListener {
+      fun onDialogScheduleMissingSubstancesConfirmed(date: Date)
    }
 }

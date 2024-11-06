@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.visit.VisitViewModel
-import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
 
 @RequiresApi(Build.VERSION_CODES.O)
