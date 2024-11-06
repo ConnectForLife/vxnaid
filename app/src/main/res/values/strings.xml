@@ -460,12 +460,10 @@
     <string name="visits_overview_details_scheduled_visit_date_label">Scheduled Visit Date:</string>
     <string name="visits_overview_details_historical_visit_date_label">Historical Visit Date:</string>
     <string name="visits_overview_details_missed_visit_date_label">Missed Visit Date:</string>
-    <string name="visits_overview_details_scheduled_visits_vaccines_label">Vaccine(s) to be administered:</string>
-    <string name="visits_overview_details_historical_visits_vaccines_label">Vaccine(s) administered:</string>
-    <string name="visits_overview_details_missed_visits_vaccines_label">Vaccine(s) administered:</string>
-    <string name="visits_overview_details_general_vaccines_label">Vaccines:</string>
+    <string name="visits_overview_details_visit_schedule_label">Visit Schedule:</string>
     <string name="visits_overview_details_phone_number_label">Phone Number:</string>
     <string name="visits_overview_details_client_id_label">Client ID:</string>
     <string name="visits_overview_details_client_name_label">Client Name:</string>
     <string name="visits_overview_details_close_button_label">Close</string>
+    <string name="visits_overview_total_visit_count_label">Total Visit Count: %1$d</string>
 </resources>

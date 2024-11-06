@@ -65,13 +65,6 @@ class VisitDetailsDialog : BaseDialogFragment() {
             Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> getString(R.string.visits_overview_details_missed_visit_date_label)
             else -> getString(R.string.visits_overview_details_visit_date_label)
         }
-
-        binding.labelVaccines.text = when (visitKey) {
-            Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> getString(R.string.visits_overview_details_scheduled_visits_vaccines_label)
-            Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> getString(R.string.visits_overview_details_historical_visits_vaccines_label)
-            Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> getString(R.string.visits_overview_details_missed_visits_vaccines_label)
-            else -> getString(R.string.visits_overview_details_general_vaccines_label)
-        }
     }
 
     companion object {

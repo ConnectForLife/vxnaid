@@ -111,6 +111,9 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(), Visits
 
             dateMatches && textSearchMatches
         }
+
+        binding.totalVisitCount.text = getString(R.string.visits_overview_total_visit_count_label, filteredVisits.size)
+
         visitsAdapter.submitList(filteredVisits)
     }
 
@@ -143,7 +146,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(), Visits
     private fun showVisitDetailsDialog(visitData: VisitDataDTO) {
         val visitDetails = VisitDetailsDTO(
             formattedVisitDate = visitData.formattedStartDateTime,
-            vaccines = "test value",
+            vaccines = "",
             phoneNumber = visitData.participant.phone ?: "",
             clientID = visitData.participant.participantId,
             clientFullName = visitData.participant.fullName
