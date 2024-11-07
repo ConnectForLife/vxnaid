@@ -16,6 +16,7 @@ import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.dateDayStart
+import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
@@ -309,7 +310,7 @@ class VisitViewModel @Inject constructor(
     private suspend fun findWeeksNumberAfterBirthForNextVisit(participantBirthDate: String): Int? {
         val substancesConfig = configurationManager.getSubstancesConfig()
         val weeksAfterBirthSet = substancesConfig.map { it.weeksAfterBirth }.sorted().toSet()
-        val childAgeInWeeks = SubstancesDataUtil.getWeeksBetweenDateAndToday(participantBirthDate)
+        val childAgeInWeeks = DateUtil.getWeeksBetweenDateAndToday(participantBirthDate)
 
         return substancesConfig
             .filter {

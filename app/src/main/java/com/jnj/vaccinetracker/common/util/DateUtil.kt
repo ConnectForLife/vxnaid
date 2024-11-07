@@ -1,8 +1,15 @@
 package com.jnj.vaccinetracker.common.util
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.soywiz.klock.DateFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
+import kotlin.math.ceil
 
 class DateUtil {
     companion object {
@@ -15,6 +22,26 @@ class DateUtil {
         fun convertStringToDate(date: String, sourceFormat: String): Date? {
             val dateFormat = SimpleDateFormat(sourceFormat, Locale.getDefault())
             return dateFormat.parse(date)
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun getWeeksBetweenDateAndToday(dateString: String): Int {
+            val formatter = DateTimeFormatter.ofPattern(DateFormat.FORMAT_DATE.toString())
+            val startDate = LocalDate.parse(dateString, formatter)
+            val endDate = LocalDate.now()
+            val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toDouble()
+
+            return ceil(daysBetween / 7).toInt()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun getWeeksBetweenDates(startDateString: String, endDateString: String): Int {
+            val formatter = DateTimeFormatter.ofPattern(DateFormat.FORMAT_DATE.toString())
+            val startDate = LocalDate.parse(startDateString, formatter)
+            val endDate = LocalDate.parse(endDateString, formatter)
+            val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toDouble()
+
+            return ceil(daysBetween / 7).toInt()
         }
     }
 }

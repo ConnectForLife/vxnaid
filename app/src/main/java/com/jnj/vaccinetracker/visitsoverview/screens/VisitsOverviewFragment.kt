@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.viewModels
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentVisitsOverviewBinding
-import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewViewModel
 
 class VisitsOverviewFragment : BaseFragment() {
 

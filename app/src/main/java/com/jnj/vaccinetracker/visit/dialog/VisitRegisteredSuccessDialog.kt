@@ -205,7 +205,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     private suspend fun findWeeksNumberAfterBirthForNextVisit(participantBirthDate: String): Int? {
         val substancesConfig = configurationManager.getSubstancesConfig()
         val weeksAfterBirthSet = substancesConfig.map { it.weeksAfterBirth }.sorted().toSet()
-        val childAgeInWeeks = SubstancesDataUtil.getWeeksBetweenDateAndToday(participantBirthDate)
+        val childAgeInWeeks = DateUtil.getWeeksBetweenDateAndToday(participantBirthDate)
 
         return substancesConfig
             .filter {

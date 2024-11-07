@@ -467,4 +467,8 @@
     <string name="visits_overview_details_close_button_label">Close</string>
     <string name="visits_overview_total_visit_count_label">Total Visit Count: %1$d</string>
     <string name="visits_overview_view_details_label">View Details</string>
+    <string name="visits_overview_download_excel_button_label">Download Excel</string>
+    <string name="visits_overview_download_csv_button_label">Download CSV</string>
+    <string name="visits_overview_saving_file_success_message">File saved in Downloads directory</string>
+    <string name="visits_overview_saving_file_failure_message">Something went wrong while saving file</string>
 </resources>
