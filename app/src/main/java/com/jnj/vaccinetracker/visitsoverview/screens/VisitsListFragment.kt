@@ -14,12 +14,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.util.DateUtil
+import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.databinding.FragmentVisitsListBinding
 import com.jnj.vaccinetracker.visitsoverview.VisitsListViewModel
 import com.jnj.vaccinetracker.visitsoverview.adapters.VisitsAdapter
@@ -30,10 +34,12 @@ import com.jnj.vaccinetracker.visitsoverview.model.VisitDetailsDTO
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
+import kotlinx.coroutines.launch
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale
+import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.Q)
 class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
@@ -49,6 +55,9 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     private val visitsListViewModel: VisitsListViewModel by viewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+
+    @Inject lateinit var configurationManager: ConfigurationManager
+    @Inject lateinit var visitManager: VisitManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -254,15 +263,31 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     }
 
     private fun showVisitDetailsDialog(visitData: VisitDataDTO) {
-        val visitDetails = VisitDetailsDTO(
-            formattedVisitDate = visitData.formattedStartDateTime,
-            vaccines = "",
-            phoneNumber = visitData.participant.phone ?: "",
-            clientID = visitData.participant.participantId,
-            clientFullName = visitData.participant.fullName
-        )
+        lifecycleScope.launch {
+            val participant = visitData.participant
+            val visitType = findVisitType(visitData)
 
-        val dialog = VisitDetailsDialog.newInstance(visitDetails, visitsKey)
-        dialog.show(parentFragmentManager, "VisitDetailsDialog")
+            val visitDetails = VisitDetailsDTO(
+                formattedVisitDate = visitData.formattedStartDateTime,
+                visitType = visitType,
+                phoneNumber = participant.phone ?: "",
+                clientID = participant.participantId,
+                clientFullName = participant.fullName
+            )
+
+            val dialog = VisitDetailsDialog.newInstance(visitDetails, visitsKey)
+            dialog.show(parentFragmentManager, "VisitDetailsDialog")
+        }
+    }
+
+    private suspend fun findVisitType(visitData: VisitDataDTO): String {
+        val participant = visitData.participant
+        val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
+        return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
+            participant.birthDate.birthDateToString(),
+            visitData.formattedStartDateTime,
+            participantVisits,
+            configurationManager
+        )
     }
 }

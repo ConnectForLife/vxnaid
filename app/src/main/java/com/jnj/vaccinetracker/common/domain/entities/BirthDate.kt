@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.common.domain.entities
 
+import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 
 data class BirthDate(val time: Long) {
@@ -16,6 +17,10 @@ data class BirthDate(val time: Long) {
 
     fun toDateTime(): DateTime {
         return DateTime(year, month, day)
+    }
+
+    fun birthDateToString(): String {
+        return toDateTime().format(DateFormat.FORMAT_DATE)
     }
 
     companion object {

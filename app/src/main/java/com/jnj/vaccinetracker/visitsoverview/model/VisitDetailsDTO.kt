@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 class VisitDetailsDTO(
     val formattedVisitDate : String,
-    val vaccines: String,
+    val visitType: String,
     val phoneNumber: String,
     val clientID: String,
     val clientFullName: String

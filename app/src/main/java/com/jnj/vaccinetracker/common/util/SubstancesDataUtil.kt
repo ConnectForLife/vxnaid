@@ -11,12 +11,9 @@ import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
 import com.soywiz.klock.DateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import kotlin.math.ceil
 
 class SubstancesDataUtil {
 
@@ -29,7 +26,7 @@ class SubstancesDataUtil {
             configurationManager: ConfigurationManager
         ): List<SubstanceDataModel> {
             val substancesGroupConfig = configurationManager.getSubstancesGroupConfig()
-            val childAgeInWeeks = getWeeksBetweenDateAndToday(participantBirthDate)
+            val childAgeInWeeks = DateUtil.getWeeksBetweenDateAndToday(participantBirthDate)
             val substancesConfig = configurationManager.getSubstancesConfig()
             val substanceDataModelList = mutableListOf<SubstanceDataModel>()
             substancesConfig.forEach { substance ->
@@ -61,6 +58,45 @@ class SubstancesDataUtil {
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
+        suspend fun getSubstancesDataForVisitWithGivenDate(
+            participantBirthDate: String,
+            visitDate: String,
+            participantVisits: List<VisitDetail>,
+            configurationManager: ConfigurationManager
+        ): List<SubstanceDataModel> {
+            val substancesGroupConfig = configurationManager.getSubstancesGroupConfig()
+            val weeksNumberBetweenBirthdateAndVisit = DateUtil.getWeeksBetweenDates(participantBirthDate, visitDate)
+            val substancesConfig = configurationManager.getSubstancesConfig()
+            val substanceDataModelList = mutableListOf<SubstanceDataModel>()
+            substancesConfig.forEach { substance ->
+                val minWeekNumber = substance.weeksAfterBirth - substance.weeksAfterBirthLowWindow
+                val maxWeekNumber = substance.weeksAfterBirth + substance.weeksAfterBirthUpWindow
+                if (weeksNumberBetweenBirthdateAndVisit in minWeekNumber..maxWeekNumber &&
+                    !isSubstanceAlreadyApplied(participantVisits, substance.conceptName)
+                ) {
+                    substanceDataModelList.add(
+                        getSingleSubstanceData(
+                            substance,
+                            substancesGroupConfig,
+                            participantVisits,
+                            substancesConfig
+                        )
+                    )
+                }
+            }
+
+            val resultListWithoutDuplicates = substanceDataModelList.distinctBy { it.conceptName }
+            val filteredResultList = applyVaccinesCatchUpSchedule(
+                resultListWithoutDuplicates,
+                weeksNumberBetweenBirthdateAndVisit,
+                participantVisits,
+                substancesGroupConfig
+            ).toMutableList()
+
+            return filteredResultList.filter { it.conceptName != "" }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
         suspend fun getVisitTypeForCurrentVisit(
             participantBirthDate: String,
             participantVisits: List<VisitDetail>,
@@ -69,6 +105,28 @@ class SubstancesDataUtil {
             val allSubstancesConfig = configurationManager.getSubstancesConfig()
             val visitTypesOrdered = getVisitTypesInOrder(allSubstancesConfig)
             val suggestedSubstancesForChild = getSubstancesDataForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
+
+            return when {
+                // Case 1: If there are suggested substances for the child
+                suggestedSubstancesForChild.isNotEmpty() -> {
+                    val visitTypesInSuggestedSubstances = getVisitTypesFromSubstances(suggestedSubstancesForChild)
+                    getBestVisitType(visitTypesInSuggestedSubstances, visitTypesOrdered)
+                }
+                // Case 2: If no suggested substances, check for the last visit
+                else -> getLastVisitType(participantVisits, allSubstancesConfig, visitTypesOrdered) ?: ""
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        suspend fun getVisitTypeForVisitWithGivenDate(
+            participantBirthDate: String,
+            visitDate: String,
+            participantVisits: List<VisitDetail>,
+            configurationManager: ConfigurationManager
+        ): String {
+            val allSubstancesConfig = configurationManager.getSubstancesConfig()
+            val visitTypesOrdered = getVisitTypesInOrder(allSubstancesConfig)
+            val suggestedSubstancesForChild = getSubstancesDataForVisitWithGivenDate(participantBirthDate, visitDate, participantVisits, configurationManager)
 
             return when {
                 // Case 1: If there are suggested substances for the child
@@ -239,7 +297,7 @@ class SubstancesDataUtil {
             configurationManager: ConfigurationManager
         ): List<OtherSubstanceDataModel> {
             val otherSubstancesConfig = configurationManager.getOtherSubstancesConfig()
-            val childAgeInWeeks = getWeeksBetweenDateAndToday(participantBirthDate)
+            val childAgeInWeeks = DateUtil.getWeeksBetweenDateAndToday(participantBirthDate)
             val otherSubstancesDataModelList = mutableListOf<OtherSubstanceDataModel>()
             otherSubstancesConfig.forEach { otherSubstance ->
                 val minWeekNumber =
@@ -330,16 +388,6 @@ class SubstancesDataUtil {
                 substanceToBeAdministeredObject?.minimumWeeksNumberAfterPreviousDose,
                 substanceToBeAdministeredObject?.visitType
             )
-        }
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun getWeeksBetweenDateAndToday(dateString: String): Int {
-            val formatter = DateTimeFormatter.ofPattern(DateFormat.FORMAT_DATE.toString())
-            val startDate = LocalDate.parse(dateString, formatter)
-            val endDate = LocalDate.now()
-            val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toDouble()
-
-            return ceil(daysBetween / 7).toInt()
         }
 
         private fun isSubstanceAlreadyApplied(
