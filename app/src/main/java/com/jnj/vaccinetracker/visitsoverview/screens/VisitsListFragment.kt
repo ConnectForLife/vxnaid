@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -64,6 +65,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_list, container, false)
 
         setupRecyclerView()
@@ -81,6 +83,16 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             title = visitsKey
             setDisplayHomeAsUpEnabled(true)
             setHomeButtonEnabled(true)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                parentFragmentManager.popBackStack()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

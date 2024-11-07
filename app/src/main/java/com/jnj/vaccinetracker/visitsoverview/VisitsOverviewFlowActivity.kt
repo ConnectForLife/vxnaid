@@ -39,6 +39,11 @@ class VisitsOverviewFlowActivity : BaseActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
     private fun navigateToScreen(screen: VisitsOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
         val fragment = when (screen) {
             VisitsOverviewViewModel.Screen.VISITS_OVERVIEW -> VisitsOverviewFragment()
