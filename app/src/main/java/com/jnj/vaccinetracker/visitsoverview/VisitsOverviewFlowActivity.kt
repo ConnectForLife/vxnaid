@@ -35,29 +35,40 @@ class VisitsOverviewFlowActivity : BaseActivity() {
         binding.lifecycleOwner = this
 
         visitsOverviewViewModel.currentScreen.observe(this) { screen ->
-            navigateToScreen(screen, visitsOverviewViewModel.navigationDirection)
+            navigateToScreen(screen.toString(), visitsOverviewViewModel.navigationDirection)
         }
     }
 
-    private fun navigateToScreen(screen: VisitsOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
+    private fun navigateToScreen(screenKey: String, navigationDirection: NavigationDirection) {
+        val screen = visitsOverviewViewModel.getScreenByKey(screenKey)
         val fragment = when (screen) {
             VisitsOverviewViewModel.Screen.VISITS_OVERVIEW -> VisitsOverviewFragment()
+            VisitsOverviewViewModel.Screen.SCHEDULED_VISITS -> ScheduledVisitsFragment()
+            VisitsOverviewViewModel.Screen.HISTORICAL_VISITS -> HistoricalVisitsFragment()
+            VisitsOverviewViewModel.Screen.MISSED_VISITS -> MissedVisitsFragment()
             else -> null
         }
+
         screen?.let { title = getString(it.title) }
 
         fragment?.let { newFragment ->
             supportFragmentManager.findFragmentById(R.id.fragment_container)?.let { existingFragment ->
-                if (newFragment::class == existingFragment::class) return logWarn("Fragment of this type is already shown, not navigating")
+                if (newFragment::class == existingFragment::class) {
+                    logWarn("Fragment of this type is already shown, not navigating")
+                    return
+                }
             }
 
-            val transaction = supportFragmentManager.beginTransaction()
-
-            transaction.animateNavigationDirection(navigationDirection)
-
-            transaction
+            supportFragmentManager.beginTransaction()
+                .animateNavigationDirection(navigationDirection)
                 .replace(R.id.fragment_container, newFragment)
                 .commit()
         }
+    }
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        visitsOverviewViewModel.saveInstanceState(outState)
     }
 }
