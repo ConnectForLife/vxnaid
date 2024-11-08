@@ -211,7 +211,7 @@
                 android:layout_height="45dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/colorPrimary"
-                android:text="@string/participant_registration_details_action_set_birth_date"
+                android:text="@string/participant_registration_details_action_set_Next_visit_date"
                 android:textAppearance="@style/ButtonTextStyling" />
         </LinearLayout>
 
