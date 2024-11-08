@@ -32,7 +32,7 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
     @Transaction
     override suspend fun findVisitsAfterDate(date: DateEntity): List<RoomVisitModel>
 
-    @Query("SELECT * FROM visit WHERE startDatetime < :date ORDER BY startDatetime DESC")
+    @Query("SELECT * FROM visit WHERE startDatetime <= :date ORDER BY startDatetime DESC")
     @Transaction
     override suspend fun findVisitsBeforeDate(date: DateEntity): List<RoomVisitModel>
 

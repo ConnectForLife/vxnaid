@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.visitsoverview
 import android.os.Bundle
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
+import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
@@ -35,7 +36,7 @@ class VisitsListViewModel @Inject constructor(
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            val scheduledVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
+            val scheduledVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
                 .filter { it.attributes[Constants.ATTRIBUTE_VISIT_STATUS] == Constants.VISIT_STATUS_OCCURRED }
             visitDTOs.value = createVisitDTOList(scheduledVisits)
             isLoading.value = false

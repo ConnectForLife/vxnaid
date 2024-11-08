@@ -43,7 +43,7 @@ interface DraftVisitEncounterDao : DraftVisitDaoBase<DraftVisitEncounterEntity, 
     @Transaction
     override suspend fun findVisitsAfterDate(date: DateEntity): List<RoomDraftVisitEncounterModel>
 
-    @Query("SELECT * FROM draft_visit_encounter WHERE startDatetime < :date ORDER BY startDatetime DESC")
+    @Query("SELECT * FROM draft_visit_encounter WHERE startDatetime <= :date ORDER BY startDatetime DESC")
     @Transaction
     override suspend fun findVisitsBeforeDate(date: DateEntity): List<RoomDraftVisitEncounterModel>
 
