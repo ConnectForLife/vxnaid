@@ -303,6 +303,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             ).show(childFragmentManager, TAG_HOME_LOCATION_PICKER)
         }
 
+        binding.btnGenerateQrCode.setOnClickListener {
+            val qrCodeGeneratorDialog = QrCodeGeneratorDialog()
+            qrCodeGeneratorDialog.show(childFragmentManager, "QrCodeGeneratorDialog")
+        }
+
         binding.btnPickDate.setOnClickListener {
             BirthDatePickerDialog(birthDatePicked).show(childFragmentManager, TAG_DATE_PICKER);
         }

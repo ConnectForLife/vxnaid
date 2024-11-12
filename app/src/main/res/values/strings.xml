@@ -13,6 +13,9 @@
     <string name="general_label_save">Save</string>
     <string name="general_label_restart_workflow">Restart Workflow</string>
     <string name="general_label_ok">OK</string>
+    <string name="qr_code_enter_name_of_qr_code">Enter name of QR Code</string>
+    <string name="generate_Qr_code">Generate QR code</string>
+    <string name="save_Qr_code">Save QR Code</string>
     <string name="general_label_yes">Yes</string>
     <string name="general_label_no">No</string>
     <string name="general_label_update">Update</string>
@@ -471,4 +474,5 @@
     <string name="visits_overview_download_csv_button_label">Download CSV</string>
     <string name="visits_overview_saving_file_success_message">File saved in Downloads directory</string>
     <string name="visits_overview_saving_file_failure_message">Something went wrong while saving file</string>
+    <string name="qrcode">qr code image</string>
 </resources>

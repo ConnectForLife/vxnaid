@@ -100,6 +100,18 @@
             </LinearLayout>
 
 
+
+            <Button
+                android:id="@+id/btnGenerateQrCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/generate_Qr_code"
+                android:textAppearance="@style/ButtonTextStyling" />
+
+
+
+
             <View
                 android:id="@+id/separator"
                 android:layout_width="match_parent"
