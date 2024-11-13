@@ -102,6 +102,10 @@ class RegisterParticipantFlowActivity : BaseActivity(),
     override fun onBackPressed() {
         finishIfEdit()
 
+        if (viewModel.currentScreen.value == RegisterParticipantFlowViewModel.Screen.PARTICIPANT_DETAILS) {
+            finish()
+        }
+
         val hasCameraPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
 
         // Edge case for going back from the take picture screen: if the user already has camera permission, no need to go back to that screen
