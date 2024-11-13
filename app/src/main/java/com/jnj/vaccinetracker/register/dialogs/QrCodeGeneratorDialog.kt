@@ -25,7 +25,6 @@ class QrCodeGeneratorDialog : DialogFragment(R.layout.dialog_qr_code_generator) 
         val btnOk = view.findViewById<Button>(R.id.btn_ok)
         val btnCancel = view.findViewById<Button>(R.id.btn_cancel)
 
-        // Locate the TextView for displaying the participant ID on the main activity
         participantIdTextView = requireActivity().findViewById(R.id.textView_participant_id)
 
         btnGenerateQrCode.setOnClickListener {
@@ -40,7 +39,6 @@ class QrCodeGeneratorDialog : DialogFragment(R.layout.dialog_qr_code_generator) 
                     250
                 )
                 imageViewQrCode.setImageBitmap(bitmap)
-                // Optionally display the generated ID if needed
                 participantIdTextView?.text = uniqueChildId
             } catch (e: Exception) {
                 Log.e(tag, "Error generating QR code", e)
@@ -52,7 +50,6 @@ class QrCodeGeneratorDialog : DialogFragment(R.layout.dialog_qr_code_generator) 
         }
 
         btnCancel.setOnClickListener {
-
             dismiss()
         }
     }
