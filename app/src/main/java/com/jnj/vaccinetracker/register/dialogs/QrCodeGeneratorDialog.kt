@@ -1,14 +1,10 @@
 package com.jnj.vaccinetracker.register.dialogs
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.util.Log
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.google.zxing.BarcodeFormat
@@ -24,17 +20,16 @@ class QrCodeGeneratorDialog : DialogFragment(R.layout.dialog_qr_code_generator) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val inputText = view.findViewById<EditText>(R.id.input_text)
         val btnGenerateQrCode = view.findViewById<Button>(R.id.btnGenerateQrCode)
         val imageViewQrCode = view.findViewById<ImageView>(R.id.imageView_qrCode)
         val btnOk = view.findViewById<Button>(R.id.btn_ok)
         val btnCancel = view.findViewById<Button>(R.id.btn_cancel)
 
+        // Locate the TextView for displaying the participant ID on the main activity
         participantIdTextView = requireActivity().findViewById(R.id.textView_participant_id)
 
         btnGenerateQrCode.setOnClickListener {
             val uniqueChildId = generateChildId()
-            inputText.setText(uniqueChildId)
 
             try {
                 val barcodeEncoder = BarcodeEncoder()
@@ -45,24 +40,26 @@ class QrCodeGeneratorDialog : DialogFragment(R.layout.dialog_qr_code_generator) 
                     250
                 )
                 imageViewQrCode.setImageBitmap(bitmap)
+                // Optionally display the generated ID if needed
+                participantIdTextView?.text = uniqueChildId
             } catch (e: Exception) {
-                Log.e(TAG, "Error generating QR code", e)
+                Log.e(tag, "Error generating QR code", e)
             }
         }
 
         btnOk.setOnClickListener {
-            participantIdTextView?.text = inputText.text.toString()
             dismiss()
         }
 
         btnCancel.setOnClickListener {
+
             dismiss()
         }
     }
 
     private fun generateChildId(): String {
         val identifierLength = 8
-        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         return (1..identifierLength)
             .map { chars[Random.nextInt(chars.length)] }
             .joinToString("")
