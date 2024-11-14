@@ -73,7 +73,7 @@ class TmpHardcodedZScore(
 
    private fun createLabelTextView(context: android.content.Context): TextView {
       return TextView(context).apply {
-         text = AppResources(context).getString(R.string.visit_z_score_weight_label)
+         text = AppResources(context).getString(R.string.visit_z_score_label)
          layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
