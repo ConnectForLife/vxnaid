@@ -2,25 +2,41 @@ package com.jnj.vaccinetracker.register.dialogs
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
+import android.app.Dialog
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.google.zxing.BarcodeFormat
 import com.jnj.vaccinetracker.R
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import kotlin.random.Random
 
-class QrCodeGeneratorDialog(private val participantId: String) : DialogFragment(R.layout.dialog_qr_code_generator) {
-    private val tag = "QrCodeGeneratorDialog"
+class QrCodeGeneratorDialog(
+    private val participantId: String
+) : DialogFragment() {
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private lateinit var imageViewQrCode: ImageView
+    private lateinit var btnCancel: Button
 
-        val imageViewQrCode = view.findViewById<ImageView>(R.id.imageView_qrCode)
-        val btnCancel = view.findViewById<Button>(R.id.btn_cancel)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(R.layout.dialog_qr_code_generator)
 
+        initializeViews(dialog)
+        generateQrCode()
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        return dialog
+    }
+
+    private fun initializeViews(dialog: Dialog) {
+        imageViewQrCode = dialog.findViewById(R.id.imageView_qrCode)
+        btnCancel = dialog.findViewById(R.id.btn_cancel)
+    }
+
+    private fun generateQrCode() {
         try {
             val barcodeEncoder = BarcodeEncoder()
             val bitmap = barcodeEncoder.encodeBitmap(
@@ -31,12 +47,8 @@ class QrCodeGeneratorDialog(private val participantId: String) : DialogFragment(
             )
             imageViewQrCode.setImageBitmap(bitmap)
         } catch (e: Exception) {
-            Log.e(tag, "Error generating QR code", e)
-        }
-
-        btnCancel.setOnClickListener {
-            dismiss()
+            Log.e("QrCodeGeneratorDialog", "Error generating QR code", e)
         }
     }
-
 }
+
