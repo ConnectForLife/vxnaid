@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.register.dialogs
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -20,33 +21,24 @@ class QrCodeGeneratorDialog : DialogFragment(R.layout.dialog_qr_code_generator) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnGenerateQrCode = view.findViewById<Button>(R.id.btnGenerateQrCode)
         val imageViewQrCode = view.findViewById<ImageView>(R.id.imageView_qrCode)
-        val btnOk = view.findViewById<Button>(R.id.btn_ok)
         val btnCancel = view.findViewById<Button>(R.id.btn_cancel)
 
         participantIdTextView = requireActivity().findViewById(R.id.textView_participant_id)
 
-        btnGenerateQrCode.setOnClickListener {
-            val uniqueChildId = generateChildId()
-
-            try {
-                val barcodeEncoder = BarcodeEncoder()
-                val bitmap = barcodeEncoder.encodeBitmap(
-                    uniqueChildId,
-                    BarcodeFormat.QR_CODE,
-                    250,
-                    250
-                )
-                imageViewQrCode.setImageBitmap(bitmap)
-                participantIdTextView?.text = uniqueChildId
-            } catch (e: Exception) {
-                Log.e(tag, "Error generating QR code", e)
-            }
-        }
-
-        btnOk.setOnClickListener {
-            dismiss()
+        val uniqueChildId = generateChildId()
+        try {
+            val barcodeEncoder = BarcodeEncoder()
+            val bitmap = barcodeEncoder.encodeBitmap(
+                uniqueChildId,
+                BarcodeFormat.QR_CODE,
+                250,
+                250
+            )
+            imageViewQrCode.setImageBitmap(bitmap)
+            participantIdTextView?.text = uniqueChildId
+        } catch (e: Exception) {
+            Log.e(tag, "Error generating QR code", e)
         }
 
         btnCancel.setOnClickListener {

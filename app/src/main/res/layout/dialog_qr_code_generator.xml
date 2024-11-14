@@ -20,13 +20,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="16dp" />
-                <Button
-                    android:id="@+id/btnGenerateQrCode"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/generate_Qr_code"
-                    android:textAppearance="@style/ButtonTextStyling"
-                    android:textAllCaps="false"/>
+
 
                 <ImageView
                     android:id="@+id/imageView_qrCode"
@@ -46,18 +40,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center">
-                    <Button
-                        android:id="@+id/btn_ok"
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/general_label_ok" />
+
                     <Button
                         android:id="@+id/btn_cancel"
                         style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/general_label_cancel" />
+                        android:text="@string/general_label_close"/>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
