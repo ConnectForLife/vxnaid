@@ -1,12 +1,15 @@
 package com.jnj.vaccinetracker.visit.zscore
 
+import android.graphics.Color
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.jnj.vaccinetracker.R
@@ -15,11 +18,18 @@ import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.dpToPx
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 
-class HardcodedMuacZScore(
+//temporary class for handling MUACAe as dropdown, should be calculated in the future using class HardcodedMuacaZScore
+class TmpHardcodedMuacZScore(
    name: String,
    gender: Gender,
    birthDateText: String,
 ) : HardcodedZScore(name, gender, birthDateText) {
+   companion object {
+      const val NORMAL_NUTRITION_STATUS = "Normal Nutrition Status" // green
+      const val MODERATE_NUTRITION_STATUS = "Moderate Acute Malnutrition" // yellow
+      const val SEVERE_NUTRITION_STATUS = "Severe Acute Malnutrition" // red
+   }
+
    private var labelTextView: TextView? = null
 
    override fun getValue(): String? = muac
@@ -44,15 +54,11 @@ class HardcodedMuacZScore(
       val linearLayout = createLinearLayout(context)
 
       labelTextView = createLabelTextView(context)
-      val muacInputEditText = createMuacInputEditText(context)
-      val valueTextView = createValueTextView(context, muac)
-
-      muacInputEditText.addTextChangedListener(createTextWatcher(listener, valueTextView))
+      val spinner = createValueSpinner(context)
 
       linearLayout.apply {
          addView(labelTextView)
-         addView(muacInputEditText)
-         addView(valueTextView)
+         addView(spinner)
       }
 
       addLinearLayoutToViewGroup(view, linearLayout)
@@ -82,31 +88,45 @@ class HardcodedMuacZScore(
       }
    }
 
-   private fun createMuacInputEditText(context: android.content.Context): EditText {
-      return EditText(context).apply {
-         inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
-         hint = AppResources(context).getString(R.string.visit_dosing_hint_cm)
-         layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-         )
-         setText(muac)
-      }
-   }
+   private fun createValueSpinner(context: android.content.Context): Spinner {
+      val options = listOf(
+         NORMAL_NUTRITION_STATUS,
+         MODERATE_NUTRITION_STATUS,
+         SEVERE_NUTRITION_STATUS
+      )
 
-   private fun createValueTextView(context: android.content.Context, muac: String?): TextView {
-      val calculator = MuacZScoreCalculator(muac, gender, birthDateText)
-      val textContent = calculator.calculateZScoreAndRating() ?: ""
-      return TextView(context).apply {
-         text = textContent.toString()
-         setTextColor(calculator.getTextColorBasedOnZsCoreValue())
+      val colors = listOf(
+         Color.GREEN,
+         Color.parseColor("#FFAA00"),
+         Color.RED
+      )
+
+      return Spinner(context).apply {
          layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
          ).apply {
             gravity = Gravity.CENTER
          }
          gravity = Gravity.CENTER
+         setPadding(0, 16, 16, 0)
+
+         adapter = object : ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, options) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+               val view = super.getView(position, convertView, parent) as TextView
+               view.setTextColor(colors[position])
+               return view
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+               val view = super.getDropDownView(position, convertView, parent) as TextView
+               view.setTextColor(colors[position])
+               view.gravity = Gravity.CENTER
+               return view
+            }
+         }.apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+         }
       }
    }
 

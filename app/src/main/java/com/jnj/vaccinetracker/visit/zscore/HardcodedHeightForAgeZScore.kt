@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.visit.zscore
 
+import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
@@ -8,11 +9,15 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.di.AppResources
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.dpToPx
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
+
+// we only use MUACA and weight for age now but this class is being left just in case
 
 class HardcodedHeightForAgeZScore(
    name: String,
@@ -66,13 +71,17 @@ class HardcodedHeightForAgeZScore(
 
    private fun createLabelTextView(context: android.content.Context): TextView {
       return TextView(context).apply {
-         text = AppResources(context).getString(R.string.visit_z_score_height_label)
+         text = AppResources(context).getString(R.string.visit_z_score_height_label) // Sets the text using AppResources
          layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
          )
+         setTypeface(typeface, android.graphics.Typeface.BOLD)
+         textSize = 18f
+         setTextColor(ContextCompat.getColor(context, android.R.color.black))
       }
    }
+
 
    private fun createHeightInputEditText(context: android.content.Context): EditText {
       val heightPointer = height
