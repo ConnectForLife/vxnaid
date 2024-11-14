@@ -304,8 +304,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
 
         binding.btnGenerateQrCode.setOnClickListener {
-            val qrCodeGeneratorDialog = QrCodeGeneratorDialog()
-            qrCodeGeneratorDialog.show(childFragmentManager, "QrCodeGeneratorDialog")
+            val qrCodeGeneratorDialog = QrCodeGeneratorDialog(binding.textViewParticipantId)
+            qrCodeGeneratorDialog.show(parentFragmentManager, "QrCodeGeneratorDialog")
+
+
+            //qrCodeGeneratorDialog.show(childFragmentManager, "QrCodeGeneratorDialog")
         }
 
         binding.btnPickDate.setOnClickListener {

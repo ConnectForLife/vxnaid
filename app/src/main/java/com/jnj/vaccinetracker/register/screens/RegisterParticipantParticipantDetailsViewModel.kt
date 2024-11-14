@@ -190,6 +190,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     private var originalNinValue: String? = null
 
+
     init {
         initState()
     }
@@ -651,7 +652,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     fun setParticipantId(participantId: String) {
-        if (this.participantId.get() == participantId) return
+        if (this.participantId.value == participantId) return
+        this.participantId.value = participantId
+        validateParticipantId()
         this.participantId.set(participantId)
 
         //in case we have a scanned id, and we change our id back to original scanned value, the confirm field disappears
@@ -815,4 +818,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     fun isEditMode(): Boolean {
         return participantUuid.value != null;
     }
+
+    fun onSetParticipantId(participantId: String) {
+        setParticipantId(participantId)
+    }
+
 }

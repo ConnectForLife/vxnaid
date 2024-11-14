@@ -79,6 +79,7 @@
                     android:textSize="18sp"
                     app:error="@{viewModel.participantIdValidationMessage}" />
 
+
                 <ImageView
                     android:id="@+id/img_participant_picture"
                     android:layout_width="88dp"
