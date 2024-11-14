@@ -10,6 +10,7 @@
     <string name="general_label_submit">Soumettre</string>
     <string name="general_label_cancel">Annuler</string>
     <string name="general_label_confirm">Confirmer</string>
+    <string name="generate_Qr_code">Générer un code QR</string>
     <string name="general_label_save">Sauvegarder</string>
     <string name="general_label_restart_workflow">Reprendre le flux opérationnel</string>
     <string name="general_label_ok">OK</string>
