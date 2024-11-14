@@ -20,8 +20,6 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="16dp" />
-
-
                 <ImageView
                     android:id="@+id/imageView_qrCode"
                     android:layout_width="250dp"

@@ -191,7 +191,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     private var originalNinValue: String? = null
 
-
     init {
         initState()
     }
