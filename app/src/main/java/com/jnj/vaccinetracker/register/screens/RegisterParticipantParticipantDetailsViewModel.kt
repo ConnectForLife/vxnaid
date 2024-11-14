@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import javax.inject.Inject
+import kotlin.random.Random
 
 @SuppressWarnings("TooManyFunctions")
 class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
@@ -651,7 +652,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     fun setParticipantId(participantId: String) {
-        if (this.participantId.get() == participantId) return
+        if (this.participantId.value == participantId) return
+        this.participantId.value = participantId
+        validateParticipantId()
         this.participantId.set(participantId)
 
         //in case we have a scanned id, and we change our id back to original scanned value, the confirm field disappears
@@ -814,5 +817,13 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     fun isEditMode(): Boolean {
         return participantUuid.value != null;
+    }
+
+    fun generateChildId(): String {
+        val identifierLength = 8
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return (1..identifierLength)
+            .map { chars[Random.nextInt(chars.length)] }
+            .joinToString("")
     }
 }
