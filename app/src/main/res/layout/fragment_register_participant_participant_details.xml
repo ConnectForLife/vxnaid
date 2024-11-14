@@ -80,6 +80,15 @@
                     app:error="@{viewModel.participantIdValidationMessage}" />
 
 
+                <Button
+                    android:id="@+id/btnGenerateQrCode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/generate_Qr_code"
+                    android:textAppearance="@style/ButtonTextStyling"
+                    android:visibility = "visible"/>
+
                 <ImageView
                     android:id="@+id/img_participant_picture"
                     android:layout_width="88dp"
@@ -99,14 +108,6 @@
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/camera_icon2" />
             </LinearLayout>
-
-            <Button
-                android:id="@+id/btnGenerateQrCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/generate_Qr_code"
-                android:textAppearance="@style/ButtonTextStyling" />
 
             <View
                 android:id="@+id/separator"
