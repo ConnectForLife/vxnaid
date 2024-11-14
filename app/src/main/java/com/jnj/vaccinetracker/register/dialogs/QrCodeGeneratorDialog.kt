@@ -7,10 +7,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import com.google.zxing.BarcodeFormat
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDetailsViewModel
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlin.random.Random
 
@@ -23,11 +21,9 @@ class QrCodeGeneratorDialog(private val textViewParticipantId: TextView) : Dialo
         val imageViewQrCode = view.findViewById<ImageView>(R.id.imageView_qrCode)
         val btnCancel = view.findViewById<Button>(R.id.btn_cancel)
 
-        // Generate a unique child ID
         val uniqueChildId = generateChildId()
 
         try {
-            // Generate the QR code
             val barcodeEncoder = BarcodeEncoder()
             val bitmap = barcodeEncoder.encodeBitmap(
                 uniqueChildId,
@@ -37,20 +33,16 @@ class QrCodeGeneratorDialog(private val textViewParticipantId: TextView) : Dialo
             )
             imageViewQrCode.setImageBitmap(bitmap)
             textViewParticipantId.text = uniqueChildId
-            // Set the generated ID in the ViewModel
-        //    viewModel.setParticipantId(uniqueChildId)
 
         } catch (e: Exception) {
             Log.e(tag, "Error generating QR code", e)
         }
 
-        // Cancel button dismisses the dialog
         btnCancel.setOnClickListener {
             dismiss()
         }
     }
 
-    // Helper function to generate a random child ID
     private fun generateChildId(): String {
         val identifierLength = 8
         val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
