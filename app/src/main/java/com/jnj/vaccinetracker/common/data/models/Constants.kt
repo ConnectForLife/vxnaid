@@ -78,6 +78,7 @@ object Constants {
     const val CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE = "Height for age Z score Vxnaid"
     const val CONCEPT_NAME_MUACA_Z_SCORE = "MUACA Vxnaid"
     const val CONCEPT_NAME_WEIGHT_FOR_HEIGHT_Z_SCORE = "Weight for Height Vxnaid"
+    const val CONCEPT_NAME_Z_SCORE = "Z-score Vxnaid"
     const val CONCEPT_NAME_IS_OEDEMA_Z_SCORE = "Is Oedema"
     const val CONCEPT_NAME_WEIGHT_KG = "Weight (kg)"
     const val CONCEPT_NAME_RECEIVED_LLIN = "Received LLIN Vxnaid"

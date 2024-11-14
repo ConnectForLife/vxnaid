@@ -20,10 +20,11 @@ sealed class HardcodedZScore(
    companion object {
       fun fromConceptName(name: String, gender: Gender, birthDateText: String): HardcodedZScore {
          return when (name) {
-            Constants.CONCEPT_NAME_WEIGHT_FOR_AGE_Z_SCORE -> TmpHardcodedWeightForAgeZScore(name, gender, birthDateText)
+            Constants.CONCEPT_NAME_WEIGHT_FOR_AGE_Z_SCORE -> HardcodedWeightForAgeZScore(name, gender, birthDateText)
             Constants.CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE -> HardcodedHeightForAgeZScore(name, gender, birthDateText)
-            Constants.CONCEPT_NAME_MUACA_Z_SCORE -> TmpHardcodedMuacZScore(name, gender, birthDateText)
+            Constants.CONCEPT_NAME_MUACA_Z_SCORE -> HardcodedMuacZScore(name, gender, birthDateText)
             Constants.CONCEPT_NAME_WEIGHT_FOR_HEIGHT_Z_SCORE -> HardcodedWeightForHeightZScore(name, gender, birthDateText)
+            Constants.CONCEPT_NAME_Z_SCORE -> TmpHardcodedZScore(name, gender, birthDateText)
             else -> error("Unknown concept name!")
          }
       }

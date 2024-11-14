@@ -16,7 +16,7 @@ import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 
 //temporary class for handling Weight for Age as dropdown, should be calculated in the future using class HardcodedWeightForAgeZScore
 
-class TmpHardcodedWeightForAgeZScore(
+class TmpHardcodedZScore(
    name: String,
    gender: Gender,
    birthDateText: String,
