@@ -304,7 +304,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
 
         binding.btnGenerateQrCode.setOnClickListener {
-            val qrCodeGeneratorDialog = QrCodeGeneratorDialog(binding.textViewParticipantId)
+            val newGeneratedChildId =viewModel.generateChildId()
+            viewModel.setParticipantId(newGeneratedChildId )
+            val qrCodeGeneratorDialog = QrCodeGeneratorDialog(newGeneratedChildId)
             qrCodeGeneratorDialog.show(parentFragmentManager, "QrCodeGeneratorDialog")
         }
 

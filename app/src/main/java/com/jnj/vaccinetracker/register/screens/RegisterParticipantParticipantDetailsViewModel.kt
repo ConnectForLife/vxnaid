@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import javax.inject.Inject
+import kotlin.random.Random
 
 @SuppressWarnings("TooManyFunctions")
 class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
@@ -819,8 +820,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         return participantUuid.value != null;
     }
 
-    fun onSetParticipantId(participantId: String) {
-        setParticipantId(participantId)
+    fun generateChildId(): String {
+        val identifierLength = 8
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return (1..identifierLength)
+            .map { chars[Random.nextInt(chars.length)] }
+            .joinToString("")
     }
-
 }
