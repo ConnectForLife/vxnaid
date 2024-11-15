@@ -2,6 +2,8 @@ package com.jnj.vaccinetracker.visit.zscore
 
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 
+// we only use MUACA and weight for age now but this class is being left just in case
+
 class HeightZScoreCalculator(
         private val height: String?, gender: Gender, birthDayText: String,
 ): ZScoreCalculator(gender, birthDayText) {

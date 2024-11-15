@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.di.AppResources
 import com.jnj.vaccinetracker.common.domain.entities.Gender
@@ -75,6 +76,9 @@ class HardcodedMuacZScore(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
          )
+         setTypeface(typeface, android.graphics.Typeface.BOLD)
+         textSize = 18f
+         setTextColor(ContextCompat.getColor(context, android.R.color.black))
       }
    }
 

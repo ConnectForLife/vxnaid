@@ -3,7 +3,9 @@ package com.jnj.vaccinetracker.visit.zscore
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.jnj.vaccinetracker.R
@@ -12,11 +14,21 @@ import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.dpToPx
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 
-class HardcodedWeightForAgeZScore(
+//temporary class for handling Weight for Age as dropdown, should be calculated in the future using class HardcodedWeightForAgeZScore
+
+class TmpHardcodedZScore(
    name: String,
    gender: Gender,
    birthDateText: String,
 ) : HardcodedZScore(name, gender, birthDateText) {
+
+   companion object {
+      const val SEVERELY_UNDERWEIGHT = "Severely Underweight"
+      const val UNDERWEIGHT = "Underweight"
+      const val NORMAL = "Normal"
+      const val OVERWEIGHT = "Overweight"
+      const val OBESE = "Obese"
+   }
 
    override fun getValue(): String? = null
    override fun isEmpty(): Boolean {
@@ -38,11 +50,11 @@ class HardcodedWeightForAgeZScore(
       val context = view.context
       val linearLayout = createLinearLayout(context)
       val labelTextView = createLabelTextView(context)
-      val valueTextView = createValueTextView(context)
+      val valueSpinner = createValueSpinner(context)
 
       linearLayout.apply {
          addView(labelTextView)
-         addView(valueTextView)
+         addView(valueSpinner)
       }
 
       addLinearLayoutToViewGroup(view, linearLayout)
@@ -61,7 +73,7 @@ class HardcodedWeightForAgeZScore(
 
    private fun createLabelTextView(context: android.content.Context): TextView {
       return TextView(context).apply {
-         text = AppResources(context).getString(R.string.visit_z_score_weight_label)
+         text = AppResources(context).getString(R.string.visit_z_score_label)
          layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -72,18 +84,35 @@ class HardcodedWeightForAgeZScore(
       }
    }
 
-   private fun createValueTextView(context: android.content.Context): TextView {
-      val textContent = WeightZScoreCalculator(weight, gender, birthDateText).calculateZScoreAndRating() ?: AppResources(context).getString(R.string.visit_z_score_weight_hint)
+   private fun createValueSpinner(context: android.content.Context): Spinner {
+      val options = listOf(
+         SEVERELY_UNDERWEIGHT,
+         UNDERWEIGHT,
+         NORMAL,  // Default option
+         OVERWEIGHT,
+         OBESE
+      )
 
-      return TextView(context).apply {
-         text = textContent.toString()
+      return Spinner(context).apply {
          layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
          ).apply {
             gravity = Gravity.CENTER
          }
          gravity = Gravity.CENTER
+         setPadding(0, 16, 16, 0)
+
+         adapter = ArrayAdapter(
+            context,
+            android.R.layout.simple_spinner_item,
+            options
+         ).also { arrayAdapter ->
+            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+         }
+
+         // Set 'NORMAL' as the default selected item
+         setSelection(options.indexOf(NORMAL))
       }
    }
 

@@ -6,12 +6,15 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.di.AppResources
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.dpToPx
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
+
+// we only use MUACA and weight for age now but this class is being left just in case
 
 class HardcodedWeightForHeightZScore(
    name: String,
@@ -73,6 +76,9 @@ class HardcodedWeightForHeightZScore(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
          )
+         setTypeface(typeface, android.graphics.Typeface.BOLD)
+         textSize = 18f
+         setTextColor(ContextCompat.getColor(context, android.R.color.black))
       }
    }
 

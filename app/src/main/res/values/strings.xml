@@ -367,7 +367,7 @@
     <string name="participant_registration_details_error_nin_already_exist">National ID is already in use. Please use different one</string>
     <string name="visit_z_score_weight_label">Weight for Age</string>
     <string name="participant_registration_details_error_birth_date_cannot_be_empty">Fill in Date of Birth OR Estimated Age</string>
-    <string name="visit_z_score_label">Z Score:</string>
+    <string name="visit_z_score_label">Z Score</string>
     <string name="visit_dosing_error_no_weight">Please enter weight</string>
     <string name="visit_z_score_height_label">Height for age</string>
     <string name="visit_dosing_hint_kg">kg</string>

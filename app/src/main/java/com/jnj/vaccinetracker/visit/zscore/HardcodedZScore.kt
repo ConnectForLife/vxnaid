@@ -5,6 +5,8 @@ import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 
+// hardcoded means custom class that had to be created in order for the config field to work, more advanced fields than just TEXT, NUMBER etc
+
 sealed class HardcodedZScore(
    protected var conceptName: String,
    protected val gender: Gender,
@@ -22,6 +24,7 @@ sealed class HardcodedZScore(
             Constants.CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE -> HardcodedHeightForAgeZScore(name, gender, birthDateText)
             Constants.CONCEPT_NAME_MUACA_Z_SCORE -> HardcodedMuacZScore(name, gender, birthDateText)
             Constants.CONCEPT_NAME_WEIGHT_FOR_HEIGHT_Z_SCORE -> HardcodedWeightForHeightZScore(name, gender, birthDateText)
+            Constants.CONCEPT_NAME_Z_SCORE -> TmpHardcodedZScore(name, gender, birthDateText)
             else -> error("Unknown concept name!")
          }
       }
