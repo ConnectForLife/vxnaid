@@ -182,7 +182,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
     }
 
     fun confirmRegistrationWithCaptureVaccinesPage(registerParticipant: RegisterParticipant) {
-       this.registerParticipant.set(registerParticipant)
+        this.registerParticipant.set(registerParticipant)
         navigationDirection = NavigationDirection.FORWARD
         currentScreen.set(Screen.PARTICIPANT_CAPTURE_HISTORICAL_DATA)
     }

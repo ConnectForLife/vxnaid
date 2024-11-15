@@ -115,7 +115,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
         viewModel.birthWeightValidationMessage.observe(lifecycleOwner) { birthWeightValidationMessage ->
             logDebug("validate birth weight" + birthWeightValidationMessage)
-           // binding.birthWeightError.requestFocus()
+            // binding.birthWeightError.requestFocus()
         }
 
         viewModel.childCategory.observe(lifecycleOwner) {
@@ -215,7 +215,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.setPhone(phoneNumber)
             flowViewModel.phoneNumber.set(phoneNumber)
         }
-        
+
         binding.editBirthWeight.doAfterTextChanged {
             val birthWeight = it?.toString().orEmpty()
             viewModel.setBirthWeight(birthWeight)
@@ -380,15 +380,15 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
-   private fun setupChildCategoryDropdown() {
-       val categories = listOf(Constants.CHILD_CATEGORY_NATIONAL,
-           Constants.CHILD_CATEGORY_FOREIGNER, Constants.CHILD_CATEGORY_REFUGEE)
-       val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, categories)
-       binding.dropdownChildCategory.setAdapter(adapter)
+    private fun setupChildCategoryDropdown() {
+        val categories = listOf(Constants.CHILD_CATEGORY_NATIONAL,
+            Constants.CHILD_CATEGORY_FOREIGNER, Constants.CHILD_CATEGORY_REFUGEE)
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, categories)
+        binding.dropdownChildCategory.setAdapter(adapter)
 
-       viewModel.childCategory.value?.let { category ->
-           binding.dropdownChildCategory.setText(category.display, false)
-       }
+        viewModel.childCategory.value?.let { category ->
+            binding.dropdownChildCategory.setText(category.display, false)
+        }
 
         binding.dropdownChildCategory.setOnItemClickListener { _, _, position, _ ->
             val selectedCategory = categories[position]

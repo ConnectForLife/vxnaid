@@ -23,13 +23,10 @@ object Constants {
     const val ATTRIBUTE_MOTHER_LAST_NAME= "Mother's last name"
     const val ATTRIBUTE_DATA_ENTRANT_NAME= "Data entrant's first name"
     const val ATTRIBUTE_DATA_ENTRANT_LAST_NAME= "Data entrant's last name"
-
     const val ATTRIBUTE_FATHER_FIRST_NAME= "Father's first name"
     const val ATTRIBUTE_FATHER_LAST_NAME= "Father's last name"
-
     const val ATTRIBUTE_CHILD_CATEGORY= "Child category"
     const val NIN_IDENTIFIER_TYPE_NAME = "National ID"
-
     // Visit
     const val ATTRIBUTE_VISIT_STATUS = "Visit Status"
     const val ATTRIBUTE_VISIT_DAYS_AFTER = "Up Window"

@@ -44,22 +44,22 @@ import kotlin.random.Random
 
 @SuppressWarnings("TooManyFunctions")
 class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
-        private val phoneValidator: PhoneValidator,
-        private val syncSettingsRepository: SyncSettingsRepository,
-        private val configurationManager: ConfigurationManager,
-        private val resourcesWrapper: ResourcesWrapper,
-        private val participantManager: ParticipantManager,
-        override val dispatchers: AppCoroutineDispatchers,
-        private val participantIdValidator: ParticipantIdValidator,
-        private val sessionExpiryObserver: SessionExpiryObserver,
-        private val getTempBiometricsTemplatesBytesUseCase: GetTempBiometricsTemplatesBytesUseCase,
-        private val fullPhoneFormatter: FullPhoneFormatter,
-        private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
-        private val textInputValidator: TextInputValidator,
-        private val ninValidator: NinValidator,
-        private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
-        private val getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase,
-        private val draftParticipantDao: DraftParticipantDao
+    private val phoneValidator: PhoneValidator,
+    private val syncSettingsRepository: SyncSettingsRepository,
+    private val configurationManager: ConfigurationManager,
+    private val resourcesWrapper: ResourcesWrapper,
+    private val participantManager: ParticipantManager,
+    override val dispatchers: AppCoroutineDispatchers,
+    private val participantIdValidator: ParticipantIdValidator,
+    private val sessionExpiryObserver: SessionExpiryObserver,
+    private val getTempBiometricsTemplatesBytesUseCase: GetTempBiometricsTemplatesBytesUseCase,
+    private val fullPhoneFormatter: FullPhoneFormatter,
+    private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
+    private val textInputValidator: TextInputValidator,
+    private val ninValidator: NinValidator,
+    private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+    private val getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase,
+    private val draftParticipantDao: DraftParticipantDao
 ) : ViewModelBase() {
 
     companion object {
@@ -92,13 +92,13 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     data class Args(
-            val participantId: String?,
-            val isManualSetParticipantID: Boolean,
-            val leftEyeScanned: Boolean,
-            val rightEyeScanned: Boolean,
-            val phoneNumber: String?,
-            val participantUuid: String?,
-            val registerDetails: ParticipantManager.RegisterDetails?,
+        val participantId: String?,
+        val isManualSetParticipantID: Boolean,
+        val leftEyeScanned: Boolean,
+        val rightEyeScanned: Boolean,
+        val phoneNumber: String?,
+        val participantUuid: String?,
+        val registerDetails: ParticipantManager.RegisterDetails?,
     )
 
     private val args = stateFlow<Args?>(null)
@@ -141,7 +141,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val dataEntrantName = mutableLiveData<String>()
     val dataEntrantNameValidationMessage = mutableLiveData<String>()
     val dataEntrantLastName = mutableLiveData<String>()
-     val dataEntrantLastNameValidationMessage = mutableLiveData<String>()
+    val dataEntrantLastNameValidationMessage = mutableLiveData<String>()
 
 
     val fatherFirstName = mutableLiveData<String>()
@@ -229,7 +229,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantUuid.set(args.participantUuid)
 
             val site = syncSettingsRepository.getSiteUuid()?.let { configurationManager.getSiteByUuid(it) }
-                    ?: throw NoSiteUuidAvailableException()
+                ?: throw NoSiteUuidAvailableException()
             val configuration = configurationManager.getConfiguration()
             val loc = configurationManager.getLocalization()
             onSiteAndConfigurationLoaded(site, configuration, loc)
@@ -316,9 +316,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     private fun initState() {
         args.filterNotNull().distinctUntilChanged()
-                .onEach { args ->
-                    load(args)
-                }.launchIn(scope)
+            .onEach { args ->
+                load(args)
+            }.launchIn(scope)
     }
 
     fun setArguments(args: Args) {
@@ -341,7 +341,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     @SuppressWarnings("LongParameterList", "LongMethod")
     fun submitRegistration(
-            picture: ParticipantImageUiModel?,
+        picture: ParticipantImageUiModel?,
     ) {
         scope.launch {
             doRegistration(picture)
@@ -349,10 +349,10 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     private suspend fun doRegistration(
-            picture: ParticipantImageUiModel?,
+        picture: ParticipantImageUiModel?,
     ) {
         val siteUuid = syncSettingsRepository.getSiteUuid()
-                ?: return logWarn("Cannot submit registration: no site UUID known")
+            ?: return logWarn("Cannot submit registration: no site UUID known")
         val homeLocation = homeLocation.get()
         val participantId = participantId.get()
         val nin = nin.get()
@@ -446,13 +446,13 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             loading.set(false)
 
             val participant = ParticipantSummaryUiModel(
-                                result.participantUuid,
-                                participantId,
-                                gender,
-                                birthDate.format(DateFormat.FORMAT_DATE),
-                                isBirthDateEstimated,
-                                null,
-                                compressedImage?.let { ParticipantImageUiModel(it.bytes) }
+                result.participantUuid,
+                participantId,
+                gender,
+                birthDate.format(DateFormat.FORMAT_DATE),
+                isBirthDateEstimated,
+                null,
+                compressedImage?.let { ParticipantImageUiModel(it.bytes) }
             )
 
             if (participantUuid.value != null) {

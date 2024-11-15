@@ -158,10 +158,7 @@
     <string name="participant_registration_details_error_no_mother_first_name">Please enter a mother\'s first name</string>
     <string name="participant_registration_details_error_no_mother_last_name">Please enter a mother\'s last name</string>
     <string name="participant_registration_details_error_no_data_entrant_first_name">Please enter a data entrants\'s first name</string>
-
     <string name="participant_registration_details_error_no_data_entrant_last_name">Please enter a data entrants\'s last name</string>
-
-
     <string name="participant_registration_details_error_no_gender">Please select a gender</string>
     <string name="participant_registration_details_error_no_year_of_birth">Please enter a valid year of birth</string>
     <string name="participant_registration_details_error_no_phone">Please enter a valid phone number with only numbers and spaces</string>

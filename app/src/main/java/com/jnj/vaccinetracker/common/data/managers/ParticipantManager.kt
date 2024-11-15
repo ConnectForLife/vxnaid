@@ -28,7 +28,7 @@ class ParticipantManager @Inject constructor(
     private val updateParticipantUseCase: UpdateParticipantUseCase,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
-    ) {
+) {
 
     /**
      * Match participant based on the authentication criteria.
@@ -179,21 +179,21 @@ class ParticipantManager @Inject constructor(
     }
 
     fun getUpdateParticipant(registerRequest: RegisterParticipant, participantUuid: String): UpdateParticipant {
-            return UpdateParticipant(
-                participantUuid = participantUuid,
-                participantId = registerRequest.participantId,
-                nin = registerRequest.nin,
-                childNumber = registerRequest.childNumber,
-                gender = registerRequest.gender,
-                isBirthDateEstimated = registerRequest.isBirthDateEstimated,
-                birthDate = registerRequest.birthDate,
-                address = registerRequest.address,
-                attributes = registerRequest.attributes,
-                image = registerRequest.image,
-                scheduleFirstVisit = createScheduleFirstVisit(),
-                childFirstName = registerRequest.childFirstName,
-                childLastName = registerRequest.childLastName
-            )
+        return UpdateParticipant(
+            participantUuid = participantUuid,
+            participantId = registerRequest.participantId,
+            nin = registerRequest.nin,
+            childNumber = registerRequest.childNumber,
+            gender = registerRequest.gender,
+            isBirthDateEstimated = registerRequest.isBirthDateEstimated,
+            birthDate = registerRequest.birthDate,
+            address = registerRequest.address,
+            attributes = registerRequest.attributes,
+            image = registerRequest.image,
+            scheduleFirstVisit = createScheduleFirstVisit(),
+            childFirstName = registerRequest.childFirstName,
+            childLastName = registerRequest.childLastName
+        )
     }
 
 
