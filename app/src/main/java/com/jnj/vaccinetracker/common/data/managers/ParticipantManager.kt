@@ -81,8 +81,10 @@ class ParticipantManager @Inject constructor(
         fatherFirstName: String?,
         fatherLastName: String?,
         motherFirstName: String,
+        dataEntrantName: String?,
         motherLastName: String,
         childCategory: String?,
+        dataEntrantLastName: String?,
     ): MutableMap<String, String> {
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
 
@@ -135,7 +137,9 @@ class ParticipantManager @Inject constructor(
         val fatherLastName: String?,
         val childFirstName: String?,
         val childLastName: String?,
+        val dataEntrantName: String?,
         val childCategory: String?,
+        val dataEntrantLastName: String?,
     )
 
     @SuppressWarnings("LongParameterList")
@@ -152,7 +156,9 @@ class ParticipantManager @Inject constructor(
             fatherLastName = registerDetails.fatherLastName,
             motherFirstName = registerDetails.motherFirstName,
             motherLastName = registerDetails.motherLastName,
-            childCategory = registerDetails.childCategory
+            childCategory = registerDetails.childCategory,
+            dataEntrantName = registerDetails.dataEntrantName,
+            dataEntrantLastName = registerDetails.dataEntrantLastName,
         )
 
         return RegisterParticipant(
@@ -217,6 +223,8 @@ class ParticipantManager @Inject constructor(
         fatherLastName: String?,
         motherFirstName: String,
         motherLastName: String,
+        dataEntrantName: String,
+        dataEntrantLastName: String,
         childFirstName: String?,
         childLastName: String?,
         childCategory: String?,
@@ -241,6 +249,8 @@ class ParticipantManager @Inject constructor(
                 motherFirstName = motherFirstName,
                 motherLastName = motherLastName,
                 childFirstName = childFirstName,
+                dataEntrantName = dataEntrantName,
+                dataEntrantLastName = dataEntrantLastName,
                 childLastName = childLastName,
                 childCategory = childCategory
             )
@@ -266,6 +276,8 @@ class ParticipantManager @Inject constructor(
         fatherLastName: String?,
         motherFirstName: String,
         motherLastName: String,
+        dataEntrantName: String,
+        dataEntrantLastName: String,
         childFirstName: String?,
         childLastName: String?,
         childCategory: String?,
@@ -290,6 +302,8 @@ class ParticipantManager @Inject constructor(
                 fatherLastName = fatherLastName,
                 motherFirstName = motherFirstName,
                 motherLastName = motherLastName,
+                dataEntrantName = dataEntrantName,
+                dataEntrantLastName = dataEntrantLastName,
                 childFirstName = childFirstName,
                 childLastName = childLastName,
                 childCategory = childCategory

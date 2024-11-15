@@ -1,7 +1,6 @@
 package com.jnj.vaccinetracker.register.screens
 
 import androidx.collection.ArrayMap
-import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftParticipantDao
 import com.jnj.vaccinetracker.common.data.helpers.delaySafe
@@ -138,6 +137,13 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val motherLastName = mutableLiveData<String>()
     val motherLastNameValidationMessage = mutableLiveData<String>()
 
+
+    val dataEntrantName = mutableLiveData<String>()
+    val dataEntrantNameValidationMessage = mutableLiveData<String>()
+    val dataEntrantLastName = mutableLiveData<String>()
+     val dataEntrantLastNameValidationMessage = mutableLiveData<String>()
+
+
     val fatherFirstName = mutableLiveData<String>()
     val fatherFirstNameValidationMessage = mutableLiveData<String>()
     val fatherLastName = mutableLiveData<String>()
@@ -265,6 +271,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             setBirthDateOrEstimatedAge(participantBase?.birthDate?.toDateTime(), participantBase?.isBirthDateEstimated ?: false)
             participantBase?.phone?.let { setPhone(it, true) }
             participantBase?.motherFirstName?.let { setMotherFirstName(it) }
+            participantBase?.dataEntrantName?.let { setDataEntrantName(it) }
+            participantBase?.dataEntrantLastName?.let { setDataEntrantLastName(it) }
             participantBase?.motherLastName?.let { setMotherLastName(it) }
             participantBase?.fatherFirstname?.let { setFatherFirstName(it) }
             participantBase?.fatherLastName?.let { setFatherLastName(it) }
@@ -289,6 +297,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             args.registerDetails.gender.let { setGender(it) }
             setBirthDateOrEstimatedAge(args.registerDetails.birthDate, args.registerDetails.isBirthDateEstimated)
             args.registerDetails.motherFirstName.let { setMotherFirstName(it) }
+            args.registerDetails.dataEntrantName.let { setDataEntrantName(it) }
+            args.registerDetails.dataEntrantLastName.let { setDataEntrantLastName(it) }
             args.registerDetails.motherLastName.let { setMotherLastName(it) }
             args.registerDetails.fatherFirstName.let { setFatherFirstName(it) }
             args.registerDetails.fatherLastName.let { setFatherLastName(it) }
@@ -357,12 +367,14 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val motherLastName = motherLastName.get()
         val fatherFirstName = fatherFirstName.get()
         val fatherLastName = fatherLastName.get()
+        val dataEntrantName = dataEntrantName.get()
+        val dataEntrantLastName = dataEntrantLastName.get()
         val childFirstName = childFirstName.get()
         val childLastName = childLastName.get()
         val childUuid = participantUuid.get()
         val childCategoryValue = childCategory.get()?.value
 
-        val areInputsValid = validateInput(participantId, gender, birthDate, homeLocation, motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName, childLastName)
+        val areInputsValid = validateInput(participantId, gender, birthDate, homeLocation, motherFirstName, motherLastName, fatherFirstName, fatherLastName,dataEntrantName,dataEntrantLastName, childFirstName, childLastName)
         val isNinValid = isNinValueValid(nin)
 
         var phoneNumberToSubmit: String? = null
@@ -410,6 +422,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 motherLastName = motherLastName!!,
                 fatherFirstName = fatherFirstName,
                 fatherLastName = fatherLastName,
+                dataEntrantName = dataEntrantName,
+                dataEntrantLastName = dataEntrantLastName,
                 childFirstName = childFirstName,
                 childLastName = childLastName,
                 childCategory = childCategoryValue,
@@ -524,6 +538,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         motherLastName: String?,
         fatherFirstName: String?,
         fatherLastName: String?,
+        dataEntrantName: String?,
+        dataEntrantLastName: String?,
         childFirstName: String?,
         childLastName: String?
     ): Boolean {
@@ -568,6 +584,20 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             if (motherLastName.isNullOrEmpty()) R.string.participant_registration_details_error_no_mother_last_name
             else R.string.participant_registration_details_error_no_letters_used,
             motherLastNameValidationMessage
+        )
+
+        addValidationError(
+            dataEntrantName.isNullOrEmpty() && textInputValidator.validate(dataEntrantName.toString()),
+            if (dataEntrantName.isNullOrEmpty()) R.string.participant_registration_details_error_no_data_entrant_first_name
+            else R.string.participant_registration_details_error_no_letters_used,
+            dataEntrantNameValidationMessage
+        )
+
+        addValidationError(
+            dataEntrantLastName.isNullOrEmpty() && textInputValidator.validate(dataEntrantLastName.toString()),
+            if (motherLastName.isNullOrEmpty()) R.string.participant_registration_details_error_no_data_entrant_first_name
+            else R.string.participant_registration_details_error_no_letters_used,
+            dataEntrantLastNameValidationMessage
         )
 
         if (!fatherFirstName.isNullOrEmpty()) {
@@ -634,6 +664,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         motherLastNameValidationMessage.set(null)
         fatherFirstNameValidationMessage.set(null)
         fatherLastNameValidationMessage.set(null)
+        dataEntrantNameValidationMessage.set(null)
+        dataEntrantLastNameValidationMessage.set(null)
         childFirstNameValidationMessage.set(null)
         childLastNameValidationMessage.set(null)
     }
@@ -682,6 +714,16 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     fun setMotherLastName(motherLastName: String?) {
         if (this.motherLastName.get() == motherLastName) return
         this.motherLastName.set(motherLastName)
+    }
+
+    fun setDataEntrantName(dataEntrantName: String?) {
+        if (this.dataEntrantName.get() == dataEntrantName) return
+        this.dataEntrantName.set(dataEntrantName)
+    }
+
+    fun setDataEntrantLastName(dataEntrantLastName: String?) {
+        if (this.dataEntrantLastName.get() == dataEntrantLastName) return
+        this.dataEntrantLastName.set(dataEntrantLastName)
     }
 
     fun setFatherFirstName(fatherFirstName: String?) {

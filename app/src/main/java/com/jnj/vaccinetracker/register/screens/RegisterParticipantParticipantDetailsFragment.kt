@@ -246,6 +246,30 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             }
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         binding.editFatherFirstName.doAfterTextChanged {
             val fatherFirstName = it?.toString().orEmpty()
             viewModel.setFatherFirstName(fatherFirstName)

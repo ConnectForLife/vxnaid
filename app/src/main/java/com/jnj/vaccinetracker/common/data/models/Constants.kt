@@ -21,6 +21,9 @@ object Constants {
     const val ATTRIBUTE_BIRTH_WEIGHT= "Birth Weight"
     const val ATTRIBUTE_MOTHER_FIRST_NAME= "Mother's first name"
     const val ATTRIBUTE_MOTHER_LAST_NAME= "Mother's last name"
+    const val ATTRIBUTE_DATA_ENTRANT_NAME= "Data entrant's first name"
+    const val ATTRIBUTE_DATA_ENTRANT_LAST_NAME= "Data entrant's last name"
+
     const val ATTRIBUTE_FATHER_FIRST_NAME= "Father's first name"
     const val ATTRIBUTE_FATHER_LAST_NAME= "Father's last name"
 

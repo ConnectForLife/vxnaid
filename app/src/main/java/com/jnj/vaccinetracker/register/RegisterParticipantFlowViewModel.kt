@@ -56,7 +56,9 @@ class RegisterParticipantFlowViewModel @Inject constructor(
             fatherLastName = "",
             childFirstName = "",
             childLastName = "",
-            childCategory = ""
+            childCategory = "",
+            dataEntrantName = "",
+            dataEntrantLastName = ""
         )
     }
     val visitTypeName = mutableLiveData<String>()
