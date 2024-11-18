@@ -25,9 +25,11 @@ import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.update.UpdateDialog
+import com.jnj.vaccinetracker.vaccinesoverview.VaccinesOverviewFlowActivity
+import com.jnj.vaccinetracker.vaccinesoverview.model.VaccinesOverviewViewModel
 import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewFlowActivity
-import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewViewModel
+import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
@@ -41,6 +43,7 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
    private val viewModel: ParticipantFlowViewModel by activityViewModels { viewModelFactory }
    private val viewModelParticipantFlow: ParticipantFlowMatchingViewModel by viewModels { viewModelFactory }
    private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
+   private val vaccinesOverviewViewModel: VaccinesOverviewViewModel by viewModels { viewModelFactory }
 
    private lateinit var binding: FragmentParticipantAddOrSearchBinding
 
@@ -57,6 +60,10 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
 
       binding.btnVisitsOverview.setOnClickListener {
          visitsOverviewViewModel.onVisitsOverviewClick()
+      }
+
+      binding.btnVaccinesOverview.setOnClickListener {
+         vaccinesOverviewViewModel.onVaccinesOverviewClick()
       }
 
       setHasOptionsMenu(true)
@@ -95,6 +102,13 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
          ), Constants.REQ_VISITS_OVERVIEW)
          (requireActivity() as BaseActivity).setForwardAnimation()
       }.launchIn(lifecycleOwner)
+
+      vaccinesOverviewViewModel.launchVaccinesOverviewFragmentFlowEvent.asFlow().onEach {
+         startActivityForResult(VaccinesOverviewFlowActivity.create(
+            context = requireContext()
+         ), Constants.REQ_VACCINES_OVERVIEW)
+         (requireActivity() as BaseActivity).setForwardAnimation()
+      }.launchIn(lifecycleOwner)
    }
 
    private fun onNewVersionAvailable() {
@@ -130,6 +144,10 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
 
          Constants.REQ_VISITS_OVERVIEW -> {
             startActivity(VisitsOverviewFlowActivity.create(requireContext()))
+         }
+
+         Constants.REQ_VACCINES_OVERVIEW -> {
+            startActivity(VaccinesOverviewFlowActivity.create(requireContext()))
          }
 
          Constants.REQ_VISIT -> {

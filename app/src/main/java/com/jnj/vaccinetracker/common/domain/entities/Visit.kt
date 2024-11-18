@@ -20,7 +20,9 @@ data class Visit(
     val observations: Map<String, ObservationValue>,
     val dateModified: DateEntity,
     override val visitType: String,
-) : VisitBase()
+) : VisitBase() {
+    val visitLocation: String get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION] ?: ""
+}
 
 data class DraftVisit(
     override val startDatetime: DateEntity,

@@ -7,6 +7,7 @@ import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftVisitDao
 import com.jnj.vaccinetracker.common.data.database.entities.base.toMap
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftVisitAttributeEntity.Companion.toDraftVisitAttributeEntity
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftVisitEntity
+import com.jnj.vaccinetracker.common.data.database.models.RoomVisitModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftVisitModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.update.RoomUpdateVisitDraftStateModel
 import com.jnj.vaccinetracker.common.data.database.repositories.base.DraftVisitRepositoryBase
@@ -72,6 +73,8 @@ class DraftVisitRepository @Inject constructor(
     override suspend fun findByVisitUuid(visitUuid: String): DraftVisit? = draftVisitDao.findByVisitUuid(visitUuid)?.toDomain()
 
     override suspend fun findAllVisits(): List<DraftVisit> = draftVisitDao.findAllVisits().map { it.toDomain() }
+
+    override suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String): List<DraftVisit> = draftVisitDao.findAllVisitsByAttributeTypeAndValue(type, value).map { it.toDomain() }
 
     override suspend fun findVisitsAfterDate(date: DateEntity): List<DraftVisit> = draftVisitDao.findVisitsAfterDate(date).map { it.toDomain() }
 

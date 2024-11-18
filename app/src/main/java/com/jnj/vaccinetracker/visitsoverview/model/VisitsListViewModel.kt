@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visitsoverview
+package com.jnj.vaccinetracker.visitsoverview.model
 
 import android.os.Bundle
 import androidx.lifecycle.viewModelScope
@@ -11,7 +11,7 @@ import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
-import com.jnj.vaccinetracker.visitsoverview.model.VisitDataDTO
+import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

@@ -26,12 +26,12 @@ import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.databinding.FragmentVisitsListBinding
-import com.jnj.vaccinetracker.visitsoverview.VisitsListViewModel
+import com.jnj.vaccinetracker.visitsoverview.model.VisitsListViewModel
 import com.jnj.vaccinetracker.visitsoverview.adapters.VisitsAdapter
 import com.jnj.vaccinetracker.visitsoverview.dialog.VisitDetailsDialog
-import com.jnj.vaccinetracker.visitsoverview.dialog.VisitsOverviewDatePickerDialog
-import com.jnj.vaccinetracker.visitsoverview.model.VisitDataDTO
-import com.jnj.vaccinetracker.visitsoverview.model.VisitDetailsDTO
+import com.jnj.vaccinetracker.common.dialogs.ReportOverviewDatePickerDialog
+import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
+import com.jnj.vaccinetracker.visitsoverview.dto.VisitDetailsDTO
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
@@ -44,7 +44,7 @@ import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.Q)
 class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
-    VisitsOverviewDatePickerDialog.VisitsOverviewDatePickerListener {
+    ReportOverviewDatePickerDialog.VisitsOverviewDatePickerListener {
 
     companion object {
         private const val START_DATE_PICKER_DIALOG_TAG = "startDatePicker"
@@ -71,7 +71,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         setupRecyclerView()
         loadVisitsData()
         setupObservers()
-        setupFiltersButton()
+        setupFilterButtons()
         setupDownloadButtons()
 
         return binding.root
@@ -124,7 +124,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         }
     }
 
-    private fun setupFiltersButton() {
+    private fun setupFilterButtons() {
         binding.btnStartDate.setOnClickListener {
             showDatePickerDialog(true)
         }
@@ -168,6 +168,11 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             row.createCell(2).setCellValue(visit.participant.fullName)
             row.createCell(3).setCellValue(visit.participant.phone)
         }
+
+        sheet.setColumnWidth(0, 4000)
+        sheet.setColumnWidth(1, 4000)
+        sheet.setColumnWidth(2, 7000)
+        sheet.setColumnWidth(3, 4000)
 
         try {
             FileOutputStream(filePath).use { outputStream ->
@@ -241,7 +246,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
 
     private fun showDatePickerDialog(isStartDate: Boolean) {
         val datePickerDialog =
-            VisitsOverviewDatePickerDialog(selectedDate = if (isStartDate) selectedStartDate else selectedEndDate)
+            ReportOverviewDatePickerDialog(selectedDate = if (isStartDate) selectedStartDate else selectedEndDate)
         datePickerDialog.show(
             childFragmentManager,
             if (isStartDate) START_DATE_PICKER_DIALOG_TAG else END_DATE_PICKER_DIALOG_TAG
@@ -253,7 +258,6 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             if (tag == START_DATE_PICKER_DIALOG_TAG) {
                 selectedStartDate = it
                 binding.labelStartDate.text = formatDate(it)
-
             } else if (tag == END_DATE_PICKER_DIALOG_TAG) {
                 selectedEndDate = it
                 binding.labelEndDate.text = formatDate(it)

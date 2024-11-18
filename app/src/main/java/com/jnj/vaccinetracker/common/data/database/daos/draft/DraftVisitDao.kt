@@ -38,6 +38,10 @@ interface DraftVisitDao : DraftVisitDaoBase<DraftVisitEntity, RoomDraftVisitMode
     @Transaction
     override suspend fun findAllVisits(): List<RoomDraftVisitModel>
 
+    @Query("select * from draft_visit where visitUuid in (select visitUuid from visit_attribute where type = :type and value = :value)")
+    @Transaction
+    override suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String): List<RoomDraftVisitModel>
+
     @Query("SELECT * FROM draft_visit WHERE startDatetime >= :date ORDER BY startDatetime ASC")
     @Transaction
     override suspend fun findVisitsAfterDate(date: DateEntity): List<RoomDraftVisitModel>

@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visitsoverview
+package com.jnj.vaccinetracker.visitsoverview.model
 
 import android.os.Bundle
 import androidx.annotation.StringRes
