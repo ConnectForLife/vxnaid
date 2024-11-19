@@ -128,6 +128,7 @@
     <string name="gender_female">Féminin</string>
     <string name="participant_registration_details_label_year_of_birth">Année de naissance</string>
     <string name="participant_registration_details_label_telephone">Numéro de téléphone portable</string>
+    <string name="participant_registration_details_action_update_participant">Mettre à jour l'enfant</string>
     <string name="participant_registration_details_telephone_hint">Veuillez entrez le numéro de téléphone portable du participant</string>
     <string name="participant_registration_details_label_home_location">Lieu du domicile</string>
     <string name="participant_registration_details_home_location_hint">Entrer le lieu du domicile du participant</string>
