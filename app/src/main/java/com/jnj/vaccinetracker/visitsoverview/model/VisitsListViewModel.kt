@@ -11,6 +11,7 @@ import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
+import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class VisitsListViewModel @Inject constructor(
     private val visitRepository: VisitRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+    private val syncSettingsRepository: SyncSettingsRepository,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
     val visitDTOs = mutableLiveData<List<VisitDataDTO>>()
@@ -27,7 +29,7 @@ class VisitsListViewModel @Inject constructor(
         isLoading.value = true
         viewModelScope.launch {
             val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
-                .filter { it.attributes[Constants.ATTRIBUTE_VISIT_STATUS] == Constants.VISIT_STATUS_SCHEDULED }
+                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
             visitDTOs.value = createVisitDTOList(scheduledVisits)
             isLoading.value = false
         }
@@ -37,7 +39,7 @@ class VisitsListViewModel @Inject constructor(
         isLoading.value = true
         viewModelScope.launch {
             val scheduledVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                .filter { it.attributes[Constants.ATTRIBUTE_VISIT_STATUS] == Constants.VISIT_STATUS_OCCURRED }
+                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
             visitDTOs.value = createVisitDTOList(scheduledVisits)
             isLoading.value = false
         }
@@ -47,7 +49,7 @@ class VisitsListViewModel @Inject constructor(
         isLoading.value = true
         viewModelScope.launch {
             val scheduledVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
-                .filter { it.attributes[Constants.ATTRIBUTE_VISIT_STATUS] == Constants.VISIT_STATUS_SCHEDULED }
+                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
             visitDTOs.value = createVisitDTOList(scheduledVisits)
             isLoading.value = false
         }
@@ -64,9 +66,10 @@ class VisitsListViewModel @Inject constructor(
             }
         }
 
+        val currentLocationUuid = syncSettingsRepository.getSiteUuid()
         visits.forEach { visit ->
             val participant  = participantsMap[visit.participantUuid]
-            if (participant != null) {
+            if (participant != null && participant.locationUuid == currentLocationUuid) {
                 val visitDataDTO = VisitDataDTO(
                     visitUuid = visit.visitUuid,
                     startDatetime = visit.startDatetime,

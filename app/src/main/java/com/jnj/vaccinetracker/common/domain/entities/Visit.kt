@@ -21,7 +21,8 @@ data class Visit(
     val dateModified: DateEntity,
     override val visitType: String,
 ) : VisitBase() {
-    val visitLocation: String get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION] ?: ""
+    val visitLocation: String get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION] ?: Constants.EMPTY_STRING_VALUE
+    val visitStatus: String get() = attributes[Constants.ATTRIBUTE_VISIT_STATUS] ?: Constants.EMPTY_STRING_VALUE
 }
 
 data class DraftVisit(
