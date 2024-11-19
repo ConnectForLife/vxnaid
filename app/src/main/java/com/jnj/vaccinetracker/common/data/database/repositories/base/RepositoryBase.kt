@@ -71,6 +71,7 @@ interface DraftParticipantDataFileRepositoryBase<T> : ParticipantDataFileReposit
 interface VisitRepositoryBase<T> : RepositoryBase<T> {
     suspend fun findByVisitUuid(visitUuid: String): T?
     suspend fun findAllVisits(): List<T>
+    suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String): List<T>
     suspend fun findVisitsAfterDate(date: DateEntity): List<T>
     suspend fun findVisitsBeforeDate(date: DateEntity): List<T>
     suspend fun findAllByParticipantUuid(participantUuid: String): List<T>

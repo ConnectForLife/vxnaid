@@ -473,4 +473,12 @@
     <string name="visits_overview_saving_file_success_message">File saved in Downloads directory</string>
     <string name="visits_overview_saving_file_failure_message">Something went wrong while saving file</string>
     <string name="qrcode">qr code image</string>
+    <string name="vaccines_overview_title">Vaccines Overview</string>
+    <string name="vaccines_administered_title">Vaccines Administered</string>
+    <string name="vaccine_name_label">Vaccine name</string>
+    <string name="vaccine_total_label">Total</string>
+    <string name="vaccine_location_label">Location</string>
+    <string name="vaccine_group_age_label">Age group</string>
+    <string name="vaccines_excel_report_date_range_label_set">Date Range: %1$s - %2$s</string>
+    <string name="vaccines_excel_report_date_range_label_not_set">Date Range: not set, data comes from the entire period</string>
 </resources>

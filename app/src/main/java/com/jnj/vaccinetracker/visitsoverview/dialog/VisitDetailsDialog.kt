@@ -10,7 +10,7 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogVisitDetailsBinding
-import com.jnj.vaccinetracker.visitsoverview.model.VisitDetailsDTO
+import com.jnj.vaccinetracker.visitsoverview.dto.VisitDetailsDTO
 
 class VisitDetailsDialog : BaseDialogFragment() {
 

@@ -61,6 +61,7 @@ object Constants {
     const val REQ_REGISTER_PARTICIPANT = 453
     const val REQ_VISIT = 12
     const val REQ_VISITS_OVERVIEW = 312
+    const val REQ_VACCINES_OVERVIEW = 412
 
     const val UTC_TIME_ZONE_NAME = "UTC"
 
@@ -105,4 +106,12 @@ object Constants {
     const val CLIENT_ID_FILE_COLUMN_HEADER = "Client ID"
     const val CLIENT_NAME_FILE_COLUMN_HEADER = "Client Name"
     const val PHONE_NUMBER_FILE_COLUMN_HEADER = "Phone Number"
+
+    const val VACCINES_CATEGORY_NAME = "Immunization"
+    const val GROUP_AGE_FIRST = "0-11 months"
+    const val GROUP_AGE_SECOND = "12-59 months"
+    const val GROUP_AGE_THIRD = "5-14 years"
+    const val GROUP_AGE_FOURTH = "14+ years"
+
+    const val EMPTY_STRING_VALUE = ""
 }

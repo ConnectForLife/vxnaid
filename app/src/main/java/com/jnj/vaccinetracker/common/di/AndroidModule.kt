@@ -48,6 +48,8 @@ import com.jnj.vaccinetracker.register.dialogs.HistoricalVisitDateDialog
 import com.jnj.vaccinetracker.participantflow.dialogs.AdverseEffectsSuccessfulDialog
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
+import com.jnj.vaccinetracker.vaccinesoverview.VaccinesOverviewFlowActivity
+import com.jnj.vaccinetracker.vaccinesoverview.screens.VaccinesOverviewFragment
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
@@ -279,4 +281,9 @@ interface AndroidModule {
     @ContributesAndroidInjector
     fun bindVisitDetailsDialog(): VisitDetailsDialog
 
+    @ContributesAndroidInjector
+    fun bindVaccinesOverviewFragment(): VaccinesOverviewFragment
+
+    @ContributesAndroidInjector
+    fun bindVaccinesOverviewFlowActivity(): VaccinesOverviewFlowActivity
 }

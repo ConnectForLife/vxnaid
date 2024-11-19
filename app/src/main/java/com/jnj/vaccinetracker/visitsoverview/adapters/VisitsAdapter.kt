@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.databinding.ItemVisitRecordBinding
-import com.jnj.vaccinetracker.visitsoverview.model.VisitDataDTO
+import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 
 class VisitsAdapter(
     private val onEyeIconClick: (VisitDataDTO) -> Unit

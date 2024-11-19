@@ -67,6 +67,10 @@
             android:name="com.jnj.vaccinetracker.visitsoverview.VisitsOverviewFlowActivity"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name="com.jnj.vaccinetracker.vaccinesoverview.VaccinesOverviewFlowActivity"
+            android:windowSoftInputMode="adjustResize" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

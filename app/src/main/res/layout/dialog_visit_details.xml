@@ -5,7 +5,7 @@
     <data>
         <variable
             name="visitDetails"
-            type="com.jnj.vaccinetracker.visitsoverview.model.VisitDetailsDTO" />
+            type="com.jnj.vaccinetracker.visitsoverview.dto.VisitDetailsDTO" />
     </data>
 
     <LinearLayout
