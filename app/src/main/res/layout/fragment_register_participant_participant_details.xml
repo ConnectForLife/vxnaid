@@ -61,7 +61,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="*"
+                    android:text="@string/participant_registration_add_asterisk"
                     android:textColor="@android:color/holo_red_dark"
                     android:layout_marginStart="2dp" />
 
@@ -84,7 +84,6 @@
                     android:text="@{viewModel.participantId}"
                     android:textSize="18sp"
                     app:error="@{viewModel.participantIdValidationMessage}" />
-
 
                 <Button
                     android:id="@+id/btnGenerateQrCode"
@@ -204,7 +203,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="*"
+                        android:text="@string/participant_registration_add_asterisk"
                         android:textColor="@android:color/holo_red_dark"
                         android:layout_marginStart="2dp" />
                 </LinearLayout>
@@ -258,7 +257,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="*"
+                        android:text="@string/participant_registration_add_asterisk"
                         android:textColor="@android:color/holo_red_dark"
                         android:layout_marginStart="2dp" />
                 </LinearLayout>
@@ -386,7 +385,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="*"
+                        android:text="@string/participant_registration_add_asterisk"
                         android:textColor="@android:color/holo_red_dark"
                         android:layout_marginStart="2dp" />
                 </LinearLayout>
@@ -479,7 +478,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="*"
+                        android:text="@string/participant_registration_add_asterisk"
                         android:textColor="@android:color/holo_red_dark"
                         android:layout_marginStart="2dp" />
                 </LinearLayout>
