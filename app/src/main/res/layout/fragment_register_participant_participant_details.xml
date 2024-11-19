@@ -373,7 +373,6 @@
             </LinearLayout>
 
             <LinearLayout
-
                 android:id="@+id/input_group_phone"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -385,8 +384,8 @@
                     android:id="@+id/label_phone"
                     android:layout_width="155dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/participant_registration_details_label_telephone"
-                    android:textAppearance="@style/LabelText" />
+                    android:textAppearance="@style/LabelText"
+                    android:text="@string/participant_registration_details_label_telephone" />
 
                 <com.hbb20.CountryCodePicker
                     android:id="@+id/country_code_picker_phone"
@@ -410,6 +409,7 @@
                     android:textSize="18sp"
                     app:error="@{viewModel.phoneValidationMessage}" />
             </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/input_group_year_of_birth"

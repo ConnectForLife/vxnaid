@@ -84,8 +84,8 @@
     <string name="iris_scan_left_title">Iris scan - Left eye</string>
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
-    <string name="participant_flow_child_number_title">Child Number</string>
-    <string name="participant_flow_participant_id_title">Child ID</string>
+    <string name="participant_flow_child_number_title">Child Number *</string>
+    <string name="participant_flow_participant_id_title">Child ID *</string>
     <string name="participant_flow_participant_id_hint">Scan Child ID QR Code</string>
     <string name="participant_flow_participant_id_scanned">The format of the ID is not supported</string>
     <string name="participant_flow_participant_id_description">Please scan the Child vaccination card with a QR-Code or manually enter the Child ID number:</string>
@@ -93,7 +93,7 @@
     <string name="participant_flow_participant_id_input_hint">#1234567890</string>
     <string name="participant_flow_participant_id_label_or">- OR -</string>
     <string name="participant_flow_participant_id_label_scan_code">QR-Code Scan</string>
-    <string name="participant_flow_phone_title">Child Mobile Phone</string>
+    <string name="participant_flow_phone_title">Child Mobile Phone *</string>
     <string name="participant_flow_phone_description">Please enter the Child mobile phone number:</string>
     <string name="participant_flow_no_phone_description">Please confirm that the Child has no mobile phone. This will significantly increase the matching time.</string>
     <string name="iris_scan_icon_description">Icon of iris scan</string>
@@ -128,7 +128,6 @@
     <string name="participant_registration_label_take_picture">Please take a clear and well-lit photo of the Child</string>
     <string name="participant_registration_label_confirm_photo_or_try_again">Would you like to submit this photo or try again?</string>
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
-    <string name="participant_registration_details_action_update_participant">Update Child</string>
     <string name="participant_registration_details_description">Please provide new Child\'s details below:</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
@@ -141,12 +140,13 @@
     <string name="participant_registration_details_label_year_of_birth">Year of birth</string>
     <string name="participant_registration_details_label_National_Identification_Number">NIN</string>
     <string name="participant_registration_details_year_of_birth_hint" translatable="false">xxxx</string>
-    <string name="participant_registration_details_label_telephone">Mobile phone</string>
+    <string name="participant_registration_details_label_telephone">Mobile phone *</string>
+
     <string name="participant_registration_details_telephone_hint">Enter Child mobile phone</string>
     <string name="participant_registration_details_label_birth_order" translatable="false"> Birth Order</string>
     <string name ="participant_registration_details_birth_weight" translatable="false">Birth Weight (kg)</string>
-    <string name="participant_registration_details_label_home_location">Address</string>
-    <string name="participant_registration_details_home_location_hint">Enter the Child\'s address</string>
+    <string name="participant_registration_details_label_home_location">Address *</string>
+    <string name="participant_registration_details_home_location_hint">Enter the Child\'s address *</string>
     <string name="participant_registration_details_action_set_home_location">Set address</string>
     <string name="participant_registration_details_label_vaccine">Regimen</string>
     <string name="participant_registration_details_label_select_vaccine">Select regimen</string>
@@ -347,14 +347,14 @@
     <string name="p2p_client_this_device_out_of_space_error">This device is out of disk space</string>
     <string name="p2p_wifi_not_available_error">Not connected to WIFI. Please connect to WIFI and try again.</string>
     <string name="p2p_could_not_send_message_error">Could not send message. Please try again.</string>
-    <string name="participant_registration_details_label_child_name">Name of Child</string>
-    <string name="participant_registration_details_label_mother_name">Name of Mother</string>
+    <string name="participant_registration_details_label_child_name">Name of Child *</string>
+    <string name="participant_registration_details_label_mother_name">Name of Mother *</string>
     <string name="participant_registration_details_label_father_name">Name of Father</string>
-    <string name="participant_registration_details_hint_first_name">First Name</string>
-    <string name="participant_registration_details_hint_last_name">Last Name</string>
+    <string name="participant_registration_details_hint_first_name">First Name *</string>
+    <string name="participant_registration_details_hint_last_name">Last Name *</string>
     <string name="participant_registration_details_label_child_category">Child category</string>
     <string name="participant_registration_details_label_select_child_category">Select child category</string>
-    <string name="participant_registration_details_label_date_of_birth">Date of birth</string>
+    <string name="participant_registration_details_label_date_of_birth">Date of birth *</string>
     <string name="participant_registration_details_birth_date_hint">Enter the child\'s date of birth</string>
     <string name="participant_registration_details_action_set_birth_date">Set date of birth</string>
     <string name="participant_registration_details_action_set_Next_visit_date">Set Next visit date</string>
