@@ -16,6 +16,7 @@ sealed class HardcodedZScore(
    protected var height: String? = null
    protected var muac: String? = null
    protected var isOedema: String? = null
+   protected var zScore: String? = null
 
    companion object {
       fun fromConceptName(name: String, gender: Gender, birthDateText: String): HardcodedZScore {
@@ -43,6 +44,9 @@ sealed class HardcodedZScore(
          }
          if (it.containsKey(Constants.CONCEPT_NAME_IS_OEDEMA_Z_SCORE)) {
             isOedema = it[Constants.CONCEPT_NAME_IS_OEDEMA_Z_SCORE]
+         }
+         if (it.containsKey(Constants.CONCEPT_NAME_Z_SCORE)) {
+            zScore = it[Constants.CONCEPT_NAME_Z_SCORE]
          }
       }
    }
