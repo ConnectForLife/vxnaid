@@ -58,13 +58,6 @@
                     android:maxLines="1"
                     android:text="@string/participant_flow_participant_id_title"
                     android:textAppearance="@style/LabelText" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/participant_registration_add_asterisk"
-                    android:textColor="@android:color/holo_red_dark"
-                    android:textSize="18sp"
-                    android:layout_marginStart="2dp" />
 
                 <ImageButton
                     android:id="@+id/btn_scan_participant_id"
@@ -200,14 +193,6 @@
                         android:maxLines="2"
                         android:text="@string/participant_registration_details_label_child_name"
                         android:textAppearance="@style/LabelText" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/participant_registration_add_asterisk"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
-                        android:layout_marginStart="2dp" />
                 </LinearLayout>
 
                 <EditText
@@ -560,6 +545,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <!-- Label with Asterisk -->
                 <TextView
                     android:id="@+id/label_gender"
                     android:layout_width="wrap_content"
@@ -567,15 +553,17 @@
                     android:maxWidth="155dp"
                     android:maxLines="1"
                     android:minWidth="155dp"
-                    android:text="@string/participant_registration_details_label_gender"
-                    android:textAppearance="@style/LabelText" />
+                    android:text="@string/label_gender_with_asterisk"
+                    android:textAppearance="@style/LabelText"
+                    android:textSize="16sp" />
 
+                <!-- Gender RadioGroup -->
                 <RadioGroup
                     android:id="@+id/radiogroup_gender"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation='horizontal'>
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/rb_gender_male"
@@ -599,6 +587,7 @@
                         android:textSize="18sp" />
                 </RadioGroup>
 
+                <!-- Error Text -->
                 <TextView
                     android:id="@+id/gender_error"
                     android:layout_width="wrap_content"
@@ -609,6 +598,8 @@
                     android:paddingTop="0dp"
                     app:error="@{viewModel.genderValidationMessage}" />
             </LinearLayout>
+
+
 
             <LinearLayout
                 android:id="@+id/input_group_birth_weight"
