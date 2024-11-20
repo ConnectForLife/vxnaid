@@ -443,7 +443,6 @@
                     app:error="@{viewModel.phoneValidationMessage}" />
             </LinearLayout>
 
-
             <LinearLayout
                 android:id="@+id/input_group_year_of_birth"
                 android:layout_width="match_parent"
@@ -497,7 +496,6 @@
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
-
             <LinearLayout
                 android:id="@+id/input_group_estimatedAge"
                 android:layout_width="match_parent"
@@ -545,7 +543,6 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <!-- Label with Asterisk -->
                 <TextView
                     android:id="@+id/label_gender"
                     android:layout_width="wrap_content"
@@ -557,7 +554,6 @@
                     android:textAppearance="@style/LabelText"
                     android:textSize="16sp" />
 
-                <!-- Gender RadioGroup -->
                 <RadioGroup
                     android:id="@+id/radiogroup_gender"
                     android:layout_width="0dp"
@@ -587,7 +583,6 @@
                         android:textSize="18sp" />
                 </RadioGroup>
 
-                <!-- Error Text -->
                 <TextView
                     android:id="@+id/gender_error"
                     android:layout_width="wrap_content"
@@ -598,8 +593,6 @@
                     android:paddingTop="0dp"
                     app:error="@{viewModel.genderValidationMessage}" />
             </LinearLayout>
-
-
 
             <LinearLayout
                 android:id="@+id/input_group_birth_weight"
