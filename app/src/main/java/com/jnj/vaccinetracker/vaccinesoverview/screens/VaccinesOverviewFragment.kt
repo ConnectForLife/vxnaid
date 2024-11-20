@@ -56,6 +56,8 @@ class VaccinesOverviewFragment : BaseFragment(),
     private val vaccinesOverviewViewModel: VaccinesOverviewViewModel by viewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+    private var selectedLocation: String? = Constants.ALL_STRING
+    private var selectedAgeGroup: String? = Constants.ALL_STRING
 
     @Inject
     lateinit var configurationManager: ConfigurationManager
@@ -70,6 +72,7 @@ class VaccinesOverviewFragment : BaseFragment(),
 
         setupRecyclerView()
         setupFilterFields()
+        initializeDefaultDates()
         loadVaccinesData()
         setupObservers()
         setupDownloadButtons()
@@ -144,13 +147,26 @@ class VaccinesOverviewFragment : BaseFragment(),
         } ?: getString(R.string.visits_overview_not_set_label)
     }
 
+    private fun initializeDefaultDates() {
+        val today = DateTime.now()
+        val firstDayOfMonth = today.startOfMonth
+
+        selectedStartDate = firstDayOfMonth
+        selectedEndDate = today
+
+        binding.labelStartDate.text = formatDate(firstDayOfMonth)
+        binding.labelEndDate.text = formatDate(today)
+
+        applyFilters()
+    }
+
     private fun setupVaccinesDropdown() {
         lifecycleScope.launch {
             vaccinesOverviewViewModel.substancesConfig.value =
                 vaccinesOverviewViewModel.getSubstancesConfig()
 
             val vaccineLabels =
-                listOf(Constants.EMPTY_STRING_VALUE) + vaccinesOverviewViewModel.substancesConfig.value!!
+                listOf(Constants.ALL_STRING) + vaccinesOverviewViewModel.substancesConfig.value!!
                     .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
                     .map { it.label }
                     .sorted()
@@ -189,23 +205,24 @@ class VaccinesOverviewFragment : BaseFragment(),
 
                 vaccinesAdapter.isSelectAllChecked =
                     selectedVaccineConceptNames.size == vaccineConceptNames.size
-                val selectedText = selectedVaccineConceptNames.filter { it.isNotEmpty() }
-                    .joinToString(", ") { findVaccineLabel(it) }
-                binding.autoCompleteVaccines.setText(selectedText.trim(), false)
+
+                val selectedText = if (vaccinesAdapter.isSelectAllChecked) {
+                    Constants.ALL_STRING
+                } else {
+                    selectedVaccineConceptNames.filter { it.isNotEmpty() }
+                        .joinToString(", ") { findVaccineLabel(it) }
+                }
+
+                binding.labelSelectedVaccines.text = "${getString(R.string.selected_vaccines_label)} $selectedText"
+
+                binding.autoCompleteVaccines.setText(selectedText, false)
                 vaccinesAdapter.notifyDataSetChanged()
                 applyFilters()
                 binding.autoCompleteVaccines.post { binding.autoCompleteVaccines.showDropDown() }
             }
 
             binding.autoCompleteVaccines.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable?) {
                     binding.autoCompleteVaccines.ellipsize = TextUtils.TruncateAt.END
@@ -216,7 +233,7 @@ class VaccinesOverviewFragment : BaseFragment(),
 
     private fun setupLocationsDropdown() {
         val locations = listOf(
-            Constants.EMPTY_STRING_VALUE,
+            Constants.ALL_STRING,
             Constants.VISIT_PLACE_STATIC,
             Constants.VISIT_PLACE_OUTREACH,
             Constants.VISIT_PLACE_SCHOOL
@@ -224,15 +241,17 @@ class VaccinesOverviewFragment : BaseFragment(),
         val locationsAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, locations)
         binding.autoCompleteLocations.setAdapter(locationsAdapter)
 
+        binding.autoCompleteLocations.setText(Constants.ALL_STRING, false)
+
         binding.autoCompleteLocations.setOnItemClickListener { _, _, position, _ ->
-            binding.autoCompleteLocations.tag = locations[position]
+            selectedLocation = locations[position]
             applyFilters()
         }
     }
 
     private fun setupAgeGroupDropdown() {
         val ageGroups = listOf(
-            Constants.EMPTY_STRING_VALUE,
+            Constants.ALL_STRING,
             Constants.GROUP_AGE_FIRST,
             Constants.GROUP_AGE_SECOND,
             Constants.GROUP_AGE_THIRD
@@ -240,8 +259,10 @@ class VaccinesOverviewFragment : BaseFragment(),
         val groupsAgeAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, ageGroups)
         binding.autoCompleteAgeGroups.setAdapter(groupsAgeAdapter)
 
+        binding.autoCompleteAgeGroups.setText(Constants.ALL_STRING, false)
+
         binding.autoCompleteAgeGroups.setOnItemClickListener { _, _, position, _ ->
-            binding.autoCompleteAgeGroups.tag = ageGroups[position]
+            selectedAgeGroup = ageGroups[position]
             applyFilters()
         }
     }
@@ -276,9 +297,6 @@ class VaccinesOverviewFragment : BaseFragment(),
         vaccinesData: List<VaccineObservationDTO> = vaccinesOverviewViewModel.vaccineDTOs.value
             ?: emptyList()
     ) {
-        val selectedLocation = binding.autoCompleteLocations.tag as? String
-        val selectedAgeGroup = binding.autoCompleteAgeGroups.tag as? String
-
         val filteredData = vaccinesData.filter { observation ->
             val dateMatches = if (observation.administerDate.isNotEmpty()) {
                 (selectedStartDate == null || DateUtil.convertStringToDate(
@@ -295,9 +313,9 @@ class VaccinesOverviewFragment : BaseFragment(),
 
             val vaccineMatches = selectedVaccineConceptNames.contains(observation.vaccineName)
             val locationMatches =
-                selectedLocation.isNullOrEmpty() || observation.visitLocation == selectedLocation
+                selectedLocation == Constants.ALL_STRING|| observation.visitLocation == selectedLocation
             val ageGroupMatches =
-                selectedAgeGroup.isNullOrEmpty() || observation.ageGroup == selectedAgeGroup
+                selectedAgeGroup == Constants.ALL_STRING || observation.ageGroup == selectedAgeGroup
 
             dateMatches && vaccineMatches && locationMatches && ageGroupMatches
         }
