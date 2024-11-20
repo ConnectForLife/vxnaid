@@ -61,6 +61,10 @@ class VisitRepository @Inject constructor(
         return visitDao.findAllVisits().map { it.toDomain() }
     }
 
+    override suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String): List<Visit> {
+        return visitDao.findAllVisitsByAttributeTypeAndValue(type, value).map { it.toDomain() }
+    }
+
     override suspend fun findVisitsAfterDate(date: DateEntity): List<Visit> {
         return visitDao.findVisitsAfterDate(date).map { it.toDomain() }
     }

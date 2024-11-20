@@ -28,6 +28,10 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
     @Transaction
     override suspend fun findAllVisits(): List<RoomVisitModel>
 
+    @Query("select * from visit where visitUuid in (select visitUuid from visit_attribute where type = :type and value = :value)")
+    @Transaction
+    override suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String): List<RoomVisitModel>
+
     @Query("SELECT * FROM visit WHERE startDatetime >= :date ORDER BY startDatetime ASC")
     @Transaction
     override suspend fun findVisitsAfterDate(date: DateEntity): List<RoomVisitModel>

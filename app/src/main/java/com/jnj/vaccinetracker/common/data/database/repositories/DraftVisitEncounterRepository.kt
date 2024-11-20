@@ -75,6 +75,8 @@ class DraftVisitEncounterRepository @Inject constructor(
 
     override suspend fun findAllVisits(): List<DraftVisitEncounter> = draftVisitEncounterDao.findAllVisits().map { it.toDomain() }
 
+    override suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String):  List<DraftVisitEncounter> = draftVisitEncounterDao.findAllVisitsByAttributeTypeAndValue(type, value).map { it.toDomain() }
+
     override suspend fun findVisitsAfterDate(date: DateEntity): List<DraftVisitEncounter> = draftVisitEncounterDao.findVisitsBeforeDate(date).map { it.toDomain() }
 
     override suspend fun findVisitsBeforeDate(date: DateEntity): List<DraftVisitEncounter> = draftVisitEncounterDao.findVisitsBeforeDate(date).map { it.toDomain() }

@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visitsoverview.model
+package com.jnj.vaccinetracker.visitsoverview.dto
 
 import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue

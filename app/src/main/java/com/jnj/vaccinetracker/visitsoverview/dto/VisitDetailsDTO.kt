@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visitsoverview.model
+package com.jnj.vaccinetracker.visitsoverview.dto
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visitsoverview.dialog
+package com.jnj.vaccinetracker.common.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
@@ -10,7 +10,7 @@ import com.jnj.vaccinetracker.common.helpers.findParent
 import com.soywiz.klock.DateTime
 import java.util.Calendar
 
-class VisitsOverviewDatePickerDialog(
+class ReportOverviewDatePickerDialog(
     private var selectedDate: DateTime? = null,
 ) : DialogFragment() {
 
