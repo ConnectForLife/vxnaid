@@ -443,6 +443,7 @@
                     app:error="@{viewModel.phoneValidationMessage}" />
             </LinearLayout>
 
+
             <LinearLayout
                 android:id="@+id/input_group_year_of_birth"
                 android:layout_width="match_parent"
@@ -496,6 +497,7 @@
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
+
             <LinearLayout
                 android:id="@+id/input_group_estimatedAge"
                 android:layout_width="match_parent"
@@ -535,6 +537,7 @@
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
+
             <LinearLayout
                 android:id="@+id/input_group_gender"
                 android:layout_width="match_parent"
@@ -542,7 +545,6 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-
                 <TextView
                     android:id="@+id/label_gender"
                     android:layout_width="wrap_content"

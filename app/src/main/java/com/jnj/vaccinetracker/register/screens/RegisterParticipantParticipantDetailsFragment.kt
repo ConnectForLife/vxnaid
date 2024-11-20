@@ -215,14 +215,20 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.setPhone(phoneNumber)
             flowViewModel.phoneNumber.set(phoneNumber)
         }
-        
+
         binding.editBirthWeight.doAfterTextChanged {
-            val birthWeight = it?.toString().orEmpty()
-            viewModel.setBirthWeight(birthWeight)
-            val currentDetails = flowViewModel.registerDetails.value
-            if (currentDetails != null) {
-                val updatedDetails = currentDetails.copy(birthWeight = birthWeight)
-                flowViewModel.registerDetails.set(updatedDetails)
+            val birthWeightString = it?.toString().orEmpty()
+            val birthWeight = birthWeightString.toIntOrNull()
+
+            if (birthWeight != null && birthWeight >= 9) {
+                binding.editBirthWeight.text = null
+            } else if (birthWeight != null) {
+                viewModel.setBirthWeight(birthWeight.toString())
+                val currentDetails = flowViewModel.registerDetails.value
+                if (currentDetails != null) {
+                    val updatedDetails = currentDetails.copy(birthWeight = birthWeight.toString())
+                    flowViewModel.registerDetails.set(updatedDetails)
+                }
             }
         }
 
