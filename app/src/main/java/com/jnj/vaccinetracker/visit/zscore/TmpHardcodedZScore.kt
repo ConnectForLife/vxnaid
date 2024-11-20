@@ -1,12 +1,12 @@
 package com.jnj.vaccinetracker.visit.zscore
 
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
-import android.widget.Spinner
 import android.widget.TextView
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.di.AppResources
@@ -30,17 +30,19 @@ class TmpHardcodedZScore(
       const val OBESE = "Obese"
    }
 
-   override fun getValue(): String? = null
+   private var labelTextView: TextView? = null
+
+   override fun getValue(): String? = zScore
    override fun isEmpty(): Boolean {
-      return false
+      return zScore.isNullOrEmpty()
    }
 
    override fun onEmpty(): () -> Unit {
-      return {}
+      return {labelTextView?.error = "Fill data"}
    }
 
    override fun onNotEmpty(): () -> Unit {
-      return {}
+      return {labelTextView?.error = null}
    }
 
    override fun setupView(
@@ -49,12 +51,12 @@ class TmpHardcodedZScore(
    ) {
       val context = view.context
       val linearLayout = createLinearLayout(context)
-      val labelTextView = createLabelTextView(context)
-      val valueSpinner = createValueSpinner(context)
+      labelTextView = createLabelTextView(context)
+      val dropdownMenu = createConfiguredDropdownMenu(context, listener)
 
       linearLayout.apply {
          addView(labelTextView)
-         addView(valueSpinner)
+         addView(dropdownMenu)
       }
 
       addLinearLayoutToViewGroup(view, linearLayout)
@@ -84,35 +86,63 @@ class TmpHardcodedZScore(
       }
    }
 
-   private fun createValueSpinner(context: android.content.Context): Spinner {
+   private fun createConfiguredDropdownMenu(
+      context: android.content.Context,
+      listener: OtherSubstanceItemAdapter.AddSubstanceValueListener
+   ): com.google.android.material.textfield.TextInputLayout {
       val options = listOf(
          SEVERELY_UNDERWEIGHT,
          UNDERWEIGHT,
-         NORMAL,  // Default option
+         NORMAL, // Default option
          OVERWEIGHT,
          OBESE
       )
 
-      return Spinner(context).apply {
+      val themedContext = ContextThemeWrapper(
+         context,
+         com.google.android.material.R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox_Dense_ExposedDropdownMenu
+      )
+
+      return com.google.android.material.textfield.TextInputLayout(themedContext).apply {
          layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
-         ).apply {
-            gravity = Gravity.CENTER
-         }
-         gravity = Gravity.CENTER
-         setPadding(0, 16, 16, 0)
+         )
 
-         adapter = ArrayAdapter(
-            context,
-            android.R.layout.simple_spinner_item,
-            options
-         ).also { arrayAdapter ->
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+         val autoCompleteTextView = AutoCompleteTextView(context).apply {
+            id = View.generateViewId()
+            layoutParams = LinearLayout.LayoutParams(
+               LinearLayout.LayoutParams.MATCH_PARENT,
+               LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            inputType = android.text.InputType.TYPE_NULL
+
+            setAdapter(
+               ArrayAdapter(
+                  context,
+                  android.R.layout.simple_dropdown_item_1line,
+                  options
+               )
+            )
+
+            getValue()?.let {
+               setText(it, false) // 'false' means don't call 'onTextChanged' on this action
+            }
+
+            setOnItemClickListener { _, _, position, _ ->
+               val selectedItem = options[position]
+               zScore = selectedItem
+               notifyListener(listener)
+            }
          }
 
-         // Set 'NORMAL' as the default selected item
-         setSelection(options.indexOf(NORMAL))
+         addView(autoCompleteTextView)
+      }
+   }
+
+   private fun notifyListener(listener: OtherSubstanceItemAdapter.AddSubstanceValueListener) {
+      getValue()?.let {
+         listener.addOtherSubstance(conceptName, it)
       }
    }
 
