@@ -458,7 +458,6 @@
                     app:error="@{viewModel.phoneValidationMessage}" />
             </LinearLayout>
 
-
             <LinearLayout
                 android:id="@+id/input_group_year_of_birth"
                 android:layout_width="match_parent"
@@ -512,7 +511,6 @@
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
-
             <LinearLayout
                 android:id="@+id/input_group_estimatedAge"
                 android:layout_width="match_parent"
@@ -551,7 +549,6 @@
                     android:text="@string/participant_registration_details_action_set_estimated_age"
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
-
 
             <LinearLayout
                 android:id="@+id/input_group_gender"
