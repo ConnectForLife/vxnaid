@@ -101,7 +101,7 @@
                     android:layout_weight="3"
                     android:text="@string/generate_Qr_code"
                     android:textAppearance="@style/ButtonTextStyling"
-                    android:visibility ="@{viewModel.participantUuid != null ? View.GONE : View.VISIBLE}"/>
+                    android:visibility ="visible"/>
 
                 <ImageView
                     android:id="@+id/img_participant_picture"
