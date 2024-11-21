@@ -217,19 +217,12 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
         
         binding.editBirthWeight.doAfterTextChanged {
-            val birthWeightString = it?.toString().orEmpty()
-            val birthWeight = birthWeightString.toIntOrNull()
-
-            if (birthWeight != null) {
-                if (birthWeight >= 9) {
-                    binding.editBirthWeight.text = null
-                } else {
-                    viewModel.setBirthWeight(birthWeight.toString())
-                    flowViewModel.registerDetails.value?.let { currentDetails ->
-                        val updatedDetails = currentDetails.copy(birthWeight = birthWeight.toString())
-                        flowViewModel.registerDetails.set(updatedDetails)
-                    }
-                }
+            val birthWeight = it?.toString().orEmpty()
+            viewModel.setBirthWeight(birthWeight)
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(birthWeight = birthWeight)
+                flowViewModel.registerDetails.set(updatedDetails)
             }
         }
 
