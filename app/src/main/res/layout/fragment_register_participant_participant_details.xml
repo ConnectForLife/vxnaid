@@ -50,21 +50,29 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/label_participant_id"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:maxLines="1"
-                    android:text="@string/participant_flow_participant_id_title"
-                    android:textAppearance="@style/LabelText" />
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/participant_registration_add_asterisk"
-                    android:textColor="@android:color/holo_red_dark"
-                    android:textSize="18sp"
-                    android:layout_marginStart="2dp" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/label_participant_id"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:maxLines="1"
+                        android:text="@string/participant_flow_participant_id_title"
+                        android:textAppearance="@style/LabelText" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/participant_registration_add_asterisk"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="18sp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginEnd="7dp"
+                        />
+                </LinearLayout>
 
                 <ImageButton
                     android:id="@+id/btn_scan_participant_id"
@@ -93,7 +101,7 @@
                     android:layout_weight="3"
                     android:text="@string/generate_Qr_code"
                     android:textAppearance="@style/ButtonTextStyling"
-                    android:visibility = "visible"/>
+                    android:visibility ="@{viewModel.participantUuid != null ? View.GONE : View.VISIBLE}"/>
 
                 <ImageView
                     android:id="@+id/img_participant_picture"
@@ -200,14 +208,6 @@
                         android:maxLines="2"
                         android:text="@string/participant_registration_details_label_child_name"
                         android:textAppearance="@style/LabelText" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/participant_registration_add_asterisk"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
-                        android:layout_marginStart="2dp" />
                 </LinearLayout>
 
                 <EditText
@@ -552,6 +552,7 @@
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
+
             <LinearLayout
                 android:id="@+id/input_group_gender"
                 android:layout_width="match_parent"
@@ -560,22 +561,37 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/label_gender"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="155dp"
                     android:layout_height="wrap_content"
-                    android:maxWidth="155dp"
-                    android:maxLines="1"
-                    android:minWidth="155dp"
-                    android:text="@string/participant_registration_details_label_gender"
-                    android:textAppearance="@style/LabelText" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/label_gender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:text="@string/participant_registration_details_label_gender"
+                        android:textAppearance="@style/LabelText"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/participant_registration_add_asterisk"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="18sp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginEnd="7dp"
+                        />
+                </LinearLayout>
 
                 <RadioGroup
                     android:id="@+id/radiogroup_gender"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation='horizontal'>
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/rb_gender_male"
