@@ -2,13 +2,9 @@ package com.jnj.vaccinetracker.register.screens
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.method.ScrollingMovementMethod
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -100,12 +96,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(true)
 
-        val genderText = getString(R.string.label_gender_with_asterisk)
-        val childIdText = getString(R.string.participant_flow_participant_id_title)
-
-        binding.labelGender.text = applyAsteriskColor(genderText)
-        binding.labelParticipantId.text = applyAsteriskColor(childIdText)
-
         return binding.root
     }
 
@@ -125,6 +115,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
         viewModel.birthWeightValidationMessage.observe(lifecycleOwner) { birthWeightValidationMessage ->
             logDebug("validate birth weight" + birthWeightValidationMessage)
+           // binding.birthWeightError.requestFocus()
         }
 
         viewModel.childCategory.observe(lifecycleOwner) {
@@ -133,6 +124,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
         viewModel.genderValidationMessage.observe(lifecycleOwner) { genderValidationMessage ->
             logDebug("validate gender" + genderValidationMessage)
+
             binding.genderError.requestFocus()
             binding.genderError.error = genderValidationMessage
         }
@@ -223,14 +215,21 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.setPhone(phoneNumber)
             flowViewModel.phoneNumber.set(phoneNumber)
         }
-
+        
         binding.editBirthWeight.doAfterTextChanged {
-            val birthWeight = it?.toString().orEmpty()
-            viewModel.setBirthWeight(birthWeight)
-            val currentDetails = flowViewModel.registerDetails.value
-            if (currentDetails != null) {
-                val updatedDetails = currentDetails.copy(birthWeight = birthWeight)
-                flowViewModel.registerDetails.set(updatedDetails)
+            val birthWeightString = it?.toString().orEmpty()
+            val birthWeight = birthWeightString.toIntOrNull()
+
+            if (birthWeight != null) {
+                if (birthWeight >= 9) {
+                    binding.editBirthWeight.text = null
+                } else {
+                    viewModel.setBirthWeight(birthWeight.toString())
+                    flowViewModel.registerDetails.value?.let { currentDetails ->
+                        val updatedDetails = currentDetails.copy(birthWeight = birthWeight.toString())
+                        flowViewModel.registerDetails.set(updatedDetails)
+                    }
+                }
             }
         }
 
@@ -489,21 +488,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             )
             finish()
         }
-    }
-
-    private fun applyAsteriskColor(text: String): SpannableString {
-        val spannable = SpannableString(text)
-        val asteriskIndex = text.indexOf("*")
-
-        if (asteriskIndex != -1) {
-            spannable.setSpan(
-                ForegroundColorSpan(Color.RED),
-                asteriskIndex,
-                text.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-        return spannable
     }
 
     override fun finishParticipantFlow() {
