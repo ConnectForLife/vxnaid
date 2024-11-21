@@ -30,7 +30,7 @@
     <string name="settings_label_deviceId">Device ID</string>
     <string name="settings_label_no_licenses">No active licenses</string>
     <string name="settings_label_deactivate">Deactivate</string>
-    <string name="label_gender_with_asterisk" translatable="false">Gender</string>
+    <string name="label_gender_with_asterisk" translatable="false">Gender*</string>
     <string name="settings_msg_no_network_cannot_deactive">Cannot deactivate licenses without a network connection.</string>
     <string name="settings_msg_no_network_cannot_activate">Cannot activate licenses without a network connection.</string>
     <string name="settings_msg_error_cannot_activate">Cannot activate licenses.</string>
@@ -86,7 +86,7 @@
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
     <string name="participant_flow_child_number_title">Child Number</string>
-    <string name="participant_flow_participant_id_title">Child ID</string>
+    <string name="participant_flow_participant_id_title">Child ID*</string>
     <string name="participant_flow_participant_id_hint">Scan Child ID QR Code</string>
     <string name="participant_flow_participant_id_scanned">The format of the ID is not supported</string>
     <string name="participant_flow_participant_id_description">Please scan the Child vaccination card with a QR-Code or manually enter the Child ID number:</string>
@@ -143,7 +143,7 @@
     <string name="participant_registration_details_label_National_Identification_Number">NIN</string>
     <string name="participant_registration_details_year_of_birth_hint" translatable="false">xxxx</string>
     <string name="participant_registration_details_label_telephone">Mobile phone</string>
-    <string name="participant_registration_details_telephone_hint">Enter Child mobile phone</string>
+    <string name="participant_registration_details_telephone_hint">Enter mobile phone</string>
     <string name="participant_registration_details_label_birth_order" translatable="false"> Birth Order</string>
     <string name ="participant_registration_details_birth_weight" translatable="false">Birth Weight (kg)</string>
     <string name="participant_registration_details_label_home_location">Address</string>

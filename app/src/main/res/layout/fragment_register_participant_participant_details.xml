@@ -52,12 +52,13 @@
 
                 <TextView
                     android:id="@+id/label_participant_id"
-                    android:layout_width="0dp"
+                    android:layout_width="14dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:maxLines="1"
                     android:text="@string/participant_flow_participant_id_title"
                     android:textAppearance="@style/LabelText" />
+
 
                 <ImageButton
                     android:id="@+id/btn_scan_participant_id"
@@ -86,7 +87,7 @@
                     android:layout_weight="3"
                     android:text="@string/generate_Qr_code"
                     android:textAppearance="@style/ButtonTextStyling"
-                    android:visibility = "visible"/>
+                    android:visibility ="@{viewModel.participantUuid != null ? View.GONE : View.VISIBLE}"/>
 
                 <ImageView
                     android:id="@+id/img_participant_picture"
