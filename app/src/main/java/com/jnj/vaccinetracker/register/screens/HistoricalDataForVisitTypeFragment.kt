@@ -80,7 +80,10 @@ class HistoricalDataForVisitTypeFragment :
       }
 
       viewModel.otherSubstancesData.observe(viewLifecycleOwner) { otherSubstances ->
-         otherSubstanceAdapter.updateItemsList(otherSubstances)
+         val filteredOtherSubstances = otherSubstances.filterNot { otherSubstance ->
+            applyReceivedLLINFilter(otherSubstance)
+         }
+         otherSubstanceAdapter.updateItemsList(filteredOtherSubstances)
       }
 
       if (!doesSubstancesHaveAnyDates()) {
@@ -88,6 +91,28 @@ class HistoricalDataForVisitTypeFragment :
       }
 
       return binding.root
+   }
+
+   override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
+      viewModel.substancesData.observe(lifecycleOwner) { substanceItems ->
+         substanceAdapter.updateList(substanceItems)
+      }
+      viewModel.otherSubstancesData.observe(lifecycleOwner) { otherSubstanceItems ->
+         val filteredOtherSubstances = otherSubstanceItems.filterNot { otherSubstance ->
+            applyReceivedLLINFilter(otherSubstance)
+         }
+         otherSubstanceAdapter.updateItemsList(filteredOtherSubstances)
+      }
+      viewModel.otherSubstancesAndValues.observe(lifecycleOwner){value ->
+         otherSubstanceAdapter.otherSubstanceValues = value
+      }
+   }
+
+   private fun applyReceivedLLINFilter(otherSubstance: OtherSubstanceDataModel): Boolean {
+      val currentVisitType = arguments?.getString(ARG_VISIT_TYPE_NAME)
+      return otherSubstance.conceptName == Constants.CONCEPT_NAME_RECEIVED_LLIN && allDataViewModel.visitTypesData.value?.any { (_, subMap) ->
+         currentVisitType != viewModel.firstVisitTypeName && subMap[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]?.get(Constants.CONCEPT_NAME_RECEIVED_LLIN) == Constants.YES_ANSWER
+      } == true
    }
 
    private fun initViewModels() {
@@ -140,18 +165,6 @@ class HistoricalDataForVisitTypeFragment :
       otherSubstanceAdapter = OtherSubstanceItemAdapter(mutableListOf(), this, registerParticipant = flowViewModel.registerParticipant.value!!)
       binding.recyclerViewOtherSubstances.layoutManager = LinearLayoutManager(requireContext())
       binding.recyclerViewOtherSubstances.adapter = otherSubstanceAdapter
-   }
-
-   override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
-      viewModel.substancesData.observe(lifecycleOwner) { substanceItems ->
-         substanceAdapter.updateList(substanceItems)
-      }
-      viewModel.otherSubstancesData.observe(lifecycleOwner) { otherSubstanceItems ->
-         otherSubstanceAdapter.updateItemsList(otherSubstanceItems)
-      }
-      viewModel.otherSubstancesAndValues.observe(lifecycleOwner){value ->
-         otherSubstanceAdapter.otherSubstanceValues = value
-      }
    }
 
    private fun setupClickListeners() {

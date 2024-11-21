@@ -115,4 +115,5 @@ object Constants {
 
     const val EMPTY_STRING_VALUE = ""
     const val ALL_STRING = "All"
+    const val YES_ANSWER = "Yes"
 }

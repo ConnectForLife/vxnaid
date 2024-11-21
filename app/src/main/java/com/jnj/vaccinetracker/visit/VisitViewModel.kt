@@ -451,7 +451,7 @@ class VisitViewModel @Inject constructor(
 
     private fun isLLINAlreadyAdministered(): Boolean? {
         return patientVisits.value?.any { visit ->
-            visit.observations[Constants.CONCEPT_NAME_RECEIVED_LLIN]?.value == "Yes"
+            visit.observations[Constants.CONCEPT_NAME_RECEIVED_LLIN]?.value == Constants.YES_ANSWER
         }
     }
 
