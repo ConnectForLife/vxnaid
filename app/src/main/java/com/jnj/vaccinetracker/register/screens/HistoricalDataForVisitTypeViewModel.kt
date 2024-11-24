@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import java.util.Date
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -26,17 +27,18 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
    private val resourcesWrapper: ResourcesWrapper,
 ) : ViewModelBase() {
 
-   data class Args(val visitTypeName: String?)
+   data class Args(val visitTypeName: String?, val visitUuid: String?)
 
    private val args = MutableStateFlow<Args?>(null)
    val visitTypeName = MutableLiveData<String?>()
    val substancesData = MutableLiveData<List<SubstanceDataModel>>(emptyList())
-   val otherSubstancesData = MutableLiveData<List<OtherSubstanceDataModel>>(emptyList())
+   val otherSubstancesData = MutableLiveData<List<OtherSubstanceDataModel>?>(emptyList())
    val substancesAndDates = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
    val otherSubstancesAndValues = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
    val loading = MutableLiveData<Boolean>()
    val errorMessage = MutableLiveData<String>()
    val visitDate = MutableLiveData<DateTime>()
+   val isLocalEdit = MutableLiveData<Boolean>(false)
 
    init {
       observeArgs()
@@ -72,9 +74,11 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
       withContext(dispatchers.io) {
          try {
             visitTypeName.postValue(args.visitTypeName)
-            args.visitTypeName?.let { visitType ->
-               loadSubstancesData(visitType)
-               loadOtherSubstancesData(visitType)
+            if (isLocalEdit.value != true){
+               args.visitTypeName?.let { visitType ->
+                  loadSubstancesData(visitType)
+                  loadOtherSubstancesData(visitType)
+               }
             }
          } catch (ex: Throwable) {
             handleError(ex)
@@ -85,15 +89,19 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
    }
 
    private suspend fun loadSubstancesData(visitTypeName: String) {
-      substancesData.postValue(
-         SubstancesDataUtil.getSubstancesDataForVisitType(visitTypeName, configurationManager)
-      )
+      substancesData.postValue(getSubstancesDataForVisitType(visitTypeName)!!)
    }
 
    private suspend fun loadOtherSubstancesData(visitTypeName: String) {
-      otherSubstancesData.postValue(
-         SubstancesDataUtil.getOtherSubstancesDataForVisitType(visitTypeName, configurationManager)
-      )
+      otherSubstancesData.postValue(getOtherDataForVisitType(visitTypeName))
+   }
+
+   suspend fun getOtherDataForVisitType(visitTypeName: String): List<OtherSubstanceDataModel> {
+      return SubstancesDataUtil.getOtherSubstancesDataForVisitType(visitTypeName, configurationManager) ?: emptyList()
+   }
+
+   suspend fun getSubstancesDataForVisitType(visitTypeName: String): List<SubstanceDataModel> {
+      return SubstancesDataUtil.getSubstancesDataForVisitType(visitTypeName, configurationManager) ?: emptyList()
    }
 
    private suspend fun handleError(ex: Throwable) {

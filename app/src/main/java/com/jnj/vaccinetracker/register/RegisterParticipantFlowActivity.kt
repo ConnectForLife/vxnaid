@@ -119,7 +119,7 @@ class RegisterParticipantFlowActivity : BaseActivity(),
     }
 
     private fun finishIfEdit() {
-        if (viewModel.participantUuid.value != null) {
+        if (viewModel.participantUuid.value != null && viewModel.currentScreen.value == RegisterParticipantFlowViewModel.Screen.PARTICIPANT_DETAILS) {
             setResult(RESULT_OK)
             finish()
         }
@@ -132,7 +132,7 @@ class RegisterParticipantFlowActivity : BaseActivity(),
             RegisterParticipantFlowViewModel.Screen.CONFIRM_PICTURE -> RegisterParticipantPicturePreviewFragment()
             RegisterParticipantFlowViewModel.Screen.PARTICIPANT_DETAILS -> RegisterParticipantParticipantDetailsFragment()
             RegisterParticipantFlowViewModel.Screen.PARTICIPANT_CAPTURE_HISTORICAL_DATA -> RegisterParticipantHistoricalDataFragment()
-            RegisterParticipantFlowViewModel.Screen.VISIT_TYPE_HISTORICAL_DATA -> HistoricalDataForVisitTypeFragment.create(viewModel.visitTypeName.value)
+            RegisterParticipantFlowViewModel.Screen.VISIT_TYPE_HISTORICAL_DATA -> HistoricalDataForVisitTypeFragment.create(viewModel.visitTypeName.value, viewModel.visitUuid.value)
             else -> null
         }
         screen?.let { title = getString(it.title) }

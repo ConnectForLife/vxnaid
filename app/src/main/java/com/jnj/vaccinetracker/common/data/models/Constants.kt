@@ -32,6 +32,7 @@ object Constants {
     const val ATTRIBUTE_VISIT_DAYS_AFTER = "Up Window"
     const val ATTRIBUTE_VISIT_DAYS_BEFORE = "Low Window"
     const val ATTRIBUTE_VISIT_DOSE_NUMBER = "Dose number"
+    const val ATTRIBUTE_VISIT_TYPE_VXNAID = "Visit type Vxnaid"
     const val ATTRIBUTE_VISIT_LOCATION = "Visit Location"
     const val VISIT_TYPE_DOSING = "Dosing"
     const val VISIT_TYPE_OTHER = "Other"
@@ -68,6 +69,7 @@ object Constants {
     const val BARCODE_STR = "Barcode"
     const val MANUFACTURER_NAME_STR = "Manufacturer"
     const val DATE_STR = "Date"
+    const val SPACE_STR = " "
 
     const val REFERRAL_CLINIC_CONCEPT_NAME = "Referral Clinic Vxnaid"
     const val REFERRAL_ADDITIONAL_INFO_CONCEPT_NAME = "Referral Additional Info Vxnaid"

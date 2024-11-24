@@ -27,10 +27,13 @@ import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.ui.model.DisplayValue
 import com.jnj.vaccinetracker.databinding.FragmentRegisterParticipantParticipantDetailsBinding
+import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
+import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.*
+import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
 
@@ -47,11 +50,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     RegisterParticipantSuccessfulDialog.RegisterParticipationCompletionListener,
     EstimatedAgeDialog.EstimatedAgePickerListener {
 
-    private companion object {
+    companion object {
         private const val TAG_HOME_LOCATION_PICKER = "homeLocationPicker"
         private const val TAG_DATE_PICKER = "datePicker"
         private const val TAG_SUCCESS_DIALOG = "successDialog"
-        private const val TAG_UPDATE_SUCCESS_DIALOG = "successUpdateDialog"
+        const val TAG_UPDATE_SUCCESS_DIALOG = "successUpdateDialog"
         private const val TAG_NO_PHONE_DIALOG = "confirmNoPhoneDialog"
         private const val TAG_NO_MATCHING_ID = "noMatchingIdDialog"
         private const val TAG_CHILD_NEWBORN_ID = "childNewBornDialog"
@@ -340,6 +343,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 ), REQ_BARCODE
             )
         }
+        binding.btnGoToHistorical.setOnClickListener {
+            goToEditHistoricalVisits()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -432,6 +438,19 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
     override fun continueRegistrationWithCaptureVaccinesPage() {
         flowViewModel.confirmRegistrationWithCaptureVaccinesPage(viewModel.registerParticipantRequest.value!!)
+    }
+
+    private fun goToEditHistoricalVisits() {
+        val participantUiModel = ParticipantSummaryUiModel(
+            viewModel.participantUuid.value!!,
+            viewModel.participantId.value!!,
+            viewModel.gender.value!!,
+            viewModel.birthDate.value!!.format(DateFormat.FORMAT_DATE),
+            viewModel.isBirthDateEstimated.value ?: false,
+            null,
+            flowViewModel.participantPicture.value?.toDomain()?.let { ParticipantImageUiModel(it.bytes) }
+        )
+        flowViewModel.goToEditHistoricalVisits(participantUiModel)
     }
 
     override fun onBirthDatePicked(birthDate: DateTime?, isEstimated: Boolean) {

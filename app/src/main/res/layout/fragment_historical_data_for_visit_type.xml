@@ -111,7 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="@color/colorPrimary"
-            android:text="@string/participant_administered_vaccines_action_save"
+            android:text="@{viewModel.isLocalEdit == true ? @string/general_label_update : @string/participant_administered_vaccines_action_save}"
             android:textAppearance="@style/ButtonTextStyling"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

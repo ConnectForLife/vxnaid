@@ -1,19 +1,22 @@
 package com.jnj.vaccinetracker.register.screens
 
-import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -25,14 +28,18 @@ import com.jnj.vaccinetracker.databinding.FragmentRegisterHistoricalVisitsBindin
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
+import com.jnj.vaccinetracker.register.dialogs.MultipleVisitsDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantSuccessfulDialog
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 class RegisterParticipantHistoricalDataFragment : BaseFragment(),
+   MultipleVisitsDialog.MultipleVisitsListener,
    RegisterParticipantSuccessfulDialog.RegisterParticipationCompletionListener {
 
    private val flowViewModel: RegisterParticipantFlowViewModel by activityViewModels { viewModelFactory }
@@ -40,9 +47,11 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    private val registerViewModel: RegisterParticipantParticipantDetailsViewModel by activityViewModels { viewModelFactory }
    private lateinit var binding: FragmentRegisterHistoricalVisitsBinding
    @Inject lateinit var configurationManager: ConfigurationManager
+   private var setupButtonsJob: Job? = null
 
    companion object {
       private const val TAG_SUCCESS_DIALOG = "successDialog"
+      private const val TAG_MULTIPLE_VISITS_DIALOG = "multipleVisitsDialog"
    }
 
    override fun onCreateView(
@@ -61,7 +70,7 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
          lifecycleOwner = viewLifecycleOwner
          flowViewModel = this@RegisterParticipantHistoricalDataFragment.flowViewModel
       }
-      viewModel.setArguments(flowViewModel.registerParticipant.value)
+      viewModel.setArguments(flowViewModel.registerParticipant.value, flowViewModel.participant.value)
       binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
 
       setupClickListeners()
@@ -70,7 +79,12 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    }
 
    override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
-      viewModel.visitTypesData.observe(lifecycleOwner) { _ ->
+      val combinedSource = MediatorLiveData<Unit>().apply {
+         addSource(viewModel.visitTypesData) { value = Unit }
+         addSource(viewModel.groupedVisitsByType) { value = Unit }
+      }
+
+      combinedSource.observe(lifecycleOwner) {
          setupButtons()
       }
       observeViewModelEvents(lifecycleOwner)
@@ -89,10 +103,13 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    private fun setupClickListeners() {
       binding.btnSubmit.setOnClickListener {
          lifecycleScope.launch {
-            val participantUiModel = registerViewModel.doRegistrationUsingRegisterRequest(flowViewModel.registerParticipant.value!!)
-            viewModel.participant.value = participantUiModel
-            submitVaccineRegistration()
-            registerViewModel.registerParticipantSuccessDialogEvents.tryEmit(participantUiModel!!)
+            if (!viewModel.isEdit.value!!) {
+               val participantUiModel =
+                  registerViewModel.doRegistrationUsingRegisterRequest(flowViewModel.registerParticipant.value!!)
+               viewModel.participant.value = participantUiModel
+               submitVaccineRegistration()
+               registerViewModel.registerParticipantSuccessDialogEvents.tryEmit(participantUiModel!!)
+            }
          }
       }
    }
@@ -108,9 +125,11 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    }
 
    private fun setupButtons() {
-      binding.buttonGrid.apply {
-         removeAllViews()
-         lifecycleScope.launch {
+      setupButtonsJob?.cancel()
+
+      setupButtonsJob = lifecycleScope.launch {
+         binding.buttonGrid.apply {
+            removeAllViews()
             configurationManager.getSubstancesConfig()
                .map { it.visitType }
                .distinct()
@@ -121,8 +140,8 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
       }
    }
 
-   private fun createButton(name: String): Button {
-      return Button(requireContext()).apply {
+   private fun createButton(name: String): FrameLayout {
+      val button = Button(requireContext()).apply {
          layoutParams = createButtonLayoutParams()
          text = name
          setTextAppearance(R.style.ButtonTextStyling)
@@ -131,7 +150,38 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
          backgroundTintList = getButtonBackgroundTint(name)
          setOnClickListener { onButtonClicked(name) }
       }
+
+      val badgeCount = viewModel.groupedVisitsByType.value?.get(name)?.size ?: 0
+      val badgeView = if (badgeCount > 0) createBadgeView(badgeCount) else null
+
+      return FrameLayout(requireContext()).apply {
+         layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+         )
+         addView(button)
+         badgeView?.let { addView(it) }
+      }
    }
+
+   private fun createBadgeView(count: Int): TextView {
+      return TextView(requireContext()).apply {
+         layoutParams = FrameLayout.LayoutParams(
+            24.dpToPx, // Width of the badge
+            24.dpToPx, // Height of the badge
+            Gravity.END or Gravity.TOP // Position the badge on the top-right of the button
+         ).apply {
+            setMargins(0, 8.dpToPx, 8.dpToPx, 0) // Margin to position the badge
+         }
+         text = count.toString()
+         textSize = 12f
+         setTextColor(ContextCompat.getColor(context, R.color.colorTextOnPrimary))
+         background = ContextCompat.getDrawable(context, R.drawable.circle_badge_background)
+         gravity = Gravity.CENTER
+      }
+   }
+
+
 
    private fun createButtonLayoutParams(): FrameLayout.LayoutParams {
       val size = 100.dpToPx
@@ -140,14 +190,29 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
       }
    }
 
-   private fun getButtonBackgroundTint(visitTypeName: String) = if (viewModel.visitTypesData.value?.containsKey(visitTypeName) == true) {
+   private fun getButtonBackgroundTint(visitTypeName: String) = if (shouldButtonHighlight(visitTypeName)) {
       ContextCompat.getColorStateList(requireContext(), R.color.colorPrimary)
    } else {
       ContextCompat.getColorStateList(requireContext(), R.color.colorTextOnLight)
    }
 
+   private fun shouldButtonHighlight(visitTypeName: String): Boolean {
+      return viewModel.visitTypesData.value?.containsKey(visitTypeName) == true
+              || viewModel.groupedVisitsByType.value?.containsKey(visitTypeName) == true
+   }
+
    private fun onButtonClicked(name: String) {
-      flowViewModel.openHistoricalDataForVisitType(name)
+      val isVisitEmpty = viewModel.groupedVisitsByType.value?.get(name)?.isEmpty() ?: true
+      if (viewModel.isEdit.value == true && !isVisitEmpty) {
+         displayMultipleVisitsDialog(name)
+      } else {
+         flowViewModel.openHistoricalDataForVisitType(name)
+      }
+   }
+
+
+   private fun displayMultipleVisitsDialog(name: String) {
+      MultipleVisitsDialog.create(name).show(childFragmentManager, TAG_MULTIPLE_VISITS_DIALOG)
    }
 
    override fun continueWithParticipantVisit(participant: ParticipantSummaryUiModel) {
@@ -161,10 +226,14 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    private fun finishActivityWithResult(participant: ParticipantSummaryUiModel? = null) {
       (requireActivity() as BaseActivity).run {
          setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtra(RegisterParticipantFlowActivity.EXTRA_PARTICIPANT, participant)
          )
          finish()
       }
+   }
+
+   override fun onVisitPicked(visitType: String, visitUuid: String) {
+      flowViewModel.openHistoricalDataForVisitType(visitType, visitUuid)
    }
 }

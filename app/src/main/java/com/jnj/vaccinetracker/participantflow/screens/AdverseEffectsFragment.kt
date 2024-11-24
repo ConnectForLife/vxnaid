@@ -166,6 +166,7 @@ class AdverseEffectsFragment : BaseFragment(),
             attributes = mapOf(
                 Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
                 Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+                Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to Constants.VISIT_TYPE_ADVERSE_EFFECTS,
             )
         )
     }

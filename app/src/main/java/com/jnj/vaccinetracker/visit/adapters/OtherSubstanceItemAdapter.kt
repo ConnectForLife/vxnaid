@@ -200,6 +200,7 @@ class OtherSubstanceItemAdapter(
             val hardcodedClass: HardcodedZScore =
                 HardcodedZScore.fromConceptName(item.conceptName, gender, birthDateText)
             hardcodedClass.setArguments(otherSubstanceValues)
+            hardcodedClass.setValueForConceptName(item.conceptName, item.value)
             hardcodedClass.setupView(itemView, listener)
             isEmpty = hardcodedClass.isEmpty()
             onEmpty = hardcodedClass.onEmpty()
