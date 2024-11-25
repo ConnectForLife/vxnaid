@@ -25,6 +25,7 @@ class UpdateParticipantSuccessfulDialog : BaseDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_update_participant_successful, container, false)
         binding.btnOk.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
             dismissAllowingStateLoss()
         }
         return binding.root
