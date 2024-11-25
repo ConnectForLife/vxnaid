@@ -116,4 +116,6 @@ object Constants {
     const val GROUP_AGE_FOURTH = "14+ years"
 
     const val EMPTY_STRING_VALUE = ""
+    const val ALL_STRING = "All"
+    const val YES_ANSWER = "Yes"
 }

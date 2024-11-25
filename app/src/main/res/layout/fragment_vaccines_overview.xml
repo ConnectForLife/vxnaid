@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingBottom="16sp"
+
             app:layout_constraintTop_toBottomOf="@id/dateFiltersContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -83,7 +83,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:dropDownWidth="300dp"
-                    android:hint="@string/vaccine_name_label"/>
+                    android:hint="@string/vaccine_name_label"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:scrollHorizontally="true"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -117,12 +120,34 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/selectedVaccinesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="16sp"
+            app:layout_constraintTop_toBottomOf="@id/otherFiltersContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/label_selectedVaccines"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:text="Selected Vaccines: " />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/table_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="8dp"
-            app:layout_constraintTop_toBottomOf="@id/otherFiltersContainer"
+            app:layout_constraintTop_toBottomOf="@id/selectedVaccinesContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 

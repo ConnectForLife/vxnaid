@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
@@ -14,7 +15,6 @@ import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import java.util.Date
@@ -32,6 +32,8 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
    private val args = MutableStateFlow<Args?>(null)
    val visitTypeName = MutableLiveData<String?>()
    val substancesData = MutableLiveData<List<SubstanceDataModel>>(emptyList())
+   val allSubstancesDataForVisitType = MutableLiveData<List<SubstanceDataModel>?>(emptyList())
+   val substancesFromAllVisitsFromVisitType = MutableLiveData<List<SubstanceDataModel>?>(emptyList())
    val otherSubstancesData = MutableLiveData<List<OtherSubstanceDataModel>?>(emptyList())
    val substancesAndDates = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
    val otherSubstancesAndValues = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
@@ -39,6 +41,9 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
    val errorMessage = MutableLiveData<String>()
    val visitDate = MutableLiveData<DateTime>()
    val isLocalEdit = MutableLiveData<Boolean>(false)
+   val isGlobalEdit = MutableLiveData<Boolean>(false)
+   val filterSubstanceDates = MutableLiveData<Boolean>(true)
+   var firstVisitTypeName: String = Constants.EMPTY_STRING_VALUE
 
    init {
       observeArgs()
@@ -57,7 +62,18 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
 
    fun addVaccineDate(conceptName: String, dateValue: String) {
       updateMap(substancesAndDates, conceptName, dateValue)
+
+      val updatedSubstances = substancesData.value?.map { substance ->
+         if (substance.conceptName == conceptName) {
+            substance.copy(obsDate = dateValue)
+         } else {
+            substance
+         }
+      }
+
+      substancesData.value = updatedSubstances!!
    }
+
 
    fun removeVaccineDate(conceptName: String) {
       val substancesAndDatesValue = substancesAndDates.value?.toMutableMap() ?: mutableMapOf()
@@ -67,13 +83,30 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
       }
    }
 
+   private fun removeVaccineGlobally(conceptName: String) {
+      substancesFromAllVisitsFromVisitType.value = substancesFromAllVisitsFromVisitType.value?.filter { substance ->
+         substance.conceptName != conceptName
+      }
+   }
+
+   fun removeVaccine(conceptName: String) {
+      substancesData.value = substancesData.value?.filter { substance ->
+         substance.conceptName != conceptName
+      }
+      removeVaccineDate(conceptName)
+      removeVaccineGlobally(conceptName)
+   }
+
+
    private suspend fun loadData(args: Args) {
       loading.postValue(true)
       errorMessage.postValue("")
 
       withContext(dispatchers.io) {
          try {
+            firstVisitTypeName = findFirstVisitType()
             visitTypeName.postValue(args.visitTypeName)
+            allSubstancesDataForVisitType.postValue(getSubstancesDataForVisitType(args.visitTypeName ?: ""))
             if (isLocalEdit.value != true){
                args.visitTypeName?.let { visitType ->
                   loadSubstancesData(visitType)
@@ -86,6 +119,10 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
             loading.postValue(false)
          }
       }
+   }
+
+   private suspend fun findFirstVisitType(): String {
+      return SubstancesDataUtil.getVisitTypesInOrder(configurationManager.getSubstancesConfig())[0]
    }
 
    private suspend fun loadSubstancesData(visitTypeName: String) {

@@ -67,6 +67,7 @@ class VaccineDialog(
                this.selectedSubstance = selectedSubstance
             } else {
                this.selectedSubstance = null
+               binding.dropdownVaccine.setHint(R.string.vaccine_dialog_select_vaccine_dropdown)
             }
          }
       }

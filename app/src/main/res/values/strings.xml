@@ -142,7 +142,7 @@
     <string name="participant_registration_details_label_National_Identification_Number">NIN</string>
     <string name="participant_registration_details_year_of_birth_hint" translatable="false">xxxx</string>
     <string name="participant_registration_details_label_telephone">Mobile phone</string>
-    <string name="participant_registration_details_telephone_hint">Enter Child mobile phone</string>
+    <string name="participant_registration_details_telephone_hint">Enter mobile phone</string>
     <string name="participant_registration_details_label_birth_order" translatable="false"> Birth Order</string>
     <string name ="participant_registration_details_birth_weight" translatable="false">Birth Weight (kg)</string>
     <string name="participant_registration_details_label_home_location">Address</string>
@@ -480,6 +480,7 @@
     <string name="vaccine_total_label">Total</string>
     <string name="vaccine_location_label">Location</string>
     <string name="vaccine_group_age_label">Age group</string>
+    <string name="selected_vaccines_label">Selected Vaccines:</string>
     <string name="vaccines_excel_report_date_range_label_set">Date Range: %1$s - %2$s</string>
     <string name="vaccines_excel_report_date_range_label_not_set">Date Range: not set, data comes from the entire period</string>
     <string name="go_to_historical_visits">Historical Visits</string>

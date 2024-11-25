@@ -139,6 +139,13 @@ class SubstancesDataUtil {
             }
         }
 
+        fun getVisitTypesInOrder(substances: List<Substance>): List<String> {
+            return substances
+                .groupBy { it.weeksAfterBirth }
+                .toSortedMap()
+                .map { it.value.first().visitType }
+        }
+
         private fun getBestVisitType(visitTypesInSuggestedSubstances: List<String>, visitTypesOrdered: List<String>): String {
             return when {
                 visitTypesInSuggestedSubstances.size == 1 -> visitTypesInSuggestedSubstances[0]
@@ -182,17 +189,9 @@ class SubstancesDataUtil {
             }
         }
 
-        private fun getVisitTypesInOrder(substances: List<Substance>): List<String> {
-            return substances
-                .groupBy { it.weeksAfterBirth }
-                .toSortedMap()
-                .map { it.value.first().visitType }
-        }
-
         private fun getVisitTypesFromSubstances(substances: List<SubstanceDataModel>): List<String> {
             return substances.map { it.visitType.toString() }
         }
-
 
         @RequiresApi(Build.VERSION_CODES.O)
         suspend fun getSubstancesDataForVisitType(

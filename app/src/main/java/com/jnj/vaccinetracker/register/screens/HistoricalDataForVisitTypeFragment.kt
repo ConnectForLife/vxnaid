@@ -41,7 +41,9 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.HistoricalVisitDateDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
+import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
 import com.jnj.vaccinetracker.visit.screens.ReferralFragment
@@ -56,13 +58,20 @@ import javax.inject.Inject
 class HistoricalDataForVisitTypeFragment :
    BaseFragment(),
    OtherSubstanceItemAdapter.AddSubstanceValueListener,
-   HistoricalVisitDateDialog.HistoricalVisitDateListener {
-   @Inject lateinit var visitManager: VisitManager
-   @Inject lateinit var userRepository: UserRepository
-   @Inject lateinit var syncSettingsRepository: SyncSettingsRepository
-   @Inject lateinit var createVisitUseCase: CreateVisitUseCase
-   @Inject lateinit var configurationManager: ConfigurationManager
-   @Inject lateinit var sessionExpiryObserver: SessionExpiryObserver
+   HistoricalVisitDateDialog.HistoricalVisitDateListener,
+   VaccineDialog.AddVaccineListener {
+   @Inject
+   lateinit var visitManager: VisitManager
+   @Inject
+   lateinit var userRepository: UserRepository
+   @Inject
+   lateinit var syncSettingsRepository: SyncSettingsRepository
+   @Inject
+   lateinit var createVisitUseCase: CreateVisitUseCase
+   @Inject
+   lateinit var configurationManager: ConfigurationManager
+   @Inject
+   lateinit var sessionExpiryObserver: SessionExpiryObserver
 
    private val viewModel: HistoricalDataForVisitTypeViewModel by viewModels { viewModelFactory }
    private val allDataViewModel: RegisterParticipantHistoricalDataViewModel by activityViewModels { viewModelFactory }
@@ -73,11 +82,11 @@ class HistoricalDataForVisitTypeFragment :
    private lateinit var otherSubstanceAdapter: OtherSubstanceItemAdapter
    private var visitTypeName: String? = null
    private var visitUuid: String? = null
-
    companion object {
       private const val ARG_VISIT_TYPE_NAME = "visitTypeName"
       private const val ARG_VISIT_UUID = "visitUuid"
       private const val TAG_HISTORICAL_VISIT_DATE = "historicalVisitDateDialog"
+      private const val TAG_VACCINE_PICKER = "vaccinePickerDialog"
 
       fun create(visitTypeName: String?, visitUuid: String?): HistoricalDataForVisitTypeFragment {
          return HistoricalDataForVisitTypeFragment().apply {
@@ -113,10 +122,22 @@ class HistoricalDataForVisitTypeFragment :
       setupClickListeners()
 
       if (!doesSubstancesHaveAnyDates() && viewModel.isLocalEdit.value != true) {
+         viewModel.filterSubstanceDates.value = false
          HistoricalVisitDateDialog().show(childFragmentManager, TAG_HISTORICAL_VISIT_DATE)
       }
 
+      getAllSubstancesFromAllVisitsForGivenVisitType(visitTypeName)
+
       return binding.root
+   }
+
+   private fun applyReceivedLLINFilter(otherSubstance: OtherSubstanceDataModel): Boolean {
+      val currentVisitType = arguments?.getString(ARG_VISIT_TYPE_NAME)
+      return otherSubstance.conceptName == Constants.CONCEPT_NAME_RECEIVED_LLIN && allDataViewModel.visitTypesData.value?.any { (_, subMap) ->
+         currentVisitType != viewModel.firstVisitTypeName && subMap[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]?.get(
+            Constants.CONCEPT_NAME_RECEIVED_LLIN
+         ) == Constants.YES_ANSWER
+      } == true
    }
 
    private fun initViewModels() {
@@ -124,6 +145,7 @@ class HistoricalDataForVisitTypeFragment :
       visitUuid = arguments?.getString(ARG_VISIT_UUID)
 
       viewModel.isLocalEdit.value = allDataViewModel.isEdit.value != null && visitUuid != null
+      viewModel.isGlobalEdit.value = allDataViewModel.isEdit.value
 
       viewModel.setArguments(
          HistoricalDataForVisitTypeViewModel.Args(
@@ -140,16 +162,19 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private fun handleCreateMode() {
+      lifecycleScope.launch {
       allDataViewModel.visitTypesData.value?.get(visitTypeName)?.let { visitTypeData ->
          viewModel.substancesAndDates.value = visitTypeData[Constants.SUBSTANCES_AND_DATES_STR]
-         viewModel.otherSubstancesAndValues.value = visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]
+         viewModel.otherSubstancesAndValues.value =
+            visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]
 
          viewModel.substancesData.value = mapToSubstanceDataList(
-            visitTypeData[Constants.SUBSTANCES_AND_DATES_STR]
+            visitTypeData[Constants.SUBSTANCES_AND_DATES_STR],
          )
          viewModel.otherSubstancesData.value = mapToOtherSubstanceDataList(
             visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]
          )
+      }
       }
    }
 
@@ -160,8 +185,10 @@ class HistoricalDataForVisitTypeFragment :
 
       visit?.observations?.let { observations ->
          lifecycleScope.launch {
-            val substancesForVisitTypeList = viewModel.getSubstancesDataForVisitType(visitTypeName!!)
-            viewModel.substancesData.value = mapEditSubstanceDataList(observations, substancesForVisitTypeList)
+            val substancesForVisitTypeList =
+               viewModel.allSubstancesDataForVisitType.value
+            viewModel.substancesData.value =
+               mapEditSubstanceDataList(observations, substancesForVisitTypeList!!)
             viewModel.substancesAndDates.value = viewModel.substancesData.value
                ?.associate { it.conceptName to it.obsDate.toString() }
                ?.toMutableMap()
@@ -169,12 +196,34 @@ class HistoricalDataForVisitTypeFragment :
 
          lifecycleScope.launch {
             val otherDataForVisitTypeList = viewModel.getOtherDataForVisitType(visitTypeName!!)
-            viewModel.otherSubstancesData.value = mapEditOtherSubstanceDataList(observations, otherDataForVisitTypeList)
+            viewModel.otherSubstancesData.value =
+               mapEditOtherSubstanceDataList(observations, otherDataForVisitTypeList)
             viewModel.otherSubstancesAndValues.value = viewModel.otherSubstancesData.value
                ?.associate { it.conceptName to it.value.toString() }
                ?.toMutableMap()
          }
       }
+   }
+
+   private fun getAllSubstancesFromAllVisitsForGivenVisitType(visitTypeName: String?) {
+      if (visitTypeName == null) return
+      val substancesForVisitTypeList = viewModel.allSubstancesDataForVisitType.value
+      if (substancesForVisitTypeList == null) {
+         Log.w("SubstanceError", "No substance data available for this visit type.")
+         return
+      }
+      val visits = allDataViewModel.groupedVisitsByType.value?.get(visitTypeName)
+      if (visits.isNullOrEmpty()) {
+         Log.w("VisitError", "No visits found for the given visit type: $visitTypeName")
+         return
+      }
+      val allObservations: MutableMap<String, ObservationValue> = mutableMapOf()
+      for (visit in visits) {
+         visit.observations.let { observationMap ->
+            allObservations.putAll(observationMap)  // Merge observations into the map
+         }
+      }
+      viewModel.substancesFromAllVisitsFromVisitType.value = mapEditSubstanceDataList(allObservations, substancesForVisitTypeList)
    }
 
    private fun mapToSubstanceDataList(data: Map<String, String>?): List<SubstanceDataModel> {
@@ -208,7 +257,7 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private fun mapEditSubstanceDataList(
-      observations:  Map<String, ObservationValue>,
+      observations: Map<String, ObservationValue>,
       substancesList: List<SubstanceDataModel>
    ): List<SubstanceDataModel> {
       return observations.filter { it.key.endsWith("Vxnaid Date") }.map { (key, value) ->
@@ -230,12 +279,14 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private fun mapEditOtherSubstanceDataList(
-      observations:  Map<String, ObservationValue>,
+      observations: Map<String, ObservationValue>,
       otherDataList: List<OtherSubstanceDataModel>
    ): List<OtherSubstanceDataModel> {
-      return observations.filterNot { it.key.endsWith(Constants.MANUFACTURER_NAME_STR) ||
-              it.key.endsWith(Constants.BARCODE_STR) ||
-              it.key.endsWith(Constants.DATE_STR) }.map { (key, value) ->
+      return observations.filterNot {
+         it.key.endsWith(Constants.MANUFACTURER_NAME_STR) ||
+                 it.key.endsWith(Constants.BARCODE_STR) ||
+                 it.key.endsWith(Constants.DATE_STR)
+      }.map { (key, value) ->
          val inputType = otherDataList.find { it.conceptName == key }?.inputType ?: "text"
          val options = otherDataList.find { it.conceptName == key }?.options ?: emptyList()
          val label = otherDataList.find { it.conceptName == key }?.label ?: key
@@ -282,7 +333,10 @@ class HistoricalDataForVisitTypeFragment :
          substanceAdapter.updateList(substanceItems)
       }
       viewModel.otherSubstancesData.observe(lifecycleOwner) { otherSubstanceItems ->
-         otherSubstanceAdapter.updateItemsList(otherSubstanceItems)
+         val filteredOtherSubstances = otherSubstanceItems?.filterNot { otherSubstance ->
+            applyReceivedLLINFilter(otherSubstance)
+         }
+         otherSubstanceAdapter.updateItemsList(filteredOtherSubstances)
       }
       viewModel.otherSubstancesAndValues.observe(lifecycleOwner) { value ->
          otherSubstanceAdapter.otherSubstanceValues = value
@@ -295,6 +349,22 @@ class HistoricalDataForVisitTypeFragment :
             viewModel.isLocalEdit.value == true -> handleEditVisit()
             allDataViewModel.isEdit.value == true -> handleNewVisitDuringUpdate()
             else -> submitHistoricalData()
+         }
+      }
+      binding.btnAddVaccine.setOnClickListener {
+         lifecycleScope.launch {
+            val allSubstances = viewModel.substancesFromAllVisitsFromVisitType.value ?: emptyList()
+            val visitSubstances = viewModel.allSubstancesDataForVisitType.value ?: emptyList()
+            val currentSubstances = viewModel.substancesData.value ?: emptyList()
+
+            val combinedSubstances =
+               (currentSubstances + allSubstances).distinctBy { it.conceptName }
+
+            val filteredSubstances = visitSubstances.filterNot { substance ->
+               combinedSubstances.any { it.conceptName == substance.conceptName || it.obsDate.isNullOrEmpty() }
+            }
+
+            VaccineDialog(filteredSubstances).show(childFragmentManager, TAG_VACCINE_PICKER)
          }
       }
    }
@@ -313,6 +383,7 @@ class HistoricalDataForVisitTypeFragment :
          if (isValidData()) {
             createNewVisitDuringUpdate()
             allDataViewModel.loadOnEdit()
+            binding.btnSubmit.visibility = View.INVISIBLE
          }
       }
    }
@@ -373,7 +444,8 @@ class HistoricalDataForVisitTypeFragment :
                participantUuid = flowViewModel.participant.value!!.participantUuid,
                dosingNumber = visit.dosingNumber ?: 0,
                substanceObservations = getObservationsForVisitEncounter(),
-               otherSubstanceObservations = viewModel.otherSubstancesAndValues.value ?: mutableMapOf(),
+               otherSubstanceObservations = viewModel.otherSubstancesAndValues.value
+                  ?: mutableMapOf(),
                visitTypeVxnaid = visitTypeName
             )
             showSuccessDialog()
@@ -405,8 +477,9 @@ class HistoricalDataForVisitTypeFragment :
          ?.firstOrNull { it.uuid == visitUuid }
    }
 
-   fun getObservationsForVisitEncounter(): Map<String, Map<String, String>> {
-      val substances: MutableMap<String, String> = viewModel.substancesAndDates.value ?: mutableMapOf()
+   private fun getObservationsForVisitEncounter(): Map<String, Map<String, String>> {
+      val substances: MutableMap<String, String> =
+         viewModel.substancesAndDates.value ?: mutableMapOf()
       return substances.mapValues {
          mapOf(
             Constants.DATE_STR to it.value,
@@ -417,7 +490,8 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private fun getParsedSubstances(): Map<String, String> {
-      val substances: MutableMap<String, String> = viewModel.substancesAndDates.value ?: mutableMapOf()
+      val substances: MutableMap<String, String> =
+         viewModel.substancesAndDates.value ?: mutableMapOf()
       return substances.flatMap { (key, value) ->
          listOf(
             "$key ${Constants.DATE_STR}" to value,
@@ -438,11 +512,19 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private suspend fun createVisitForNewVisit(date: Date): VisitDetail {
-      val visit = createVisitUseCase.createVisit(buildNextVisitObject(flowViewModel.participant.value!!, date)).toVisitDetail()
+      val visit = createVisitUseCase.createVisit(
+         buildNextVisitObject(
+            flowViewModel.participant.value!!,
+            date
+         )
+      ).toVisitDetail()
       return visit
    }
 
-   private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
+   private suspend fun buildNextVisitObject(
+      participant: ParticipantSummaryUiModel,
+      visitDate: Date
+   ): CreateVisit {
       val operatorUuid = userRepository.getUser()?.uuid
          ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
       val locationUuid = syncSettingsRepository.getSiteUuid()
@@ -462,7 +544,10 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    @RequiresApi(Build.VERSION_CODES.O)
-   private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
+   private suspend fun findVisitType(
+      participant: ParticipantSummaryUiModel,
+      visitTime: Date
+   ): String {
       val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
       return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
          participant.birthDateText,
@@ -487,6 +572,15 @@ class HistoricalDataForVisitTypeFragment :
 
    override fun onDatePicked(date: DateTime) {
       viewModel.visitDate.value = date
-      substanceAdapter.reload()
+      viewModel.substancesData.value?.forEach { substance ->
+         viewModel.addVaccineDate(substance.conceptName, date.format(DateFormat.FORMAT_DATE))
+      }
+   }
+
+   override fun addVaccine(vaccine: SubstanceDataModel) {
+      viewModel.addVaccineDate(vaccine.conceptName, "")
+      val currentSubstances = viewModel.substancesData.value?.toMutableList() ?: mutableListOf()
+      currentSubstances.add(vaccine)
+      viewModel.substancesData.value = currentSubstances
    }
 }

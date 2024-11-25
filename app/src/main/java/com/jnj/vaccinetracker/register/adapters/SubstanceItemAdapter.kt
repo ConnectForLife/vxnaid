@@ -54,7 +54,7 @@ class SubstanceItemAdapter(
       if (newSubstances != null) {
          newSubstances.forEach { newItem ->
             val existingItem = existingItemsMap[newItem.conceptName]
-            if (existingItem != null) {
+            if (existingItem != null && viewModel.isGlobalEdit.value != true && viewModel.filterSubstanceDates.value == true) {
                newItem.obsDate = existingItem.obsDate
             }
             items.add(newItem)
@@ -89,15 +89,19 @@ class SubstanceItemAdapter(
          val substanceDateStr = substance.obsDate?.format(DateFormat.FORMAT_DATE) ?: ""
          vaccineDateText.text = substanceDateStr
          btnPickDate.setOnClickListener {
-            // nice to have calculate
             AlreadyAdministeredVaccineDatePickerDialog(null, this).show(
                supportFragmentManager,
                DIALOG_TAG
             )
          }
          removeDateBtn.setOnClickListener{
-            onDateRemove(substance)
+            if (viewModel.isLocalEdit.value == true) {
+               onEditDateRemove(substance)
+            } else {
+               onDateRemove(substance)
+            }
          }
+         removeDateBtn.visibility = View.VISIBLE
          if (viewModel.visitDate.value != null && !checkIfSubstanceHasDate(substance)) {
             onDateSelected(viewModel.visitDate.value!!)
          }
@@ -115,6 +119,10 @@ class SubstanceItemAdapter(
          viewModel.removeVaccineDate(substance.conceptName)
          vaccineDateText.text = context.getString(R.string.vaccine_never_administered)
          removeDateBtn.visibility = View.INVISIBLE
+      }
+
+      private fun onEditDateRemove(substance: SubstanceDataModel) {
+         viewModel.removeVaccine(substance.conceptName)
       }
    }
 }
