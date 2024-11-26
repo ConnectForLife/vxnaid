@@ -9,6 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.net.ConnectException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -54,7 +55,11 @@ class ServerHealthMeter @Inject constructor(
             logError("getHealth error", it)
         }
         val httpCode = result.getOrDefault(0)
-        val serverHealthy = httpCode < 500
+        val serverHealthy = if (result.exceptionOrNull() is ConnectException) {
+            false
+        } else {
+            httpCode < 500
+        }
         isHealthy.value = serverHealthy
         measuringEnabled.value = !serverHealthy
         if (measuringEnabled.value) {

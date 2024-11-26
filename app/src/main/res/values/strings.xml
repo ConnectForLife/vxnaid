@@ -236,6 +236,7 @@
     <string name="sync_status_complete">Sync finished at %s</string>
     <string name="sync_status_syncing">Sync in Progress</string>
     <string name="sync_status_offline">Working Offline. Last Sync Date: %s</string>
+    <string name="sync_status_server_down">Server down. Working Offline. Last Sync Date: %s</string>
     <string name="sync_status_sync_error">Sync Error: Tap for details</string>
     <string name="sync_status_sync_error_no_tap">Sync Error</string>
     <string name="setup_intro_title">Vaccine Monitoring Platform</string>

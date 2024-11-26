@@ -70,6 +70,10 @@ class SyncNotificationManager @Inject constructor(private val context: Context) 
                 context.getString(R.string.sync_status_offline, lastSyncDate.format())
             is SyncState.OfflineOutOfSync ->
                 context.getString(R.string.sync_status_offline, lastSyncDate?.format() ?: context.getString(R.string.general_label_na))
+            is SyncState.ServerDown ->
+                context.getString(R.string.sync_status_server_down, lastSyncDate.format())
+            is SyncState.ServerDownOutOfSync ->
+                context.getString(R.string.sync_status_server_down, lastSyncDate?.format() ?: context.getString(R.string.general_label_na))
             is SyncState.SyncError ->
                 context.getString(R.string.sync_status_sync_error_no_tap)
             is SyncState.SyncComplete -> context.getString(R.string.sync_status_complete, lastSyncDate.format())
