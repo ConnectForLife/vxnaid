@@ -154,6 +154,9 @@ class HistoricalDataForVisitTypeFragment :
          )
       )
 
+      // this could be refactored to use viewModel.getOtherDataForVisitType(visitTypeName!!) (and the substance method)
+      // and injecting values if they exist depending on source for edit and create mode
+      // not using seperate maps for dates and values but operate on DataModels
       if (allDataViewModel.isEdit.value == true) {
          handleEditMode()
       } else {
@@ -277,29 +280,36 @@ class HistoricalDataForVisitTypeFragment :
          )
       }
    }
-
-   private fun mapEditOtherSubstanceDataList(
+   private suspend fun mapEditOtherSubstanceDataList(
       observations: Map<String, ObservationValue>,
       otherDataList: List<OtherSubstanceDataModel>
    ): List<OtherSubstanceDataModel> {
-      return observations.filterNot {
-         it.key.endsWith(Constants.MANUFACTURER_NAME_STR) ||
-                 it.key.endsWith(Constants.BARCODE_STR) ||
-                 it.key.endsWith(Constants.DATE_STR)
-      }.map { (key, value) ->
-         val inputType = otherDataList.find { it.conceptName == key }?.inputType ?: "text"
-         val options = otherDataList.find { it.conceptName == key }?.options ?: emptyList()
-         val label = otherDataList.find { it.conceptName == key }?.label ?: key
+      val orderList = viewModel.getOtherDataForVisitType(visitTypeName!!) // Desired order.
 
-         OtherSubstanceDataModel(
-            conceptName = key,
-            label = label,
-            category = "notNeeded",
-            inputType = inputType,
-            visitType = "notNeeded",
-            options = options,
-            value = value.value
-         )
+      val filteredObservations = observations.filterNot { (key, _) ->
+         key.endsWith(Constants.MANUFACTURER_NAME_STR) ||
+                 key.endsWith(Constants.BARCODE_STR) ||
+                 key.endsWith(Constants.DATE_STR)
+      }
+
+      val mappedData = filteredObservations.mapNotNull { (key, value) ->
+         otherDataList.find { it.conceptName == key }?.let { configItem ->
+            OtherSubstanceDataModel(
+               conceptName = key,
+               label = configItem.label ?: key,
+               category = "notNeeded",
+               inputType = configItem.inputType ?: "text",
+               visitType = "notNeeded",
+               options = configItem.options ?: emptyList(),
+               value = value.value
+            )
+         }
+      }
+
+      val mappedDataMap = mappedData.associateBy { it.conceptName }
+
+      return orderList.mapNotNull { configItem ->
+         mappedDataMap[configItem.conceptName]
       }
    }
 
