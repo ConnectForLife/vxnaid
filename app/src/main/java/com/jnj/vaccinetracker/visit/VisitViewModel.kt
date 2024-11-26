@@ -1,8 +1,10 @@
 package com.jnj.vaccinetracker.visit
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
@@ -11,6 +13,7 @@ import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
+import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
@@ -92,6 +95,8 @@ class VisitViewModel @Inject constructor(
     var missingSubstancesVisitDate = MutableLiveData<Date>(null)
     var contraindicationsRescheduleDate = MutableLiveData<DateTime>(null)
     var contraindicationsRescheduleReasonText = MutableLiveData<String>(null)
+
+    var allLocations = MutableLiveData<List<Site>>(listOf())
 
     init {
         initState()
@@ -508,6 +513,17 @@ class VisitViewModel @Inject constructor(
                 Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
             )
         )
+    }
+
+    fun fetchAllLocations() {
+        viewModelScope.launch {
+            try {
+                allLocations.value = configurationManager.getSites()
+            } catch (e: Exception) {
+                Log.e("VisitViewModel", "Failed to fetch locations", e)
+                allLocations.value = emptyList()
+            }
+        }
     }
 }
 
