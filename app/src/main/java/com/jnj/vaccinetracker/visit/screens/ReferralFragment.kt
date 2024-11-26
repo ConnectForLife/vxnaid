@@ -77,10 +77,12 @@ class ReferralFragment : BaseFragment() {
 
         initializeViews()
         setupListeners()
+        setupObservers()
+
+        viewModel.fetchAllLocations()
+
         lifecycleScope.launch {
-            fetchLocations()
             getVisitsForParticipant()
-            setupAdapter()
         }
 
         setHasOptionsMenu(true)
@@ -92,7 +94,6 @@ class ReferralFragment : BaseFragment() {
     private fun initializeViews() {
         with(binding) {
             if (!isAfterVisit) textViewSaveVisit.visibility = View.GONE
-            val currentVisitUuid = arguments?.getString("currentVisitUuid")
             participantUuid = arguments?.getString("participantUuid")
             lifecycleScope.launch {
                 if (participantUuid != null) {
@@ -114,15 +115,14 @@ class ReferralFragment : BaseFragment() {
         }
     }
 
-    private fun fetchLocations() {
-        lifecycleScope.launch {
-            try {
-                locations = configurationManager.getSites()
+    private fun setupObservers() {
+        viewModel.allLocations.observe(viewLifecycleOwner) { sites ->
+            if (sites.isNotEmpty()) {
+                locations = sites
                 locationUuid = viewModel.getLocationUuid()
-                currentSite = locations.firstOrNull { it.uuid == locationUuid }
-            } catch (e: Exception) {
-                Log.e("ReferralFragment", "Locations fetching failed", e)
-                showErrorMessage(getString(R.string.referral_page_failed_referral_text))
+                currentSite = locations.firstOrNull { it.uuid == locationUuid}
+
+                setupAdapter()
             }
         }
     }
@@ -139,12 +139,12 @@ class ReferralFragment : BaseFragment() {
     }
 
     private fun setupAdapter() {
-        val locationWithoutCurrentSite = locations.filter { it.uuid != locationUuid }
-        adapter = if (locationWithoutCurrentSite.isNotEmpty()) {
+        val locationsWithoutCurrentSite = locations.filter { it.uuid != locationUuid }
+        adapter = if (locationsWithoutCurrentSite.isNotEmpty()) {
             ArrayAdapter(
                 requireContext(),
                 R.layout.item_dropdown,
-                locationWithoutCurrentSite.map { it.name })
+                locationsWithoutCurrentSite.map { it.name })
         } else {
             ArrayAdapter(
                 requireContext(),
