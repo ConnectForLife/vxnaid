@@ -21,10 +21,25 @@ sealed class HardcodedZScore(
    companion object {
       fun fromConceptName(name: String, gender: Gender, birthDateText: String): HardcodedZScore {
          return when (name) {
-            Constants.CONCEPT_NAME_WEIGHT_FOR_AGE_Z_SCORE -> HardcodedWeightForAgeZScore(name, gender, birthDateText)
-            Constants.CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE -> HardcodedHeightForAgeZScore(name, gender, birthDateText)
+            Constants.CONCEPT_NAME_WEIGHT_FOR_AGE_Z_SCORE -> HardcodedWeightForAgeZScore(
+               name,
+               gender,
+               birthDateText
+            )
+
+            Constants.CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE -> HardcodedHeightForAgeZScore(
+               name,
+               gender,
+               birthDateText
+            )
+
             Constants.CONCEPT_NAME_MUACA_Z_SCORE -> HardcodedMuacZScore(name, gender, birthDateText)
-            Constants.CONCEPT_NAME_WEIGHT_FOR_HEIGHT_Z_SCORE -> HardcodedWeightForHeightZScore(name, gender, birthDateText)
+            Constants.CONCEPT_NAME_WEIGHT_FOR_HEIGHT_Z_SCORE -> HardcodedWeightForHeightZScore(
+               name,
+               gender,
+               birthDateText
+            )
+
             Constants.CONCEPT_NAME_Z_SCORE -> TmpHardcodedZScore(name, gender, birthDateText)
             else -> error("Unknown concept name!")
          }
@@ -47,6 +62,26 @@ sealed class HardcodedZScore(
          }
          if (it.containsKey(Constants.CONCEPT_NAME_Z_SCORE)) {
             zScore = it[Constants.CONCEPT_NAME_Z_SCORE]
+         }
+      }
+   }
+
+   fun setValueForConceptName(conceptName: String, itemValue: String?) {
+      itemValue?.let {
+         if (conceptName == Constants.CONCEPT_NAME_WEIGHT_KG) {
+            weight = itemValue
+         }
+         if (conceptName == Constants.CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE) {
+            height = itemValue
+         }
+         if (conceptName == Constants.CONCEPT_NAME_MUACA_Z_SCORE) {
+            muac = itemValue
+         }
+         if (conceptName == Constants.CONCEPT_NAME_IS_OEDEMA_Z_SCORE) {
+            isOedema = itemValue
+         }
+         if (conceptName == Constants.CONCEPT_NAME_Z_SCORE) {
+            zScore = itemValue
          }
       }
    }

@@ -30,6 +30,8 @@ import com.jnj.vaccinetracker.common.helpers.findDosingVisit
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
+import com.jnj.vaccinetracker.common.util.DateUtil
+import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.databinding.DialogRescheduleVisitBinding
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.ScheduleVisitDatePickerDialog
@@ -39,6 +41,7 @@ import com.jnj.vaccinetracker.visit.screens.ReferralFragment
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -98,7 +101,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
                   if (!isAfterContraindications){
                      createVisitUseCase.createVisit(
                         buildNextVisitObject(
-                           participant,
+                           participant!!,
                            Date(visitDate!!.unixMillisLong)
                         )
                      )
@@ -143,22 +146,32 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
    }
 
    @RequiresApi(Build.VERSION_CODES.O)
-   fun buildNextVisitObject(
-      participant: ParticipantSummaryUiModel?,
-      visitDate: Date
-   ): CreateVisit {
+   private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
+      val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
+      return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
+         participant.birthDateText,
+         DateUtil.convertDateToString(visitTime, DateFormat.FORMAT_DATE.toString()),
+         participantVisits,
+         configurationManager
+      )
+   }
+
+   @RequiresApi(Build.VERSION_CODES.O)
+   private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
       val operatorUuid = userRepository.getUser()?.uuid
-         ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
+         ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
       val locationUuid = syncSettingsRepository.getSiteUuid()
          ?: throw NoSiteUuidAvailableException("Location not available")
+      val visitType = findVisitType(participant, visitDate)
       return CreateVisit(
-         participantUuid = participant!!.participantUuid,
+         participantUuid = participant.participantUuid,
          visitType = Constants.VISIT_TYPE_DOSING,
          startDatetime = visitDate,
          locationUuid = locationUuid,
          attributes = mapOf(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+            Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
          )
       )
    }

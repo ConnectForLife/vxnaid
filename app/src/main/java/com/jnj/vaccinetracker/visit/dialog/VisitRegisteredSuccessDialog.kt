@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
@@ -75,6 +76,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     @Inject lateinit var userRepository: UserRepository
     @Inject lateinit var syncSettingsRepository: SyncSettingsRepository
     @Inject lateinit var configurationManager: ConfigurationManager
+    @Inject lateinit var visitManager: VisitManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,7 +115,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                try {
                    validateDate()
                    if (visitDate != null) {
-                       createVisitUseCase.createVisit(buildNextVisitObject(participant, Date(visitDate!!.unixMillisLong)))
+                       createVisitUseCase.createVisit(buildNextVisitObject(participant!!, Date(visitDate!!.unixMillisLong)))
                        val visitDateAsText = visitDate!!.format(DateFormat.FORMAT_DATE)
                        visitScheduleResultTextView.text = "${getString(R.string.visit_schedule_visit_saved_successfully_label)} $visitDateAsText"
                        visitScheduleResultTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.successDark))
@@ -154,22 +156,32 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun buildNextVisitObject(
-        participant: ParticipantSummaryUiModel?,
-        visitDate: Date
-    ): CreateVisit {
+    private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
+        val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
+        return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
+            participant.birthDateText,
+            DateUtil.convertDateToString(visitTime, DateFormat.FORMAT_DATE.toString()),
+            participantVisits,
+            configurationManager
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
         val operatorUuid = userRepository.getUser()?.uuid
-            ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
+            ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Location not available")
+        val visitType = findVisitType(participant, visitDate)
         return CreateVisit(
-            participantUuid = participant!!.participantUuid,
+            participantUuid = participant.participantUuid,
             visitType = Constants.VISIT_TYPE_DOSING,
             startDatetime = visitDate,
             locationUuid = locationUuid,
             attributes = mapOf(
                 Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
                 Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+                Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
             )
         )
     }

@@ -13,6 +13,7 @@ import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
+import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.dateDayStart
@@ -26,6 +27,7 @@ import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
+import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -231,6 +233,7 @@ class VisitViewModel @Inject constructor(
         val participant = participant.get()
         val dosingVisit = dosingVisit.get()
         val visitsCounter = visitsCounter.value
+        val selectedVisitType = selectedVisitType.value
         val substancesObservations = selectedSubstancesWithBarcodes.value ?: mapOf()
         val otherSubstancesObservations = selectedOtherSubstances.value ?: mapOf()
 
@@ -251,7 +254,8 @@ class VisitViewModel @Inject constructor(
                     dosingNumber = visitsCounter ?: 0,
                     substanceObservations = substancesObservations.toMap(),
                     otherSubstanceObservations = otherSubstancesObservations.toMap(),
-                    visitLocation = visitPlace
+                    visitLocation = visitPlace,
+                    visitTypeVxnaid = selectedVisitType
                 )
 
                 if (newVisitDate != null) {
@@ -458,7 +462,7 @@ class VisitViewModel @Inject constructor(
     suspend fun onReferralAfterContraindications() {
         createVisitUseCase.createVisit(
             buildNextVisitObject(
-                participant.value,
+                participant.value!!,
                 Date(contraindicationsRescheduleDate.value!!.unixMillisLong)
             )
         )
@@ -476,21 +480,32 @@ class VisitViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun buildNextVisitObject(
-        participant: ParticipantSummaryUiModel?,
-        visitDate: Date
-    ): CreateVisit {
+    private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
+        val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
+        return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
+            participant.birthDateText,
+            DateUtil.convertDateToString(visitTime, DateFormat.FORMAT_DATE.toString()),
+            participantVisits,
+            configurationManager
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
         val operatorUuid = userRepository.getUser()?.uuid
-            ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
-        val locationUuid = getLocationUuid()
+            ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
+        val locationUuid = syncSettingsRepository.getSiteUuid()
+            ?: throw NoSiteUuidAvailableException("Location not available")
+        val visitType = findVisitType(participant, visitDate)
         return CreateVisit(
-            participantUuid = participant!!.participantUuid,
+            participantUuid = participant.participantUuid,
             visitType = Constants.VISIT_TYPE_DOSING,
             startDatetime = visitDate,
             locationUuid = locationUuid,
             attributes = mapOf(
                 Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
                 Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+                Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
             )
         )
     }

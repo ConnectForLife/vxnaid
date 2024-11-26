@@ -199,6 +199,7 @@ class OtherSubstanceItemAdapter(
             val birthDateText = participant?.birthDateText ?: registerParticipant?.birthDate!!.toDateTime().format(DateFormat.FORMAT_DATE)
             val hardcodedClass: HardcodedZScore =
                 HardcodedZScore.fromConceptName(item.conceptName, gender, birthDateText)
+            hardcodedClass.setValueForConceptName(item.conceptName, item.value)
             hardcodedClass.setArguments(otherSubstanceValues)
             hardcodedClass.setupView(itemView, listener)
             isEmpty = hardcodedClass.isEmpty()

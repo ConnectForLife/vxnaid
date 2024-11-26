@@ -2,8 +2,10 @@ package com.jnj.vaccinetracker.register.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.data.models.IrisPosition
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.RegisterParticipant
@@ -15,14 +17,20 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.SessionExpiryObserver
 import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
+import com.jnj.vaccinetracker.common.util.DateUtil
+import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
+import com.soywiz.klock.DateFormat
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
@@ -36,24 +44,93 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    private val createVisitUseCase: CreateVisitUseCase,
    private val userRepository: UserRepository,
    private val syncSettingsRepository: SyncSettingsRepository,
+   private val configurationManager: ConfigurationManager
 ) : ViewModelBase() {
 
    val registerVaccinesSuccessEvents = eventFlow<ParticipantSummaryUiModel>()
    val loading = mutableLiveBoolean()
    val errorMessage = mutableLiveData<String>()
    private val participantArg = stateFlow<RegisterParticipant?>(null)
+   private val participantSummaryArg = stateFlow<ParticipantSummaryUiModel?>(null)
    val registerParticipant = mutableLiveData<RegisterParticipant>()
    val participant = mutableLiveData<ParticipantSummaryUiModel>()
    private val dosingVisit = mutableLiveData<VisitDetail>()
+   val isEdit = mutableLiveData<Boolean>(false)
+   val groupedVisitsByType = mutableLiveData<Map<String, List<VisitDetail>>>()
 
    val visitTypesData = mutableLiveData<MutableMap<String, MutableMap<String, MutableMap<String, String>>>>(mutableMapOf())
 
    init {
+      participantSummaryArg
+         .filterNotNull()
+         .distinctUntilChanged()
+         .onEach {
+            participant.value = it
+            isEdit.value = true
+            loadOnEdit()
+         }
+         .launchIn(scope)
+
       participantArg
          .filterNotNull()
          .distinctUntilChanged()
-         .onEach { registerParticipant.value = it }
+         .onEach {
+            registerParticipant.value = it
+            isEdit.value = false
+         }
          .launchIn(scope)
+   }
+
+   suspend fun loadOnEdit() {
+      loading.set(true)
+      try {
+         val visits = visitManager.getVisitsForParticipant(participantUuid = participant.value!!.participantUuid)
+
+         val filteredVisits = visits.filter { visit ->
+            visit.visitStatus == Constants.VISIT_STATUS_OCCURRED && visit.visitType == Constants.VISIT_TYPE_DOSING
+         }
+
+         groupedVisitsByType.value = filteredVisits.groupBy { visit ->
+            visit.attributes.getOrElse(Constants.ATTRIBUTE_VISIT_TYPE_VXNAID) { "UNKNOWN" }.toString()
+         }
+
+         loading.set(false)
+      } catch (ex: Throwable) {
+         yield()
+         ex.rethrowIfFatal()
+         loading.set(false)
+         logError("Failed to get visits for participant: ", ex)
+      }
+   }
+
+   private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
+      val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
+      return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
+         participant.birthDateText,
+         DateUtil.convertDateToString(visitTime, DateFormat.FORMAT_DATE.toString()),
+         participantVisits,
+         configurationManager
+      )
+   }
+
+   private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel): CreateVisit {
+      val operatorUuid = userRepository.getUser()?.uuid
+         ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
+      val locationUuid = syncSettingsRepository.getSiteUuid()
+         ?: throw NoSiteUuidAvailableException("Location not available")
+      val visitTime = convertLocalDateToDate(LocalDate.now())
+      val visitType = findVisitType(participant, visitTime)
+      return CreateVisit(
+         participantUuid = participant.participantUuid,
+         visitType = Constants.VISIT_TYPE_DOSING,
+         startDatetime = visitTime,
+         locationUuid = locationUuid,
+         attributes = mapOf(
+            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
+            Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+            Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
+         )
+      )
    }
 
    @RequiresApi(Build.VERSION_CODES.O)
@@ -61,29 +138,12 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       createVisitUseCase.createVisit(buildNextVisitObject(participant))
    }
 
-   private fun buildNextVisitObject(participant: ParticipantSummaryUiModel): CreateVisit {
-      val operatorUuid = userRepository.getUser()?.uuid
-         ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
-      val locationUuid = syncSettingsRepository.getSiteUuid()
-         ?: throw NoSiteUuidAvailableException("Location not available")
-      return CreateVisit(
-         participantUuid = participant.participantUuid,
-         visitType = Constants.VISIT_TYPE_DOSING,
-         startDatetime = convertLocalDateToDate(LocalDate.now()),
-         locationUuid = locationUuid,
-         attributes = mapOf(
-            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
-            Constants.ATTRIBUTE_OPERATOR to operatorUuid
-         )
-      )
-   }
-
    private fun convertLocalDateToDate(localDate: LocalDate): Date {
       val instant = localDate.atStartOfDay(ZoneId.of(Constants.UTC_TIME_ZONE_NAME)).toInstant()
       return Date.from(instant)
    }
 
-   private suspend fun doRegisterVisit(visitTypeData: MutableMap<String, MutableMap<String, String>>) {
+   private suspend fun doRegisterVisit(visitType: String, visitTypeData: MutableMap<String, MutableMap<String, String>>) {
       val participant = participant.value ?: run {
          logError("No participant available.")
          return
@@ -116,7 +176,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
                participantUuid = participant.participantUuid,
                dosingNumber = dosingVisit.dosingNumber ?: 0,
                substanceObservations = substanceObservations,
-               otherSubstanceObservations = otherSubstancesAndValues
+               otherSubstanceObservations = otherSubstancesAndValues,
+               visitTypeVxnaid = visitType
             )
             createNextVisit(participant)
          } catch (ex: OperatorUuidNotAvailableException) {
@@ -140,8 +201,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
          return
       }
 
-      visitData.values.forEach { visitTypeData ->
-         doRegisterVisit(visitTypeData)
+      visitData.forEach { (visitType, visitTypeData) ->
+         doRegisterVisit(visitType, visitTypeData)
       }
 
       participant.value?.let {
@@ -149,8 +210,9 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       } ?: logError("No participant to emit success event.")
    }
 
-   fun setArguments(participant: RegisterParticipant?) {
+   fun setArguments(participant: RegisterParticipant?, participantSummary: ParticipantSummaryUiModel?) {
       participantArg.value = participant
+      participantSummaryArg.value = participantSummary
    }
 
    fun addVisitTypeData(

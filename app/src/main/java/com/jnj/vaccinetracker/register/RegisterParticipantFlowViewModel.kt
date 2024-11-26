@@ -18,6 +18,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.soywiz.klock.DateTime
+import java.util.Date
 import javax.inject.Inject
 
 /**
@@ -60,6 +61,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         )
     }
     val visitTypeName = mutableLiveData<String>()
+    val visitUuid = mutableLiveData<String>()
     val leftEyeScanned = mutableLiveBoolean()
     val rightEyeScanned = mutableLiveBoolean()
     val isManualEnteredId = mutableLiveBoolean()
@@ -181,11 +183,17 @@ class RegisterParticipantFlowViewModel @Inject constructor(
 
     fun confirmRegistrationWithCaptureVaccinesPage(registerParticipant: RegisterParticipant) {
        this.registerParticipant.set(registerParticipant)
+        navigateForward()
+    }
+
+    fun goToEditHistoricalVisits(participantUiModel: ParticipantSummaryUiModel) {
+        participant.set(participantUiModel)
         navigationDirection = NavigationDirection.FORWARD
         currentScreen.set(Screen.PARTICIPANT_CAPTURE_HISTORICAL_DATA)
     }
-    fun openHistoricalDataForVisitType(visitTypeName: String) {
+    fun openHistoricalDataForVisitType(visitTypeName: String, visitUuid: String? = null) {
         this.visitTypeName.set(visitTypeName)
+        this.visitUuid.set(visitUuid)
         navigationDirection = NavigationDirection.FORWARD
         currentScreen.set(Screen.VISIT_TYPE_HISTORICAL_DATA)
         this.visitTypeName.set(null)
