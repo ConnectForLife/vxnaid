@@ -63,6 +63,21 @@ class SyncBanner @JvmOverloads constructor(
                         labelColor = R.color.colorTextOnPrimary,
                         iconResource = R.drawable.ic_checkmark_alert,
                         bannerColor = R.color.sync_offline_out_of_sync)
+                is SyncState.ServerDown ->
+                    setLayoutParams(
+                        iconVisibility = View.GONE,
+                        labelText = R.string.sync_status_server_down,
+                        labelVararg = value.lastSyncDate.format(),
+                        labelColor = R.color.colorTextOnPrimary,
+                        bannerColor = R.color.sync_offline)
+                is SyncState.ServerDownOutOfSync ->
+                    setLayoutParams(
+                        iconVisibility = View.VISIBLE,
+                        labelText = R.string.sync_status_server_down,
+                        labelVararg = value.lastSyncDate?.format() ?: resources.getString(R.string.general_label_na),
+                        labelColor = R.color.colorTextOnPrimary,
+                        iconResource = R.drawable.ic_checkmark_alert,
+                        bannerColor = R.color.sync_offline_out_of_sync)
                 is SyncState.SyncError ->
                     setLayoutParams(
                         iconVisibility = View.VISIBLE,

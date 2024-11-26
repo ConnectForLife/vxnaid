@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.sync.domain.helpers
 
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.helpers.NetworkConnectivity
+import com.jnj.vaccinetracker.common.helpers.ServerHealthMeter
 import com.jnj.vaccinetracker.common.helpers.weeks
 import com.jnj.vaccinetracker.sync.data.models.SyncDate
 import com.jnj.vaccinetracker.sync.domain.entities.SyncState
@@ -14,6 +15,7 @@ class SyncStateBuilder @Inject constructor(
     private val networkConnectivity: NetworkConnectivity,
     private val syncLogger: SyncLogger,
     private val syncErrorCountUseCase: GetSyncErrorCountUseCase,
+    private val serverHealthMeter: ServerHealthMeter,
 ) {
 
     companion object {
@@ -42,6 +44,14 @@ class SyncStateBuilder @Inject constructor(
                     }
                     syncDate != null -> SyncState.OnlineInSync
                     else -> SyncState.Idle
+                }
+            } else if (!serverHealthMeter.isHealthyAccurate()) {
+                when {
+                    syncErrorCount > 0 -> {
+                        SyncState.SyncError(false, syncErrorCount)
+                    }
+                    syncDate == null || syncDate.isStale() -> SyncState.ServerDownOutOfSync(syncDate)
+                    else -> SyncState.ServerDown(syncDate)
                 }
             } else {
                 when {

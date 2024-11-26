@@ -9,6 +9,8 @@ sealed class SyncState {
     data class SyncComplete(val lastSyncDate: SyncDate) : SyncState()
     data class Offline(val lastSyncDate: SyncDate) : SyncState()
     data class OfflineOutOfSync(val lastSyncDate: SyncDate?) : SyncState()
+    data class ServerDown(val lastSyncDate: SyncDate) : SyncState()
+    data class ServerDownOutOfSync(val lastSyncDate: SyncDate?) : SyncState()
     data class SyncError(val isInProgress: Boolean, val numberOfErrors: Long) : SyncState()
 }
 
