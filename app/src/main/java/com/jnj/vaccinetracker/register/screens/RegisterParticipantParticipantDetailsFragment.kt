@@ -318,6 +318,12 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.setParticipantId(newGeneratedChildId)
             val qrCodeGeneratorDialog = QrCodeGeneratorDialog(newGeneratedChildId)
             qrCodeGeneratorDialog.show(parentFragmentManager, "QrCodeGeneratorDialog")
+
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(participantId = newGeneratedChildId)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
         }
 
         binding.btnPickDate.setOnClickListener {
