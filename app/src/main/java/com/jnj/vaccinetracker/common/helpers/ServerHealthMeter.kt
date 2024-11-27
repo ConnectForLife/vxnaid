@@ -55,11 +55,7 @@ class ServerHealthMeter @Inject constructor(
             logError("getHealth error", it)
         }
         val httpCode = result.getOrDefault(0)
-        val serverHealthy = if (result.exceptionOrNull() is ConnectException) {
-            false
-        } else {
-            httpCode < 500
-        }
+        val serverHealthy = httpCode < 500
         isHealthy.value = serverHealthy
         measuringEnabled.value = !serverHealthy
         if (measuringEnabled.value) {
