@@ -153,7 +153,6 @@ class ReferralFragment : BaseFragment() {
             )
         }
         binding.dropdownClinics.setAdapter(adapter)
-        setHomeSiteInDropdown()
     }
 
     private fun showErrorMessage(message: String) {
@@ -218,13 +217,6 @@ class ReferralFragment : BaseFragment() {
             binding.textViewReferWithinClinicSwitchLabel.setTextColor(
                 ContextCompat.getColor(requireContext(), R.color.colorPrimary)
             )
-        }
-    }
-
-    private fun setHomeSiteInDropdown() {
-        val selectedIndex = locations.indexOfFirst { it.uuid == locationUuid }
-        if (selectedIndex != -1) {
-            binding.dropdownClinics.setText(adapter!!.getItem(selectedIndex), false)
         }
     }
 
