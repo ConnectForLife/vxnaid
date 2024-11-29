@@ -52,7 +52,8 @@ class HardcodedMuacZScore(
       linearLayout.apply {
          addView(labelTextView)
          addView(muacInputEditText)
-         addView(valueTextView)
+         // turn of visualisation of calculation for now, when the formula will be ready just uncomment it and update the formula in the calculator
+         //addView(valueTextView)
       }
 
       addLinearLayoutToViewGroup(view, linearLayout)

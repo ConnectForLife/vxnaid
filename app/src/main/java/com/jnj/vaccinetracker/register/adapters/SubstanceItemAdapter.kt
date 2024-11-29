@@ -88,6 +88,11 @@ class SubstanceItemAdapter(
          substanceName.text = substance.label
          val substanceDateStr = substance.obsDate?.format(DateFormat.FORMAT_DATE) ?: ""
          vaccineDateText.text = substanceDateStr
+         if (substanceDateStr.isEmpty()) {
+            btnPickDate.text = context.getString(R.string.vaccine_capture_date_label)
+         } else {
+            btnPickDate.text = context.getString(R.string.vaccine_change_date_label)
+         }
          btnPickDate.setOnClickListener {
             AlreadyAdministeredVaccineDatePickerDialog(null, this).show(
                supportFragmentManager,
@@ -114,11 +119,13 @@ class SubstanceItemAdapter(
             viewModel.addVaccineDate(selectedSubstance!!.conceptName, dateString)
          }
          removeDateBtn.visibility = View.VISIBLE
+         btnPickDate.text = context.getString(R.string.vaccine_change_date_label)
       }
       private fun onDateRemove(substance: SubstanceDataModel) {
          viewModel.removeVaccineDate(substance.conceptName)
          vaccineDateText.text = context.getString(R.string.vaccine_never_administered)
          removeDateBtn.visibility = View.INVISIBLE
+         btnPickDate.text = context.getString(R.string.vaccine_capture_date_label)
       }
 
       private fun onEditDateRemove(substance: SubstanceDataModel) {
