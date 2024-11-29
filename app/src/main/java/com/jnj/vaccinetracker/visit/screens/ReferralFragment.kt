@@ -182,7 +182,7 @@ class ReferralFragment : BaseFragment() {
                 if (isAfterVisit) {
                     findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish()
                 } else {
-                    findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish()
+                    findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish(false)
                 }
             } catch (e: Exception) {
                 Log.e("ReferralFragment", "Referral failed", e)
@@ -233,7 +233,7 @@ class ReferralFragment : BaseFragment() {
             if (isAfterVisit) {
                 findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish()
             } else {
-                findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish()
+                findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish(true)
             }
         }
     }
@@ -268,7 +268,7 @@ class ReferralFragment : BaseFragment() {
 
     interface OnReferralPageFinishListener {
         fun onReferralAfterVisitPageFinish()
-        fun onReferralAfterContraindicationsPageFinish()
+        fun onReferralAfterContraindicationsPageFinish(finish:Boolean = false)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {

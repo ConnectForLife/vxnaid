@@ -1,9 +1,11 @@
 package com.jnj.vaccinetracker.register.dialogs
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
@@ -17,6 +19,7 @@ import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
  * @author maartenvangiel
  * @version 1
  */
+@RequiresApi(Build.VERSION_CODES.O)
 class RegisterParticipantSuccessfulDialog : BaseDialogFragment() {
 
     companion object {

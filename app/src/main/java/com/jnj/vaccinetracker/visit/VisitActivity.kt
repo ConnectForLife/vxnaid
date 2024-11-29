@@ -332,12 +332,14 @@ class VisitActivity :
         viewModel.submitDosingVisit(newVisitDate = missingSubstanceVisitDate, visitPlace = visitPlace)
     }
 
-    override fun onReferralAfterContraindicationsPageFinish() {
+    override fun onReferralAfterContraindicationsPageFinish(finish:Boolean) {
         val context = this
         lifecycleScope.launch {
             try {
-            viewModel.onReferralAfterContraindications()
-            finish()
+                viewModel.onReferralAfterContraindications()
+                if (finish) {
+                    finish()
+                }
             } catch (e: Exception) {
                 Log.e("Rescheduling a visit", "Reschedule has failed failed", e)
                 com.jnj.vaccinetracker.common.dialogs.AlertDialog(context).showAlertDialog(getString(R.string.reschedule_visit_failed))
