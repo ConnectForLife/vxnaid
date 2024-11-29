@@ -125,8 +125,9 @@ class HistoricalDataForVisitTypeFragment :
          viewModel.filterSubstanceDates.value = false
          HistoricalVisitDateDialog().show(childFragmentManager, TAG_HISTORICAL_VISIT_DATE)
       }
-
-      getAllSubstancesFromAllVisitsForGivenVisitType(visitTypeName)
+      lifecycleScope.launch {
+         getAllSubstancesFromAllVisitsForGivenVisitType(visitTypeName)
+      }
 
       return binding.root
    }
@@ -188,8 +189,7 @@ class HistoricalDataForVisitTypeFragment :
 
       visit?.observations?.let { observations ->
          lifecycleScope.launch {
-            val substancesForVisitTypeList =
-               viewModel.allSubstancesDataForVisitType.value
+            val substancesForVisitTypeList = viewModel.getSubstancesDataForVisitType(visitTypeName!!)
             viewModel.substancesData.value =
                mapEditSubstanceDataList(observations, substancesForVisitTypeList!!)
             viewModel.substancesAndDates.value = viewModel.substancesData.value
@@ -208,9 +208,9 @@ class HistoricalDataForVisitTypeFragment :
       }
    }
 
-   private fun getAllSubstancesFromAllVisitsForGivenVisitType(visitTypeName: String?) {
+   private suspend fun getAllSubstancesFromAllVisitsForGivenVisitType(visitTypeName: String?) {
       if (visitTypeName == null) return
-      val substancesForVisitTypeList = viewModel.allSubstancesDataForVisitType.value
+      val substancesForVisitTypeList = viewModel.getSubstancesDataForVisitType(visitTypeName!!)
       if (substancesForVisitTypeList == null) {
          Log.w("SubstanceError", "No substance data available for this visit type.")
          return
