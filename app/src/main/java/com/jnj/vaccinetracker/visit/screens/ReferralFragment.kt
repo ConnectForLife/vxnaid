@@ -26,8 +26,12 @@ import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentReferralBinding
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.visit.VisitViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ReferralFragment : BaseFragment() {
@@ -230,10 +234,8 @@ class ReferralFragment : BaseFragment() {
                 findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish()
             } else {
                 findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish()
-                requireActivity().finish()
             }
         }
-
     }
 
     private fun createReferralObservations(selectedClinic: String, referralReason: String): Map<String, String> {

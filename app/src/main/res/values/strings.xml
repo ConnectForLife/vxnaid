@@ -487,4 +487,5 @@
     <string name="go_to_historical_visits">Historical Visits</string>
     <string name="dialog_multiple_visits_text">Please select a visit:</string>
     <string name="vaccine_change_date_label">Change Date</string>
+    <string name="dialog_missing_substances_empty_text_validation_message">Provide a reason</string>
 </resources>
