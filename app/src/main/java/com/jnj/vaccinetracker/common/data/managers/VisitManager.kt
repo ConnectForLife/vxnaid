@@ -115,11 +115,7 @@ class VisitManager @Inject constructor(
 
         val request = visit?.let{
             val appendedVisitAttributes = it.attributes + visitAttributes
-            var parsedObservations: Map<String, String> = it.observations.mapValues { entry -> entry.value.value }
-            if (parsedObservations.isEmpty()) {
-                // tmp solution
-                parsedObservations = mapOf(Constants.OBSERVATION_TYPE_MANUFACTURER to "tmp")
-            }
+            val parsedObservations: Map<String, String> = it.observations.mapValues { entry -> entry.value.value }
             UpdateVisit(
                 visitUuid = it.uuid,
                 participantUuid = participantUuid,
