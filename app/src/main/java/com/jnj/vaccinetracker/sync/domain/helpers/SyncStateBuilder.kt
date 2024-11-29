@@ -45,7 +45,7 @@ class SyncStateBuilder @Inject constructor(
                     syncDate != null -> SyncState.OnlineInSync
                     else -> SyncState.Idle
                 }
-            } else if (!serverHealthMeter.isHealthyAccurate()) {
+            } else if (!serverHealthMeter.isHealthyAccurate() && networkConnectivity.isConnectedFast()) {
                 when {
                     syncErrorCount > 0 -> {
                         SyncState.SyncError(false, syncErrorCount)

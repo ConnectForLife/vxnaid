@@ -332,10 +332,11 @@ class VisitViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun buildVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
+    private suspend fun buildVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
         val locationUuid = getLocationUuid()
+        val visitType = findVisitType(participant, visitDate)
 
         return CreateVisit(
             participantUuid = participant.participantUuid,
@@ -345,6 +346,7 @@ class VisitViewModel @Inject constructor(
             attributes = mapOf(
                 Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
                 Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+                Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
             )
         )
     }
