@@ -465,15 +465,15 @@ class VisitViewModel @Inject constructor(
     }
 
     suspend fun onReferralAfterContraindications() {
-        createVisitUseCase.createVisit(
-            buildNextVisitObject(
-                participant.value!!,
-                Date(contraindicationsRescheduleDate.value!!.unixMillisLong)
+        try {
+            createVisitUseCase.createVisit(
+                buildNextVisitObject(
+                    participant.value!!,
+                    Date(contraindicationsRescheduleDate.value!!.unixMillisLong)
+                )
             )
-        )
 
-        val contraindicationsRescheduleReasonText = contraindicationsRescheduleReasonText.value
-        if (!contraindicationsRescheduleReasonText.isNullOrEmpty()) {
+            val contraindicationsRescheduleReasonText = contraindicationsRescheduleReasonText.value.toString()
             val attributesToAdd =
                 mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to contraindicationsRescheduleReasonText)
             visitManager.updateVisitAttributes(
@@ -481,6 +481,8 @@ class VisitViewModel @Inject constructor(
                 participant.value!!.participantUuid,
                 attributesToAdd
             )
+        } catch (ex: Exception) {
+            Log.e("Rescheduling a visit", "Reschedule has failed failed", ex)
         }
     }
 
@@ -501,7 +503,7 @@ class VisitViewModel @Inject constructor(
             ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Location not available")
-        val visitType = findVisitType(participant, visitDate)
+        val visitType = dosingVisit.value?.visitTypeVxnaid ?: findVisitType(participant, visitDate) // it assigns visit type of current visit to new rescheduled one
         return CreateVisit(
             participantUuid = participant.participantUuid,
             visitType = Constants.VISIT_TYPE_DOSING,

@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
@@ -45,19 +46,35 @@ import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 
-class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), ScheduleVisitDatePickerDialog.OnDateSelectedListener {
+@RequiresApi(Build.VERSION_CODES.O)
+class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(),
+   ScheduleVisitDatePickerDialog.OnDateSelectedListener {
    private lateinit var binding: DialogRescheduleVisitBinding
    private lateinit var rescheduleReasonEditText: EditText
    private lateinit var visitDateTextView: TextView
    private var visitDate: DateTime? = null
-   private val participant: ParticipantSummaryUiModel? by lazy { requireArguments().getParcelable(PARTICIPANT) }
-   private val isAfterContraindications: Boolean by lazy { requireArguments().getBoolean(IS_AFTER_CONTRAINDICATIONS) }
-   @Inject lateinit var createVisitUseCase: CreateVisitUseCase
-   @Inject lateinit var userRepository: UserRepository
-   @Inject lateinit var syncSettingsRepository: SyncSettingsRepository
-   @Inject lateinit var configurationManager: ConfigurationManager
-   @Inject lateinit var visitManager: VisitManager
-   @Inject lateinit var vaccineTrackerSyncApiDataSource: VaccineTrackerSyncApiDataSource
+   private val participant: ParticipantSummaryUiModel? by lazy {
+      requireArguments().getParcelable(
+         PARTICIPANT
+      )
+   }
+   private val isAfterContraindications: Boolean by lazy {
+      requireArguments().getBoolean(
+         IS_AFTER_CONTRAINDICATIONS
+      )
+   }
+   @Inject
+   lateinit var createVisitUseCase: CreateVisitUseCase
+   @Inject
+   lateinit var userRepository: UserRepository
+   @Inject
+   lateinit var syncSettingsRepository: SyncSettingsRepository
+   @Inject
+   lateinit var configurationManager: ConfigurationManager
+   @Inject
+   lateinit var visitManager: VisitManager
+   @Inject
+   lateinit var vaccineTrackerSyncApiDataSource: VaccineTrackerSyncApiDataSource
    private var currentVisit: VisitDetail? = null
 
    companion object {
@@ -66,8 +83,16 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
       private const val IS_AFTER_CONTRAINDICATIONS = "isAfterContraIndications"
       const val TAG_DIALOG_RESCHEDULE_VISIT = "rescheduleVisitDialog"
 
-      fun create(participant: ParticipantSummaryUiModel?, isAfterContraIndications: Boolean = false): RescheduleVisitDialog {
-         return RescheduleVisitDialog().apply { arguments = bundleOf(PARTICIPANT to participant, IS_AFTER_CONTRAINDICATIONS to isAfterContraIndications) }
+      fun create(
+         participant: ParticipantSummaryUiModel?,
+         isAfterContraIndications: Boolean = false
+      ): RescheduleVisitDialog {
+         return RescheduleVisitDialog().apply {
+            arguments = bundleOf(
+               PARTICIPANT to participant,
+               IS_AFTER_CONTRAINDICATIONS to isAfterContraIndications
+            )
+         }
       }
    }
 
@@ -81,24 +106,38 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
       }
    }
 
-   @RequiresApi(Build.VERSION_CODES.O)
-   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-      binding = DataBindingUtil.inflate(inflater, R.layout.dialog_reschedule_visit, container, false)
+   override fun onCreateView(
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
+   ): View {
+      binding =
+         DataBindingUtil.inflate(inflater, R.layout.dialog_reschedule_visit, container, false)
       binding.executePendingBindings()
 
       visitDateTextView = binding.nextVisitDateValue
       rescheduleReasonEditText = binding.editTextRescheduleReason
 
       binding.nextVisitDatePickerButton.setOnClickListener {
-         ScheduleVisitDatePickerDialog(visitDate, this).show(childFragmentManager, "scheduleVisitDatePickerDialog")
+         ScheduleVisitDatePickerDialog(visitDate, this).show(
+            childFragmentManager,
+            "scheduleVisitDatePickerDialog"
+         )
       }
 
+      setupClickListeners()
+      setupInputListeners()
+      return binding.root
+   }
+
+   fun setupClickListeners() {
       binding.btnSaveVisit.setOnClickListener {
          lifecycleScope.launch {
             try {
                validateDate()
+               validateText()
                if (visitDate != null) {
-                  if (!isAfterContraindications){
+                  if (!isAfterContraindications) {
                      createVisitUseCase.createVisit(
                         buildNextVisitObject(
                            participant!!,
@@ -106,24 +145,30 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
                         )
                      )
 
-                     if (rescheduleReasonEditText.text.toString().isNotEmpty()) {
-                        val attributesToAdd =
-                           mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to rescheduleReasonEditText.text.toString())
-                        visitManager.updateVisitAttributes(
-                           currentVisit,
-                           participant!!.participantUuid,
-                           attributesToAdd
-                        )
-                     }
+                     val attributesToAdd =
+                        mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to rescheduleReasonEditText.text.toString())
+                     visitManager.updateVisitAttributes(
+                        currentVisit,
+                        participant!!.participantUuid,
+                        attributesToAdd
+                     )
                   }
 
                   dismissAllowingStateLoss()
 
-                  findParent<RescheduleVisitListener>()?.onRescheduleVisitListener(visitDate!!, rescheduleReasonEditText.text.toString())
+                  findParent<RescheduleVisitListener>()?.onRescheduleVisitListener(
+                     visitDate!!,
+                     rescheduleReasonEditText.text.toString()
+                  )
                }
             } catch (ex: Exception) {
-               Log.e("RescheduleVisitDialog", "Something went wrong during rescheduling a visit", ex)
-               com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(getString(R.string.reschedule_visit_failed))
+               Log.e(
+                  "RescheduleVisitDialog",
+                  "Something went wrong during rescheduling a visit",
+                  ex
+               )
+               com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext())
+                  .showAlertDialog(getString(R.string.reschedule_visit_failed))
             }
          }
       }
@@ -131,7 +176,12 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
       binding.btnFinish.setOnClickListener {
          dismissAllowingStateLoss()
       }
-      return binding.root
+   }
+
+   private fun setupInputListeners() {
+      binding.editTextRescheduleReason.doAfterTextChanged {
+         binding.editTextRescheduleReason.error = null
+      }
    }
 
    override fun onDismiss(dialog: DialogInterface) {
@@ -146,7 +196,10 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
    }
 
    @RequiresApi(Build.VERSION_CODES.O)
-   private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
+   private suspend fun findVisitType(
+      participant: ParticipantSummaryUiModel,
+      visitTime: Date
+   ): String {
       val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
       return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
          participant.birthDateText,
@@ -157,7 +210,10 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
    }
 
    @RequiresApi(Build.VERSION_CODES.O)
-   private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
+   private suspend fun buildNextVisitObject(
+      participant: ParticipantSummaryUiModel,
+      visitDate: Date
+   ): CreateVisit {
       val operatorUuid = userRepository.getUser()?.uuid
          ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
       val locationUuid = syncSettingsRepository.getSiteUuid()
@@ -178,10 +234,21 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(), Schedu
 
    private fun validateDate() {
       if (visitDate == null) {
-         val dateValidationText = getString(R.string.dialog_missing_substances_empty_date_validation_message)
+         val dateValidationText =
+            getString(R.string.dialog_missing_substances_empty_date_validation_message)
          binding.nextVisitDateValue.error = dateValidationText
          val hintTextColor = ContextCompat.getColor(requireContext(), R.color.errorLight)
          binding.nextVisitDateValue.setHintTextColor(hintTextColor)
+      }
+   }
+
+   private fun validateText() {
+      if (rescheduleReasonEditText.text.isNullOrEmpty()) {
+         val dateValidationText =
+            getString(R.string.dialog_missing_substances_empty_text_validation_message)
+         binding.editTextRescheduleReason.error = dateValidationText
+         val hintTextColor = ContextCompat.getColor(requireContext(), R.color.errorLight)
+         binding.editTextRescheduleReason.setHintTextColor(hintTextColor)
       }
    }
 

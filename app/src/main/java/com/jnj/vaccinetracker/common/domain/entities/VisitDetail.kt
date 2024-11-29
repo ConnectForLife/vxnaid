@@ -42,6 +42,7 @@ data class VisitDetail(
         }
 
     val visitStatus: String? get() = attributes[Constants.ATTRIBUTE_VISIT_STATUS]
+    val visitTypeVxnaid: String? get() = attributes[Constants.ATTRIBUTE_VISIT_TYPE_VXNAID]
 
     companion object {
         private val dateFormatDisplay = SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH)
