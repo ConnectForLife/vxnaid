@@ -233,13 +233,13 @@ class HistoricalDataForVisitTypeFragment :
       return data?.map { (conceptName, date) ->
          SubstanceDataModel(
             conceptName = conceptName,
-            label = "notNeeded",
-            category = "notNeeded",
-            routeOfAdministration = "notNeeded",
-            group = "notNeeded",
+            label = Constants.NOT_NEEDED_STRING_VALUE,
+            category = Constants.NOT_NEEDED_STRING_VALUE,
+            routeOfAdministration = Constants.NOT_NEEDED_STRING_VALUE,
+            group = Constants.NOT_NEEDED_STRING_VALUE,
             maximumAgeInWeeks = null,
             minimumWeeksNumberAfterPreviousDose = null,
-            visitType = "notNeeded",
+            visitType = Constants.NOT_NEEDED_STRING_VALUE,
             obsDate = date
          )
       } ?: emptyList()
@@ -250,9 +250,9 @@ class HistoricalDataForVisitTypeFragment :
          OtherSubstanceDataModel(
             conceptName = conceptName,
             label = conceptName,
-            category = "notNeeded",
-            inputType = "notNeeded",
-            visitType = "notNeeded",
+            category = Constants.NOT_NEEDED_STRING_VALUE,
+            inputType = Constants.NOT_NEEDED_STRING_VALUE,
+            visitType = Constants.NOT_NEEDED_STRING_VALUE,
             options = emptyList(),
             value = value
          )
@@ -263,19 +263,19 @@ class HistoricalDataForVisitTypeFragment :
       observations: Map<String, ObservationValue>,
       substancesList: List<SubstanceDataModel>
    ): List<SubstanceDataModel> {
-      return observations.filter { it.key.endsWith("Vxnaid Date") }.map { (key, value) ->
+      return observations.filter { it.key.endsWith(Constants.VXNAID_DATE_CONCEPT_NAME_SUFFIX) }.map { (key, value) ->
          val conceptName = key.removeSuffix("${Constants.SPACE_STR}${Constants.DATE_STR}")
          val label = substancesList.find { it.conceptName == conceptName }?.label ?: conceptName
 
          SubstanceDataModel(
             conceptName = conceptName,
             label = label,
-            category = "notNeeded",
-            routeOfAdministration = "notNeeded",
-            group = "notNeeded",
+            category = Constants.NOT_NEEDED_STRING_VALUE,
+            routeOfAdministration = Constants.NOT_NEEDED_STRING_VALUE,
+            group = Constants.NOT_NEEDED_STRING_VALUE,
             maximumAgeInWeeks = null,
             minimumWeeksNumberAfterPreviousDose = null,
-            visitType = "notNeeded",
+            visitType = Constants.NOT_NEEDED_STRING_VALUE,
             obsDate = value.value
          )
       }
@@ -297,9 +297,9 @@ class HistoricalDataForVisitTypeFragment :
             OtherSubstanceDataModel(
                conceptName = key,
                label = configItem.label ?: key,
-               category = "notNeeded",
+               category = Constants.NOT_NEEDED_STRING_VALUE,
                inputType = configItem.inputType ?: "text",
-               visitType = "notNeeded",
+               visitType = Constants.NOT_NEEDED_STRING_VALUE,
                options = configItem.options ?: emptyList(),
                value = value.value
             )

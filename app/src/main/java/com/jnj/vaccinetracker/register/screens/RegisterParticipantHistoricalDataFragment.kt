@@ -181,8 +181,6 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
       }
    }
 
-
-
    private fun createButtonLayoutParams(): FrameLayout.LayoutParams {
       val size = 100.dpToPx
       return FrameLayout.LayoutParams(size, size).apply {
@@ -209,7 +207,6 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
          flowViewModel.openHistoricalDataForVisitType(name)
       }
    }
-
 
    private fun displayMultipleVisitsDialog(name: String) {
       MultipleVisitsDialog.create(name).show(childFragmentManager, TAG_MULTIPLE_VISITS_DIALOG)

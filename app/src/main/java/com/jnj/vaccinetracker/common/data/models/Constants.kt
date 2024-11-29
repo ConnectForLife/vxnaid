@@ -118,4 +118,7 @@ object Constants {
     const val EMPTY_STRING_VALUE = ""
     const val ALL_STRING = "All"
     const val YES_ANSWER = "Yes"
+
+    const val VXNAID_DATE_CONCEPT_NAME_SUFFIX = "Vxnaid Date"
+    const val NOT_NEEDED_STRING_VALUE = "notNeeded"
 }

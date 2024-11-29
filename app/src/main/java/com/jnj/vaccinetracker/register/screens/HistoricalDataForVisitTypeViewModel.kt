@@ -40,9 +40,9 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
    val loading = MutableLiveData<Boolean>()
    val errorMessage = MutableLiveData<String>()
    val visitDate = MutableLiveData<DateTime>()
-   val isLocalEdit = MutableLiveData<Boolean>(false)
-   val isGlobalEdit = MutableLiveData<Boolean>(false)
-   val filterSubstanceDates = MutableLiveData<Boolean>(true)
+   val isLocalEdit = MutableLiveData(false)
+   val isGlobalEdit = MutableLiveData(false)
+   val filterSubstanceDates = MutableLiveData(true)
    var firstVisitTypeName: String = Constants.EMPTY_STRING_VALUE
 
    init {
