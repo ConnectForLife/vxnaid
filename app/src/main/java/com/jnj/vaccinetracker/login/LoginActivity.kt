@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.login
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
@@ -51,31 +52,26 @@ class LoginActivity : BaseActivity() {
         binding.viewModel = viewModel
         viewModel.init(true)
 
-        binding.btnLogin.setOnClickListener { login() }
-        binding.editPassword.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                login()
-                true
-            } else {
-                false
-            }
-        }
-
-        val visitPlaces = listOf(
-            Constants.VISIT_PLACE_STATIC,
-            Constants.VISIT_PLACE_OUTREACH,
-            Constants.VISIT_PLACE_SCHOOL
-        )
-        val adapter = ArrayAdapter(
-            this,
-            R.layout.item_dropdown,
-            visitPlaces
-        )
-        binding.dropdownLoginVisitPlace.setAdapter(adapter)
-
-        binding.root.setOnClickListener { hideKeyboard() }
-        binding.btnUpdate.setOnClickListener { showUpdateDialog() }
+        setupPasswordVisibilityToggle()
+        setupLoginButton()
+        setupVisitPlaceDropdown()
+        setupKeyboardHide()
+        setupUpdateButton()
         observeViewModel(this)
+    }
+
+    private fun setupPasswordVisibilityToggle() {
+        binding.textInputPassword.setEndIconOnClickListener {
+            val isPasswordVisible =
+                binding.editPassword.inputType and InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+
+            binding.editPassword.inputType = if (isPasswordVisible) {
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD // Hide password
+            } else {
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD // Show password
+            }
+            binding.editPassword.setSelection(binding.editPassword.text?.length ?: 0)
+        }
     }
 
     override val syncBanner: SyncBanner
