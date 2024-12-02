@@ -228,4 +228,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
 
       visitTypesData.postValue(currentData)
    }
+
+   fun getParticipantBirthDate(): String {
+      return registerParticipant.value?.birthDate?.birthDateToString() ?: participant.value!!.birthDateText
+   }
 }
