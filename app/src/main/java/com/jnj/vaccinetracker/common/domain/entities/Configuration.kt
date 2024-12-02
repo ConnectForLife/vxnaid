@@ -38,14 +38,7 @@ data class AddressField(
     val displayOrder: Int,
 ) {
     enum class InputType {
-        DROPDOWN, FREE_INPUT;
-
-        companion object {
-            val TYPE_TEXT_VARIATION_VISIBLE_PASSWORD: Int
-                get() {
-                    TODO()
-                }
-        }
+        DROPDOWN, FREE_INPUT
     }
 }
 
