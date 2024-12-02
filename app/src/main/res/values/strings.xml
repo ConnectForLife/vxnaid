@@ -488,4 +488,5 @@
     <string name="dialog_multiple_visits_text">Please select a visit:</string>
     <string name="vaccine_change_date_label">Change Date</string>
     <string name="dialog_missing_substances_empty_text_validation_message">Provide a reason</string>
+    <string name="participant_registration_smth_wrong_happened">Something wrong happened during the registration.</string>
 </resources>

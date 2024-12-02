@@ -12,6 +12,7 @@ import com.jnj.vaccinetracker.common.data.models.IrisPosition
 import com.jnj.vaccinetracker.common.data.models.api.response.IdentifierDTO
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.*
+import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantIdUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.GenerateUniqueParticipantIdUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.GetAddressMasterDataOrderUseCase
@@ -45,23 +46,24 @@ import kotlin.random.Random
 
 @SuppressWarnings("TooManyFunctions")
 class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
-        private val phoneValidator: PhoneValidator,
-        private val syncSettingsRepository: SyncSettingsRepository,
-        private val configurationManager: ConfigurationManager,
-        private val resourcesWrapper: ResourcesWrapper,
-        private val participantManager: ParticipantManager,
-        override val dispatchers: AppCoroutineDispatchers,
-        private val participantIdValidator: ParticipantIdValidator,
-        private val sessionExpiryObserver: SessionExpiryObserver,
-        private val getTempBiometricsTemplatesBytesUseCase: GetTempBiometricsTemplatesBytesUseCase,
-        private val fullPhoneFormatter: FullPhoneFormatter,
-        private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
-        private val textInputValidator: TextInputValidator,
-        private val ninValidator: NinValidator,
-        private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
-        private val getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase,
-        private val draftParticipantDao: DraftParticipantDao
-) : ViewModelBase() {
+    private val phoneValidator: PhoneValidator,
+    private val syncSettingsRepository: SyncSettingsRepository,
+    private val configurationManager: ConfigurationManager,
+    private val resourcesWrapper: ResourcesWrapper,
+    private val participantManager: ParticipantManager,
+    override val dispatchers: AppCoroutineDispatchers,
+    private val participantIdValidator: ParticipantIdValidator,
+    private val sessionExpiryObserver: SessionExpiryObserver,
+    private val getTempBiometricsTemplatesBytesUseCase: GetTempBiometricsTemplatesBytesUseCase,
+    private val fullPhoneFormatter: FullPhoneFormatter,
+    private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
+    private val textInputValidator: TextInputValidator,
+    private val ninValidator: NinValidator,
+    private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+    private val getAddressMasterDataOrderUseCase: GetAddressMasterDataOrderUseCase,
+    private val draftParticipantDao: DraftParticipantDao,
+    private val findParticipantByParticipantIdUseCase: FindParticipantByParticipantIdUseCase
+    ) : ViewModelBase() {
 
     companion object {
         /**
@@ -510,8 +512,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                     registerFailedEvents.tryEmit(resourcesWrapper.getString(R.string.general_label_error))
                 }
             }
+            throw ex
         }
-        return null
     }
 
     @SuppressWarnings("LongParameterList")
@@ -548,6 +550,18 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             else R.string.participant_registration_details_error_invalid_participant_id,
             participantIdValidationMessage
         )
+
+        val existingParticipant = findParticipantByParticipantIdUseCase.findByParticipantId(participantId = participantId!!)
+        if (existingParticipant != null) {
+            if (existingParticipant.participantUuid != participantUuid.value) {
+                addValidationError(
+                    false,
+                    R.string.participant_registration_details_error_participant_already_exists,
+                    participantIdValidationMessage
+                )
+            }
+        }
+
 
         addValidationError(gender != null, R.string.participant_registration_details_error_no_gender, genderValidationMessage)
 

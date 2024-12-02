@@ -22,6 +22,7 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.helpers.dpToPx
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
+import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentRegisterHistoricalVisitsBinding
@@ -34,6 +35,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import java.util.Date
 import javax.inject.Inject
 
@@ -104,14 +106,27 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
       binding.btnSubmit.setOnClickListener {
          lifecycleScope.launch {
             if (!viewModel.isEdit.value!!) {
-               val participantUiModel =
-                  registerViewModel.doRegistrationUsingRegisterRequest(flowViewModel.registerParticipant.value!!)
-               viewModel.participant.value = participantUiModel
-               submitVaccineRegistration()
-               registerViewModel.registerParticipantSuccessDialogEvents.tryEmit(participantUiModel!!)
+               try {
+                  viewModel.loading.set(true)
+                  val participantUiModel =
+                     registerViewModel.doRegistrationUsingRegisterRequest(flowViewModel.registerParticipant.value!!)
+                  viewModel.participant.value = participantUiModel
+                  submitVaccineRegistration()
+                  registerViewModel.registerParticipantSuccessDialogEvents.tryEmit(
+                     participantUiModel!!
+                  )
+               } catch (ex: Exception) {
+                  showErrorMessage(resourcesWrapper.getString(R.string.participant_registration_smth_wrong_happened))
+               } finally {
+                  viewModel.loading.set(false)
+               }
             }
          }
       }
+   }
+
+   private fun showErrorMessage(message: String) {
+      com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(message)
    }
 
    private fun submitVaccineRegistration() {
