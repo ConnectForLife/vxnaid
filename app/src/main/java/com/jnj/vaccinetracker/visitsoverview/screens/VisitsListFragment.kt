@@ -1,10 +1,13 @@
 package com.jnj.vaccinetracker.visitsoverview.screens
 
 import android.content.ContentValues
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -30,6 +33,7 @@ import com.jnj.vaccinetracker.visitsoverview.model.VisitsListViewModel
 import com.jnj.vaccinetracker.visitsoverview.adapters.VisitsAdapter
 import com.jnj.vaccinetracker.visitsoverview.dialog.VisitDetailsDialog
 import com.jnj.vaccinetracker.common.dialogs.ReportOverviewDatePickerDialog
+import com.jnj.vaccinetracker.common.util.FileUtil
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDetailsDTO
 import com.soywiz.klock.DateFormat
@@ -37,8 +41,7 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import java.io.File
-import java.io.FileOutputStream
+import java.io.OutputStream
 import java.util.Locale
 import javax.inject.Inject
 
@@ -150,66 +153,48 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
 
     private fun exportToExcel(visits: List<VisitDataDTO>) {
         val fileName = "${buildFileName()}.xls"
-        val filePath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName)
+        val mimeType = "application/vnd.ms-excel"
 
-        val workbook = HSSFWorkbook()
-        val sheet = workbook.createSheet(visitsKey.replace(" ", "_"))
+        FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
+            val workbook = HSSFWorkbook()
+            val sheet = workbook.createSheet(visitsKey.replace(" ", "_"))
 
-        val headerRow = sheet.createRow(0)
-        headerRow.createCell(0).setCellValue(Constants.VISIT_DATE_FILE_COLUMN_HEADER)
-        headerRow.createCell(1).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
-        headerRow.createCell(2).setCellValue(Constants.CLIENT_NAME_FILE_COLUMN_HEADER)
-        headerRow.createCell(3).setCellValue(Constants.PHONE_NUMBER_FILE_COLUMN_HEADER)
+            val headerRow = sheet.createRow(0)
+            headerRow.createCell(0).setCellValue(Constants.VISIT_DATE_FILE_COLUMN_HEADER)
+            headerRow.createCell(1).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
+            headerRow.createCell(2).setCellValue(Constants.CLIENT_NAME_FILE_COLUMN_HEADER)
+            headerRow.createCell(3).setCellValue(Constants.PHONE_NUMBER_FILE_COLUMN_HEADER)
 
-        visits.forEachIndexed { index, visit ->
-            val row = sheet.createRow(index + 1)
-            row.createCell(0).setCellValue(visit.formattedStartDateTime)
-            row.createCell(1).setCellValue(visit.participant.participantId)
-            row.createCell(2).setCellValue(visit.participant.fullName)
-            row.createCell(3).setCellValue(visit.participant.phone)
-        }
-
-        sheet.setColumnWidth(0, 4000)
-        sheet.setColumnWidth(1, 4000)
-        sheet.setColumnWidth(2, 7000)
-        sheet.setColumnWidth(3, 4000)
-
-        try {
-            FileOutputStream(filePath).use { outputStream ->
-                workbook.write(outputStream)
-                workbook.close()
+            visits.forEachIndexed { index, visit ->
+                val row = sheet.createRow(index + 1)
+                row.createCell(0).setCellValue(visit.formattedStartDateTime)
+                row.createCell(1).setCellValue(visit.participant.participantId)
+                row.createCell(2).setCellValue(visit.participant.fullName)
+                row.createCell(3).setCellValue(visit.participant.phone)
             }
-            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_success_message), Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_failure_message), Toast.LENGTH_LONG).show()
+
+            sheet.setColumnWidth(0, 4000)
+            sheet.setColumnWidth(1, 4000)
+            sheet.setColumnWidth(2, 7000)
+            sheet.setColumnWidth(3, 4000)
+
+            workbook.write(outputStream)
+            workbook.close()
         }
     }
 
     private fun exportToCSV(visits: List<VisitDataDTO>) {
-        val resolver = requireContext().contentResolver
         val fileName = "${buildFileName()}.csv"
         val mimeType = "text/csv"
         val titleRowColumns = "${Constants.VISIT_DATE_FILE_COLUMN_HEADER}, ${Constants.CLIENT_ID_FILE_COLUMN_HEADER}, ${Constants.CLIENT_NAME_FILE_COLUMN_HEADER}, ${Constants.PHONE_NUMBER_FILE_COLUMN_HEADER} \n"
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-            put(MediaStore.Downloads.MIME_TYPE, mimeType)
-            put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-        }
 
-        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-        uri?.let {
-            resolver.openOutputStream(uri).use { outputStream ->
-                outputStream?.bufferedWriter()?.use { writer ->
-                    writer.write(titleRowColumns)
-                    visits.forEach { visit ->
-                        writer.write("${visit.formattedStartDateTime}, ${visit.participant.participantId}, ${visit.participant.fullName}, ${visit.participant.phone ?: ""} \n")
-                    }
+        FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
+            outputStream.bufferedWriter().use { writer ->
+                writer.write(titleRowColumns)
+                visits.forEach { visit ->
+                    writer.write("${visit.formattedStartDateTime}, ${visit.participant.participantId}, ${visit.participant.fullName}, ${visit.participant.phone ?: ""} \n")
                 }
             }
-            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_success_message), Toast.LENGTH_LONG)
-                .show()
-        } ?: run {
-            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_failure_message), Toast.LENGTH_LONG).show()
         }
     }
 

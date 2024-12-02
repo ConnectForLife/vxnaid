@@ -2,7 +2,6 @@ package com.jnj.vaccinetracker.vaccinesoverview.screens
 
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -11,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -31,17 +29,16 @@ import com.jnj.vaccinetracker.vaccinesoverview.dto.VaccineObservationDTO
 import com.jnj.vaccinetracker.vaccinesoverview.dto.VaccinesOverviewDTO
 import com.jnj.vaccinetracker.vaccinesoverview.model.VaccinesOverviewViewModel
 import com.jnj.vaccinetracker.common.dialogs.ReportOverviewDatePickerDialog
+import com.jnj.vaccinetracker.common.util.FileUtil
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.util.CellRangeAddress
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.Q)
 class VaccinesOverviewFragment : BaseFragment(),
     ReportOverviewDatePickerDialog.VisitsOverviewDatePickerListener {
 
@@ -344,150 +341,134 @@ class VaccinesOverviewFragment : BaseFragment(),
         startDate: DateTime?,
         endDate: DateTime?
     ) {
-        val workbook = HSSFWorkbook()
-        val sheet =
-            workbook.createSheet(getString(R.string.vaccines_overview_title).replace(" ", "_"))
-
-        val dateRangeRow = sheet.createRow(0)
-        val dateRangeText = if (startDate != null && endDate != null) {
-            getString(
-                R.string.vaccines_excel_report_date_range_label_set, startDate.toString(
-                    DateFormat.FORMAT_DATE.toString()
-                ), endDate.toString(DateFormat.FORMAT_DATE.toString())
-            )
-        } else {
-            getString(R.string.vaccines_excel_report_date_range_label_not_set)
-        }
-        dateRangeRow.createCell(0).setCellValue(dateRangeText)
-        sheet.addMergedRegion(CellRangeAddress(0, 0, 0, 2))
-
-        sheet.createRow(1)
-
-        val titleRow = sheet.createRow(2)
-        titleRow.createCell(0).setCellValue(getString(R.string.vaccine_name_label))
-        sheet.addMergedRegion(CellRangeAddress(2, 3, 0, 0))
-
-        val ageGroups =
-            listOf(Constants.GROUP_AGE_FIRST, Constants.GROUP_AGE_SECOND, Constants.GROUP_AGE_THIRD)
-        val locations = listOf(
-            Constants.VISIT_PLACE_STATIC,
-            Constants.VISIT_PLACE_OUTREACH,
-            Constants.VISIT_PLACE_SCHOOL
-        )
-
-        val ageGroupRow = sheet.getRow(2) ?: sheet.createRow(2)
-        val locationsRow = sheet.createRow(3)
-
-        var currentColumn = 1
-        ageGroups.forEach { ageGroup ->
-            sheet.addMergedRegion(CellRangeAddress(2, 2, currentColumn, currentColumn + 2))
-            ageGroupRow.createCell(currentColumn).setCellValue(ageGroup)
-
-            locations.forEachIndexed { index, location ->
-                locationsRow.createCell(currentColumn + index).setCellValue(location)
-            }
-            currentColumn += locations.size
-        }
-
-        ageGroupRow.createCell(currentColumn).setCellValue(getString(R.string.vaccine_total_label))
-        sheet.addMergedRegion(CellRangeAddress(2, 3, currentColumn, currentColumn))
-
-        val columnSums = MutableList(currentColumn + 1) { 0 }
-
-        val filteredAndGroupedData = vaccinesData
-            .filter { observation ->
-                val administerDate = DateUtil.convertStringToDate(
-                    observation.administerDate,
-                    DateFormat.FORMAT_DATE.toString()
-                )
-                val isAdministerDateInRange =
-                    (startDate == null || administerDate!! >= startDate.toDate()) &&
-                            (endDate == null || administerDate!! <= endDate.toDate())
-                val isVaccineSelected =
-                    selectedVaccineConceptNames.isEmpty() || selectedVaccineConceptNames.contains(
-                        observation.vaccineName
-                    )
-                isAdministerDateInRange && isVaccineSelected
-            }
-            .groupBy { it.vaccineName }
-
-        var currentRow = 4
-        filteredAndGroupedData.forEach { (vaccineName, observations) ->
-            val row = sheet.createRow(currentRow++)
-            row.createCell(0).setCellValue(findVaccineLabel(vaccineName))
-
-            val ageLocationCounts = mutableMapOf<String, Int>()
-
-            ageGroups.forEach { ageGroup ->
-                locations.forEach { location ->
-                    ageLocationCounts["$ageGroup-$location"] = 0
-                }
-            }
-
-            observations.forEach { observation ->
-                val ageGroup = when (observation.ageGroup) {
-                    Constants.GROUP_AGE_FIRST -> Constants.GROUP_AGE_FIRST
-                    Constants.GROUP_AGE_SECOND -> Constants.GROUP_AGE_SECOND
-                    Constants.GROUP_AGE_THIRD -> Constants.GROUP_AGE_THIRD
-                    else -> null
-                }
-                if (ageGroup != null && observation.visitLocation.isNotEmpty()) {
-                    val key = "$ageGroup-${observation.visitLocation}"
-                    ageLocationCounts[key] = ageLocationCounts.getOrDefault(key, 0) + 1
-                }
-            }
-
-            var cellIndex = 1
-            var rowTotal = 0
-            ageGroups.forEach { ageGroup ->
-                locations.forEach { location ->
-                    val count = ageLocationCounts["$ageGroup-$location"]?.toDouble() ?: 0.0
-                    row.createCell(cellIndex).setCellValue(count)
-
-                    columnSums[cellIndex] += count.toInt()
-                    rowTotal += count.toInt()
-                    cellIndex++
-                }
-            }
-
-            row.createCell(cellIndex).setCellValue(rowTotal.toDouble())
-            columnSums[cellIndex] += rowTotal
-        }
-
-        val totalsRow = sheet.createRow(currentRow)
-        totalsRow.createCell(0).setCellValue(getString(R.string.vaccine_total_label))
-        for (colIndex in 1..columnSums.lastIndex) {
-            totalsRow.createCell(colIndex).setCellValue(columnSums[colIndex].toDouble())
-        }
-
-        sheet.setColumnWidth(0, 5000)
-        for (i in 1..(ageGroups.size * locations.size)) {
-            sheet.setColumnWidth(i, 4000)
-        }
-        sheet.setColumnWidth(currentColumn, 4000)
-
         val fileName = "${buildFileName()}.xls"
-        val filePath = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            fileName
-        )
+        val mimeType = "application/vnd.ms-excel"
 
-        try {
-            FileOutputStream(filePath).use { outputStream ->
-                workbook.write(outputStream)
-                workbook.close()
+        FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
+            val workbook = HSSFWorkbook()
+            val sheet =
+                workbook.createSheet(getString(R.string.vaccines_overview_title).replace(" ", "_"))
+
+            val dateRangeRow = sheet.createRow(0)
+            val dateRangeText = if (startDate != null && endDate != null) {
+                getString(
+                    R.string.vaccines_excel_report_date_range_label_set, startDate.toString(
+                        DateFormat.FORMAT_DATE.toString()
+                    ), endDate.toString(DateFormat.FORMAT_DATE.toString())
+                )
+            } else {
+                getString(R.string.vaccines_excel_report_date_range_label_not_set)
             }
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.visits_overview_saving_file_success_message),
-                Toast.LENGTH_LONG
-            ).show()
-        } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.visits_overview_saving_file_failure_message),
-                Toast.LENGTH_LONG
-            ).show()
+            dateRangeRow.createCell(0).setCellValue(dateRangeText)
+            sheet.addMergedRegion(CellRangeAddress(0, 0, 0, 2))
+
+            sheet.createRow(1)
+
+            val titleRow = sheet.createRow(2)
+            titleRow.createCell(0).setCellValue(getString(R.string.vaccine_name_label))
+            sheet.addMergedRegion(CellRangeAddress(2, 3, 0, 0))
+
+            val ageGroups =
+                listOf(Constants.GROUP_AGE_FIRST, Constants.GROUP_AGE_SECOND, Constants.GROUP_AGE_THIRD)
+            val locations = listOf(
+                Constants.VISIT_PLACE_STATIC,
+                Constants.VISIT_PLACE_OUTREACH,
+                Constants.VISIT_PLACE_SCHOOL
+            )
+
+            val ageGroupRow = sheet.getRow(2) ?: sheet.createRow(2)
+            val locationsRow = sheet.createRow(3)
+
+            var currentColumn = 1
+            ageGroups.forEach { ageGroup ->
+                sheet.addMergedRegion(CellRangeAddress(2, 2, currentColumn, currentColumn + 2))
+                ageGroupRow.createCell(currentColumn).setCellValue(ageGroup)
+
+                locations.forEachIndexed { index, location ->
+                    locationsRow.createCell(currentColumn + index).setCellValue(location)
+                }
+                currentColumn += locations.size
+            }
+
+            ageGroupRow.createCell(currentColumn).setCellValue(getString(R.string.vaccine_total_label))
+            sheet.addMergedRegion(CellRangeAddress(2, 3, currentColumn, currentColumn))
+
+            val columnSums = MutableList(currentColumn + 1) { 0 }
+
+            val filteredAndGroupedData = vaccinesData
+                .filter { observation ->
+                    val administerDate = DateUtil.convertStringToDate(
+                        observation.administerDate,
+                        DateFormat.FORMAT_DATE.toString()
+                    )
+                    val isAdministerDateInRange =
+                        (startDate == null || administerDate!! >= startDate.toDate()) &&
+                                (endDate == null || administerDate!! <= endDate.toDate())
+                    val isVaccineSelected =
+                        selectedVaccineConceptNames.isEmpty() || selectedVaccineConceptNames.contains(
+                            observation.vaccineName
+                        )
+                    isAdministerDateInRange && isVaccineSelected
+                }
+                .groupBy { it.vaccineName }
+
+            var currentRow = 4
+            filteredAndGroupedData.forEach { (vaccineName, observations) ->
+                val row = sheet.createRow(currentRow++)
+                row.createCell(0).setCellValue(findVaccineLabel(vaccineName))
+
+                val ageLocationCounts = mutableMapOf<String, Int>()
+
+                ageGroups.forEach { ageGroup ->
+                    locations.forEach { location ->
+                        ageLocationCounts["$ageGroup-$location"] = 0
+                    }
+                }
+
+                observations.forEach { observation ->
+                    val ageGroup = when (observation.ageGroup) {
+                        Constants.GROUP_AGE_FIRST -> Constants.GROUP_AGE_FIRST
+                        Constants.GROUP_AGE_SECOND -> Constants.GROUP_AGE_SECOND
+                        Constants.GROUP_AGE_THIRD -> Constants.GROUP_AGE_THIRD
+                        else -> null
+                    }
+                    if (ageGroup != null && observation.visitLocation.isNotEmpty()) {
+                        val key = "$ageGroup-${observation.visitLocation}"
+                        ageLocationCounts[key] = ageLocationCounts.getOrDefault(key, 0) + 1
+                    }
+                }
+
+                var cellIndex = 1
+                var rowTotal = 0
+                ageGroups.forEach { ageGroup ->
+                    locations.forEach { location ->
+                        val count = ageLocationCounts["$ageGroup-$location"]?.toDouble() ?: 0.0
+                        row.createCell(cellIndex).setCellValue(count)
+
+                        columnSums[cellIndex] += count.toInt()
+                        rowTotal += count.toInt()
+                        cellIndex++
+                    }
+                }
+
+                row.createCell(cellIndex).setCellValue(rowTotal.toDouble())
+                columnSums[cellIndex] += rowTotal
+            }
+
+            val totalsRow = sheet.createRow(currentRow)
+            totalsRow.createCell(0).setCellValue(getString(R.string.vaccine_total_label))
+            for (colIndex in 1..columnSums.lastIndex) {
+                totalsRow.createCell(colIndex).setCellValue(columnSums[colIndex].toDouble())
+            }
+
+            sheet.setColumnWidth(0, 5000)
+            for (i in 1..(ageGroups.size * locations.size)) {
+                sheet.setColumnWidth(i, 4000)
+            }
+            sheet.setColumnWidth(currentColumn, 4000)
+
+            workbook.write(outputStream)
+            workbook.close()
         }
     }
 
