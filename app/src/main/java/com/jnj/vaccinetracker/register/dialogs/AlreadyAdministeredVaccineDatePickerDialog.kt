@@ -61,8 +61,8 @@ class AlreadyAdministeredVaccineDatePickerDialog(
 
         val c = Calendar.getInstance()
         datePicker.maxDate = c.timeInMillis
-        val birthDate = allDataViewModel.registerParticipant.value?.birthDate?.birthDateToString() ?: allDataViewModel.participant.value?.birthDateText
-        birthDate?.let {
+        val birthDate = allDataViewModel.getParticipantBirthDate()
+        birthDate.let {
             try {
                 val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val birthDateMillis = sdf.parse(it)?.time ?: return

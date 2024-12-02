@@ -123,7 +123,7 @@ class HistoricalDataForVisitTypeFragment :
 
       if (!doesSubstancesHaveAnyDates() && viewModel.isLocalEdit.value != true) {
          viewModel.filterSubstanceDates.value = false
-         val birthDate = allDataViewModel.registerParticipant.value?.birthDate?.birthDateToString() ?: allDataViewModel.participant.value!!.birthDateText
+         val birthDate = allDataViewModel.getParticipantBirthDate()
          HistoricalVisitDateDialog.create(birthDate = birthDate).show(childFragmentManager, TAG_HISTORICAL_VISIT_DATE)
       }
       lifecycleScope.launch {
