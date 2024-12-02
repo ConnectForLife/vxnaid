@@ -121,4 +121,6 @@ object Constants {
 
     const val VXNAID_DATE_CONCEPT_NAME_SUFFIX = "Vxnaid Date"
     const val NOT_NEEDED_STRING_VALUE = "notNeeded"
+
+    const val AT_BIRTH_VISIT_TYPE = "At Birth"
 }

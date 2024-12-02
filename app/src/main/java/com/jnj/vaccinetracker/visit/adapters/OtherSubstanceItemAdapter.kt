@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.RegisterParticipant
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
@@ -123,7 +124,7 @@ class OtherSubstanceItemAdapter(
             val itemValue = itemsValues?.get(item.conceptName)
 
             when (getItemViewType(index)) {
-                TYPE_TEXT, TYPE_NUMBER, TYPE_NUMBER_DECIMAL -> handleTextInputValidation(index, itemValue, recyclerView, errorList)
+                TYPE_TEXT, TYPE_NUMBER, TYPE_NUMBER_DECIMAL -> handleTextInputValidation(index, itemValue, item, recyclerView, errorList)
                 TYPE_RADIO -> handleRadioValidation(index, itemValue, recyclerView, errorList)
                 TYPE_HARDCODED_Z_SCORE -> handleZScoreValidation(index, recyclerView, errorList)
             }
@@ -131,7 +132,7 @@ class OtherSubstanceItemAdapter(
         return errorList
     }
 
-    private fun handleTextInputValidation(index: Int, itemValue: String?, recyclerView: RecyclerView, errorList: MutableList<String>) {
+    private fun handleTextInputValidation(index: Int, itemValue: String?, otherSubstance: OtherSubstanceDataModel, recyclerView: RecyclerView, errorList: MutableList<String>) {
         val holder = recyclerView.findViewHolderForAdapterPosition(index) as? TextViewHolder
         val label = holder?.labelTextView?.text
         val errorMessage = "Please fill $label before submitting"
@@ -140,8 +141,20 @@ class OtherSubstanceItemAdapter(
             holder?.inputEditText?.error = errorMessage
             errorList.add(errorMessage)
         } else {
-            holder?.inputEditText?.error = null
+            if (isWeightAtBirthValid(otherSubstance, itemValue)) {
+                holder?.inputEditText?.error = "Value cannot be less than 1 and greater than 9"
+                errorList.add("Value of $label cannot be less than 1 and greater than 9")
+            } else {
+                holder?.inputEditText?.error = null
+            }
         }
+    }
+
+    private fun isWeightAtBirthValid(
+        otherSubstance: OtherSubstanceDataModel,
+        weightValue: String
+    ): Boolean {
+        return otherSubstance.visitType == Constants.AT_BIRTH_VISIT_TYPE && otherSubstance.conceptName == Constants.CONCEPT_NAME_WEIGHT_KG && (weightValue.toInt() < 1 || weightValue.toInt() > 9)
     }
 
     private fun handleRadioValidation(index: Int, itemValue: String?, recyclerView: RecyclerView, errorList: MutableList<String>) {
