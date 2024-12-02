@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.visitsoverview.screens
 
 import android.content.ContentValues
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -151,74 +152,48 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     }
 
     private fun exportToExcel(visits: List<VisitDataDTO>) {
-        val resolver = requireContext().contentResolver
         val fileName = "${buildFileName()}.xls"
-        val mimeType = "application/vnd.ms-excel"
+        val filePath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName)
 
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-            put(MediaStore.Downloads.MIME_TYPE, mimeType)
-            put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+        val workbook = HSSFWorkbook()
+        val sheet = workbook.createSheet(visitsKey.replace(" ", "_"))
+
+        val headerRow = sheet.createRow(0)
+        headerRow.createCell(0).setCellValue(Constants.VISIT_DATE_FILE_COLUMN_HEADER)
+        headerRow.createCell(1).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
+        headerRow.createCell(2).setCellValue(Constants.CLIENT_NAME_FILE_COLUMN_HEADER)
+        headerRow.createCell(3).setCellValue(Constants.PHONE_NUMBER_FILE_COLUMN_HEADER)
+
+        visits.forEachIndexed { index, visit ->
+            val row = sheet.createRow(index + 1)
+            row.createCell(0).setCellValue(visit.formattedStartDateTime)
+            row.createCell(1).setCellValue(visit.participant.participantId)
+            row.createCell(2).setCellValue(visit.participant.fullName)
+            row.createCell(3).setCellValue(visit.participant.phone)
         }
 
-        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-        uri?.let {
-            try {
-                resolver.openOutputStream(uri)?.use { outputStream ->
-                    val workbook = HSSFWorkbook()
-                    val sheet = workbook.createSheet(visitsKey.replace(" ", "_"))
+        sheet.setColumnWidth(0, 4000)
+        sheet.setColumnWidth(1, 4000)
+        sheet.setColumnWidth(2, 7000)
+        sheet.setColumnWidth(3, 4000)
 
-                    // Create header row
-                    val headerRow = sheet.createRow(0)
-                    headerRow.createCell(0).setCellValue(Constants.VISIT_DATE_FILE_COLUMN_HEADER)
-                    headerRow.createCell(1).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
-                    headerRow.createCell(2).setCellValue(Constants.CLIENT_NAME_FILE_COLUMN_HEADER)
-                    headerRow.createCell(3).setCellValue(Constants.PHONE_NUMBER_FILE_COLUMN_HEADER)
-
-
-                    visits.forEachIndexed { index, visit ->
-                        val row = sheet.createRow(index + 1)
-                        row.createCell(0).setCellValue(visit.formattedStartDateTime)
-                        row.createCell(1).setCellValue(visit.participant.participantId)
-                        row.createCell(2).setCellValue(visit.participant.fullName)
-                        row.createCell(3).setCellValue(visit.participant.phone)
-                    }
-
-                    // Write to file
-                    workbook.write(outputStream)
-                    workbook.close()
-                }
-
-                Toast.makeText(requireContext(), "File saved successfully", Toast.LENGTH_LONG).show()
-
-                // Automatically open the file
-                val openIntent = Intent(Intent.ACTION_VIEW).apply {
-                    setDataAndType(uri, mimeType)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                startActivity(openIntent)
-            } catch (e: Exception) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.visits_overview_saving_file_failure_message),
-                    Toast.LENGTH_LONG
-                ).show()
+        try {
+            FileOutputStream(filePath).use { outputStream ->
+                workbook.write(outputStream)
+                workbook.close()
             }
-        } ?: run {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.visits_overview_saving_file_failure_message),
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_success_message), Toast.LENGTH_LONG).show()
+            openFile(filePath, "application/vnd.ms-excel")
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_failure_message), Toast.LENGTH_LONG).show()
         }
     }
-
 
     private fun exportToCSV(visits: List<VisitDataDTO>) {
         val resolver = requireContext().contentResolver
         val fileName = "${buildFileName()}.csv"
         val mimeType = "text/csv"
-        val titleRowColumns = "${Constants.VISIT_DATE_FILE_COLUMN_HEADER},${Constants.CLIENT_ID_FILE_COLUMN_HEADER},${Constants.CLIENT_NAME_FILE_COLUMN_HEADER},${Constants.PHONE_NUMBER_FILE_COLUMN_HEADER}\n"
+        val titleRowColumns = "${Constants.VISIT_DATE_FILE_COLUMN_HEADER}, ${Constants.CLIENT_ID_FILE_COLUMN_HEADER}, ${Constants.CLIENT_NAME_FILE_COLUMN_HEADER}, ${Constants.PHONE_NUMBER_FILE_COLUMN_HEADER} \n"
         val contentValues = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, fileName)
             put(MediaStore.Downloads.MIME_TYPE, mimeType)
@@ -231,63 +206,37 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
                 outputStream?.bufferedWriter()?.use { writer ->
                     writer.write(titleRowColumns)
                     visits.forEach { visit ->
-                        writer.write(
-                            "${visit.formattedStartDateTime},${visit.participant.participantId},${visit.participant.fullName},${visit.participant.phone ?: ""}\n"
-                        )
+                        writer.write("${visit.formattedStartDateTime}, ${visit.participant.participantId}, ${visit.participant.fullName}, ${visit.participant.phone ?: ""} \n")
                     }
                 }
             }
-            openFile(File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName), mimeType)
+            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_success_message), Toast.LENGTH_LONG).show()
+            openFile(uri, mimeType)
         } ?: run {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.visits_overview_saving_file_failure_message),
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(requireContext(), getString(R.string.visits_overview_saving_file_failure_message), Toast.LENGTH_LONG).show()
         }
     }
 
     private fun openFile(file: File, mimeType: String) {
-        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver = requireContext().contentResolver
-            val contentValues = ContentValues().apply {
-                put(MediaStore.Files.FileColumns.DISPLAY_NAME, file.name)
-                put(MediaStore.Files.FileColumns.MIME_TYPE, mimeType)
-                put(MediaStore.Files.FileColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-            }
-            resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-        } else {
-            FileProvider.getUriForFile(
-                requireContext(),
-                "${requireContext().packageName}.provider",
-                file
-            )
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.file provider",
+            file
+        )
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeType)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-
-        if (uri != null) {
-            val openIntent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, mimeType)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            try {
-                startActivity(openIntent)
-            } catch (e: Exception) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.visits_overview_saving_file_failure_message),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.visits_overview_saving_file_failure_message),
-                Toast.LENGTH_LONG
-            ).show()
-        }
+        startActivity(Intent.createChooser(intent, getString(R.string.visits_overview_saving_file_success_message)))
     }
 
+    private fun openFile(uri: Uri, mimeType: String) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeType)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(intent, getString(R.string.visits_overview_saving_file_success_message)))
+    }
 
     private fun buildFileName(): String {
         return "${visitsKey.replace(" ", "_")}_${
