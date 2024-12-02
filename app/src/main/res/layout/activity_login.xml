@@ -126,21 +126,30 @@
                     android:layout_height="50dp"
                     app:srcCompat="@drawable/ic_key" />
 
-                <EditText
-                    android:id="@+id/edit_password"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputPassword"
                     android:layout_width="@dimen/login_input_field_width"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:autofillHints="@string/login_label_password"
-                    android:hint="@string/login_label_password"
-                    android:imeActionLabel="@string/login_label_sign_in"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword"
-                    android:selectAllOnFocus="true"
-                    android:textSize="18sp"
-                    app:error="@{viewModel.passwordValidationMessage}" />
+                    android:layout_marginEnd="12dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    app:endIconMode="password_toggle">
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="@string/login_label_password"
+                        android:hint="@string/login_label_password"
+                        android:imeActionLabel="@string/login_label_sign_in"
+                        android:imeOptions="actionDone"
+                        android:inputType="textPassword"
+                        android:textSize="18sp"
+                        android:selectAllOnFocus="true" />
+
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/input_group_login_visit_location"

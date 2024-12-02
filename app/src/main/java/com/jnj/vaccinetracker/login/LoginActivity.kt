@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
@@ -59,6 +61,19 @@ class LoginActivity : BaseActivity() {
             } else {
                 false
             }
+        }
+
+        val textInputPasswordLayout = findViewById<TextInputLayout>(R.id.textInputPassword)
+        val editPassword = findViewById<TextInputEditText>(R.id.edit_password)
+
+        textInputPasswordLayout.setEndIconOnClickListener {
+            if (editPassword.inputType == (android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+                editPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                editPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+
+            editPassword.setSelection(editPassword.text?.length ?: 0)
         }
 
         val visitPlaces = listOf(

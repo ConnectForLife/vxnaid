@@ -224,7 +224,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             val birthWeight = birthWeightString.toIntOrNull()
 
             if (birthWeight != null) {
-                if (birthWeight >= 9) {
+                if (birthWeight < 1 || birthWeight > 9) {
                     binding.editBirthWeight.text = null
                 } else {
                     viewModel.setBirthWeight(birthWeight.toString())
