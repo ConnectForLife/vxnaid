@@ -123,7 +123,8 @@ class HistoricalDataForVisitTypeFragment :
 
       if (!doesSubstancesHaveAnyDates() && viewModel.isLocalEdit.value != true) {
          viewModel.filterSubstanceDates.value = false
-         HistoricalVisitDateDialog.create(birthDate = flowViewModel.participant.value!!.birthDateText).show(childFragmentManager, TAG_HISTORICAL_VISIT_DATE)
+         val birthDate = allDataViewModel.registerParticipant.value?.birthDate?.birthDateToString() ?: allDataViewModel.participant.value!!.birthDateText
+         HistoricalVisitDateDialog.create(birthDate = birthDate).show(childFragmentManager, TAG_HISTORICAL_VISIT_DATE)
       }
       lifecycleScope.launch {
          getAllSubstancesFromAllVisitsForGivenVisitType(visitTypeName)

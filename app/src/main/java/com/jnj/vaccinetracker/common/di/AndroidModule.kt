@@ -46,6 +46,7 @@ import com.jnj.vaccinetracker.common.dialogs.DatePickerDialog
 import com.jnj.vaccinetracker.common.ui.dialog.ValidationErrorDialog
 import com.jnj.vaccinetracker.register.dialogs.HistoricalVisitDateDialog
 import com.jnj.vaccinetracker.participantflow.dialogs.AdverseEffectsSuccessfulDialog
+import com.jnj.vaccinetracker.register.dialogs.AlreadyAdministeredVaccineDatePickerDialog
 import com.jnj.vaccinetracker.register.dialogs.MultipleVisitsDialog
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
@@ -188,6 +189,9 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindVaccineDialog(): VaccineDialog
+
+    @ContributesAndroidInjector
+    fun bindAlreadyAdministeredVaccineDatePickerDialog(): AlreadyAdministeredVaccineDatePickerDialog
 
     @ContributesAndroidInjector
     fun bindHistoricalVisitDateDialog(): HistoricalVisitDateDialog

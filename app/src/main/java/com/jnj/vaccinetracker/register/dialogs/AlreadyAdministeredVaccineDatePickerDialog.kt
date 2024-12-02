@@ -1,18 +1,28 @@
 package com.jnj.vaccinetracker.register.dialogs
 
 import android.app.Dialog
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.DatePicker
-import androidx.fragment.app.DialogFragment
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.activityViewModels
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
+import com.jnj.vaccinetracker.register.screens.RegisterParticipantHistoricalDataViewModel
 import com.soywiz.klock.DateTime
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 class AlreadyAdministeredVaccineDatePickerDialog(
     private var selectedDate: DateTime? = null,
     private val listener: ScheduleVisitDatePickerDialog.OnDateSelectedListener? = null
-) : DialogFragment() {
+) : BaseDialogFragment() {
+    private val allDataViewModel: RegisterParticipantHistoricalDataViewModel by activityViewModels { viewModelFactory }
 
     private lateinit var btnOk: Button
     private lateinit var btnCancel: Button
@@ -51,6 +61,16 @@ class AlreadyAdministeredVaccineDatePickerDialog(
 
         val c = Calendar.getInstance()
         datePicker.maxDate = c.timeInMillis
+        val birthDate = allDataViewModel.registerParticipant.value?.birthDate?.birthDateToString() ?: allDataViewModel.participant.value?.birthDateText
+        birthDate?.let {
+            try {
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val birthDateMillis = sdf.parse(it)?.time ?: return
+                datePicker.minDate = birthDateMillis
+            } catch (e: ParseException) {
+                Log.e("DatePicker", "Invalid birth date format", e)
+            }
+        }
 
         if (selectedDate == null) {
             val year = c.get(Calendar.YEAR)
