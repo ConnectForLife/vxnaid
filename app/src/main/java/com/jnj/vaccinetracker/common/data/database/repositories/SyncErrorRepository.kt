@@ -1,5 +1,7 @@
 package com.jnj.vaccinetracker.common.data.database.repositories
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.jnj.vaccinetracker.common.data.database.daos.SyncErrorDao
 import com.jnj.vaccinetracker.common.data.database.entities.SyncErrorEntity
 import com.jnj.vaccinetracker.common.data.database.helpers.chunkedQueryByIds
@@ -20,6 +22,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@RequiresApi(Build.VERSION_CODES.O)
 class SyncErrorRepository @Inject constructor(
     private val syncErrorDao: SyncErrorDao,
     private val syncErrorMetadataJsonMapper: SyncErrorJsonMapper,
@@ -50,9 +53,7 @@ class SyncErrorRepository @Inject constructor(
             dateCreated = dateCreated,
             syncErrorState = syncErrorState
         )
-
-
-    private suspend fun RoomSyncErrorOverviewModel.toDomain() = SyncErrorOverview(syncErrorMetadataJsonMapper.fromJson(metadataJson), dateCreated)
+    private suspend fun RoomSyncErrorOverviewModel.toDomain() = SyncErrorOverview(syncErrorMetadataJsonMapper.fromJson(metadataJson), stackTrace, dateCreated)
 
     suspend fun findAllSyncErrorKeysByType(syncErrorStates: List<SyncErrorState>, type: String): List<String> {
         return syncErrorDao.findAllIdsByType(syncErrorStates, type)

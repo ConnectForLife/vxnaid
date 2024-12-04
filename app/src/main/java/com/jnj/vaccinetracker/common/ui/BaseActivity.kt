@@ -30,9 +30,9 @@ import javax.inject.Inject
 abstract class BaseActivity :
     DaggerAppCompatActivity(), ResourcesWrapper, UiFlowExt {
 
-    private companion object {
+    companion object {
         private const val TAG_LOGIN_DIALOG = "loginDialog"
-        private const val TAG_SYNC_ERROR_DIALOG = "syncErrorDialog"
+        const val TAG_SYNC_ERROR_DIALOG = "syncErrorDialog"
     }
 
     @Inject
@@ -129,6 +129,8 @@ abstract class BaseActivity :
         super.onResume()
         checkIrisScannerRecentlyAttached()
         SyncAndroidService.start(this)
+        val dialogFragment = supportFragmentManager.findFragmentByTag(TAG_SYNC_ERROR_DIALOG) as? BaseDialogFragment
+        dialogFragment?.dismissAllowingStateLoss()
     }
 
     override fun getInt(resId: Int): Int {

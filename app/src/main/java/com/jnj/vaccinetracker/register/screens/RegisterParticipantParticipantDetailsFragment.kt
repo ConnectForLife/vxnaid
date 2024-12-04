@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.register.screens
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +25,7 @@ import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.BaseActivity
+import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.ui.model.DisplayValue
 import com.jnj.vaccinetracker.databinding.FragmentRegisterParticipantParticipantDetailsBinding
@@ -42,6 +44,7 @@ import kotlinx.coroutines.flow.onEach
  * @version 1
  */
 @SuppressWarnings("TooManyFunctions")
+@RequiresApi(Build.VERSION_CODES.O)
 class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     HomeLocationPickerDialog.HomeLocationPickerListener,
     BirthDatePickerDialog.BirthDatePickerListener,
@@ -95,6 +98,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         setupPhoneInput()
         setupClickListeners()
         setupInputListeners()
+        if (flowViewModel.isDuplicateIdEdgeCase.value) {
+            onIsDuplicateIdEdgeCase()
+        }
 
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(true)
@@ -185,9 +191,60 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         if (viewModel.participantUuid.value != null) {
             binding.rbGenderMale.isEnabled = false
             binding.rbGenderFemale.isEnabled = false
-            binding.btnScanParticipantId.visibility = View.INVISIBLE
+            if (!flowViewModel.isDuplicateIdEdgeCase.value) {
+                binding.btnScanParticipantId.visibility = View.INVISIBLE
+            }
             if (viewModel.birthWeight.value != null) {
                 binding.editBirthWeight.isEnabled = false
+            }
+        }
+    }
+
+    private fun onIsDuplicateIdEdgeCase() {
+        displayDialogForEdgeCase()
+        disableFieldsForEdgeCase()
+        changeVisibilityOfFieldsForEdgeCase()
+    }
+
+    private fun displayDialogForEdgeCase() {
+        AlertDialog.Builder(context).apply {
+            setTitle(R.string.edge_case_duplicate_id_title)
+            setMessage(R.string.edge_case_duplicate_id_message)
+            setPositiveButton(R.string.general_label_ok) { dialog, _ ->
+                dialog.dismiss()
+            }
+            create()
+            show()
+        }
+    }
+
+    private fun changeVisibilityOfFieldsForEdgeCase() {
+        binding.btnGoToHistorical.visibility = View.INVISIBLE
+        binding.btnGenerateQrCode.visibility = View.VISIBLE
+        binding.btnScanParticipantId.visibility = View.VISIBLE
+    }
+
+    private fun disableFieldsForEdgeCase() {
+        if (flowViewModel.isDuplicateIdEdgeCase.value) {
+            disableAllFieldsExcept(binding.root, setOf(
+                binding.btnGenerateQrCode.id,
+                binding.textViewParticipantId.id,
+                binding.btnSubmit.id,
+                binding.btnScanParticipantId.id
+            ))
+            return
+        }
+    }
+
+    private fun disableAllFieldsExcept(root: View, exceptions: Set<Int>) {
+        if (root is ViewGroup) {
+            for (i in 0 until root.childCount) {
+                val child = root.getChildAt(i)
+                if (child is ViewGroup) {
+                    disableAllFieldsExcept(child, exceptions)
+                } else if (child.id !in exceptions) {
+                    child.isEnabled = false
+                }
             }
         }
     }
@@ -406,7 +463,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 rightEyeScanned = flowViewModel.rightEyeScanned.value,
                 phoneNumber = flowViewModel.phoneNumber.value,
                 participantUuid = flowViewModel.participantUuid.value,
-                registerDetails = flowViewModel.registerDetails.value
+                registerDetails = flowViewModel.registerDetails.value,
+                isDuplicateIdEdgeCase = flowViewModel.isDuplicateIdEdgeCase.value
             )
         )
     }

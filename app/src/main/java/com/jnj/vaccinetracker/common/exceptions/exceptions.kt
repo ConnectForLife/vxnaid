@@ -27,7 +27,13 @@ class InvalidSessionException : AppIoException()
 
 class MatchNotFoundException : AppIoException()
 
-class ParticipantAlreadyExistsException(override val message: String? = null) : AppIoException()
+class ParticipantAlreadyExistsException(override val message: String? = null) : AppIoException() {
+    companion object {
+        fun toStringExceptionName(): String {
+            return "ParticipantAlreadyExistsException"
+        }
+    }
+}
 
 class ParticipantUuidAlreadyExistsException : AppIoException()
 class ParticipantDeletedException : AppIoException()
