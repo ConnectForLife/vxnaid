@@ -137,9 +137,9 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
                startActivity(ParticipantFlowActivity.create(requireContext()))
             } else {
                // If participant passed, we continue
+               startActivity(ParticipantFlowActivity.create(requireContext()))
                startParticipantVisitContraindications(participant)
             }
-            requireActivity().finish()
          }
 
          Constants.REQ_VISITS_OVERVIEW -> {
