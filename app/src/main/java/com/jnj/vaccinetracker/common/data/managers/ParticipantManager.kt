@@ -52,7 +52,6 @@ class ParticipantManager @Inject constructor(
     /**
      * Gets the person image for a person and decodes the base64 response to a byte array
      */
-    @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun getPersonImage(personUuid: String): ImageBytes {
         return getPersonImageUseCase.getPersonImage(personUuid) ?: error("couldn't find person image for person $personUuid")
     }
@@ -121,7 +120,7 @@ class ParticipantManager @Inject constructor(
         val childNumber: String?,
         val birthWeight: String?,
         val gender: Gender,
-        val birthDate: DateTime,
+        val birthDate: DateTime?,
         val isBirthDateEstimated: Boolean,
         val telephone: String?,
         val siteUuid: String,
@@ -161,7 +160,7 @@ class ParticipantManager @Inject constructor(
             childNumber = registerDetails.childNumber,
             gender = registerDetails.gender,
             isBirthDateEstimated = registerDetails.isBirthDateEstimated,
-            birthDate = BirthDate(registerDetails.birthDate.unixMillisLong),
+            birthDate = BirthDate(registerDetails.birthDate!!.unixMillisLong),
             address = registerDetails.address,
             attributes = personAttributes,
             image = registerDetails.picture,
