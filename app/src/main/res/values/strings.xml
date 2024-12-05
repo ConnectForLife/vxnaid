@@ -79,7 +79,7 @@
     <string name="match_or_register_patient_step_identify">Identify or register the Child</string>
     <string name="match_or_register_patient_step_visit">Follow-up on Child\'s visits</string>
     <string name="match_or_register_patient_step_index">Step %s</string>
-    <string name="match_or_register_patient_btn_continue">Complete Return Visit </string>
+    <string name="match_or_register_patient_btn_continue">Next </string>
     <string name="match_or_register_patient_intro">You will be guided step-by-step to identify or register the Child</string>
     <string name="match_or_register_patient_intro_title">Match or register</string>
     <string name="iris_scan_left_title">Iris scan - Left eye</string>
