@@ -525,6 +525,7 @@
                     android:text="@string/participant_registration_details_label_estimated_age"
                     android:textAppearance="@style/LabelText" />
 
+
                 <TextView
                     android:id="@+id/textView_participantEstimatedAge"
                     android:layout_width="0dp"
