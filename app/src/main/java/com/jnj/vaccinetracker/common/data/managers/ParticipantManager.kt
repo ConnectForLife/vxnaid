@@ -52,6 +52,7 @@ class ParticipantManager @Inject constructor(
     /**
      * Gets the person image for a person and decodes the base64 response to a byte array
      */
+    @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun getPersonImage(personUuid: String): ImageBytes {
         return getPersonImageUseCase.getPersonImage(personUuid) ?: error("couldn't find person image for person $personUuid")
     }
