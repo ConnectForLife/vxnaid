@@ -98,7 +98,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         setupPhoneInput()
         setupClickListeners()
         setupInputListeners()
-        if (flowViewModel.isDuplicateIdEdgeCase.value) {
+        if (flowViewModel.isDuplicateId.value) {
             onIsDuplicateIdEdgeCase()
         }
 
@@ -191,7 +191,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         if (viewModel.participantUuid.value != null) {
             binding.rbGenderMale.isEnabled = false
             binding.rbGenderFemale.isEnabled = false
-            if (!flowViewModel.isDuplicateIdEdgeCase.value) {
+            if (!flowViewModel.isDuplicateId.value) {
                 binding.btnScanParticipantId.visibility = View.INVISIBLE
             }
             if (viewModel.birthWeight.value != null) {
@@ -225,7 +225,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     }
 
     private fun disableFieldsForEdgeCase() {
-        if (flowViewModel.isDuplicateIdEdgeCase.value) {
+        if (flowViewModel.isDuplicateId.value) {
             disableAllFieldsExcept(binding.root, setOf(
                 binding.btnGenerateQrCode.id,
                 binding.textViewParticipantId.id,
@@ -464,7 +464,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 phoneNumber = flowViewModel.phoneNumber.value,
                 participantUuid = flowViewModel.participantUuid.value,
                 registerDetails = flowViewModel.registerDetails.value,
-                isDuplicateIdEdgeCase = flowViewModel.isDuplicateIdEdgeCase.value
+                isDuplicateId = flowViewModel.isDuplicateId.value
             )
         )
     }

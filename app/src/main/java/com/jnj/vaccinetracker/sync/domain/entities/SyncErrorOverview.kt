@@ -135,7 +135,7 @@ data class SyncErrorOverview(val metadata: SyncErrorMetadata, val stackTrace: St
             countryCode = null,
             phoneNumber = null,
             participantUuid = participantUuid,
-            isDuplicateIdEdgeCase = true
+            isDuplicateId = true
         )
 
         if (context is Activity) {
