@@ -507,6 +507,7 @@
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorPrimary"
                     android:text="@string/participant_registration_details_action_set_birth_date"
+                    android:enabled="@{viewModel.estimatedAgeText == null || viewModel.estimatedAgeText.isEmpty()}"
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
@@ -546,7 +547,9 @@
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorPrimary"
                     android:text="@string/participant_registration_details_action_set_estimated_age"
-                    android:textAppearance="@style/ButtonTextStyling" />
+                    android:textAppearance="@style/ButtonTextStyling"
+                    android:enabled="@{viewModel.birthDateText == null || viewModel.birthDateText.isEmpty()}" />
+
             </LinearLayout>
 
             <LinearLayout

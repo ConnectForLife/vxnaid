@@ -43,7 +43,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
             childNumber = "",
             birthWeight = "",
             gender = Gender.MALE,
-            birthDate = DateTime.now(),
+            birthDate = null,
             isBirthDateEstimated = false,
             telephone = "",
             siteUuid = "",
