@@ -549,6 +549,7 @@
                     android:textAppearance="@style/ButtonTextStyling"
                     android:enabled="@{viewModel.birthDateText == null || viewModel.birthDateText.isEmpty()}" />
 
+
             </LinearLayout>
 
             <LinearLayout
