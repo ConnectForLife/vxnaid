@@ -73,7 +73,7 @@
     <string name="site_selection_error_no_site_selected">Please select a site</string>
     <string name="match_or_register_patient_welcome">Welcome operator %s, you are currently at site %s</string>
     <string name="match_or_register_patient_step_id_card">Scan or enter the Child\'s ID</string>
-    <string name="match_or_register_patient_step_phone">Enter the Child\'s phone number</string>
+    <string name="match_or_register_patient_step_phone">Enter the phone number</string>
     <string name="match_or_register_patient_step_iris_scan">Iris scan the Child\'s eye(s)</string>
     <string name="match_or_register_patient_step_identify">Identify or register the Child</string>
     <string name="match_or_register_patient_step_visit">Follow-up on Child\'s visits</string>
@@ -93,8 +93,8 @@
     <string name="participant_flow_participant_id_input_hint">#1234567890</string>
     <string name="participant_flow_participant_id_label_or">- OR -</string>
     <string name="participant_flow_participant_id_label_scan_code">QR-Code Scan</string>
-    <string name="participant_flow_phone_title">Child Mobile Phone</string>
-    <string name="participant_flow_phone_description">Please enter the Child mobile phone number:</string>
+    <string name="participant_flow_phone_title">Enter Mobile Phone</string>
+    <string name="participant_flow_phone_description">Please enter the  mobile phone number:</string>
     <string name="participant_flow_no_phone_description">Please confirm that the Child has no mobile phone. This will significantly increase the matching time.</string>
     <string name="iris_scan_icon_description">Icon of iris scan</string>
     <string name="iris_scan_intro_right">Please scan the Child\'s RIGHT eye</string>
