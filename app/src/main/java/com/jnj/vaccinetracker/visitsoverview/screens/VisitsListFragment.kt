@@ -194,7 +194,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             outputStream.bufferedWriter().use { writer ->
                 writer.write(titleRowColumns)
                 visits.forEach { visit ->
-                    writer.write("${visit.formattedStartDateTime}, ${visit.participant.participantId},${visit.participant.motherName},${visit.participant.phone ?: ""} \n")
+                    writer.write("${visit.formattedStartDateTime}, ${visit.participant.participantId},${visit.participant.fullName},${visit.participant.motherName},${visit.participant.phone ?: ""} \n")
                 }
             }
         }
