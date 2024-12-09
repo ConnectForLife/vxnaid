@@ -18,6 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="20dp"
             android:text="@{visit.formattedStartDateTime}"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -25,13 +26,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_clientId"
-            app:layout_constraintWidth_percent="0.28" />
+            app:layout_constraintWidth_percent="0.21" />
 
         <TextView
             android:id="@+id/tv_clientId"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="20dp"
             android:text="@{visit.participant.participantId}"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -39,31 +41,47 @@
             app:layout_constraintStart_toEndOf="@id/tv_visit_date"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_clientName"
-            app:layout_constraintWidth_percent="0.28" />
+            app:layout_constraintWidth_percent="0.21" />
 
         <TextView
             android:id="@+id/tv_clientName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="20dp"
             android:text="@{visit.participant.fullName}"
             android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
             app:layout_constraintStart_toEndOf="@id/tv_clientId"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_percent="0.28" />
+            app:layout_constraintEnd_toStartOf="@+id/tv_motherName"
+            app:layout_constraintWidth_percent="0.21" />
+
+        <TextView
+            android:id="@+id/tv_motherName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="20dp"
+            android:text="@{visit.participant.motherName}"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/tv_clientName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/icon_eye"
+            app:layout_constraintWidth_percent="0.21" />
 
         <ImageView
             android:id="@+id/icon_eye"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="8dp"
+
             android:contentDescription="@string/visits_overview_view_details_label"
             android:src="@drawable/eye_icon"
             app:tint="@color/colorAccent"
-            app:layout_constraintStart_toEndOf="@id/tv_clientName"
+            app:layout_constraintStart_toEndOf="@id/tv_motherName"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintWidth_percent="0.16" />

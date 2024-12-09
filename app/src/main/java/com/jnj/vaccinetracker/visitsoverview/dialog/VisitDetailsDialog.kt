@@ -45,7 +45,8 @@ class VisitDetailsDialog : BaseDialogFragment() {
             binding.tableRowVaccines,
             binding.tableRowPhoneNumber,
             binding.tableRowClientId,
-            binding.tableRowClientName
+            binding.tableRowClientName,
+            binding.tableRowClientMotherFullName
         )
 
         tableRowViews.forEachIndexed { index, tableRow ->

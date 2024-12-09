@@ -9,5 +9,6 @@ class VisitDetailsDTO(
     val visitType: String,
     val phoneNumber: String,
     val clientID: String,
-    val clientFullName: String
+    val clientFullName: String,
+    val clientMotherName: String
 ) : Parcelable

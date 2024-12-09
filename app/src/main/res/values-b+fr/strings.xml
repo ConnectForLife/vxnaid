@@ -73,6 +73,7 @@
     <string name="match_or_register_patient_btn_continue">Initier le flux opérationnel d\'un participant</string>
     <string name="match_or_register_patient_intro">Vous serez guidé étape par étape à l\'identification ou l\'enregistrement d\'un participant</string>
     <string name="match_or_register_patient_intro_title">Page d\'accueil</string>
+    <string name="visits_overview_client_mothers_name_column_label">Nom de la mère</string>
     <string name="iris_scan_left_title">Scan de l\'iris - œil gauche</string>
     <string name="iris_scan_right_title">Scan de l\'iris - œil droit</string>
     <string name="participant_matching_title">Reconnaissance d\'un participant</string>

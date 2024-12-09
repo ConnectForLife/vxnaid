@@ -139,6 +139,19 @@
                 android:background="@color/colorTextOnLight"
                 android:padding="8dp"
                 android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/header_motherFullName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:text="@string/visits_overview_client_mothers_name_column_label"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@color/colorTextOnLight"
+                android:padding="8dp"
+                android:textColor="@android:color/white" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

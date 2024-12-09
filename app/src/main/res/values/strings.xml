@@ -84,12 +84,13 @@
     <string name="iris_scan_left_title">Iris scan - Left eye</string>
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
+    <string name="visits_overview_client_mothers_name_column_label">Mother\'s Name</string>
     <string name="participant_flow_child_number_title">Child Number</string>
     <string name="participant_flow_participant_id_title">Child ID</string>
     <string name="participant_flow_participant_id_hint">Scan Child ID QR Code</string>
     <string name="participant_flow_participant_id_scanned">The format of the ID is not supported</string>
     <string name="participant_flow_participant_id_description">Please scan the Child vaccination card with a QR-Code or manually enter the Child ID number:</string>
-    <string name="participant_flow_participant_id_label_manual_entry">Manual ID Entry</string>
+    <string name="participant_flow_participant_id_label_manual_entry">Manual Enter ID Entry</string>
     <string name="participant_flow_participant_id_input_hint">#1234567890</string>
     <string name="participant_flow_participant_id_label_or">- OR -</string>
     <string name="participant_flow_participant_id_label_scan_code">QR-Code Scan</string>
@@ -213,7 +214,7 @@
     <string name="visit_dosing_error_no_vial_barcode">Please enter or scan a vial barcode</string>
     <string name="visit_dosing_error_no_manufacturer">Please select a manufacturer</string>
     <string name="visit_dosing_label_success">Visit successfully registered!</string>
-    <string name="visit_schedule_next_visit_title">Schedule next visit</string>
+    <string name="visit_schedule_next_visit_title">Save visit</string>
     <string name="visit_schedule_next_visit_proposed_date_title">Proposed date:</string>
     <string name="visit_schedule_next_visit_set_next_visit_title">Next visit date:</string>
     <string name="visit_schedule_next_visit_save_visit_button_label">Save Visit</string>
