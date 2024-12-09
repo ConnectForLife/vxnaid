@@ -26,6 +26,9 @@ interface ParticipantBiometricsTemplateDao : ParticipantBiometricsTemplateDaoBas
     @Query("select participant_biometrics_template.* from participant_biometrics_template join participant USING (participantUuid) where participantId=:participantId")
     override suspend fun findByParticipantId(participantId: String): ParticipantBiometricsEntity?
 
+    @Query("select participant_biometrics_template.* from participant_biometrics_template join participant USING (participantUuid) where nin=:participantNin")
+    override suspend fun findByParticipantNin(participantNin: String): ParticipantBiometricsEntity?
+
     @Query("select * from participant_biometrics_template where participantUuid=:participantUuid")
     override suspend fun findByParticipantUuid(participantUuid: String): ParticipantBiometricsEntity?
 

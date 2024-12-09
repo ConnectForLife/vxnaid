@@ -29,6 +29,7 @@ class RegisterParticipantUseCaseTest : FunSpec({
     val createVisitUseCase: CreateVisitUseCase = mockk()
     val participantDataFileIO: ParticipantDataFileIO = mockk()
     val findParticipantByParticipantIdUseCase: FindParticipantByParticipantIdUseCase = mockk()
+    val findParticipantByParticipantNinUseCase: FindParticipantByParticipantNinUseCase = mockk()
     val transactionRunner: ParticipantDbTransactionRunner = FakeTransactionRunner()
     val syncLogger: SyncLogger = mockk()
     val registerParticipantUseCase = RegisterParticipantUseCase(
@@ -37,6 +38,7 @@ class RegisterParticipantUseCaseTest : FunSpec({
         uploadDraftParticipantUseCase,
         createVisitUseCase,
         findParticipantByParticipantIdUseCase,
+       findParticipantByParticipantNinUseCase,
         transactionRunner,
         syncLogger
     )

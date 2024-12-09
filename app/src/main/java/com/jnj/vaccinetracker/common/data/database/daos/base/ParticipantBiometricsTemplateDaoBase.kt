@@ -9,6 +9,7 @@ interface ParticipantBiometricsTemplateDaoBase<E> : DaoBase<E> {
     suspend fun findAllByPhoneIsNull(offset: Int, limit: Int): List<@JvmSuppressWildcards E>
     suspend fun findByParticipantUuid(participantUuid: String): E?
     suspend fun findByParticipantId(participantId: String): E?
+    suspend fun findByParticipantNin(participantNin: String): E?
     suspend fun delete(deleteParticipantModel: RoomDeleteParticipantModel): Int
     suspend fun findAll(offset: Int, limit: Int): List<@JvmSuppressWildcards E>
 }

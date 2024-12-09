@@ -494,4 +494,7 @@
     <string name="upload_participant_pending_call_error_with_participant_id_duplicate_id">Edit ID</string>
     <string name="edge_case_duplicate_id_message">Someone uploaded a child with the same id while your device was offline. Please update the ID and inform the family about the change.</string>
     <string name="edge_case_duplicate_id_title">Duplicate ID!</string>
+    <string name="upload_participant_pending_call_error_with_participant_nin_duplicate_nin">Edit NIN</string>
+    <string name="edge_case_duplicate_nin_title">Duplicate NIN!</string>
+    <string name="edge_case_duplicate_nin_message">Someone uploaded a child with the same NIN while your device was offline. Please update the NIN and inform the family about the change.</string>
 </resources>

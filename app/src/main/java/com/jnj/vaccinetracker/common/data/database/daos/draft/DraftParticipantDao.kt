@@ -41,6 +41,10 @@ interface DraftParticipantDao : DraftParticipantDaoBase<DraftParticipantEntity, 
     @Transaction
     override suspend fun findByParticipantId(participantId: String): RoomDraftParticipantModel?
 
+    @Query("select * from draft_participant left join draft_participant_address using (participantUuid) where nin=:participantNin")
+    @Transaction
+    override suspend fun findByParticipantNin(participantNin: String): RoomDraftParticipantModel?
+
     @Query("select * from draft_participant left join draft_participant_address using (participantUuid) where draftState=:draftState LIMIT 1")
     @Transaction
     suspend fun findFirstByDraftState(draftState: DraftState): RoomDraftParticipantModel?

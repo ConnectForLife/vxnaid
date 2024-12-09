@@ -8,6 +8,7 @@ interface ParticipantDaoCommon<E, M> : DaoBase<E> {
     suspend fun findAllByPhone(phone: String): List<@JvmSuppressWildcards M>
     suspend fun findAllByPhoneIsNull(): List<@JvmSuppressWildcards M>
     suspend fun findByParticipantId(participantId: String): M?
+    suspend fun findByParticipantNin(participantNin: String): M?
     suspend fun findByParticipantUuid(participantUuid: String): M?
     suspend fun delete(deleteParticipantModel: RoomDeleteParticipantModel): Int
 }

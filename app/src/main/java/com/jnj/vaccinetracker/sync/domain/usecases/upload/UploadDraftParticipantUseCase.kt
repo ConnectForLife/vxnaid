@@ -11,6 +11,7 @@ import com.jnj.vaccinetracker.common.data.models.toDto
 import com.jnj.vaccinetracker.common.domain.entities.*
 import com.jnj.vaccinetracker.common.exceptions.DuplicateRequestException
 import com.jnj.vaccinetracker.common.exceptions.ParticipantAlreadyExistsException
+import com.jnj.vaccinetracker.common.exceptions.ParticipantNinAlreadyExistsException
 import com.jnj.vaccinetracker.common.exceptions.WebCallException
 import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.logInfo
@@ -52,7 +53,8 @@ class UploadDraftParticipantUseCase @Inject constructor(
         } catch (ex: WebCallException) {
             when (ex.cause) {
                 is DuplicateRequestException -> onDuplicateRequestException(draftParticipant)
-                is ParticipantAlreadyExistsException -> return ex.cause.onParticipantIdAlreadyExists(draftParticipant, isMadeUnique, allowDuplicate, updateDraftState)
+                is ParticipantNinAlreadyExistsException -> throw ex.cause
+                is ParticipantAlreadyExistsException -> throw ex.cause
                 else -> throw ex
             }
         }

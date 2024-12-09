@@ -35,6 +35,14 @@ class ParticipantAlreadyExistsException(override val message: String? = null) : 
     }
 }
 
+class ParticipantNinAlreadyExistsException(override val message: String? = null) : AppIoException() {
+    companion object {
+        fun toStringExceptionName(): String {
+            return "ParticipantNinAlreadyExistsException"
+        }
+    }
+}
+
 class ParticipantUuidAlreadyExistsException : AppIoException()
 class ParticipantDeletedException : AppIoException()
 

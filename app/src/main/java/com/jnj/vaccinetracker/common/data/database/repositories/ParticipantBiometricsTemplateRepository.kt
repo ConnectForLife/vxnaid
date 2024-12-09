@@ -77,6 +77,10 @@ class ParticipantBiometricsTemplateRepository @Inject constructor(
         return participantBiometricsTemplateDao.findByParticipantId(participantId)?.toDomain()
     }
 
+    override suspend fun findByParticipantNin(participantNin: String): ParticipantBiometricsTemplateFile? {
+        return participantBiometricsTemplateDao.findByParticipantNin(participantNin)?.toDomain()
+    }
+
     override suspend fun insert(model: ParticipantBiometricsTemplateFile, orReplace: Boolean) = transactionRunner.withTransaction {
         try {
             val entity = model.toPersistence()

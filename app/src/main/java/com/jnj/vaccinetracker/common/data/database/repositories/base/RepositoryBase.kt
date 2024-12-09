@@ -44,6 +44,7 @@ interface UploadableDraftRepository<T> : UpdatableDraftRepository<T> {
 interface ParticipantRepositoryBase<T> : RepositoryBase<T> {
     suspend fun findByParticipantUuid(participantUuid: String): T?
     suspend fun findByParticipantId(participantId: String): T?
+    suspend fun findByParticipantNin(participantNin: String): T?
     suspend fun findAllByPhone(phone: String?): List<T>
 }
 

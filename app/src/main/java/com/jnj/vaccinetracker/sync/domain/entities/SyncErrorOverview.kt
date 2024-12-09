@@ -18,6 +18,7 @@ import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.MasterDataFile
 import com.jnj.vaccinetracker.common.domain.entities.SyncEntityType
 import com.jnj.vaccinetracker.common.exceptions.ParticipantAlreadyExistsException
+import com.jnj.vaccinetracker.common.exceptions.ParticipantNinAlreadyExistsException
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowMatchingFragment
@@ -103,6 +104,11 @@ data class SyncErrorOverview(val metadata: SyncErrorMetadata, val stackTrace: St
                 stackTrace.contains(ParticipantAlreadyExistsException.toStringExceptionName()) -> {
             View.VISIBLE
         }
+        metadata is SyncErrorMetadata.UploadParticipantPendingCall &&
+                metadata.participantId != null &&
+                stackTrace.contains(ParticipantNinAlreadyExistsException.toStringExceptionName()) -> {
+            View.VISIBLE
+        }
         else -> View.GONE
     }
 
@@ -113,19 +119,27 @@ data class SyncErrorOverview(val metadata: SyncErrorMetadata, val stackTrace: St
                 stackTrace.contains(ParticipantAlreadyExistsException.toStringExceptionName()) -> {
             context.getString(R.string.upload_participant_pending_call_error_with_participant_id_duplicate_id)
         }
+        metadata is SyncErrorMetadata.UploadParticipantPendingCall &&
+                metadata.participantId != null &&
+                stackTrace.contains(ParticipantNinAlreadyExistsException.toStringExceptionName()) -> {
+            context.getString(R.string.upload_participant_pending_call_error_with_participant_nin_duplicate_nin)
+        }
         else -> Constants.EMPTY_STRING_VALUE
     }
 
     override fun onButtonClick(context: Context): Unit = when {
         metadata is SyncErrorMetadata.UploadParticipantPendingCall && metadata.participantId != null && stackTrace.contains(ParticipantAlreadyExistsException.toStringExceptionName()) -> {
-            startParticipantEdit(metadata.participantUuid, context)
+            startParticipantEdit(metadata.participantUuid, context, ParticipantAlreadyExistsException.toStringExceptionName())
+        }
+        metadata is SyncErrorMetadata.UploadParticipantPendingCall && metadata.participantId != null && stackTrace.contains(ParticipantNinAlreadyExistsException.toStringExceptionName()) -> {
+            startParticipantEdit(metadata.participantUuid, context, ParticipantNinAlreadyExistsException.toStringExceptionName())
         }
         else -> {}
     }
 
     override val displayDate: String get() = dateFormat.format(dateCreated)
 
-    private fun startParticipantEdit(participantUuid: String, context: Context) {
+    private fun startParticipantEdit(participantUuid: String, context: Context, duplicateError: String? = null) {
         val intent = RegisterParticipantFlowActivity.create(
             context = context,
             participantId = null,
@@ -135,7 +149,7 @@ data class SyncErrorOverview(val metadata: SyncErrorMetadata, val stackTrace: St
             countryCode = null,
             phoneNumber = null,
             participantUuid = participantUuid,
-            isDuplicateId = true
+            duplicateError = duplicateError
         )
 
         if (context is Activity) {

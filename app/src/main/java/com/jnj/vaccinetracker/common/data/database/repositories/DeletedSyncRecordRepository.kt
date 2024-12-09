@@ -93,4 +93,7 @@ class DeletedSyncRecordRepository @Inject constructor(
 
     suspend fun findByParticipantId(participantId: String): RoomDeletedParticipantModel? =
          deletedParticipantDao.findByParticipantId(participantId)
+
+    suspend fun findByParticipantNin(participantNin: String): RoomDeletedParticipantModel? =
+        deletedParticipantDao.findByParticipantNin(participantNin)
 }

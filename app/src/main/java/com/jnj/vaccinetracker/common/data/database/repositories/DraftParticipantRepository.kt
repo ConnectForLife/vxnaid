@@ -145,6 +145,10 @@ class DraftParticipantRepository @Inject constructor(
         return draftParticipantDao.findByParticipantId(participantId)?.toDomain()
     }
 
+    override suspend fun findByParticipantNin(participantNin: String): DraftParticipant? {
+        return draftParticipantDao.findByParticipantId(participantNin)?.toDomain()
+    }
+
     suspend fun findDraftStateByParticipantUuid(participantUuid: String): DraftState? {
         return draftParticipantDao.findDraftStateByParticipantUuid(participantUuid)
     }

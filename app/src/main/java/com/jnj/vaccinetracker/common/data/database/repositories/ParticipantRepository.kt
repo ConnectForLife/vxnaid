@@ -91,6 +91,10 @@ class ParticipantRepository @Inject constructor(
         return participantDao.findByParticipantId(participantId)?.toDomain()
     }
 
+    override suspend fun findByParticipantNin(participantNin: String): Participant? {
+        return participantDao.findByParticipantNin(participantNin)?.toDomain()
+    }
+
     suspend fun deleteByParticipantUuid(participantUuid: String): Int {
         return participantDao.delete(RoomDeleteParticipantModel(participantUuid)).also { countDeleted ->
             logDebug("deleteByParticipantUuid: $participantUuid $countDeleted")

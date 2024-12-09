@@ -45,7 +45,7 @@ class RegisterParticipantFlowActivity : BaseActivity(),
         const val EXTRA_PARTICIPANT_UUID = "participantBase"
         const val EXTRA_COUNTRY_CODE = "phoneCountryCode"
         const val EXTRA_PHONE_NUMBER = "participantPhoneNumber"
-        const val EXTRA_DUPLICATE_ID = "isDuplicateId"
+        const val EXTRA_DUPLICATE_ERROR_TYPE = "duplicateErrorType"
 
 
         fun create(
@@ -57,7 +57,7 @@ class RegisterParticipantFlowActivity : BaseActivity(),
             countryCode: String?,
             phoneNumber: String?,
             participantUuid: String? = null,
-            isDuplicateId: Boolean = false
+            duplicateError: String? = null
         ): Intent {
             return Intent(context, RegisterParticipantFlowActivity::class.java)
                 .putExtra(EXTRA_PARTICIPANT_ID, participantId)
@@ -67,7 +67,7 @@ class RegisterParticipantFlowActivity : BaseActivity(),
                 .putExtra(EXTRA_PHONE_NUMBER, phoneNumber)
                 .putExtra(EXTRA_MANUAL_ID, isManualEnteredParticipantId)
                 .putExtra(EXTRA_PARTICIPANT_UUID, participantUuid)
-                .putExtra(EXTRA_DUPLICATE_ID, isDuplicateId)
+                .putExtra(EXTRA_DUPLICATE_ERROR_TYPE, duplicateError)
         }
     }
 
@@ -85,7 +85,7 @@ class RegisterParticipantFlowActivity : BaseActivity(),
                 phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER),
                 isManualEnteredId = intent.getBooleanExtra(EXTRA_MANUAL_ID, false),
                 participantUuid = intent.getStringExtra(EXTRA_PARTICIPANT_UUID),
-                isDuplicateId = intent.getBooleanExtra(EXTRA_DUPLICATE_ID, false)
+                duplicateError = intent.getStringExtra(EXTRA_DUPLICATE_ERROR_TYPE)
             )
         }
         binding = DataBindingUtil.setContentView(this, R.layout.activity_register_participant_flow)
