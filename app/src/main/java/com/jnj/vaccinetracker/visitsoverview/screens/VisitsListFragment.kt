@@ -164,6 +164,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             headerRow.createCell(1).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
             headerRow.createCell(2).setCellValue(Constants.CLIENT_NAME_FILE_COLUMN_HEADER)
             headerRow.createCell(3).setCellValue(Constants.PHONE_NUMBER_FILE_COLUMN_HEADER)
+            headerRow.createCell(4).setCellValue(Constants.CLIENT_MOTHER_NAME_FILE_HEADER)
 
             visits.forEachIndexed { index, visit ->
                 val row = sheet.createRow(index + 1)
@@ -171,13 +172,14 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
                 row.createCell(1).setCellValue(visit.participant.participantId)
                 row.createCell(2).setCellValue(visit.participant.fullName)
                 row.createCell(3).setCellValue(visit.participant.phone)
+                row.createCell(4).setCellValue(visit.participant.motherName)
             }
 
             sheet.setColumnWidth(0, 4000)
             sheet.setColumnWidth(1, 4000)
             sheet.setColumnWidth(2, 7000)
             sheet.setColumnWidth(3, 4000)
-
+            sheet.setColumnWidth(4, 7000)
             workbook.write(outputStream)
             workbook.close()
         }
@@ -192,7 +194,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             outputStream.bufferedWriter().use { writer ->
                 writer.write(titleRowColumns)
                 visits.forEach { visit ->
-                    writer.write("${visit.formattedStartDateTime}, ${visit.participant.participantId}, ${visit.participant.fullName}, ${visit.participant.phone ?: ""} \n")
+                    writer.write("${visit.formattedStartDateTime}, ${visit.participant.participantId},${visit.participant.motherName},${visit.participant.phone ?: ""} \n")
                 }
             }
         }
@@ -215,11 +217,11 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             val dateMatches =
                 (selectedStartDate == null || visit.startDatetime >= selectedStartDate?.toDate()) &&
                         (selectedEndDate == null || visit.startDatetime <= selectedEndDate?.toDate())
-            val textSearchMatches =
-                visit.participant.participantId.lowercase(Locale.getDefault()).contains(searchText)
-                        || visit.participant.fullName.lowercase(Locale.getDefault())
-                    .contains(searchText)
 
+            val textSearchMatches =
+                visit.participant.participantId.lowercase(Locale.getDefault()).contains(searchText) ||
+                        visit.participant.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
+                        visit.participant.motherName.lowercase(Locale.getDefault()).contains(searchText)
             dateMatches && textSearchMatches
         }
 
@@ -273,7 +275,8 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
                 visitType = visitType,
                 phoneNumber = participant.phone ?: "",
                 clientID = participant.participantId,
-                clientFullName = participant.fullName
+                clientFullName = participant.fullName,
+                clientMotherName = participant.motherName
             )
 
             val dialog = VisitDetailsDialog.newInstance(visitDetails, visitsKey)

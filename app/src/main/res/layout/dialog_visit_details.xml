@@ -129,12 +129,35 @@
                     android:textStyle="bold"
                     android:textSize="18sp"/>
                 <TextView
-                    android:id="@+id/value_client_name"
+                    android:id="@+id/tableRow_clientMotherName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@{visitDetails.clientFullName}"
                     android:textSize="18sp"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow_clientMotherFullName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/visits_overview_client_mothers_name_column_label"
+                    android:textStyle="bold"
+                    android:textSize="18sp"/>
+                <TextView
+                    android:id="@+id/value_client_mother_Name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@{visitDetails.clientMotherName}"
+                    android:textSize="18sp"/>
+
             </TableRow>
 
         </TableLayout>

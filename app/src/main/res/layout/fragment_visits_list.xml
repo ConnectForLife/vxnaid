@@ -141,7 +141,7 @@
                 android:textColor="@android:color/white" />
 
             <TextView
-                android:id="@+id/header_MothersName"
+                android:id="@+id/header_motherFullName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
