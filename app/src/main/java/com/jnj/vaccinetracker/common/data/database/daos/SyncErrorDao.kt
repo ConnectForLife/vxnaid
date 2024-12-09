@@ -23,7 +23,7 @@ interface SyncErrorDao : DaoBase<SyncErrorEntity>, ObservableDao {
     @Query("select metadataJson from sync_error LIMIT :offset, :limit")
     suspend fun findAllMetadata(offset: Int, limit: Int): List<String>
 
-    @Query("select metadataJson, dateCreated from sync_error where syncErrorState in (:syncErrorStates) order by dateCreated desc LIMIT :offset, :limit")
+    @Query("select metadataJson, stackTrace, dateCreated from sync_error where syncErrorState in (:syncErrorStates) order by dateCreated desc LIMIT :offset, :limit")
     suspend fun findAllOverview(syncErrorStates: List<SyncErrorState>, offset: Int, limit: Int): List<RoomSyncErrorOverviewModel>
 
     @Query("select * from sync_error where id = :id")

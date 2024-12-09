@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -9,17 +10,15 @@
             type="com.jnj.vaccinetracker.common.ui.dialog.SyncErrorOverviewUiModel" />
 
         <import type="android.view.View" />
-
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
         android:background="@drawable/participant_item_bg"
         android:minHeight="?android:listPreferredItemHeightSmall"
-        android:orientation="vertical">
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/textView_error_message"
@@ -28,18 +27,38 @@
             android:layout_marginStart="4dp"
             android:text="@{item.displayErrorMessage(context)}"
             android:textAppearance="@style/LabelText"
+            app:layout_constraintBottom_toTopOf="@+id/textView_error_date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Error saving configuration." />
 
         <TextView
             android:id="@+id/textView_error_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:paddingTop="8dp"
             android:text="@{item.displayDate}"
             android:textAppearance="@style/GeneralText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView_error_message"
             tools:text="01/05/2021 13:01" />
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/btn_error_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorTextOnLight"
+            android:text="@{item.displayButtonMessage(context)}"
+            android:textAppearance="@style/ButtonTextStyling"
+            android:visibility="@{item.displayActionButton}"
+            android:onClick="@{item.onButtonClick}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

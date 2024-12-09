@@ -1,17 +1,32 @@
 package com.jnj.vaccinetracker.sync.domain.entities
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.fragment.app.DialogFragment
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.LicenseType
 import com.jnj.vaccinetracker.common.di.AppResources
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.MasterDataFile
 import com.jnj.vaccinetracker.common.domain.entities.SyncEntityType
+import com.jnj.vaccinetracker.common.exceptions.ParticipantAlreadyExistsException
+import com.jnj.vaccinetracker.common.ui.BaseActivity
+import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
+import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowMatchingFragment
+import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class SyncErrorOverview(val metadata: SyncErrorMetadata, val dateCreated: DateEntity) : SyncErrorOverviewDisplay() {
+@RequiresApi(Build.VERSION_CODES.O)
+data class SyncErrorOverview(val metadata: SyncErrorMetadata, val stackTrace: String, val dateCreated: DateEntity) : SyncErrorOverviewDisplay() {
     val key get() = metadata.key
 
     private fun SyncEntityType.display(context: ResourcesWrapper) = when (this) {
@@ -82,14 +97,72 @@ data class SyncErrorOverview(val metadata: SyncErrorMetadata, val dateCreated: D
         }
     }
 
+    override fun displayActionButton(): Int = when {
+        metadata is SyncErrorMetadata.UploadParticipantPendingCall &&
+                metadata.participantId != null &&
+                stackTrace.contains(ParticipantAlreadyExistsException.toStringExceptionName()) -> {
+            View.VISIBLE
+        }
+        else -> View.GONE
+    }
+
+
+    override fun displayButtonMessage(context: ResourcesWrapper): String = when {
+        metadata is SyncErrorMetadata.UploadParticipantPendingCall &&
+                metadata.participantId != null &&
+                stackTrace.contains(ParticipantAlreadyExistsException.toStringExceptionName()) -> {
+            context.getString(R.string.upload_participant_pending_call_error_with_participant_id_duplicate_id)
+        }
+        else -> Constants.EMPTY_STRING_VALUE
+    }
+
+    override fun onButtonClick(context: Context): Unit = when {
+        metadata is SyncErrorMetadata.UploadParticipantPendingCall && metadata.participantId != null && stackTrace.contains(ParticipantAlreadyExistsException.toStringExceptionName()) -> {
+            startParticipantEdit(metadata.participantUuid, context)
+        }
+        else -> {}
+    }
+
     override val displayDate: String get() = dateFormat.format(dateCreated)
+
+    private fun startParticipantEdit(participantUuid: String, context: Context) {
+        val intent = RegisterParticipantFlowActivity.create(
+            context = context,
+            participantId = null,
+            isManualEnteredParticipantId = null,
+            irisScannedLeft = false,
+            irisScannedRight = false,
+            countryCode = null,
+            phoneNumber = null,
+            participantUuid = participantUuid,
+            isDuplicateId = true
+        )
+
+        if (context is Activity) {
+            context.startActivity(intent)
+            (context as BaseActivity).setForwardAnimation()
+        } else {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+    }
 }
 
 abstract class SyncErrorOverviewDisplay {
     abstract val displayDate: String
     abstract fun displayErrorMessage(context: ResourcesWrapper): String
+    abstract fun displayButtonMessage(context: ResourcesWrapper): String
+    abstract fun onButtonClick(context: Context)
+    abstract fun displayActionButton(): Int
+
     fun displayErrorMessage(context: Context): String {
         return displayErrorMessage(AppResources(context))
+    }
+    fun displayButtonMessage(context: Context): String {
+        return displayButtonMessage(AppResources(context))
+    }
+    fun onButtonClick(view: View) {
+        return onButtonClick(view.context)
     }
 }
 

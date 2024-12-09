@@ -36,7 +36,7 @@ class UploadDraftParticipantDataUseCase @Inject constructor(
                         uploadDraftVisitUseCase.upload(draftVisit)
                     }
                     is ParticipantPendingCall.RegisterParticipant -> {
-                        val draftParticipant = uploadDraftParticipantUseCase.upload(draftParticipant, true, updateDraftState = true)
+                        val draftParticipant = uploadDraftParticipantUseCase.upload(draftParticipant, false, updateDraftState = true)
                         onParticipantRegistered(draftParticipant)
                     }
                     is ParticipantPendingCall.UpdateVisit -> {

@@ -1,8 +1,13 @@
 package com.jnj.vaccinetracker.common.ui.dialog
 
+import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.view.View
+import androidx.annotation.RequiresApi
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.helpers.AndroidFiles
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.logError
@@ -110,6 +115,7 @@ class SyncErrorViewModel @Inject constructor(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 sealed class SyncErrorOverviewUiModel : SyncErrorOverviewDisplay() {
     data class Regular(val syncError: SyncErrorOverview) : SyncErrorOverviewUiModel() {
         override val displayDate: String
@@ -117,6 +123,17 @@ sealed class SyncErrorOverviewUiModel : SyncErrorOverviewDisplay() {
 
         override fun displayErrorMessage(context: ResourcesWrapper): String {
             return syncError.displayErrorMessage(context)
+        }
+
+        override fun displayActionButton(): Int {
+            return syncError.displayActionButton()
+        }
+        override fun displayButtonMessage(context: ResourcesWrapper): String {
+            return syncError.displayButtonMessage(context)
+        }
+
+        override fun onButtonClick(context: Context) {
+            syncError.onButtonClick(context)
         }
     }
 
@@ -131,6 +148,16 @@ sealed class SyncErrorOverviewUiModel : SyncErrorOverviewDisplay() {
 
         override fun displayErrorMessage(context: ResourcesWrapper): String {
             return context.getString(R.string.upload_biometrics_templates_error, syncErrors.size)
+        }
+        override fun displayActionButton(): Int {
+            return View.GONE
+        }
+        override fun displayButtonMessage(context: ResourcesWrapper): String {
+            return Constants.EMPTY_STRING_VALUE
+        }
+
+        override fun onButtonClick(context: Context) {
+            // no need to implement
         }
     }
 }

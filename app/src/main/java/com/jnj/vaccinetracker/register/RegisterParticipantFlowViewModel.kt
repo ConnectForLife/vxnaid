@@ -65,6 +65,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
     val leftEyeScanned = mutableLiveBoolean()
     val rightEyeScanned = mutableLiveBoolean()
     val isManualEnteredId = mutableLiveBoolean()
+    val isDuplicateId = mutableLiveBoolean(false)
     val countryCode = mutableLiveData<String>()
     val phoneNumber = mutableLiveData<String>()
     val requestFinish = mutableLiveData<Boolean>()
@@ -77,6 +78,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         phoneNumber: String?,
         isManualEnteredId: Boolean,
         participantUuid: String?,
+        isDuplicateId: Boolean = false,
     ) {
         if (currentScreen.get() == null) {
             currentScreen.set(Screen.PARTICIPANT_DETAILS)
@@ -87,6 +89,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         this.countryCode.set(countryCode)
         this.phoneNumber.set(phoneNumber)
         this.isManualEnteredId.set(isManualEnteredId)
+        this.isDuplicateId.value = isDuplicateId
         this.participantUuid.set(participantUuid)
         if (participantUuid != null) {
             val participantPicture = loadParticipantPicture(participantUuid)?.toUiModel()

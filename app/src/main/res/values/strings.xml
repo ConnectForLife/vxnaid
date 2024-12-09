@@ -491,4 +491,7 @@
     <string name="vaccine_change_date_label">Change Date</string>
     <string name="dialog_missing_substances_empty_text_validation_message">Provide a reason</string>
     <string name="participant_registration_smth_wrong_happened">Something wrong happened during the registration.</string>
+    <string name="upload_participant_pending_call_error_with_participant_id_duplicate_id">Edit ID</string>
+    <string name="edge_case_duplicate_id_message">Someone uploaded a child with the same id while your device was offline. Please update the ID and inform the family about the change.</string>
+    <string name="edge_case_duplicate_id_title">Duplicate ID!</string>
 </resources>
