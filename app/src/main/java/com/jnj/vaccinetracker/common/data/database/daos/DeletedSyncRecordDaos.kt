@@ -32,6 +32,9 @@ interface DeletedParticipantDao : DeletedSyncRecordDao<DeletedParticipantEntity>
 
     @Query("select participantUuid as uuid, dateModified, participantId  from deleted_participant where participantId=:participantId")
     suspend fun findByParticipantId(participantId: String) :RoomDeletedParticipantModel?
+
+    @Query("select participantUuid as uuid, dateModified, participantId  from deleted_participant where participantId=:participantNin")
+    suspend fun findByParticipantNin(participantNin: String) :RoomDeletedParticipantModel?
 }
 
 @Dao

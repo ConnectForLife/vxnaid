@@ -84,6 +84,10 @@ abstract class ApiExceptionInterceptorBase constructor(
         if (apiErrorResponse.message.contains("participant already exists with the same uuid", ignoreCase = true)) {
             throw ParticipantUuidAlreadyExistsException()
         }
+        if (apiErrorResponse.message.contains("failed to validate with reason: Identifier", ignoreCase = true)
+            && apiErrorResponse.message.contains("already in use by another patient", ignoreCase = true)) {
+            throw ParticipantNinAlreadyExistsException()
+        }
 
         if (apiErrorResponse.message.contains("invalid template", ignoreCase = true)) {
             throw TemplateInvalidException()

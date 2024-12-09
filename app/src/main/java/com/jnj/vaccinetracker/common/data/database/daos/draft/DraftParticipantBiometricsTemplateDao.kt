@@ -43,6 +43,10 @@ interface DraftParticipantBiometricsTemplateDao : ParticipantBiometricsTemplateD
         as dp USING (participantUuid) left join participant as p USING (participantUuid) where coalesce(dp.participantId, p.participantId) = :participantId""")
     override suspend fun findByParticipantId(participantId: String): DraftParticipantBiometricsEntity?
 
+    @Query("""select draft_participant_biometrics_template.* from draft_participant_biometrics_template left join draft_participant 
+        as dp USING (participantUuid) left join participant as p USING (participantUuid) where coalesce(dp.nin, p.nin) = :participantNin""")
+    override suspend fun findByParticipantNin(participantNin: String): DraftParticipantBiometricsEntity?
+
     @Query("select count(*) from draft_participant_biometrics_template")
     override fun observeChanges(): Flow<Long>
 

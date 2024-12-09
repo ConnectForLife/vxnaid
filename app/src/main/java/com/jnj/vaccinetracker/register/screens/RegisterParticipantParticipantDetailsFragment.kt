@@ -23,6 +23,8 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.Gender
+import com.jnj.vaccinetracker.common.exceptions.ParticipantAlreadyExistsException
+import com.jnj.vaccinetracker.common.exceptions.ParticipantNinAlreadyExistsException
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
@@ -98,8 +100,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         setupPhoneInput()
         setupClickListeners()
         setupInputListeners()
-        if (flowViewModel.isDuplicateId.value) {
-            onIsDuplicateIdEdgeCase()
+        if (!flowViewModel.duplicateError.value.isNullOrEmpty()) {
+            onIsDuplicateEdgeCase()
         }
 
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -191,7 +193,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         if (viewModel.participantUuid.value != null) {
             binding.rbGenderMale.isEnabled = false
             binding.rbGenderFemale.isEnabled = false
-            if (!flowViewModel.isDuplicateId.value) {
+            if (flowViewModel.duplicateError.value != ParticipantAlreadyExistsException.toStringExceptionName()) {
                 binding.btnScanParticipantId.visibility = View.INVISIBLE
             }
             if (viewModel.birthWeight.value != null) {
@@ -200,13 +202,28 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
-    private fun onIsDuplicateIdEdgeCase() {
-        displayDialogForEdgeCase()
-        disableFieldsForEdgeCase()
-        changeVisibilityOfFieldsForEdgeCase()
+    private fun onIsDuplicateEdgeCase() {
+        when (flowViewModel.duplicateError.value) {
+            ParticipantAlreadyExistsException.toStringExceptionName() -> onDuplicateId()
+            ParticipantNinAlreadyExistsException.toStringExceptionName() -> onDuplicateNin()
+            else -> { /* No action */ }
+        }
     }
 
-    private fun displayDialogForEdgeCase() {
+    private fun onDuplicateId() {
+        displayDialogForIdEdgeCase()
+        changeVisibilityOfFieldsForIdEdgeCase()
+        disableFieldsForIdEdgeCase()
+    }
+
+    private fun onDuplicateNin() {
+        displayDialogForNinEdgeCase()
+        changeVisibilityOfFieldsForNinEdgeCase()
+        disableFieldsForNinEdgeCase()
+    }
+
+
+    private fun displayDialogForIdEdgeCase() {
         AlertDialog.Builder(context).apply {
             setTitle(R.string.edge_case_duplicate_id_title)
             setMessage(R.string.edge_case_duplicate_id_message)
@@ -218,19 +235,47 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
     }
 
-    private fun changeVisibilityOfFieldsForEdgeCase() {
+    private fun displayDialogForNinEdgeCase() {
+        AlertDialog.Builder(context).apply {
+            setTitle(R.string.edge_case_duplicate_nin_title)
+            setMessage(R.string.edge_case_duplicate_nin_message)
+            setPositiveButton(R.string.general_label_ok) { dialog, _ ->
+                dialog.dismiss()
+            }
+            create()
+            show()
+        }
+    }
+
+    private fun changeVisibilityOfFieldsForIdEdgeCase() {
         binding.btnGoToHistorical.visibility = View.INVISIBLE
         binding.btnGenerateQrCode.visibility = View.VISIBLE
         binding.btnScanParticipantId.visibility = View.VISIBLE
     }
 
-    private fun disableFieldsForEdgeCase() {
-        if (flowViewModel.isDuplicateId.value) {
+    private fun changeVisibilityOfFieldsForNinEdgeCase() {
+        binding.btnGoToHistorical.visibility = View.INVISIBLE
+    }
+
+    private fun disableFieldsForIdEdgeCase() {
+        if (!flowViewModel.duplicateError.value.isNullOrEmpty()) {
             disableAllFieldsExcept(binding.root, setOf(
                 binding.btnGenerateQrCode.id,
                 binding.textViewParticipantId.id,
                 binding.btnSubmit.id,
                 binding.btnScanParticipantId.id
+            ))
+            return
+        }
+    }
+
+    private fun disableFieldsForNinEdgeCase() {
+        if (!flowViewModel.duplicateError.value.isNullOrEmpty()) {
+            disableAllFieldsExcept(binding.root, setOf(
+                binding.btnSubmit.id,
+                binding.inputGroupNIN.id,
+                binding.editParticipantNin.id,
+                binding.participantRegistrationDetailsLabelNin.id
             ))
             return
         }
@@ -464,7 +509,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 phoneNumber = flowViewModel.phoneNumber.value,
                 participantUuid = flowViewModel.participantUuid.value,
                 registerDetails = flowViewModel.registerDetails.value,
-                isDuplicateId = flowViewModel.isDuplicateId.value
+                duplicateError = flowViewModel.duplicateError.value
             )
         )
     }

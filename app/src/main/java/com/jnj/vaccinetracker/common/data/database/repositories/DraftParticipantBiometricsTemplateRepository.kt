@@ -82,6 +82,10 @@ class DraftParticipantBiometricsTemplateRepository @Inject constructor(
         return draftParticipantBiometricsTemplateDao.findByParticipantId(participantId)?.toDomain()
     }
 
+    override suspend fun findByParticipantNin(participantNin: String): DraftParticipantBiometricsTemplateFile? {
+        return draftParticipantBiometricsTemplateDao.findByParticipantNin(participantNin)?.toDomain()
+    }
+
     override suspend fun deleteByParticipantUuid(participantUuid: String): Boolean {
         val success = draftParticipantBiometricsTemplateDao.deleteByParticipantUuid(participantUuid) > 0
         logInfo("deleteByParticipantId: $success")

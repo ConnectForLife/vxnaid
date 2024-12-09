@@ -23,6 +23,7 @@ class RegisterParticipantUseCase @Inject constructor(
     private val uploadDraftParticipantUseCase: UploadDraftParticipantUseCase,
     private val createVisitUseCase: CreateVisitUseCase,
     private val findParticipantByParticipantIdUseCase: FindParticipantByParticipantIdUseCase,
+    private val findParticipantByParticipantNinUseCase: FindParticipantByParticipantNinUseCase,
     private val transactionRunner: ParticipantDbTransactionRunner,
     private val syncLogger: SyncLogger,
 ) {
@@ -97,6 +98,20 @@ class RegisterParticipantUseCase @Inject constructor(
             if (deletedParticipant != null)
                 throw ParticipantAlreadyExistsException()
         }
+        if (registerParticipant.nin != null) {
+            val existingNinParticipant =
+                findParticipantByParticipantNinUseCase.findByParticipantByNin(participantNin = registerParticipant.nin)
+            if (existingNinParticipant != null) {
+                throw ParticipantNinAlreadyExistsException()
+            } else {
+                val deletedParticipant =
+                    findParticipantByParticipantNinUseCase.findDeletedParticipantByNin(
+                        participantNin = registerParticipant.nin
+                    )
+                if (deletedParticipant != null)
+                    throw ParticipantNinAlreadyExistsException()
+            }
+        }
         val registrationDate = dateNow()
         val participantUuid = uuid()
         val biometricsFile = registerParticipant.biometricsTemplate?.let { DraftParticipantBiometricsTemplateFile.newFile(participantUuid) }
@@ -118,6 +133,9 @@ class RegisterParticipantUseCase @Inject constructor(
                 logWarn("Upload participant failed: No network")
             } catch (ex: ParticipantAlreadyExistsException) {
                 logWarn("Upload participant failed: Participant does already exists")
+                throw ex
+            } catch (ex: ParticipantNinAlreadyExistsException) {
+                logWarn("Upload participant failed: Participant with nin: ${participant.nin} does already exists")
                 throw ex
             } catch (ex: Exception) {
                 logWarn("Upload participant failed", ex)
