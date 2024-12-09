@@ -188,7 +188,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     private fun exportToCSV(visits: List<VisitDataDTO>) {
         val fileName = "${buildFileName()}.csv"
         val mimeType = "text/csv"
-        val titleRowColumns = "${Constants.VISIT_DATE_FILE_COLUMN_HEADER}, ${Constants.CLIENT_ID_FILE_COLUMN_HEADER}, ${Constants.CLIENT_NAME_FILE_COLUMN_HEADER}, ${Constants.PHONE_NUMBER_FILE_COLUMN_HEADER} \n"
+        val titleRowColumns = "${Constants.VISIT_DATE_FILE_COLUMN_HEADER}, ${Constants.CLIENT_ID_FILE_COLUMN_HEADER}, ${Constants.CLIENT_NAME_FILE_COLUMN_HEADER}, ${Constants.CLIENT_MOTHER_NAME_FILE_HEADER}, ${Constants.PHONE_NUMBER_FILE_COLUMN_HEADER} \n"
 
         FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
             outputStream.bufferedWriter().use { writer ->
