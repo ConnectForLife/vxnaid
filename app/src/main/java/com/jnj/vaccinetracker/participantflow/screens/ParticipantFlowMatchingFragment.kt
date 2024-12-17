@@ -70,7 +70,6 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
             } else {
                 viewModel.getSelectedParticipantSummary()?.let { startParticipantVisitContraindications(it, false) }
             }
-
         }
 
         binding.btnReportAdverseEffects.setOnClickListener {
@@ -131,10 +130,13 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         val participantId = flowViewModel.participantId.value.takeIf { !it.isNullOrEmpty() }
         val irisScans = flowViewModel.irisScans.takeIf { scans -> scans.values.any { it } }
         val phone = flowViewModel.getFullPhoneNumber()
+        val motherName = flowViewModel.motherName.value.takeIf { !it.isNullOrEmpty() }
 
-        viewModel.setArguments(ParticipantFlowMatchingViewModel.Args(participantId = participantId,
+        viewModel.setArguments(ParticipantFlowMatchingViewModel.Args(
+            participantId = participantId,
             irisScans = irisScans,
-            phone = phone))
+            phone = phone,
+            motherName = motherName))
     }
 
     private fun onItemSelected(matchingListItem: ParticipantFlowMatchingViewModel.MatchingListItem) {

@@ -12,6 +12,7 @@ interface ParticipantBiometricsTemplateDaoBase<E> : DaoBase<E> {
     suspend fun findByParticipantNin(participantNin: String): E?
     suspend fun delete(deleteParticipantModel: RoomDeleteParticipantModel): Int
     suspend fun findAll(offset: Int, limit: Int): List<@JvmSuppressWildcards E>
+    suspend fun findAllByMotherName(motherName: String?): List<@JvmSuppressWildcards E>
 }
 
 suspend fun ParticipantBiometricsTemplateDaoBase<*>.deleteByParticipantUuid(participantUuid: String): Int = delete(RoomDeleteParticipantModel(participantUuid))
@@ -23,6 +24,9 @@ suspend fun <E> ParticipantBiometricsTemplateDaoBase<E>.findAllByPhoneIsNull(): 
 
 suspend fun <E> ParticipantBiometricsTemplateDaoBase<E>.findAllByPhoneNullable(phone: String?): List<@JvmSuppressWildcards E> =
     if (phone == null) findAllByPhoneIsNull() else findAllByPhone(phone)
+
+suspend fun <E> ParticipantBiometricsTemplateDaoBase<E>.findAllByMotherName(motherName: String?): List<@JvmSuppressWildcards E> =
+     findAllByMotherName(motherName)
 
 
 suspend fun <E> ParticipantBiometricsTemplateDaoBase<E>.findAll(): List<E> {

@@ -140,6 +140,9 @@ interface AndroidModule {
     fun bindParticipantFlowPhoneNumberFragment(): ParticipantFlowPhoneNumberFragment
 
     @ContributesAndroidInjector
+    fun bindParticipantFlowMotherNameFragment(): ParticipantFlowMotherNameFragment
+
+    @ContributesAndroidInjector
     fun bindParticipantFlowNoTelephoneDialog(): ParticipantFlowNoTelephoneDialog
 
     @ContributesAndroidInjector

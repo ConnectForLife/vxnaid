@@ -73,6 +73,10 @@ class ParticipantBiometricsTemplateRepository @Inject constructor(
         return participantBiometricsTemplateDao.findAllByPhoneNullable(phone).map { it.toDomain() }
     }
 
+    override suspend fun findAllByMotherName(motherName: String?): List<ParticipantBiometricsTemplateFile> {
+        return participantBiometricsTemplateDao.findAllByMotherName(motherName).map { it.toDomain() }
+    }
+
     override suspend fun findByParticipantId(participantId: String): ParticipantBiometricsTemplateFile? {
         return participantBiometricsTemplateDao.findByParticipantId(participantId)?.toDomain()
     }

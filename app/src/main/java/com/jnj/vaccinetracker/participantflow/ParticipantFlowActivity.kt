@@ -85,6 +85,7 @@ class ParticipantFlowActivity : BaseActivity() {
             ParticipantFlowViewModel.Screen.INTRO -> ParticipantFlowIntroFragment()
             ParticipantFlowViewModel.Screen.PARTICIPANT_ID -> ParticipantFlowParticipantIdFragment()
             ParticipantFlowViewModel.Screen.PHONE -> ParticipantFlowPhoneNumberFragment()
+            ParticipantFlowViewModel.Screen.MOTHER_NAME -> ParticipantFlowMotherNameFragment()
             ParticipantFlowViewModel.Screen.IRIS_SCAN_LEFT_EYE -> ParticipantFlowIrisScanLeftFragment()
             ParticipantFlowViewModel.Screen.IRIS_SCAN_RIGHT_EYE -> ParticipantFlowIrisScanRightFragment()
             ParticipantFlowViewModel.Screen.PARTICIPANT_MATCHING -> ParticipantFlowMatchingFragment()

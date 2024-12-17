@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.common.data.database.repositories
 
 import com.jnj.vaccinetracker.common.data.database.daos.base.deleteByParticipantUuid
 import com.jnj.vaccinetracker.common.data.database.daos.base.findAll
+import com.jnj.vaccinetracker.common.data.database.daos.base.findAllByMotherName
 import com.jnj.vaccinetracker.common.data.database.daos.base.findAllByPhoneNullable
 import com.jnj.vaccinetracker.common.data.database.daos.base.forEachAll
 import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftParticipantBiometricsTemplateDao
@@ -80,6 +81,10 @@ class DraftParticipantBiometricsTemplateRepository @Inject constructor(
 
     override suspend fun findByParticipantId(participantId: String): DraftParticipantBiometricsTemplateFile? {
         return draftParticipantBiometricsTemplateDao.findByParticipantId(participantId)?.toDomain()
+    }
+
+    override suspend fun findAllByMotherName(motherName: String?): List<DraftParticipantBiometricsTemplateFile> {
+        return draftParticipantBiometricsTemplateDao.findAllByMotherName(motherName).map { it.toDomain() }
     }
 
     override suspend fun findByParticipantNin(participantNin: String): DraftParticipantBiometricsTemplateFile? {

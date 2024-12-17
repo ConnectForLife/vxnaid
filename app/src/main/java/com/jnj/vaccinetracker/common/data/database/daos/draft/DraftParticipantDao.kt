@@ -22,6 +22,11 @@ interface DraftParticipantDao : DraftParticipantDaoBase<DraftParticipantEntity, 
     @Transaction
     override suspend fun findAllByPhone(phone: String): List<RoomDraftParticipantModel>
 
+    @Query("select * from draft_participant left join draft_participant_address using (participantUuid) " +
+            "where motherFirstName like '%' || :motherName || '%' OR motherLastName like '%' || :motherName || '%'")
+    @Transaction
+    override suspend fun findAllByMotherName(motherName: String?): List<RoomDraftParticipantModel>
+
     @Query("select * from draft_participant left join draft_participant_address using (participantUuid) where phone IS NULL")
     @Transaction
     override suspend fun findAllByPhoneIsNull(): List<RoomDraftParticipantModel>

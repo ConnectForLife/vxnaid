@@ -78,6 +78,9 @@ class ParticipantFlowViewModel @Inject constructor(
     val participantPhone = mutableLiveData<String>()
     // Note that for matching, you need the fullPhoneNumber in format: "${phoneCountryCode.get()}${participantPhone.get()}".replace(" ", "")
 
+    // Mother name variables
+    val motherName = mutableLiveData<String>()
+
     // Iris scan variables
     val irisScans = ArrayMap<IrisPosition, Boolean>()
     val irisIndexes = ArrayMap<IrisPosition, Int?>()
@@ -174,6 +177,7 @@ class ParticipantFlowViewModel @Inject constructor(
             when (step.type) {
                 WorkflowItem.ID_CARD.type -> result += listOf(Screen.PARTICIPANT_ID)
                 WorkflowItem.PHONE.type -> result += listOf(Screen.PHONE)
+                WorkflowItem.MOTHER_NAME.type -> result += listOf(Screen.MOTHER_NAME)
                 WorkflowItem.IRIS_SCAN.type -> result += listOf(
                     Screen.IRIS_SCAN_RIGHT_EYE,
                     Screen.IRIS_SCAN_LEFT_EYE
@@ -268,6 +272,11 @@ class ParticipantFlowViewModel @Inject constructor(
     fun confirmPhone(countryCode: String?, phoneNumber: String?) {
         this.phoneCountryCode.set(countryCode)
         this.participantPhone.set(phoneNumber)
+        navigateForward()
+    }
+
+    fun confirmMotherName(motherName: String?) {
+        this.motherName.set(motherName)
         navigateForward()
     }
 
@@ -379,6 +388,7 @@ class ParticipantFlowViewModel @Inject constructor(
     enum class WorkflowItem(val type: String, var mandatory: Boolean) {
         ID_CARD("id_card", false),
         PHONE("phone", false),
+        MOTHER_NAME("mother_name", false),
         IRIS_SCAN("iris_scan", false),
         MATCHING("", false),
         VISIT("", false);
@@ -389,6 +399,7 @@ class ParticipantFlowViewModel @Inject constructor(
         INTRO(R.string.match_or_register_patient_intro_title),
         PARTICIPANT_ID(R.string.participant_flow_child_number_title),
         PHONE(R.string.participant_flow_phone_title),
+        MOTHER_NAME(R.string.participant_flow_mother_name_page_title),
         IRIS_SCAN_LEFT_EYE(R.string.iris_scan_left_title),
         IRIS_SCAN_RIGHT_EYE(R.string.iris_scan_right_title),
         PARTICIPANT_MATCHING(R.string.participant_matching_title),

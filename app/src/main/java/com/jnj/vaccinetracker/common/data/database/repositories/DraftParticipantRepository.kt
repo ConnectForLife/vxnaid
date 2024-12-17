@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.common.data.database.repositories
 
 import com.jnj.vaccinetracker.common.data.database.daos.base.deleteByParticipantUuid
+import com.jnj.vaccinetracker.common.data.database.daos.base.findAllByMotherName
 import com.jnj.vaccinetracker.common.data.database.daos.base.findAllByPhoneNullable
 import com.jnj.vaccinetracker.common.data.database.daos.base.updateDraftStateOrThrow
 import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftParticipantAddressDao
@@ -71,11 +72,17 @@ class DraftParticipantRepository @Inject constructor(
         locationUuid = locationUuid,
         isUpdate = isUpdate,
         childFirstName = childFirstName,
-        childLastName = childLastName
+        childLastName = childLastName,
+        motherFirstName = motherFirstName,
+        motherLastName = motherLastName
     )
 
     override suspend fun findAllByPhone(phone: String?): List<DraftParticipant> {
         return draftParticipantDao.findAllByPhoneNullable(phone).map { it.toDomain() }
+    }
+
+    override suspend fun findAllByMotherName(motherName: String?): List<DraftParticipant> {
+        return draftParticipantDao.findAllByMotherName(motherName).map { it.toDomain() }
     }
 
     override suspend fun findAllParticipantUuidsByDraftState(draftState: DraftState, offset: Int, limit: Int): List<String> {

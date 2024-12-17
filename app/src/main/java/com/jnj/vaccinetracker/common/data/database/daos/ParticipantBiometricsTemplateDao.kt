@@ -17,6 +17,10 @@ interface ParticipantBiometricsTemplateDao : ParticipantBiometricsTemplateDaoBas
     @Query("select participant_biometrics_template.* from participant_biometrics_template join participant USING (participantUuid) where phone=:phone")
     override suspend fun findAllByPhone(phone: String): List<ParticipantBiometricsEntity>
 
+    @Query("select participant_biometrics_template.* from participant_biometrics_template join participant USING (participantUuid) " +
+            "where motherFirstName like '%' || :motherName || '%' OR motherLastName like '%' || :motherName || '%'")
+    override suspend fun findAllByMotherName(motherName: String?): List<ParticipantBiometricsEntity>
+
     @Query("select * from participant_biometrics_template LIMIT :offset, :limit")
     override suspend fun findAll(offset: Int, limit: Int): List<ParticipantBiometricsEntity>
 

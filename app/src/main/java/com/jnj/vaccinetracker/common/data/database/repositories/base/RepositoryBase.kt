@@ -46,6 +46,7 @@ interface ParticipantRepositoryBase<T> : RepositoryBase<T> {
     suspend fun findByParticipantId(participantId: String): T?
     suspend fun findByParticipantNin(participantNin: String): T?
     suspend fun findAllByPhone(phone: String?): List<T>
+    suspend fun findAllByMotherName(motherName: String?): List<T>
 }
 
 interface ParticipantRepositoryCommon<T> : ParticipantRepositoryBase<T> {

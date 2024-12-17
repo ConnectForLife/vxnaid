@@ -11,12 +11,16 @@ interface ParticipantDaoCommon<E, M> : DaoBase<E> {
     suspend fun findByParticipantNin(participantNin: String): M?
     suspend fun findByParticipantUuid(participantUuid: String): M?
     suspend fun delete(deleteParticipantModel: RoomDeleteParticipantModel): Int
+    suspend fun findAllByMotherName(motherName: String?): List<@JvmSuppressWildcards M>
 }
 
 suspend fun ParticipantDaoCommon<*, *>.deleteByParticipantUuid(participantUuid: String): Int = delete(RoomDeleteParticipantModel(participantUuid))
 
 suspend fun <E, M> ParticipantDaoCommon<E, M>.findAllByPhoneNullable(phone: String?): List<@JvmSuppressWildcards M> =
     if (phone == null) findAllByPhoneIsNull() else findAllByPhone(phone)
+
+suspend fun <E, M> ParticipantDaoCommon<E, M>.findAllByMotherName(motherName: String?): List<@JvmSuppressWildcards M> =
+    findAllByMotherName(motherName)
 
 interface ParticipantDaoBase<E, M> : ParticipantDaoCommon<E, M> {
 

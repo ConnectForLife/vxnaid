@@ -57,8 +57,8 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
         initState()
     }
 
-    data class Args(val participantId: String?, val phone: String?, val irisScans: Map<IrisPosition, Boolean>?) {
-        val isNoIdentifierUsed get() = listOfNotNull(participantId, phone, irisScans).isEmpty()
+    data class Args(val participantId: String?, val phone: String?, val motherName: String?, val irisScans: Map<IrisPosition, Boolean>?) {
+        val isNoIdentifierUsed get() = listOfNotNull(participantId, phone, motherName, irisScans).isEmpty()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -73,10 +73,12 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
             val irisScans = args.irisScans
             val phoneQuery = args.phone
             val participantIdQuery = args.participantId
+            val motherNameQuery = args.motherName
             val biometricsTemplateBytes = irisScans?.let { getTempBiometricsTemplatesBytesUseCase.getBiometricsTemplate(it) }
             val matches = participantManager.matchParticipants(
                 participantId = participantIdQuery,
                 phone = phoneQuery,
+                motherName = motherNameQuery,
                 biometricsTemplateBytes = biometricsTemplateBytes,
                 onProgressPercentChanged = { progress.value = it }
             )
@@ -122,8 +124,7 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
         errorMessage.set(null)
         matchCount.set(null)
         loading.set(true)
-        args.filterNotNull().distinctUntilChanged().combine(retryClickEvents.asFlow())
-        { args, _ ->
+        args.filterNotNull().distinctUntilChanged().combine(retryClickEvents.asFlow()) { args, _ ->
             load(args)
         }.launchIn(scope)
         retryClickEvents.tryEmit(Unit)

@@ -37,6 +37,7 @@ class ParticipantManager @Inject constructor(
     suspend fun matchParticipants(
         participantId: String?,
         phone: String?,
+        motherName: String?,
         biometricsTemplateBytes: BiometricsTemplateBytes?,
         onProgressPercentChanged: OnProgressPercentChanged = {},
     ): List<ParticipantMatch> {
@@ -44,6 +45,7 @@ class ParticipantManager @Inject constructor(
             ParticipantIdentificationCriteria(
                 participantId = participantId,
                 phone = phone,
+                motherName = motherName,
                 biometricsTemplate = biometricsTemplateBytes
             ), onProgressPercentChanged
         )

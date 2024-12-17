@@ -68,7 +68,9 @@ class ParticipantRepository @Inject constructor(
         locationUuid = locationUuid,
         isBirthDateEstimated = isBirthDateEstimated,
         childFirstName = childFirstName,
-        childLastName = childLastName
+        childLastName = childLastName,
+        motherFirstName = motherFirstName,
+        motherLastName = motherLastName
     )
 
     override suspend fun findAllByPhone(phone: String?): List<Participant> {
@@ -89,6 +91,10 @@ class ParticipantRepository @Inject constructor(
 
     override suspend fun findByParticipantId(participantId: String): Participant? {
         return participantDao.findByParticipantId(participantId)?.toDomain()
+    }
+
+    override suspend fun findAllByMotherName(motherName: String?): List<Participant> {
+        return participantDao.findAllByMotherName(motherName).map { it.toDomain() }
     }
 
     override suspend fun findByParticipantNin(participantNin: String): Participant? {

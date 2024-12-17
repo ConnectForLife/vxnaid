@@ -15,7 +15,6 @@ import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.p2p.data.helpers.calcProgress
 import kotlinx.coroutines.*
-import java.util.*
 import javax.inject.Inject
 
 class MatchParticipantsUseCase @Inject constructor(
@@ -118,6 +117,7 @@ class MatchParticipantsUseCase @Inject constructor(
         return api.matchParticipants(
             participantId = identificationCriteria.participantId,
             phone = identificationCriteria.phone,
+            motherName = identificationCriteria.motherName,
             biometricsTemplateFile = identificationCriteria.biometricsTemplate,
             country = getSelectedSiteUseCase.getSelectedSite().country
         ).map { it.toDomain() }
@@ -143,7 +143,7 @@ class MatchParticipantsUseCase @Inject constructor(
             }
         }
 
-    private suspend fun findParticipants(participantId: String?, phone: String?): List<ParticipantBase> {
+    private suspend fun findParticipants(participantId: String?, phone: String?, motherName: String?): List<ParticipantBase> {
         val results = mutableListOf<ParticipantBase>()
         if (!participantId.isNullOrEmpty()) {
             for (repo in participantRepos) {
@@ -162,6 +162,15 @@ class MatchParticipantsUseCase @Inject constructor(
                 results += participants
             }
         }
+
+        if (!motherName.isNullOrEmpty()) {
+            for (repo in participantRepos) {
+                val participants = repo.findAllByMotherName(motherName)
+                logInfo("participant mother name match (mother name:$motherName) ${repo::class.simpleName}: ${participants.size}")
+                results += participants
+            }
+        }
+
         return results.distinctBy { it.participantUuid }
     }
 
@@ -170,8 +179,9 @@ class MatchParticipantsUseCase @Inject constructor(
         onProgressPercentChanged: OnProgressPercentChanged,
     ): List<LocalParticipantMatch> {
         logInfo("fetchMatchesWithoutBiometrics")
-        return findParticipants(participantId = criteria.participantId, phone = criteria.phone).map { it.toLocalMatch() }.also {
-            onProgressPercentChanged(MAX_PERCENT)
+        return findParticipants(criteria.participantId, criteria.phone, criteria.motherName)
+            .map { it.toLocalMatch() }
+            .also { onProgressPercentChanged(MAX_PERCENT)
         }
     }
 
@@ -196,8 +206,8 @@ class MatchParticipantsUseCase @Inject constructor(
             ))
         }
 
-        val participantsByPhoneOrId = findParticipants(criteria.participantId, criteria.phone)
-        participantsByPhoneOrId.mapNotNull { it.biometricsTemplate }.forEach { template ->
+        val participantsByPhoneOrIdOrMotherName = findParticipants(criteria.participantId, criteria.phone, criteria.motherName)
+        participantsByPhoneOrIdOrMotherName.mapNotNull { it.biometricsTemplate }.forEach { template ->
             templatesToEnroll += template
         }
         setProgressState {
@@ -231,8 +241,8 @@ class MatchParticipantsUseCase @Inject constructor(
         }
         logInfo("fetchMatchesWithBiometrics matches count ${matches.size} templatesToEnroll size = ${templatesToEnroll.size}")
         val matchesCombined = matches
-            .toLocalParticipantMatches(participantsByPhoneOrId) +
-                participantsByPhoneOrId.map { it.toLocalMatch() }
+            .toLocalParticipantMatches(participantsByPhoneOrIdOrMotherName) +
+                participantsByPhoneOrIdOrMotherName.map { it.toLocalMatch() }
         return matchesCombined.distinctBy { it.uuid }.also {
             setProgressState {
                 progressFetchMatchParticipants = MAX_PERCENT

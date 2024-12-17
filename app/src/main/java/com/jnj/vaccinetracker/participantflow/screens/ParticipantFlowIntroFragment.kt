@@ -67,6 +67,10 @@ class ParticipantFlowIntroFragment : BaseFragment() {
                     view.stepIndex = this.getString(R.string.match_or_register_patient_step_index, index.toString())
                     view.imgId.setImageResource(R.drawable.ic_baseline_phone)
                 }
+                ParticipantFlowViewModel.WorkflowItem.MOTHER_NAME -> {
+                    view.label = this.getString(R.string.participant_flow_mother_name_label)
+                    view.stepIndex = this.getString(R.string.match_or_register_patient_step_index, index.toString())
+                }
                 ParticipantFlowViewModel.WorkflowItem.IRIS_SCAN -> {
                     view.label = this.getString(R.string.match_or_register_patient_step_iris_scan)
                     view.stepIndex = this.getString(R.string.match_or_register_patient_step_index, index.toString())

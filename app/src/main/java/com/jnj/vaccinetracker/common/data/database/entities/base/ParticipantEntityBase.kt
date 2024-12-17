@@ -15,6 +15,8 @@ interface ParticipantEntityBase : ParticipantUuidContainer {
     val birthWeight: String?
     val childFirstName: String?
     val childLastName: String?
+    val motherFirstName: String?
+    val motherLastName: String?
 
     companion object {
         const val COL_PHONE = "phone"

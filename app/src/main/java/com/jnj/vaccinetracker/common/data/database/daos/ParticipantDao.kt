@@ -27,6 +27,11 @@ interface ParticipantDao : ParticipantDaoBase<ParticipantEntity, RoomParticipant
     @Transaction
     override suspend fun findByParticipantId(participantId: String): RoomParticipantModel?
 
+    @Query("select * from participant left join participant_address using (participantUuid) " +
+            "where motherFirstName like '%' || :motherName || '%' OR motherLastName like '%' || :motherName || '%'")
+    @Transaction
+    override suspend fun findAllByMotherName(motherName: String?): List<RoomParticipantModel>
+
     @Query("select * from participant left join participant_address using (participantUuid) where nin=:participantNin")
     @Transaction
     override suspend fun findByParticipantNin(participantNin: String): RoomParticipantModel?

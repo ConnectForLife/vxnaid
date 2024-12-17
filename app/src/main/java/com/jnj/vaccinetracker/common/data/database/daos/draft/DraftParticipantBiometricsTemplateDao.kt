@@ -36,6 +36,12 @@ interface DraftParticipantBiometricsTemplateDao : ParticipantBiometricsTemplateD
     override suspend fun findAllByPhone(phone: String): List<DraftParticipantBiometricsEntity>
 
     @Query("""select draft_participant_biometrics_template.* from draft_participant_biometrics_template left join draft_participant 
+        as dp USING (participantUuid) left join participant as p USING (participantUuid) 
+        where coalesce(dp.motherFirstName, p.motherFirstName) like '%' || :motherName || '%'
+        OR coalesce(dp.motherLastName, p.motherLastName) like '%' || :motherName || '%'""")
+    override suspend fun findAllByMotherName(motherName: String?): List<DraftParticipantBiometricsEntity>
+
+    @Query("""select draft_participant_biometrics_template.* from draft_participant_biometrics_template left join draft_participant 
         as dp USING (participantUuid) left join participant as p USING (participantUuid) where coalesce(dp.phone, p.phone) IS NULL LIMIT :offset, :limit""")
     override suspend fun findAllByPhoneIsNull(offset: Int, limit: Int): List<DraftParticipantBiometricsEntity>
 

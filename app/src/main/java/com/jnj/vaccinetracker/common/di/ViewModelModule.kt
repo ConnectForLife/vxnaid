@@ -9,6 +9,7 @@ import com.jnj.vaccinetracker.login.LoginViewModel
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowIrisScanViewModel
 import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowMatchingViewModel
+import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowMotherNameViewModel
 import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowParticipantIdViewModel
 import com.jnj.vaccinetracker.participantflow.screens.ParticipantFlowPhoneNumberViewModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
@@ -99,6 +100,12 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(ParticipantFlowParticipantIdViewModel::class)
     fun bindParticipantFlowParticipantIdViewModel(participantFlowParticipantIdViewModel: ParticipantFlowParticipantIdViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ParticipantFlowMotherNameViewModel::class)
+    fun bindParticipantFlowMotherNameViewModel(participantFlowMotherNameViewModel: ParticipantFlowMotherNameViewModel): ViewModel
+
 
     @Binds
     @IntoMap

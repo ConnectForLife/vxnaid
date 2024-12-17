@@ -97,6 +97,9 @@
     <string name="participant_flow_phone_title">Enter Mobile Phone</string>
     <string name="participant_flow_phone_description">Please enter the  mobile phone number:</string>
     <string name="participant_flow_no_phone_description">Please confirm that the Child has no mobile phone. This will significantly increase the matching time.</string>
+    <string name="participant_flow_mother_name_page_title">Mother\'s name</string>
+    <string name="participant_flow_mother_name_label">Please enter mother\'s name:</string>
+    <string name="participant_flow_mother_name_hint">You can search by first or last mother\'s name. You do not have to enter whole first/last name.</string>
     <string name="iris_scan_icon_description">Icon of iris scan</string>
     <string name="iris_scan_intro_right">Please scan the Child\'s RIGHT eye</string>
     <string name="iris_scan_intro_left">Please scan the Child\'s LEFT eye</string>
@@ -186,7 +189,7 @@
     <string name="dialog_cancel_workflow_title">Restart Child workflow</string>
     <string name="dialog_cancel_workflow_description">Are you sure you want to remove all unsubmitted data from the current Child and restart the workflow?</string>
     <string name="dialog_missing_identifiers_title">Missing Child identifiers</string>
-    <string name="dialog_missing_identifiers_description">Please enter Child ID or perform an iris scan.</string>
+    <string name="dialog_missing_identifiers_description">Please enter Child ID, phone number or mother\'s name to find a child</string>
     <string name="dialog_mandatory_iris_title">Iris scan required for identification</string>
     <string name="dialog_mandatory_iris_description">Your administrator has configured iris scan as a mandatory Child identifier. Please scan one or both eyes to proceed.</string>
     <string name="dialog_cancel_setup_title">Cancel Setup</string>

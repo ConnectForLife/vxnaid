@@ -116,6 +116,7 @@ interface VaccineTrackerSyncApiService {
         @Part irisTemplatePart: MultipartBody.Part?,
         @Part participantIdPart: MultipartBody.Part?,
         @Part phonePart: MultipartBody.Part?,
+        @Part motherNamePart: MultipartBody.Part?,
         @Part countryPart: MultipartBody.Part?,
     ): List<ParticipantMatchDto>
 

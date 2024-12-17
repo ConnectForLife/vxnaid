@@ -94,7 +94,8 @@ interface VaccineTrackerSyncApiDataSource : VaccineTrackerApiDataSourceBase {
 
     suspend fun getParticipantVisitDetails(participantUuid: String): List<VisitDetailDto>
 
-    suspend fun matchParticipants(participantId: String?, phone: String?, biometricsTemplateFile: BiometricsTemplateBytes?, country: String): List<ParticipantMatchDto>
+    suspend fun matchParticipants(participantId: String?, phone: String?, motherName: String?,
+                                  biometricsTemplateFile: BiometricsTemplateBytes?, country: String): List<ParticipantMatchDto>
 
     suspend fun personTemplate(participantUuid: String, biometricsTemplate: BiometricsTemplateBytes)
 
@@ -122,6 +123,7 @@ class VaccineTrackerSyncApiDataSourceDefault @Inject constructor(
         private const val PART_ID_PHONE = "phone"
         private const val PART_ID_COUNTRY = "country"
         private const val PART_ID_IRIS_TEMPLATE = "template"
+        private const val PART_ID_MOTHER_NAME = "motherName"
 
         fun getBiometricsTemplateBytesMultiPart(biometricsTemplate: BiometricsTemplateBytes): MultipartBody.Part {
             val requestBody: RequestBody = biometricsTemplate.bytes.toRequestBody("multipart/form-data".toMediaType())
@@ -138,6 +140,10 @@ class VaccineTrackerSyncApiDataSourceDefault @Inject constructor(
 
         private fun getCountryPart(country: String): MultipartBody.Part {
             return MultipartBody.Part.createFormData(PART_ID_COUNTRY, country)
+        }
+
+        private fun getMotherNamePart(motherName: String): MultipartBody.Part {
+            return MultipartBody.Part.createFormData(PART_ID_MOTHER_NAME, motherName)
         }
     }
 
@@ -277,16 +283,19 @@ class VaccineTrackerSyncApiDataSourceDefault @Inject constructor(
         apiService.getParticipantVisitDetails(participantUuid)
     }
 
-    override suspend fun matchParticipants(participantId: String?, phone: String?, biometricsTemplateFile: BiometricsTemplateBytes?, country: String): List<ParticipantMatchDto> {
+    override suspend fun matchParticipants(participantId: String?, phone: String?, motherName: String?,
+                                           biometricsTemplateFile: BiometricsTemplateBytes?, country: String): List<ParticipantMatchDto> {
         val irisTemplateFormData = biometricsTemplateFile?.let { getBiometricsTemplateBytesMultiPart(it) }
         val participantIdFormData = participantId?.takeIf { it.isNotBlank() }?.let { getParticipantIdPart(it) }
         val phoneFormData = phone?.takeIf { it.isNotBlank() }?.let { getPhonePart(it) }
         val countryFormData = getCountryPart(country)
+        val motherNameFormData = motherName?.takeIf { it.isNotBlank() }?.let { getMotherNamePart(it) }
         return webCallSync(callName = "matchParticipants") {
             apiService.matchParticipants(
                 irisTemplatePart = irisTemplateFormData,
                 participantIdPart = participantIdFormData,
                 phonePart = phoneFormData,
+                motherNamePart = motherNameFormData,
                 countryPart = countryFormData
             )
         }

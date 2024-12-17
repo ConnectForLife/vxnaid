@@ -30,7 +30,9 @@ data class DraftParticipantEntity(
     override val locationUuid: String?,
     override val isUpdate: Boolean? = false,
     override val childFirstName: String?,
-    override val childLastName: String?
+    override val childLastName: String?,
+    override val motherFirstName: String?,
+    override val motherLastName: String?
 
 ) : DraftParticipantEntityBase {
     companion object {
