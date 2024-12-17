@@ -378,7 +378,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val childUuid = participantUuid.get()
         val childCategoryValue = childCategory.get()?.value
 
-        val areInputsValid = validateInput(participantId, gender, birthDate, homeLocation, motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName, childLastName)
+        val areInputsValid = validateInputs(participantId, gender, birthDate, homeLocation,
+            motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName,
+            childLastName, childNumber)
         val isNinValid = isNinValueValid(nin)
 
         var phoneNumberToSubmit: String? = null
@@ -568,7 +570,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     @SuppressWarnings("LongParameterList")
-    private suspend fun validateInput(
+    private suspend fun validateInputs(
         participantId: String?,
         gender: Gender?,
         birthDate: DateTime?,
@@ -578,7 +580,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         fatherFirstName: String?,
         fatherLastName: String?,
         childFirstName: String?,
-        childLastName: String?
+        childLastName: String?,
+        childNumber: String?
     ): Boolean {
         var isValid = true
         val validationErrors: MutableList<String> = mutableListOf()
@@ -613,6 +616,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             }
         }
 
+
+        addValidationError(!childNumber.isNullOrEmpty(), R.string.participant_registration_details_error_no_child_number, childNumberValidationMessage)
 
         addValidationError(gender != null, R.string.participant_registration_details_error_no_gender, genderValidationMessage)
 
@@ -701,6 +706,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         fatherLastNameValidationMessage.set(null)
         childFirstNameValidationMessage.set(null)
         childLastNameValidationMessage.set(null)
+        childNumberValidationMessage.set(null)
     }
 
     fun setGender(gender: Gender) {

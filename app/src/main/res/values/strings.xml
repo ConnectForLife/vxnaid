@@ -169,6 +169,7 @@
     <string name="participant_registration_details_error_no_home_location">Please select an address</string>
     <string name="participant_registration_details_error_no_vaccine">Please select a regimen</string>
     <string name="participant_registration_details_error_no_language">Please select a language</string>
+    <string name="participant_registration_details_error_no_child_number">Please enter a child number</string>
     <string name="participant_registration_details_error_participant_already_exists">A Child with this ID already exists</string>
     <string name="participant_registration_label_success">Child successfully registered</string>
     <string name="participant_registration_label_telephone_number_title">Missing Mobile Phone Number</string>
