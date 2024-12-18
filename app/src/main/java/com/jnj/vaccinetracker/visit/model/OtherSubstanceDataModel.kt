@@ -7,5 +7,6 @@ data class OtherSubstanceDataModel(
     val inputType: String,
     val visitType: String,
     val options: List<String>,
+    val isRequired: Boolean? = null,
     var value: String? = null
 )

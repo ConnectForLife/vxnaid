@@ -311,7 +311,8 @@ class SubstancesDataUtil {
                             otherSubstance.category,
                             otherSubstance.inputType,
                             otherSubstance.visitType,
-                            otherSubstance.options
+                            otherSubstance.options,
+                            otherSubstance.isRequired
                         )
                     )
                 }
@@ -338,7 +339,8 @@ class SubstancesDataUtil {
                         otherSubstance.category,
                         otherSubstance.inputType,
                         otherSubstance.visitType,
-                        otherSubstance.options
+                        otherSubstance.options,
+                        otherSubstance.isRequired
                     )
                 )
             }

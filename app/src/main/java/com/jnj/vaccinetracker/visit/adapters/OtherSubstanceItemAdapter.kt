@@ -125,8 +125,8 @@ class OtherSubstanceItemAdapter(
 
             when (getItemViewType(index)) {
                 TYPE_TEXT, TYPE_NUMBER, TYPE_NUMBER_DECIMAL -> handleTextInputValidation(index, itemValue, item, recyclerView, errorList)
-                TYPE_RADIO -> handleRadioValidation(index, itemValue, recyclerView, errorList)
-                TYPE_HARDCODED_Z_SCORE -> handleZScoreValidation(index, recyclerView, errorList)
+                TYPE_RADIO -> handleRadioValidation(index, itemValue, item, recyclerView, errorList)
+                TYPE_HARDCODED_Z_SCORE -> handleZScoreValidation(index, item, recyclerView, errorList)
             }
         }
         return errorList
@@ -137,15 +137,17 @@ class OtherSubstanceItemAdapter(
         val label = holder?.labelTextView?.text
         val errorMessage = "Please fill $label before submitting"
 
-        if (itemValue.isNullOrEmpty()) {
-            holder?.inputEditText?.error = errorMessage
-            errorList.add(errorMessage)
-        } else {
-            if (isWeightAtBirthValid(otherSubstance, itemValue)) {
-                holder?.inputEditText?.error = "Value cannot be less than 1 and greater than 9"
-                errorList.add("Value of $label cannot be less than 1 and greater than 9")
+        if (otherSubstance.isRequired == true) {
+            if (itemValue.isNullOrEmpty()) {
+                holder?.inputEditText?.error = errorMessage
+                errorList.add(errorMessage)
             } else {
-                holder?.inputEditText?.error = null
+                if (isWeightAtBirthValid(otherSubstance, itemValue)) {
+                    holder?.inputEditText?.error = "Value cannot be less than 1 and greater than 9"
+                    errorList.add("Value of $label cannot be less than 1 and greater than 9")
+                } else {
+                    holder?.inputEditText?.error = null
+                }
             }
         }
     }
@@ -157,32 +159,35 @@ class OtherSubstanceItemAdapter(
         return otherSubstance.visitType == Constants.AT_BIRTH_VISIT_TYPE && otherSubstance.conceptName == Constants.CONCEPT_NAME_WEIGHT_KG && (weightValue.toInt() < 1 || weightValue.toInt() > 9)
     }
 
-    private fun handleRadioValidation(index: Int, itemValue: String?, recyclerView: RecyclerView, errorList: MutableList<String>) {
+    private fun handleRadioValidation(index: Int, itemValue: String?, otherSubstance: OtherSubstanceDataModel, recyclerView: RecyclerView, errorList: MutableList<String>) {
         val holder = recyclerView.findViewHolderForAdapterPosition(index) as? RadioViewHolder
         val label = holder?.labelTextView?.text
         val errorMessage = "Please select $label option before submitting"
 
-        if (itemValue.isNullOrEmpty()) {
-            holder?.labelTextView?.error = errorMessage
-            errorList.add(errorMessage)
-        } else {
-            holder?.labelTextView?.error = null
+        if (otherSubstance.isRequired == true) {
+            if (itemValue.isNullOrEmpty()) {
+                holder?.labelTextView?.error = errorMessage
+                errorList.add(errorMessage)
+            } else {
+                holder?.labelTextView?.error = null
+            }
         }
     }
 
-    private fun handleZScoreValidation(index: Int, recyclerView: RecyclerView, errorList: MutableList<String>) {
+    private fun handleZScoreValidation(index: Int, otherSubstance: OtherSubstanceDataModel, recyclerView: RecyclerView, errorList: MutableList<String>) {
         val holder = recyclerView.findViewHolderForAdapterPosition(index) as? HardcodedZScoreViewHolder
         val label = holder?.label
         val errorMessage = "Please fill $label before submitting"
 
-        if (holder?.isEmpty == true) {
-            holder.onEmpty?.invoke()
-            errorList.add(errorMessage)
-        } else {
-            holder?.onNotEmpty?.invoke()
+        if (otherSubstance.isRequired == true) {
+            if (holder?.isEmpty == true) {
+                holder.onEmpty?.invoke()
+                errorList.add(errorMessage)
+            } else {
+                holder?.onNotEmpty?.invoke()
+            }
         }
     }
-
 
     inner class TextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val labelTextView: TextView = itemView.findViewById(R.id.label_otherSubstance)
