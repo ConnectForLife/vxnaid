@@ -403,9 +403,9 @@ class SubstancesDataUtil {
             substancesGroupConfig: SubstancesGroupConfig
         ): String? {
             val group = substancesGroupConfig.find { it.substanceName == substance.group }
-            val index = group?.options?.indexOf(substance.conceptName)
+            val index = group?.options?.indexOf(substance.conceptName) ?: return null
 
-            val previousVaccineConceptName = if (index!! > 0) {
+            val previousVaccineConceptName = if (index > 0) {
                 group.options[index - 1]
             } else {
                 null
