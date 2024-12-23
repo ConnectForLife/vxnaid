@@ -26,12 +26,18 @@ class SubstancesDataUtil {
             configurationManager: ConfigurationManager
         ): List<SubstanceDataModel> {
             val substancesGroupConfig = configurationManager.getSubstancesGroupConfig()
-            val childAgeInWeeks = DateUtil.getWeeksBetweenDateAndToday(participantBirthDate)
+            var childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
             val substancesConfig = configurationManager.getSubstancesConfig()
             val substanceDataModelList = mutableListOf<SubstanceDataModel>()
             substancesConfig.forEach { substance ->
                 val minWeekNumber = substance.weeksAfterBirth - substance.weeksAfterBirthLowWindow
                 val maxWeekNumber = substance.weeksAfterBirth + substance.weeksAfterBirthUpWindow
+                childAgeInWeeks = if (substance.conceptName == Constants.HEP_B_BD_VACCINE_CONCEPT_NAME
+                    || substance.conceptName == Constants.POLIO_0_VACCINE_CONCEPT_NAME) {
+                    DateUtil.getRoundedUpWeeksBetweenDateAndToday(participantBirthDate)
+                } else {
+                    DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
+                }
                 if (childAgeInWeeks in minWeekNumber..maxWeekNumber &&
                     !isSubstanceAlreadyApplied(participantVisits, substance.conceptName)
                 ) {
@@ -40,7 +46,8 @@ class SubstancesDataUtil {
                             substance,
                             substancesGroupConfig,
                             participantVisits,
-                            substancesConfig
+                            substancesConfig,
+                            childAgeInWeeks
                         )
                     )
                 }
@@ -51,7 +58,8 @@ class SubstancesDataUtil {
                 resultListWithoutDuplicates,
                 childAgeInWeeks,
                 participantVisits,
-                substancesGroupConfig
+                substancesGroupConfig,
+                substancesConfig
             ).toMutableList()
 
             return filteredResultList.filter { it.conceptName != "" }
@@ -65,7 +73,8 @@ class SubstancesDataUtil {
             configurationManager: ConfigurationManager
         ): List<SubstanceDataModel> {
             val substancesGroupConfig = configurationManager.getSubstancesGroupConfig()
-            val weeksNumberBetweenBirthdateAndVisit = DateUtil.getWeeksBetweenDates(participantBirthDate, visitDate)
+            val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
+            val weeksNumberBetweenBirthdateAndVisit = DateUtil.getFullWeeksBetweenDates(participantBirthDate, visitDate)
             val substancesConfig = configurationManager.getSubstancesConfig()
             val substanceDataModelList = mutableListOf<SubstanceDataModel>()
             substancesConfig.forEach { substance ->
@@ -79,7 +88,8 @@ class SubstancesDataUtil {
                             substance,
                             substancesGroupConfig,
                             participantVisits,
-                            substancesConfig
+                            substancesConfig,
+                            childAgeInWeeks
                         )
                     )
                 }
@@ -90,7 +100,8 @@ class SubstancesDataUtil {
                 resultListWithoutDuplicates,
                 weeksNumberBetweenBirthdateAndVisit,
                 participantVisits,
-                substancesGroupConfig
+                substancesGroupConfig,
+                substancesConfig
             ).toMutableList()
 
             return filteredResultList.filter { it.conceptName != "" }
@@ -104,6 +115,18 @@ class SubstancesDataUtil {
         ): String {
             val allSubstancesConfig = configurationManager.getSubstancesConfig()
             val visitTypesOrdered = getVisitTypesInOrder(allSubstancesConfig)
+
+            val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
+            val hasEverBeenVaccinated = isAnySubstanceApplied(participantVisits)
+
+            // If child is < 6 weeks system should display 'At Birth' visit
+            // If child is 6+ weeks and never been vaccinated system should display '6 weeks' visit
+            if (childAgeInWeeks < 6) {
+                return visitTypesOrdered[0] // At Birth
+            } else if (!hasEverBeenVaccinated) {
+                return visitTypesOrdered[1] // 6 weeks
+            }
+
             val suggestedSubstancesForChild = getSubstancesDataForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
 
             return when {
@@ -224,10 +247,11 @@ class SubstancesDataUtil {
         fun isTimeIntervalMaintained(
             previousDoseConceptName: String?,
             participantVisits: List<VisitDetail>,
-            minimumWeeksNumberAfterPreviousDose: Int?
+            minimumWeeksNumberAfterPreviousDose: Int?,
+            isPreviousDoseNotValid: Boolean
         ): Boolean {
 
-            if (previousDoseConceptName == null || minimumWeeksNumberAfterPreviousDose == null) {
+            if (minimumWeeksNumberAfterPreviousDose == null || isPreviousDoseNotValid) {
                 return true
             }
 
@@ -254,16 +278,15 @@ class SubstancesDataUtil {
             substances: List<SubstanceDataModel>,
             childAgeInWeeks: Int,
             participantVisits: List<VisitDetail>,
-            substancesGroupConfig: SubstancesGroupConfig
+            substancesGroupConfig: SubstancesGroupConfig,
+            substancesConfig: SubstancesConfig
         ): List<SubstanceDataModel> {
             return substances.filter { substance ->
                 val previousDoseConceptName = findPreviousDoseName(substance, substancesGroupConfig)
-                (substance.maximumAgeInWeeks == null || childAgeInWeeks <= substance.maximumAgeInWeeks) &&
-                        isTimeIntervalMaintained(
-                            previousDoseConceptName,
-                            participantVisits,
-                            substance.minimumWeeksNumberAfterPreviousDose
-                        )
+                val isPreviousDoseNotValid = isVaccineNotValidInTermsOfAge(previousDoseConceptName, substancesConfig, childAgeInWeeks)
+                (substance.maximumAgeInWeeks == null || childAgeInWeeks <= substance.maximumAgeInWeeks)
+                        && isTimeIntervalMaintained(previousDoseConceptName, participantVisits,
+                    substance.minimumWeeksNumberAfterPreviousDose, isPreviousDoseNotValid)
             }
         }
 
@@ -288,37 +311,6 @@ class SubstancesDataUtil {
             }
 
             return substanceDataModelList
-        }
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        suspend fun getOtherSubstancesDataForCurrentVisit(
-            participantBirthDate: String,
-            configurationManager: ConfigurationManager
-        ): List<OtherSubstanceDataModel> {
-            val otherSubstancesConfig = configurationManager.getOtherSubstancesConfig()
-            val childAgeInWeeks = DateUtil.getWeeksBetweenDateAndToday(participantBirthDate)
-            val otherSubstancesDataModelList = mutableListOf<OtherSubstanceDataModel>()
-            otherSubstancesConfig.forEach { otherSubstance ->
-                val minWeekNumber =
-                    otherSubstance.weeksAfterBirth - otherSubstance.weeksAfterBirthLowWindow
-                val maxWeekNumber =
-                    otherSubstance.weeksAfterBirth + otherSubstance.weeksAfterBirthUpWindow
-                if (childAgeInWeeks in minWeekNumber..maxWeekNumber) {
-                    otherSubstancesDataModelList.add(
-                        OtherSubstanceDataModel(
-                            otherSubstance.conceptName,
-                            otherSubstance.label,
-                            otherSubstance.category,
-                            otherSubstance.inputType,
-                            otherSubstance.visitType,
-                            otherSubstance.options,
-                            otherSubstance.isRequired
-                        )
-                    )
-                }
-            }
-
-            return otherSubstancesDataModelList
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
@@ -352,23 +344,32 @@ class SubstancesDataUtil {
             substance: Substance,
             substancesGroupConfig: SubstancesGroupConfig,
             participantVisits: List<VisitDetail>?,
-            substancesConfig: SubstancesConfig
+            substancesConfig: SubstancesConfig,
+            childAgeInWeeks: Int
         ): SubstanceDataModel {
             val group =
                 substancesGroupConfig.find { substanceGroup -> substanceGroup.substanceName == substance.group }
             val earlierDoses =
                 group?.options?.takeWhile { it != substance.conceptName }?.toMutableList()
                     ?: mutableListOf()
+
+            val iterator = earlierDoses.iterator()
+            while (iterator.hasNext()) {
+                val earlierDose = iterator.next()
+                val substanceObject = substancesConfig.find { it.conceptName == earlierDose }
+                if (substanceObject != null) {
+                    if (substanceObject.maximumAgeInWeeks != null && childAgeInWeeks > substanceObject.maximumAgeInWeeks) {
+                        iterator.remove()
+                    }
+                }
+            }
+
             if (group?.options?.contains(substance.conceptName) == true) {
                 earlierDoses.add(substance.conceptName)
             }
             var substanceToBeAdministered = substance.conceptName
             for (item in earlierDoses) {
-                if (participantVisits != null && isSubstanceAlreadyApplied(
-                        participantVisits,
-                        item
-                    )
-                ) {
+                if (participantVisits != null && isSubstanceAlreadyApplied(participantVisits, item)) {
                     substanceToBeAdministered = ""
                 } else {
                     substanceToBeAdministered = item
@@ -398,6 +399,14 @@ class SubstancesDataUtil {
             return visits.any { visit -> substanceName + " ${Constants.DATE_STR}" in visit.observations }
         }
 
+        private fun isAnySubstanceApplied(visits: List<VisitDetail>): Boolean {
+            return visits.any { visit ->
+                visit.observations.keys.any { key ->
+                    key.endsWith(Constants.VXNAID_DATE_SUFFIX)
+                }
+            }
+        }
+
         private fun findPreviousDoseName(
             substance: SubstanceDataModel,
             substancesGroupConfig: SubstancesGroupConfig
@@ -412,6 +421,22 @@ class SubstancesDataUtil {
             }
 
             return previousVaccineConceptName
+        }
+
+        private fun isVaccineNotValidInTermsOfAge(vaccineConceptName: String?,
+                                               substancesConfig: SubstancesConfig,
+                                               childAgeInWeeks: Int): Boolean {
+            if (vaccineConceptName == null) {
+                return true
+            }
+
+            val vaccineObject = substancesConfig.find { it.conceptName == vaccineConceptName }
+
+            return if (vaccineObject?.maximumAgeInWeeks != null) {
+                childAgeInWeeks > vaccineObject.maximumAgeInWeeks
+            } else {
+                false
+            }
         }
     }
 }

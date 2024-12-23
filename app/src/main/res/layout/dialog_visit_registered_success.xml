@@ -209,7 +209,7 @@
                 style="@style/Widget.AppCompat.Button.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="45dp"
-                android:layout_weight="1"
+                android:layout_weight="0"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="@string/participant_registration_details_action_set_Next_visit_date"
                 android:textAppearance="@style/ButtonTextStyling" />

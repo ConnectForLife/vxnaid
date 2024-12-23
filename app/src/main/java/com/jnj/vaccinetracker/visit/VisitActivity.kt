@@ -348,9 +348,8 @@ class VisitActivity :
     }
     private fun onDosingVisitRegistrationSuccessful() {
         val dosingVisit = viewModel.dosingVisit.value
-        VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value, viewModel.participant.value, dosingVisit!!.uuid).show(supportFragmentManager,
-            TAG_DIALOG_SUCCESS
-        )
+        VisitRegisteredSuccessDialog.create(viewModel.upcomingVisit.value, viewModel.participant.value, dosingVisit!!.uuid)
+            .show(supportFragmentManager, TAG_DIALOG_SUCCESS)
     }
 
     private fun onDosingVisitRegistrationFailed() {

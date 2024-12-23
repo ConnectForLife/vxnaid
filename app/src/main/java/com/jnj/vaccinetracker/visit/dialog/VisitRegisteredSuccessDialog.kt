@@ -1,7 +1,6 @@
 package com.jnj.vaccinetracker.visit.dialog
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -98,15 +97,19 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         proposedDateTextVisit = binding.root.findViewById(R.id.proposed_next_visit_date_value)
 
         lifecycleScope.launch {
-            proposedDateTextVisit.text = getProposedNextVisitDateAsText()
+            val nextVisitWeeksNumber = findWeeksDifferenceBetweenCurrentAndNextVisit()
+            val nextVisitProposedDateAsLocalDate = getProposedNextVisitDateAsLocalDate(nextVisitWeeksNumber)
+            proposedDateTextVisit.text = nextVisitProposedDateAsLocalDate.toString()
 
-            val proposedDate = getProposedNextVisitDateAsDate()
+            val nextVisitProposedDateAsDate = Date.from(nextVisitProposedDateAsLocalDate
+                ?.atStartOfDay(ZoneId.of(Constants.UTC_TIME_ZONE_NAME))?.toInstant())
+            val proposedDateAsDate = nextVisitProposedDateAsDate?.let { DateTime.fromUnix(it.time) }
             binding.nextVisitDatePickerButton.setOnClickListener {
-                ScheduleVisitDatePickerDialog(proposedDate, this@VisitRegisteredSuccessDialog).show(childFragmentManager, "scheduleVisitDatePickerDialog")
+                ScheduleVisitDatePickerDialog(proposedDateAsDate, this@VisitRegisteredSuccessDialog).show(childFragmentManager, "scheduleVisitDatePickerDialog")
             }
 
-            if (proposedDate != null) {
-                onDateSelected(proposedDate)
+            if (proposedDateAsDate != null) {
+                onDateSelected(proposedDateAsDate)
             }
         }
 
@@ -172,7 +175,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
             ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Location not available")
-        val visitType = findVisitType(participant, visitDate)
+        val visitType = findVisitTypeOfNextVisit()
         return CreateVisit(
             participantUuid = participant.participantUuid,
             visitType = Constants.VISIT_TYPE_DOSING,
@@ -184,6 +187,44 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                 Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
             )
         )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun findWeeksDifferenceBetweenCurrentAndNextVisit(): Int? {
+        val participantBirthDate = participant!!.birthDateText
+        val participantVisits = visitManager.getVisitsForParticipant(participant!!.participantUuid)
+        val currentVisitType = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
+        val substancesConfig = configurationManager.getSubstancesConfig()
+        val currentVaccine = substancesConfig.find { it.visitType == currentVisitType }
+        if (currentVaccine == null) {
+            return null
+        }
+        val nextVaccine = substancesConfig.filter { it.weeksAfterBirth > currentVaccine.weeksAfterBirth }
+            .minByOrNull { it.weeksAfterBirth }
+        if (nextVaccine == null) {
+            return null
+        }
+
+        return nextVaccine.weeksAfterBirth - currentVaccine.weeksAfterBirth
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun findVisitTypeOfNextVisit(): String {
+        val participantBirthDate = participant!!.birthDateText
+        val participantVisits = visitManager.getVisitsForParticipant(participant!!.participantUuid)
+        val currentVisitType = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
+        val substancesConfig = configurationManager.getSubstancesConfig()
+        val currentVaccine = substancesConfig.find { it.visitType == currentVisitType }
+        if (currentVaccine == null) {
+            return ""
+        }
+        val nextVaccine = substancesConfig.filter { it.weeksAfterBirth > currentVaccine.weeksAfterBirth }
+            .minByOrNull { it.weeksAfterBirth }
+        if (nextVaccine == null) {
+            return ""
+        }
+
+        return nextVaccine.visitType
     }
 
     private fun validateDate() {
@@ -203,21 +244,19 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun getProposedNextVisitDateAsText(): String {
-        val weeksNumberAfterBirthForNextVisit = findWeeksNumberAfterBirthForNextVisit(participant!!.birthDateText)
-        val nextVisitDate = weeksNumberAfterBirthForNextVisit?.let { calculateNextVisitDate(participant!!.birthDateText, it) }
-        if (nextVisitDate != null) {
-            return DateUtil.convertDateToString(nextVisitDate, DateFormat.FORMAT_DATE.toString())
+    private fun getProposedNextVisitDateAsLocalDate(weeksNumber: Int?): LocalDate? {
+        if (weeksNumber == null) {
+            return null
         }
 
-        return ""
+        return LocalDate.now().plusWeeks(weeksNumber.toLong())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun findWeeksNumberAfterBirthForNextVisit(participantBirthDate: String): Int? {
         val substancesConfig = configurationManager.getSubstancesConfig()
         val weeksAfterBirthSet = substancesConfig.map { it.weeksAfterBirth }.sorted().toSet()
-        val childAgeInWeeks = DateUtil.getWeeksBetweenDateAndToday(participantBirthDate)
+        val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
 
         return substancesConfig
             .filter {

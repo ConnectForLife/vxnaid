@@ -70,6 +70,7 @@ object Constants {
     const val MANUFACTURER_NAME_STR = "Manufacturer"
     const val DATE_STR = "Date"
     const val SPACE_STR = " "
+    const val VXNAID_DATE_SUFFIX = "Vxnaid $DATE_STR"
 
     const val REFERRAL_CLINIC_CONCEPT_NAME = "Referral Clinic Vxnaid"
     const val REFERRAL_ADDITIONAL_INFO_CONCEPT_NAME = "Referral Additional Info Vxnaid"
@@ -124,4 +125,6 @@ object Constants {
     const val NOT_NEEDED_STRING_VALUE = "notNeeded"
 
     const val AT_BIRTH_VISIT_TYPE = "At Birth"
+    const val HEP_B_BD_VACCINE_CONCEPT_NAME = "Hep B BD Vxnaid"
+    const val POLIO_0_VACCINE_CONCEPT_NAME = "Polio 0 Vxnaid"
 }

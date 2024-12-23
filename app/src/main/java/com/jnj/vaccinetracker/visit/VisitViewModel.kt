@@ -319,7 +319,7 @@ class VisitViewModel @Inject constructor(
     private suspend fun findWeeksNumberAfterBirthForNextVisit(participantBirthDate: String): Int? {
         val substancesConfig = configurationManager.getSubstancesConfig()
         val weeksAfterBirthSet = substancesConfig.map { it.weeksAfterBirth }.sorted().toSet()
-        val childAgeInWeeks = DateUtil.getWeeksBetweenDateAndToday(participantBirthDate)
+        val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
 
         return substancesConfig
             .filter {
