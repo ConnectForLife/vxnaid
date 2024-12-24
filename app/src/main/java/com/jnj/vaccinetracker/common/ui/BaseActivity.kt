@@ -1,19 +1,25 @@
 package com.jnj.vaccinetracker.common.ui
 
+import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.install.model.ActivityResult
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.IrisScannerConnectionManager
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.dialog.SyncErrorDialog
+import com.jnj.vaccinetracker.inappupdate.InAppUpdate
 import com.jnj.vaccinetracker.login.LoginActivity
 import com.jnj.vaccinetracker.login.RefreshSessionDialog
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowCancelWorkflowDialog
@@ -38,6 +44,9 @@ abstract class BaseActivity :
     @Inject
     lateinit var irisScannerConnectionManager: IrisScannerConnectionManager
 
+
+    lateinit var inAppUpdate: InAppUpdate
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -45,12 +54,43 @@ abstract class BaseActivity :
 
     protected open val syncBanner: SyncBanner? = null
 
+    private val inAppUpdateRequest =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    Log.d("InAppUpdateRequest", "result successfully")
+
+                    print("..............inAppUpdateRequest result successfully................")
+                }
+
+                Activity.RESULT_CANCELED -> {
+                    Log.d(
+                        "inAppUpdateRequest",
+                        "..............inAppUpdateRequest result failed or canceled................"
+                    )
+                }
+
+                ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> {
+                    Log.d("InAppUpdate", "In-app update failed: RESULT_IN_APP_UPDATE_FAILED")
+                    Toast.makeText(
+                        this,
+                        "Update the app via Google Play Store Please!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    inAppUpdate.updateWasRequested = false
+
+                }
+            }
+
+        }
     protected inline val resourcesWrapper: ResourcesWrapper
         get() = this
 
     @OptIn(FlowPreview::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // check & prompt in app update for the user
+        inAppUpdate.checkImmediateUpdate(inAppUpdateRequest)
         observeViewModel()
     }
 
@@ -119,17 +159,25 @@ abstract class BaseActivity :
     private fun onOperatorSessionRefreshed() {
         logInfo("onOperatorSessionRefreshed")
         // close refreshsessiondialog if there is one active
-        val refreshSessionDialogFragment = supportFragmentManager.findFragmentByTag(TAG_LOGIN_DIALOG)
+        val refreshSessionDialogFragment =
+            supportFragmentManager.findFragmentByTag(TAG_LOGIN_DIALOG)
         if (refreshSessionDialogFragment != null)
-            supportFragmentManager.commit(allowStateLoss = true) { remove(refreshSessionDialogFragment) }
+            supportFragmentManager.commit(allowStateLoss = true) {
+                remove(
+                    refreshSessionDialogFragment
+                )
+            }
     }
 
 
     override fun onResume() {
         super.onResume()
+        // Resumes the app updates if one was started already
+        inAppUpdate.checkResumeUpdate(inAppUpdateRequest)
         checkIrisScannerRecentlyAttached()
         SyncAndroidService.start(this)
-        val dialogFragment = supportFragmentManager.findFragmentByTag(TAG_SYNC_ERROR_DIALOG) as? BaseDialogFragment
+        val dialogFragment =
+            supportFragmentManager.findFragmentByTag(TAG_SYNC_ERROR_DIALOG) as? BaseDialogFragment
         dialogFragment?.dismissAllowingStateLoss()
     }
 
@@ -150,7 +198,10 @@ abstract class BaseActivity :
         when (item.itemId) {
             R.id.action_cancel -> {
                 runOnUiThread {
-                    ParticipantFlowCancelWorkflowDialog().show(supportFragmentManager, TAG_LOGIN_DIALOG)
+                    ParticipantFlowCancelWorkflowDialog().show(
+                        supportFragmentManager,
+                        TAG_LOGIN_DIALOG
+                    )
                 }
                 return true
             }
