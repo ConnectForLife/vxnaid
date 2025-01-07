@@ -34,8 +34,8 @@ android {
             correctErrorTypes = true
             useBuildCache = true
         }
-        versionCode generateVersionCode()
-        versionName generateVersionName()
+        versionCode = 1
+        versionName = "1.0"
         setProperty("archivesBaseName", "VMP-$versionName")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -64,12 +64,14 @@ android {
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
             ndk {
-                abiFilters 'armeabi-v7a'
+                //abiFilters 'armeabi-v7a'
+                abiFilters "armeabi-v7a","arm64-v8a","x86","x86_64"
             }
         }
         debug {
             ndk {
-                abiFilters 'x86', 'armeabi-v7a'
+               // abiFilters 'x86', 'armeabi-v7a'
+                abiFilters "armeabi-v7a","arm64-v8a","x86","x86_64"
             }
             versionNameSuffix "-debug"
             debuggable true
