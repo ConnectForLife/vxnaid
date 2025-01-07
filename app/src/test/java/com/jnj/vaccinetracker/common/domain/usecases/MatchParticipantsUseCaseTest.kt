@@ -49,6 +49,7 @@ class MatchParticipantsUseCaseTest : FunSpec({
     fun identificationCriteria(participantId: String? = null, phone: String? = null, biometricsTemplate: BiometricsTemplateBytes? = null) = ParticipantIdentificationCriteria(
         participantId = participantId,
         phone = phone,
+        motherName = "mothername",
         biometricsTemplate = biometricsTemplate)
 
     fun ParticipantBase.toMatch(matchingScore: Int? = null) =
@@ -89,7 +90,7 @@ class MatchParticipantsUseCaseTest : FunSpec({
         // Arrange
         val participantId = "1"
         val match = participantMatchDto("11115", participantId = participantId)
-        coEvery { api.matchParticipants(participantId, any(), any(), selectedSite.country) } returns listOf(match)
+        coEvery { api.matchParticipants(participantId, any(), any(), any(), selectedSite.country) } returns listOf(match)
         coEvery { participantRepository.findByParticipantId(any()) } throws Exception("local match err")
         // Act
         val result = sut.matchParticipants(identificationCriteria(participantId = participantId))
@@ -98,7 +99,7 @@ class MatchParticipantsUseCaseTest : FunSpec({
     }
 
     context("when remote api fails") {
-        coEvery { api.matchParticipants(any(), any(), any(), selectedSite.country) } throws NoNetworkException()
+        coEvery { api.matchParticipants(any(), any(), any(), any(), selectedSite.country) } throws NoNetworkException()
         test("then use local matching instead of remote") {
             // Arrange
             val participantId = "1"

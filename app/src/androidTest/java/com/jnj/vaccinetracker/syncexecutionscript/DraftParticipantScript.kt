@@ -154,7 +154,7 @@ class DraftParticipantScript {
         (startNumber..endNumber).forEach { participantNumber ->
             val participantId = formatParticipantId(participantNumber)
             println("looking up $participantId")
-            val results = participantManager.matchParticipants(participantId = participantId, null, biometricsTemplateBytes = if (checkTemplate) template else null)
+            val results = participantManager.matchParticipants(participantId = participantId, null, null, biometricsTemplateBytes = if (checkTemplate) template else null)
             val result = results.firstOrNull()
             val success = result != null
             val hasPicture = if (result != null) {

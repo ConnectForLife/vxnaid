@@ -43,39 +43,39 @@ class MatchParticipantsPerformanceTest {
 
     @Test
     fun testParticipantIdAndTemplate() {
-        doMatching(ParticipantIdentificationCriteria(participantId = participantId, biometricsTemplate = template, phone = null))
+        doMatching(ParticipantIdentificationCriteria(participantId = participantId, biometricsTemplate = template, phone = null, motherName = null))
     }
 
     @Test
     fun testPhoneAndTemplate() {
-        doMatching(ParticipantIdentificationCriteria(participantId = null, biometricsTemplate = template, phone = phone))
+        doMatching(ParticipantIdentificationCriteria(participantId = null, biometricsTemplate = template, phone = phone, motherName = null))
     }
 
 
     @Test
     fun testPhoneAndParticipantIdAndTemplate() {
-        doMatching(ParticipantIdentificationCriteria(participantId = participantId, biometricsTemplate = template, phone = phone))
+        doMatching(ParticipantIdentificationCriteria(participantId = participantId, biometricsTemplate = template, phone = phone, motherName = null))
     }
 
 
     @Test
     fun testTemplate() {
-        doMatching(ParticipantIdentificationCriteria(participantId = null, biometricsTemplate = template, phone = null))
+        doMatching(ParticipantIdentificationCriteria(participantId = null, biometricsTemplate = template, phone = null, motherName = null))
     }
 
     @Test
     fun testPhone() {
-        doMatching(ParticipantIdentificationCriteria(participantId = null, biometricsTemplate = null, phone = phone))
+        doMatching(ParticipantIdentificationCriteria(participantId = null, biometricsTemplate = null, phone = phone, motherName = null))
     }
 
     @Test
     fun testParticipantId() {
-        doMatching(ParticipantIdentificationCriteria(participantId = participantId, biometricsTemplate = null, phone = null))
+        doMatching(ParticipantIdentificationCriteria(participantId = participantId, biometricsTemplate = null, phone = null, motherName = null))
     }
 
     @Test
     fun testPhoneAndParticipantId() {
-        doMatching(ParticipantIdentificationCriteria(participantId = participantId, biometricsTemplate = null, phone = phone))
+        doMatching(ParticipantIdentificationCriteria(participantId = participantId, biometricsTemplate = null, phone = phone, motherName = null))
     }
 
 

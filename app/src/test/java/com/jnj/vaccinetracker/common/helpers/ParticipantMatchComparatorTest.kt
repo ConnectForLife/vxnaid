@@ -11,7 +11,7 @@ class ParticipantMatchComparatorTest : FunSpec({
         ParticipantMatch(uuid, participantId, matchingScore, Gender.FEMALE, BirthDate.Companion.yearOfBirth(1994), null, null, emptyMap<String, String>().withPhone(phone))
 
     context("without biometrics") {
-        fun createCriteria(participantId: String, phone: String?) = ParticipantIdentificationCriteria(participantId, phone, null)
+        fun createCriteria(participantId: String, phone: String?) = ParticipantIdentificationCriteria(participantId, phone, "mothername",null)
         val matches =
             listOf(
                 createMatch(participantId = "1", phone = "0123"),
@@ -42,7 +42,7 @@ class ParticipantMatchComparatorTest : FunSpec({
         }
     }
     context("with biometrics") {
-        fun createCriteria(participantId: String, phone: String?) = ParticipantIdentificationCriteria(participantId, phone, BiometricsTemplateBytes(byteArrayOf(1)))
+        fun createCriteria(participantId: String, phone: String?) = ParticipantIdentificationCriteria(participantId, phone, "mothername", BiometricsTemplateBytes(byteArrayOf(1)))
         val matches =
             listOf(createMatch(participantId = "1", phone = "0123", matchingScore = 3),
                 createMatch(participantId = "2", phone = "321", matchingScore = 10),
