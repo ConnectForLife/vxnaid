@@ -54,13 +54,26 @@ class SubstancesDataUtil {
             }
 
             val resultListWithoutDuplicates = substanceDataModelList.distinctBy { it.conceptName }
-            val filteredResultList = applyVaccinesCatchUpSchedule(
+            var filteredResultList = applyVaccinesCatchUpSchedule(
                 resultListWithoutDuplicates,
                 childAgeInWeeks,
                 participantVisits,
                 substancesGroupConfig,
                 substancesConfig
             ).toMutableList()
+
+            /*
+            Additional catchup schedule condition.
+            If child is 6+ weeks and has never been vaccinated do now show any vaccines
+            from 'higher' visit types than At Birth and 6 weeks regardless of the child's age
+             */
+            val hasEverBeenVaccinated = isAnySubstanceApplied(participantVisits)
+            if (childAgeInWeeks >= 6 && !hasEverBeenVaccinated) {
+                filteredResultList = filteredResultList.filter { substance ->
+                    substance.visitType == Constants.AT_BIRTH_VISIT_TYPE
+                            || substance.visitType == Constants.SIX_WEEKS_VISIT_TYPE }
+                    .toMutableList()
+            }
 
             return filteredResultList.filter { it.conceptName != "" }
         }

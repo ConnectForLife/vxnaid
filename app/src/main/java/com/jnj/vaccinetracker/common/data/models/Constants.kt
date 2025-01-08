@@ -125,6 +125,7 @@ object Constants {
     const val NOT_NEEDED_STRING_VALUE = "notNeeded"
 
     const val AT_BIRTH_VISIT_TYPE = "At Birth"
+    const val SIX_WEEKS_VISIT_TYPE = "6 weeks"
     const val HEP_B_BD_VACCINE_CONCEPT_NAME = "Hep B BD Vxnaid"
     const val POLIO_0_VACCINE_CONCEPT_NAME = "Polio 0 Vxnaid"
 }
