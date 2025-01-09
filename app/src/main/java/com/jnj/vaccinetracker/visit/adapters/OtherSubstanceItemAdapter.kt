@@ -250,11 +250,13 @@ class OtherSubstanceItemAdapter(
 
             radioGroup.setOnCheckedChangeListener { _, checkedId ->
                 val selectedRadioButton = radioGroup.findViewById<RadioButton>(checkedId)
-                val selectedIndex = selectedRadioButton.tag as Int
-                val selectedValue = item.options[selectedIndex]
-                item.value = selectedValue
-                listener.addOtherSubstance(item.conceptName, selectedValue)
-                labelTextView.error = null
+                if (selectedRadioButton != null) {
+                    val selectedIndex = selectedRadioButton.tag as Int
+                    val selectedValue = item.options[selectedIndex]
+                    item.value = selectedValue
+                    listener.addOtherSubstance(item.conceptName, selectedValue)
+                    labelTextView.error = null
+                }
             }
         }
     }
