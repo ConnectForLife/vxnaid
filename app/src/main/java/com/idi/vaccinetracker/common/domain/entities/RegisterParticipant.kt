@@ -1,0 +1,42 @@
+package com.idi.vaccinetracker.common.domain.entities
+
+import java.util.*
+
+data class RegisterParticipant(
+    val participantId: String,
+    val nin: String?,
+    val childNumber: String?,
+    val gender: Gender,
+    val isBirthDateEstimated: Boolean,
+    val birthDate: BirthDate,
+    val address: Address,
+    val attributes: Map<String, String>,
+    val image: ImageBytes?,
+    val biometricsTemplate: BiometricsTemplateBytes?,
+    val scheduleFirstVisit: ScheduleFirstVisit,
+    val childFirstName: String?,
+    val childLastName: String?
+)
+
+data class UpdateParticipant(
+    val participantUuid: String,
+    val participantId: String,
+    val nin: String?,
+    val childNumber: String?,
+    val gender: Gender,
+    val isBirthDateEstimated: Boolean,
+    val birthDate: BirthDate,
+    val address: Address,
+    val attributes: Map<String, String>,
+    val image: ImageBytes?,
+    val scheduleFirstVisit: ScheduleFirstVisit,
+    val childFirstName: String?,
+    val childLastName: String?
+)
+
+data class ScheduleFirstVisit(
+    val visitType: String,
+    val startDatetime: Date,
+    val locationUuid: String,
+    val attributes: Map<String, String>,
+)

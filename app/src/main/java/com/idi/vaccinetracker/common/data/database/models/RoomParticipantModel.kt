@@ -1,0 +1,34 @@
+package com.idi.vaccinetracker.common.data.database.models
+
+import androidx.room.Embedded
+import androidx.room.Relation
+import com.idi.vaccinetracker.common.data.database.entities.BirthDateEntity
+import com.idi.vaccinetracker.common.data.database.entities.GenderEntity
+import com.idi.vaccinetracker.common.data.database.entities.ParticipantAttributeEntity
+import com.idi.vaccinetracker.common.data.database.entities.ParticipantEntity
+import com.idi.vaccinetracker.common.data.database.entities.base.ParticipantEntityBase
+import com.idi.vaccinetracker.common.data.database.entities.base.ParticipantSyncBase
+import com.idi.vaccinetracker.common.data.database.models.common.RoomAddressModel
+import com.idi.vaccinetracker.common.data.database.typealiases.DateEntity
+
+data class RoomParticipantModel(
+    override val dateModified: DateEntity,
+    override val participantUuid: String,
+    override val phone: String?,
+    override val birthWeight: String?,
+    override val participantId: String,
+    override val nin: String?,
+    override val childNumber: String?,
+    override val gender: GenderEntity,
+    override val birthDate: BirthDateEntity,
+    override val isBirthDateEstimated: Boolean?,
+    override val childFirstName: String?,
+    override val childLastName: String?,
+    override val motherFirstName: String?,
+    override val motherLastName: String?,
+    @Relation(parentColumn = ParticipantEntity.ID, entityColumn = ParticipantEntity.ID)
+    val attributes: List<ParticipantAttributeEntity>,
+    @Embedded
+    val address: RoomAddressModel?,
+    override val locationUuid: String?,
+) : ParticipantEntityBase, ParticipantSyncBase

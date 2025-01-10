@@ -1,0 +1,10 @@
+package com.idi.vaccinetracker.sync.domain.usecases.delete
+
+import com.idi.vaccinetracker.common.data.database.repositories.DeletedSyncRecordRepository
+import com.idi.vaccinetracker.common.domain.entities.SyncEntityType
+import javax.inject.Inject
+
+class GetDeletedSyncRecordCountUseCase @Inject constructor(private val deletedSyncRecordRepository: DeletedSyncRecordRepository) {
+
+    suspend fun count(syncEntityType: SyncEntityType) = deletedSyncRecordRepository.count(syncEntityType)
+}

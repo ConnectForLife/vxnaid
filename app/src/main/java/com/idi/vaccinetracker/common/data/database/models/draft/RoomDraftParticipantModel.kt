@@ -1,0 +1,36 @@
+package com.idi.vaccinetracker.common.data.database.models.draft
+
+import androidx.room.Embedded
+import androidx.room.Relation
+import com.idi.vaccinetracker.common.data.database.entities.BirthDateEntity
+import com.idi.vaccinetracker.common.data.database.entities.GenderEntity
+import com.idi.vaccinetracker.common.data.database.entities.base.DraftParticipantEntityBase
+import com.idi.vaccinetracker.common.data.database.entities.draft.DraftParticipantAttributeEntity
+import com.idi.vaccinetracker.common.data.database.entities.draft.DraftParticipantEntity
+import com.idi.vaccinetracker.common.data.database.models.common.RoomAddressModel
+import com.idi.vaccinetracker.common.data.database.typealiases.DateEntity
+import com.idi.vaccinetracker.common.domain.entities.DraftState
+
+data class RoomDraftParticipantModel(
+    override val participantUuid: String,
+    override val phone: String?,
+    override val participantId: String,
+    override val nin: String?,
+    override val childNumber: String?,
+    override val birthWeight: String?,
+    override val gender: GenderEntity,
+    override val birthDate: BirthDateEntity,
+    override val isBirthDateEstimated: Boolean? = false,
+    @Relation(parentColumn = DraftParticipantEntity.ID, entityColumn = DraftParticipantEntity.ID)
+    val attributes: List<DraftParticipantAttributeEntity>,
+    @Embedded
+    val address: RoomAddressModel?,
+    override val draftState: DraftState,
+    override val registrationDate: DateEntity,
+    override val locationUuid: String?,
+    override val isUpdate: Boolean? = false,
+    override val childFirstName: String?,
+    override val childLastName: String?,
+    override val motherFirstName: String?,
+    override val motherLastName: String?
+) : DraftParticipantEntityBase

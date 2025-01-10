@@ -1,0 +1,31 @@
+package com.idi.vaccinetracker.visit.zscore
+
+import com.idi.vaccinetracker.common.domain.entities.Gender
+
+// we only use MUACA and weight for age now but this class is being left just in case
+
+class HeightZScoreCalculator(
+        private val height: String?, gender: Gender, birthDayText: String,
+): ZScoreCalculator(gender, birthDayText) {
+    companion object {
+        const val NORMAL = "Normal"
+        const val STUNTING = "Stunting"
+    }
+
+    override fun calculateZScoreAndRating(): ZScoreAndRating? {
+        val zScore = this.zScore ?: return null
+        val rating = when {
+            zScore < -2 -> STUNTING
+            else -> NORMAL
+        }
+        return ZScoreAndRating(zScore, rating)
+    }
+
+    override fun calculateZScore(): Double? {
+        // Placeholder calculation (random value for demonstration)
+        // Perform calculations based on height, gender, and age to calculate Z-score
+        // Replace the placeholder calculation with actual logic using reference data or models
+        if (height.isNullOrEmpty()) return null
+        return (Math.random() * 8) - 4 // Example Z-score between -4 and +4
+    }
+}

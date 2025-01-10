@@ -1,0 +1,18 @@
+package com.idi.vaccinetracker.visit.zscore
+
+import com.idi.vaccinetracker.common.domain.entities.Gender
+
+data class ZScoreAndRating(val zScore: Double, val rating: String) {
+    override fun toString(): String {
+        return "$rating (${String.format("%.2f", zScore)}SD)"
+    }
+}
+
+abstract class ZScoreCalculator (
+        private val gender: Gender,
+        protected val birthDayText: String
+){
+    protected val zScore: Double? by lazy { calculateZScore() }
+    abstract fun calculateZScoreAndRating(): ZScoreAndRating?
+    abstract fun calculateZScore(): Double?
+}

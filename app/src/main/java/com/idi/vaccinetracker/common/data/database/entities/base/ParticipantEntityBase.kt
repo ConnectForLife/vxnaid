@@ -1,0 +1,25 @@
+package com.idi.vaccinetracker.common.data.database.entities.base
+
+import com.idi.vaccinetracker.common.data.database.entities.BirthDateEntity
+import com.idi.vaccinetracker.common.data.database.entities.GenderEntity
+
+interface ParticipantEntityBase : ParticipantUuidContainer {
+    val phone: String?
+    val participantId: String
+    val nin: String?
+    val childNumber: String?
+    val gender: GenderEntity
+    val birthDate: BirthDateEntity
+    val isBirthDateEstimated: Boolean?
+    val locationUuid: String?
+    val birthWeight: String?
+    val childFirstName: String?
+    val childLastName: String?
+    val motherFirstName: String?
+    val motherLastName: String?
+
+    companion object {
+        const val COL_PHONE = "phone"
+        const val COL_PARTICIPANT_ID = "participantId"
+    }
+}
