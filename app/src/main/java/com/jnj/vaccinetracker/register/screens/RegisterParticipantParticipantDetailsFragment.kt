@@ -416,17 +416,17 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         }
 
         binding.btnGenerateQrCode.setOnClickListener {
-            val newGeneratedChildId = viewModel.generateChildId()
+            val newGeneratedChildId = RegisterParticipantParticipantDetailsViewModel.ChildIdGenerator.generateChildId()
             viewModel.setParticipantId(newGeneratedChildId)
             val qrCodeGeneratorDialog = QrCodeGeneratorDialog(newGeneratedChildId)
             qrCodeGeneratorDialog.show(parentFragmentManager, "QrCodeGeneratorDialog")
-
             val currentDetails = flowViewModel.registerDetails.value
             if (currentDetails != null) {
                 val updatedDetails = currentDetails.copy(participantId = newGeneratedChildId)
                 flowViewModel.registerDetails.set(updatedDetails)
             }
         }
+
 
         binding.btnPickDate.setOnClickListener {
             BirthDatePickerDialog(birthDatePicked).show(childFragmentManager, TAG_DATE_PICKER);

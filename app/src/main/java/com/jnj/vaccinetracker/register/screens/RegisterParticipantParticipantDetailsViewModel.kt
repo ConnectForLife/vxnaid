@@ -889,12 +889,22 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     fun isEditMode(): Boolean {
         return participantUuid.value != null;
     }
-
+object  ChildIdGenerator {
+    private val generatedIds = mutableSetOf<String>()
     fun generateChildId(): String {
         val identifierLength = 8
         val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return (1..identifierLength)
-            .map { chars[Random.nextInt(chars.length)] }
-            .joinToString("")
+
+        var newId: String
+        do {
+            newId = (1..identifierLength)
+                .map { chars[Random.nextInt(chars.length)] }
+                .joinToString("")
+            // Regenerate if already exists
+        } while (newId in generatedIds)
+        // set after confirming it's unique
+        generatedIds.add(newId)
+        return newId
     }
+}
 }
