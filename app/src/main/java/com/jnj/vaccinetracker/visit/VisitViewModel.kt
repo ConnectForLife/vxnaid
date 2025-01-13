@@ -231,10 +231,11 @@ class VisitViewModel @Inject constructor(
     /**
      * Submit a dosing visit encounter
      *
-     * @param newVisitDate                          Specify next visit date
+     * @param newVisitDate  date of next visit
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun submitDosingVisit(newVisitDate: Date? = null, visitPlace: String? = null) {
+    fun submitDosingVisit(newVisitDate: Date? = null, visitPlace: String? = null,
+                          referralObservations: Map<String, String> = emptyMap()) {
         val participant = participant.get()
         val dosingVisit = dosingVisit.get()
         val visitsCounter = visitsCounter.value
@@ -260,7 +261,8 @@ class VisitViewModel @Inject constructor(
                     substanceObservations = substancesObservations.toMap(),
                     otherSubstanceObservations = otherSubstancesObservations.toMap(),
                     visitLocation = visitPlace,
-                    visitTypeVxnaid = selectedVisitType
+                    visitTypeVxnaid = selectedVisitType,
+                    referralObservations = referralObservations
                 )
 
                 if (newVisitDate != null) {
@@ -466,7 +468,7 @@ class VisitViewModel @Inject constructor(
         }
     }
 
-    suspend fun onReferralAfterContraindications() {
+    suspend fun onReferralAfterContraindications(referralObservations: Map<String, String>) {
         try {
             createVisitUseCase.createVisit(
                 buildNextVisitObject(
@@ -481,10 +483,11 @@ class VisitViewModel @Inject constructor(
             visitManager.updateVisitAttributes(
                 dosingVisit.value,
                 participant.value!!.participantUuid,
-                attributesToAdd
+                attributesToAdd,
+                referralObservations
             )
         } catch (ex: Exception) {
-            Log.e("Rescheduling a visit", "Reschedule has failed failed", ex)
+            Log.e("Rescheduling a visit", "Reschedule has failed", ex)
         }
     }
 

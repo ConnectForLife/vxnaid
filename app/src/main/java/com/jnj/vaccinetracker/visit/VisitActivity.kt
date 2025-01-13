@@ -21,6 +21,7 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.barcode.ScanBarcodeViewModel
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
+import com.jnj.vaccinetracker.common.dialogs.AlertDialog
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
@@ -322,27 +323,27 @@ class VisitActivity :
         viewModel.addToSelectedSubstances(vaccine)
     }
 
-    override fun onReferralAfterVisitPageFinish() {
+    override fun onReferralAfterVisitPageFinish(referralObservations: Map<String, String>) {
         val missingSubstanceVisitDate = viewModel.missingSubstancesVisitDate.value
         val visitPlace =
             getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE).getString(
                 Constants.VISIT_PLACE_FILE_KEY,
                 Constants.VISIT_PLACE_STATIC
             )
-        viewModel.submitDosingVisit(newVisitDate = missingSubstanceVisitDate, visitPlace = visitPlace)
+        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations)
     }
 
-    override fun onReferralAfterContraindicationsPageFinish(finish:Boolean) {
+    override fun onReferralAfterContraindicationsPageFinish(finish: Boolean, referralObservations: Map<String, String>) {
         val context = this
         lifecycleScope.launch {
             try {
-                viewModel.onReferralAfterContraindications()
+                viewModel.onReferralAfterContraindications(referralObservations)
                 if (finish) {
                     finish()
                 }
             } catch (e: Exception) {
                 Log.e("Rescheduling a visit", "Reschedule has failed failed", e)
-                com.jnj.vaccinetracker.common.dialogs.AlertDialog(context).showAlertDialog(getString(R.string.reschedule_visit_failed))
+                AlertDialog(context).showAlertDialog(getString(R.string.reschedule_visit_failed))
             }
         }
     }

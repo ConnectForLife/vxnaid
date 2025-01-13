@@ -44,7 +44,8 @@ class VisitManager @Inject constructor(
         substanceObservations: Map<String, Map<String, String>>? = null,
         otherSubstanceObservations: Map<String, String>? = null,
         visitLocation: String? = null,
-        visitTypeVxnaid: String? = null
+        visitTypeVxnaid: String? = null,
+        referralObservations: Map<String, String> = emptyMap()
     ) {
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
@@ -54,11 +55,15 @@ class VisitManager @Inject constructor(
 
         val attributes = buildVisitAttributes(operatorUuid, dosingNumber, visitLocation, visitTypeVxnaid)
 
-        val observations = buildObservations(
+        var observations = buildObservations(
             substanceObservations = substanceObservations,
             otherSubstanceObservations = otherSubstanceObservations,
             encounterDatetime = encounterDatetime
         )
+
+        if (referralObservations.isNotEmpty()) {
+            observations = observations + referralObservations
+        }
 
         val request = UpdateVisit(
             visitUuid = visitUuid,
@@ -109,19 +114,25 @@ class VisitManager @Inject constructor(
 
     suspend fun getUpcomingVisit(participantUuid: String): UpcomingVisit? = getUpcomingVisitUseCase.getUpcomingVisit(participantUuid, date = dateNow())
 
-    suspend fun updateVisitAttributes(visit: VisitDetail?, participantUuid: String, visitAttributes: Map<String, String>) {
+    suspend fun updateVisitAttributes(
+        visit: VisitDetail?,
+        participantUuid: String,
+        visitAttributes: Map<String, String>,
+        referralObservations: Map<String, String> = emptyMap()
+    ) {
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
 
         val request = visit?.let{
             val appendedVisitAttributes = it.attributes + visitAttributes
             val parsedObservations: Map<String, String> = it.observations.mapValues { entry -> entry.value.value }
+            val allObservations = parsedObservations + referralObservations
             UpdateVisit(
                 visitUuid = it.uuid,
                 participantUuid = participantUuid,
                 startDatetime = it.startDate,
                 locationUuid = locationUuid,
-                observations = parsedObservations,
+                observations = allObservations,
                 attributes = appendedVisitAttributes
             )
         } ?: throw VisitNotFound()
@@ -132,7 +143,7 @@ class VisitManager @Inject constructor(
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
 
-        val request = visit?.let{
+        val request = visit?.let {
             val parsedObservations: Map<String, String> = it.observations.mapValues { entry -> entry.value.value }
             val newObservations = if (appendObservations) {
                 parsedObservations + visitObservations

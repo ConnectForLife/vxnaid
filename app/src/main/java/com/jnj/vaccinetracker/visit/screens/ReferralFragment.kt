@@ -173,22 +173,20 @@ class ReferralFragment : BaseFragment() {
 
         lifecycleScope.launch {
             try {
-                visitManager.updateVisitObservations(
-                    currentVisit,
-                    participantUuid = participantUuid!!,
-                    referralObservations
-                )
                 onRefer(selectedClinic)
                 if (isAfterVisit) {
-                    findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish()
+                    findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish(referralObservations)
                 } else {
-                    findParent<OnReferralPageFinishListener>()?.onReferralAfterContraindicationsPageFinish(false)
+                    findParent<OnReferralPageFinishListener>()
+                        ?.onReferralAfterContraindicationsPageFinish(false, referralObservations)
                 }
             } catch (e: Exception) {
                 Log.e("ReferralFragment", "Referral failed", e)
                 showErrorMessage(getString(R.string.referral_page_failed_referral_text))
             }
         }
+
+        binding.editTextAdditionalInfo.text = null
     }
 
     fun onRefer(selectedClinic: String) {
@@ -267,8 +265,10 @@ class ReferralFragment : BaseFragment() {
 
 
     interface OnReferralPageFinishListener {
-        fun onReferralAfterVisitPageFinish()
-        fun onReferralAfterContraindicationsPageFinish(finish:Boolean = false)
+        fun onReferralAfterVisitPageFinish(referralObservations: Map<String, String> = emptyMap())
+        fun onReferralAfterContraindicationsPageFinish(finish: Boolean = false,
+                                                       referralObservations: Map<String, String> = emptyMap()
+        )
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
