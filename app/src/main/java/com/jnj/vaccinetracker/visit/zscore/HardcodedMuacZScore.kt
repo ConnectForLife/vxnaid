@@ -91,7 +91,10 @@ class HardcodedMuacZScore(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
          )
-         setText(muac)
+         if (!muac.isNullOrEmpty()) {
+            setText(muac)
+            setSelection(muac?.length ?: 0)
+         }
       }
    }
 
@@ -122,12 +125,11 @@ class HardcodedMuacZScore(
 
          override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             muac = s?.toString()
-            updateValueTextView(valueTextView)
-            notifyListener(listener)
          }
 
          override fun afterTextChanged(s: Editable?) {
-            // No action needed here
+            updateValueTextView(valueTextView)
+            notifyListener(listener)
          }
       }
    }
