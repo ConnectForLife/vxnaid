@@ -38,7 +38,6 @@ import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import javax.inject.Inject
 
@@ -97,9 +96,8 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         proposedDateTextVisit = binding.root.findViewById(R.id.proposed_next_visit_date_value)
 
         lifecycleScope.launch {
-            val nextVisitWeeksNumber = findWeeksDifferenceBetweenCurrentAndNextVisit()
-            val nextVisitProposedDateAsLocalDate = getProposedNextVisitDateAsLocalDate(nextVisitWeeksNumber)
-            proposedDateTextVisit.text = nextVisitProposedDateAsLocalDate.toString()
+            val nextVisitProposedDateAsLocalDate = findProposedNextVisitDateAsLocalDate()
+            proposedDateTextVisit.text = nextVisitProposedDateAsLocalDate?.toString() ?: ""
 
             val nextVisitProposedDateAsDate = Date.from(nextVisitProposedDateAsLocalDate
                 ?.atStartOfDay(ZoneId.of(Constants.UTC_TIME_ZONE_NAME))?.toInstant())
@@ -190,25 +188,6 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun findWeeksDifferenceBetweenCurrentAndNextVisit(): Int? {
-        val participantBirthDate = participant!!.birthDateText
-        val participantVisits = visitManager.getVisitsForParticipant(participant!!.participantUuid)
-        val currentVisitType = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
-        val substancesConfig = configurationManager.getSubstancesConfig()
-        val currentVaccine = substancesConfig.find { it.visitType == currentVisitType }
-        if (currentVaccine == null) {
-            return null
-        }
-        val nextVaccine = substancesConfig.filter { it.weeksAfterBirth > currentVaccine.weeksAfterBirth }
-            .minByOrNull { it.weeksAfterBirth }
-        if (nextVaccine == null) {
-            return null
-        }
-
-        return nextVaccine.weeksAfterBirth - currentVaccine.weeksAfterBirth
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun findVisitTypeOfNextVisit(): String {
         val participantBirthDate = participant!!.birthDateText
         val participantVisits = visitManager.getVisitsForParticipant(participant!!.participantUuid)
@@ -237,43 +216,31 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun getProposedNextVisitDateAsDate(): DateTime? {
-        val weeksNumberAfterBirthForNextVisit = findWeeksNumberAfterBirthForNextVisit(participant!!.birthDateText)
-        val nextVisitDate = weeksNumberAfterBirthForNextVisit?.let { calculateNextVisitDate(participant!!.birthDateText, it) }
-        return nextVisitDate?.let { DateTime.fromUnix(it.time) }
-    }
+    private suspend fun findProposedNextVisitDateAsLocalDate(): LocalDate? {
+        val participantBirthDate = participant!!.birthDateText
+        val participantVisits = visitManager.getVisitsForParticipant(participant!!.participantUuid)
+        val currentVisitType = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
+        val substancesConfig = configurationManager.getSubstancesConfig()
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getProposedNextVisitDateAsLocalDate(weeksNumber: Int?): LocalDate? {
-        if (weeksNumber == null) {
+        val currentVaccine = substancesConfig.find { it.visitType == currentVisitType }
+        if (currentVaccine == null) {
             return null
         }
 
-        return LocalDate.now().plusWeeks(weeksNumber.toLong())
-    }
+        val nextVaccine = substancesConfig
+            .filter { it.weeksAfterBirth > currentVaccine.weeksAfterBirth }
+            .minByOrNull { it.weeksAfterBirth }
+        if (nextVaccine == null) {
+            return null
+        }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun findWeeksNumberAfterBirthForNextVisit(participantBirthDate: String): Int? {
-        val substancesConfig = configurationManager.getSubstancesConfig()
-        val weeksAfterBirthSet = substancesConfig.map { it.weeksAfterBirth }.sorted().toSet()
-        val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
-
-        return substancesConfig
-            .filter {
-                val minWeekNumber = it.weeksAfterBirth - it.weeksAfterBirthLowWindow
-                val maxWeekNumber = it.weeksAfterBirth + it.weeksAfterBirthUpWindow
-                childAgeInWeeks in minWeekNumber..maxWeekNumber
-            }.firstNotNullOfOrNull {
-                weeksAfterBirthSet.filter { week -> week > it.weeksAfterBirth }.minOrNull()
-            }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun calculateNextVisitDate(birthDateText: String, weeksNumberAfterBirth: Int): Date {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val birthDate = LocalDate.parse(birthDateText, formatter)
-        val nextVisitDate = birthDate.plusWeeks(weeksNumberAfterBirth.toLong())
-        return Date.from(nextVisitDate.atStartOfDay(ZoneId.of(Constants.UTC_TIME_ZONE_NAME)).toInstant())
+        return if (currentVisitType == Constants.AT_BIRTH_VISIT_TYPE) {
+            val birthDateLocalDate = LocalDate.parse(participantBirthDate)
+            birthDateLocalDate.plusWeeks(nextVaccine.weeksAfterBirth.toLong())
+        } else {
+            val weeksDifference = nextVaccine.weeksAfterBirth - currentVaccine.weeksAfterBirth
+            LocalDate.now().plusWeeks(weeksDifference.toLong())
+        }
     }
 
     interface VisitRegisteredSuccessDialogListener {
