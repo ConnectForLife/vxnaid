@@ -91,9 +91,13 @@ class HardcodedMuacZScore(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
          )
-         setText(muac)
+         if (!muac.isNullOrEmpty()) {
+            setText(muac)
+            setSelection(muac?.length ?: 0)
+         }
       }
    }
+
 
    private fun createValueTextView(context: android.content.Context, muac: String?): TextView {
       val calculator = MuacZScoreCalculator(muac, gender, birthDateText)
@@ -121,16 +125,18 @@ class HardcodedMuacZScore(
          }
 
          override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            // Update the internal value but do NOT modify the input field
             muac = s?.toString()
-            updateValueTextView(valueTextView)
-            notifyListener(listener)
          }
 
          override fun afterTextChanged(s: Editable?) {
-            // No action needed here
+            // Only update the value display after the input is complete
+            updateValueTextView(valueTextView)
+            notifyListener(listener)
          }
       }
    }
+
 
    private fun updateValueTextView(valueTextView: TextView) {
       val calculator = MuacZScoreCalculator(muac, gender, birthDateText)
