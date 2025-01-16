@@ -33,7 +33,7 @@ sealed class HardcodedZScore(
                birthDateText
             )
 
-            Constants.CONCEPT_NAME_MUACA_Z_SCORE -> HardcodedMuacZScore(name, gender, birthDateText)
+            Constants.CONCEPT_NAME_MUAC_Z_SCORE -> HardcodedMuacZScore(name, gender, birthDateText)
             Constants.CONCEPT_NAME_WEIGHT_FOR_HEIGHT_Z_SCORE -> HardcodedWeightForHeightZScore(
                name,
                gender,
@@ -54,8 +54,8 @@ sealed class HardcodedZScore(
          if (it.containsKey(Constants.CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE)) {
             height = it[Constants.CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE]
          }
-         if (it.containsKey(Constants.CONCEPT_NAME_MUACA_Z_SCORE)) {
-            muac = it[Constants.CONCEPT_NAME_MUACA_Z_SCORE]
+         if (it.containsKey(Constants.CONCEPT_NAME_MUAC_Z_SCORE)) {
+            muac = it[Constants.CONCEPT_NAME_MUAC_Z_SCORE]
          }
          if (it.containsKey(Constants.CONCEPT_NAME_IS_OEDEMA_Z_SCORE)) {
             isOedema = it[Constants.CONCEPT_NAME_IS_OEDEMA_Z_SCORE]
@@ -74,7 +74,7 @@ sealed class HardcodedZScore(
          if (conceptName == Constants.CONCEPT_NAME_HEIGHT_FOR_AGE_Z_SCORE) {
             height = itemValue
          }
-         if (conceptName == Constants.CONCEPT_NAME_MUACA_Z_SCORE) {
+         if (conceptName == Constants.CONCEPT_NAME_MUAC_Z_SCORE) {
             muac = itemValue
          }
          if (conceptName == Constants.CONCEPT_NAME_IS_OEDEMA_Z_SCORE) {
