@@ -10,7 +10,7 @@ class PhoneValidator @Inject constructor(private val phoneNumberUtil: PhoneNumbe
         /**
          * only numbers and white spaces
          */
-        private val phoneRegex = "[0-9\\s]*".toRegex()
+        private val phoneRegex = "^256[732]\\d{8}\$".toRegex()
     }
 
     fun validate(fullPhoneNumber: String): Boolean {
