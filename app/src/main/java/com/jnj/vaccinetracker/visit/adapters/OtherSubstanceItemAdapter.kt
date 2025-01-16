@@ -142,21 +142,65 @@ class OtherSubstanceItemAdapter(
                 holder?.inputEditText?.error = errorMessage
                 errorList.add(errorMessage)
             } else {
-                if (isWeightAtBirthValid(otherSubstance, itemValue)) {
-                    holder?.inputEditText?.error = "Value cannot be less than 1 and greater than 9"
-                    errorList.add("Value of $label cannot be less than 1 and greater than 9")
-                } else {
-                    holder?.inputEditText?.error = null
-                }
+                validateWeight(otherSubstance, itemValue, holder, errorList)
+                validateAge(otherSubstance, itemValue, holder, errorList)
             }
         }
     }
 
-    private fun isWeightAtBirthValid(
-        otherSubstance: OtherSubstanceDataModel,
-        weightValue: String
-    ): Boolean {
-        return otherSubstance.visitType == Constants.AT_BIRTH_VISIT_TYPE && otherSubstance.conceptName == Constants.CONCEPT_NAME_WEIGHT_KG && (weightValue.toInt() < 1 || weightValue.toInt() > 9)
+    private fun validateWeight(otherSubstance: OtherSubstanceDataModel, value: String,
+                               holder: TextViewHolder?, errorList: MutableList<String>) {
+        if (otherSubstance.conceptName != Constants.CONCEPT_NAME_WEIGHT_KG) {
+            return
+        }
+
+        val label = holder?.labelTextView?.text
+        val weightInKilograms = value.toInt()
+
+        //Validate Weight for At Birth visit
+        if (otherSubstance.visitType == Constants.AT_BIRTH_VISIT_TYPE) {
+            if (weightInKilograms < 1 || weightInKilograms > 9) {
+                holder?.inputEditText?.error = "Value cannot be less than 1 and greater than 9"
+                errorList.add("Value of $label cannot be less than 1 and greater than 9")
+            } else {
+                holder?.inputEditText?.error = null
+            }
+        //Validate Weight for Six Weeks visit
+        } else if (otherSubstance.visitType == Constants.SIX_WEEKS_VISIT_TYPE) {
+            if (weightInKilograms > 30) {
+                holder?.inputEditText?.error = "Value cannot be greater than 30"
+                errorList.add("Value of $label cannot be greater than 30")
+            } else {
+                holder?.inputEditText?.error = null
+            }
+        //Validate Weight for any other visits
+        } else {
+            if (weightInKilograms < 2 || weightInKilograms > 30) {
+                holder?.inputEditText?.error = "Value cannot be less than 2 and greater than 30"
+                errorList.add("Value of $label cannot be less than 2 and greater than 30")
+            } else {
+                holder?.inputEditText?.error = null
+            }
+        }
+    }
+
+    private fun validateAge(otherSubstance: OtherSubstanceDataModel, value: String,
+                            holder: TextViewHolder?, errorList: MutableList<String>) {
+        if (otherSubstance.conceptName != Constants.CONCEPT_NAME_AGE_IN_MONTHS) {
+            return
+        }
+
+        val label = holder?.labelTextView?.text
+        val ageInMonths = value.toInt()
+
+        if (otherSubstance.visitType == Constants.NINE_MONTHS_VISIT_TYPE) {
+            if (ageInMonths > 59) {
+                holder?.inputEditText?.error = "Value cannot be greater than 59"
+                errorList.add("Value of $label cannot be greater than 59")
+            } else {
+                holder?.inputEditText?.error = null
+            }
+        }
     }
 
     private fun handleRadioValidation(index: Int, itemValue: String?, otherSubstance: OtherSubstanceDataModel, recyclerView: RecyclerView, errorList: MutableList<String>) {

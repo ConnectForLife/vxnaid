@@ -86,6 +86,7 @@ object Constants {
     const val CONCEPT_NAME_IS_OEDEMA_Z_SCORE = "Is Oedema"
     const val CONCEPT_NAME_WEIGHT_KG = "Weight (kg)"
     const val CONCEPT_NAME_RECEIVED_LLIN = "Received LLIN Vxnaid"
+    const val CONCEPT_NAME_AGE_IN_MONTHS = "Age (months) Vxnaid"
 
     const val CALL_NAVIGATE_TO_MATCH_SCREEN = "CALL_NAVIGATE_TO_MATCH_SCREEN"
     const val PARTICIPANT_MATCH_ID = "PARTICIPANT_MATCH_ID"
@@ -126,6 +127,7 @@ object Constants {
 
     const val AT_BIRTH_VISIT_TYPE = "At Birth"
     const val SIX_WEEKS_VISIT_TYPE = "6 weeks"
+    const val NINE_MONTHS_VISIT_TYPE = "9 months"
     const val HEP_B_BD_VACCINE_CONCEPT_NAME = "Hep B BD Vxnaid"
     const val POLIO_0_VACCINE_CONCEPT_NAME = "Polio 0 Vxnaid"
 }
