@@ -159,9 +159,9 @@ class OtherSubstanceItemAdapter(
 
         //Validate Weight for At Birth visit
         if (otherSubstance.visitType == Constants.AT_BIRTH_VISIT_TYPE) {
-            if (weightInKilograms < 1 || weightInKilograms > 9) {
-                holder?.inputEditText?.error = "Value cannot be less than 1 and greater than 9"
-                errorList.add("Value of $label cannot be less than 1 and greater than 9")
+            if (weightInKilograms < 2 || weightInKilograms > 8) {
+                holder?.inputEditText?.error = "Value cannot be less than 2 and greater than 8"
+                errorList.add("Value of $label cannot be less than 2 and greater than 8")
             } else {
                 holder?.inputEditText?.error = null
             }
