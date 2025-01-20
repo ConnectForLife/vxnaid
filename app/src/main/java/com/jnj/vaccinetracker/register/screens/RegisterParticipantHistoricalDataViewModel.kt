@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
-import com.jnj.vaccinetracker.common.data.models.IrisPosition
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.RegisterParticipant
@@ -17,14 +16,13 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.SessionExpiryObserver
 import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
+import com.jnj.vaccinetracker.common.helpers.uuid
 import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
-import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import com.soywiz.klock.DateFormat
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -103,30 +101,19 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       }
    }
 
-   private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
-      val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
-      return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
-         participant.birthDateText,
-         DateUtil.convertDateToString(visitTime, DateFormat.FORMAT_DATE.toString()),
-         participantVisits,
-         configurationManager
-      )
-   }
-
-   private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel): CreateVisit {
+   private fun buildHistoricalVisitObject(participant: ParticipantSummaryUiModel, visitType: String): CreateVisit {
       val operatorUuid = userRepository.getUser()?.uuid
          ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
       val locationUuid = syncSettingsRepository.getSiteUuid()
          ?: throw NoSiteUuidAvailableException("Location not available")
       val visitTime = convertLocalDateToDate(LocalDate.now())
-      val visitType = findVisitType(participant, visitTime)
       return CreateVisit(
          participantUuid = participant.participantUuid,
          visitType = Constants.VISIT_TYPE_DOSING,
          startDatetime = visitTime,
          locationUuid = locationUuid,
          attributes = mapOf(
-            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
+            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
          )
@@ -134,8 +121,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    }
 
    @RequiresApi(Build.VERSION_CODES.O)
-   suspend fun createNextVisit(participant: ParticipantSummaryUiModel) {
-      createVisitUseCase.createVisit(buildNextVisitObject(participant))
+   suspend fun createHistoricalVisit(participant: ParticipantSummaryUiModel, visitType: String, visitUuid: String) {
+      createVisitUseCase.createVisitWithGivenUuid(buildHistoricalVisitObject(participant, visitType), visitUuid)
    }
 
    private fun convertLocalDateToDate(localDate: LocalDate): Date {
@@ -165,6 +152,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       }?.toMutableMap() ?: mutableMapOf()
 
       val otherSubstancesAndValues = visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR] ?: mutableMapOf()
+      val visitUuid = uuid()
+      createHistoricalVisit(participant, visitType, visitUuid)
 
       loading.set(true)
 
@@ -172,14 +161,13 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
          try {
             visitManager.registerDosingVisit(
                encounterDatetime = Date(),
-               visitUuid = dosingVisit.uuid,
+               visitUuid = visitUuid,
                participantUuid = participant.participantUuid,
                dosingNumber = dosingVisit.dosingNumber ?: 0,
                substanceObservations = substanceObservations,
                otherSubstanceObservations = otherSubstancesAndValues,
                visitTypeVxnaid = visitType
             )
-            createNextVisit(participant)
          } catch (ex: OperatorUuidNotAvailableException) {
             sessionExpiryObserver.notifySessionExpired()
          } catch (throwable: Throwable) {

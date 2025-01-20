@@ -29,4 +29,10 @@ class CreateVisitUseCase @Inject constructor(
         draftVisitRepository.insert(draftVisit, orReplace = false)
         return draftVisit
     }
+
+    suspend fun createVisitWithGivenUuid(createVisit: CreateVisit, visitUuid: String): DraftVisit {
+        val draftVisit = createVisit.toDomain(visitUuid)
+        draftVisitRepository.insert(draftVisit, orReplace = false)
+        return draftVisit
+    }
 }

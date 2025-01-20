@@ -211,8 +211,8 @@ class HistoricalDataForVisitTypeFragment :
 
    private suspend fun getAllSubstancesFromAllVisitsForGivenVisitType(visitTypeName: String?) {
       if (visitTypeName == null) return
-      val substancesForVisitTypeList = viewModel.getSubstancesDataForVisitType(visitTypeName!!)
-      if (substancesForVisitTypeList == null) {
+      val substancesForVisitTypeList = viewModel.getSubstancesDataForVisitType(visitTypeName)
+      if (substancesForVisitTypeList.isEmpty()) {
          Log.w("SubstanceError", "No substance data available for this visit type.")
          return
       }
