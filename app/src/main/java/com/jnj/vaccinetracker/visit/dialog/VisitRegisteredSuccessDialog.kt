@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -33,6 +34,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.ScheduleVisitDatePickerDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
+import com.jnj.vaccinetracker.visit.VisitViewModel
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
@@ -57,6 +59,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         }
     }
 
+    private val viewModel: VisitViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: DialogVisitRegisteredSuccessBinding
     private lateinit var visitDateTextView: TextView
     private lateinit var visitScheduleResultTextView: TextView
@@ -157,17 +160,6 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
-        val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
-        return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
-            participant.birthDateText,
-            DateUtil.convertDateToString(visitTime, DateFormat.FORMAT_DATE.toString()),
-            participantVisits,
-            configurationManager
-        )
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
@@ -217,9 +209,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun findProposedNextVisitDateAsLocalDate(): LocalDate? {
-        val participantBirthDate = participant!!.birthDateText
-        val participantVisits = visitManager.getVisitsForParticipant(participant!!.participantUuid)
-        val currentVisitType = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
+        val currentVisitType = viewModel.selectedVisitType.value
         val substancesConfig = configurationManager.getSubstancesConfig()
 
         val currentVaccine = substancesConfig.find { it.visitType == currentVisitType }
@@ -234,6 +224,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
             return null
         }
 
+        val participantBirthDate = participant!!.birthDateText
         return if (currentVisitType == Constants.AT_BIRTH_VISIT_TYPE) {
             val birthDateLocalDate = LocalDate.parse(participantBirthDate)
             birthDateLocalDate.plusWeeks(nextVaccine.weeksAfterBirth.toLong())

@@ -129,7 +129,10 @@ class VisitViewModel @Inject constructor(
             patientVisits.value = visitManager.getVisitsForParticipant(participantSummary.participantUuid)
             visitsCounter.value = patientVisits.value?.count()
 
-            val suggestedVisitTypeFromConfig = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantSummary.birthDateText, patientVisits.value!!, configurationManager)
+            val suggestedVisitTypeFromConfig = SubstancesDataUtil.getVisitTypeForCurrentVisit(
+                participantSummary.birthDateText,
+                patientVisits.value!!,
+                configurationManager)
             suggestedVisitType.value = suggestedVisitTypeFromConfig
             selectedVisitType.value = suggestedVisitTypeFromConfig
 

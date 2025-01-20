@@ -14,6 +14,7 @@ import com.soywiz.klock.DateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
+import kotlin.math.abs
 
 class SubstancesDataUtil {
 
@@ -138,19 +139,17 @@ class SubstancesDataUtil {
                 return visitTypesOrdered[0] // At Birth
             } else if (!hasEverBeenVaccinated) {
                 return visitTypesOrdered[1] // 6 weeks
+            } else {
+                return findVisitTypeByChildAge(childAgeInWeeks, allSubstancesConfig)
+            }
+        }
+
+        fun findVisitTypeByChildAge(childAgeInWeeks: Int, substancesConfig: SubstancesConfig): String {
+            val substanceClosestToChildAge = substancesConfig.minByOrNull {
+                abs(it.weeksAfterBirth - childAgeInWeeks)
             }
 
-            val suggestedSubstancesForChild = getSubstancesDataForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
-
-            return when {
-                // Case 1: If there are suggested substances for the child
-                suggestedSubstancesForChild.isNotEmpty() -> {
-                    val visitTypesInSuggestedSubstances = getVisitTypesFromSubstances(suggestedSubstancesForChild)
-                    getBestVisitType(visitTypesInSuggestedSubstances, visitTypesOrdered)
-                }
-                // Case 2: If no suggested substances, check for the last visit
-                else -> getLastVisitType(participantVisits, allSubstancesConfig, visitTypesOrdered) ?: ""
-            }
+            return substanceClosestToChildAge?.visitType ?: ""
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
