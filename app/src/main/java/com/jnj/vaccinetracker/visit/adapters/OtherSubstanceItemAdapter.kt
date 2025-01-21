@@ -153,9 +153,9 @@ class OtherSubstanceItemAdapter(
         if (otherSubstance.conceptName != Constants.CONCEPT_NAME_WEIGHT_KG) {
             return
         }
-
+        val weightInKilograms = value.toDouble()
         val label = holder?.labelTextView?.text
-        val weightInKilograms = value.toInt()
+
 
         //Validate Weight for At Birth visit
         if (otherSubstance.visitType == Constants.AT_BIRTH_VISIT_TYPE) {
