@@ -19,7 +19,6 @@ import javax.inject.Inject
 class VisitsListViewModel @Inject constructor(
     private val visitRepository: VisitRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
-    private val syncSettingsRepository: SyncSettingsRepository,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
     val visitDTOs = mutableLiveData<List<VisitDataDTO>>()
@@ -38,9 +37,9 @@ class VisitsListViewModel @Inject constructor(
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            val scheduledVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+            val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
                 .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
-            visitDTOs.value = createVisitDTOList(scheduledVisits)
+            visitDTOs.value = createVisitDTOList(historicalVisits)
             isLoading.value = false
         }
     }
@@ -48,9 +47,9 @@ class VisitsListViewModel @Inject constructor(
     fun getMissedVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            val scheduledVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
+            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
-            visitDTOs.value = createVisitDTOList(scheduledVisits)
+            visitDTOs.value = createVisitDTOList(missedVisits)
             isLoading.value = false
         }
     }
@@ -66,10 +65,9 @@ class VisitsListViewModel @Inject constructor(
             }
         }
 
-        val currentLocationUuid = syncSettingsRepository.getSiteUuid()
         visits.forEach { visit ->
             val participant  = participantsMap[visit.participantUuid]
-            if (participant != null && participant.locationUuid == currentLocationUuid) {
+            if (participant != null) {
                 val visitDataDTO = VisitDataDTO(
                     visitUuid = visit.visitUuid,
                     startDatetime = visit.startDatetime,
