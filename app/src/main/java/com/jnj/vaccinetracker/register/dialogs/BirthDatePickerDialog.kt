@@ -18,7 +18,7 @@ class BirthDatePickerDialog(
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_birth_date_picker)
+        dialog.setContentView(R.layout.dialog_date_picker)
 
         initializeViews(dialog)
         setupDatePicker()
