@@ -167,7 +167,10 @@ class OtherSubstanceItemAdapter(
             }
         //Validate Weight for Six Weeks visit
         } else if (otherSubstance.visitType == Constants.SIX_WEEKS_VISIT_TYPE) {
-            if (weightInKilograms > 30) {
+            if (weightInKilograms <= 0) {
+                holder?.inputEditText?.error = "Value cannot be zero or less"
+                errorList.add("Value of $label cannot be zero or less")
+            } else if (weightInKilograms > 30) {
                 holder?.inputEditText?.error = "Value cannot be greater than 30"
                 errorList.add("Value of $label cannot be greater than 30")
             } else {
