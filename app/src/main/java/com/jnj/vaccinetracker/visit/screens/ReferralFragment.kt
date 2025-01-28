@@ -18,7 +18,7 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
-import com.jnj.vaccinetracker.common.domain.entities.Site
+import com.jnj.vaccinetracker.common.dialogs.AlertDialog
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.helpers.findDosingVisit
 import com.jnj.vaccinetracker.common.helpers.findParent
@@ -26,12 +26,8 @@ import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentReferralBinding
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.visit.VisitViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ReferralFragment : BaseFragment() {
@@ -52,9 +48,6 @@ class ReferralFragment : BaseFragment() {
     private var currentVisit: VisitDetail? = null
     private var participantUuid: String? = null
     private var adapter: ArrayAdapter<String>? = null
-    private var locationUuid: String = ""
-    private var locations: List<Site> = listOf()
-    private var currentSite: Site? = null
     private var isReferWithin: Boolean = true
 
     val isAfterVisit: Boolean by lazy {
@@ -81,7 +74,7 @@ class ReferralFragment : BaseFragment() {
 
         initializeViews()
         setupListeners()
-        setupObservers()
+        setupReferralWithinFacilityDropdown()
 
         viewModel.fetchAllLocations()
 
@@ -119,18 +112,6 @@ class ReferralFragment : BaseFragment() {
         }
     }
 
-    private fun setupObservers() {
-        viewModel.allLocations.observe(viewLifecycleOwner) { sites ->
-            if (sites.isNotEmpty()) {
-                locations = sites
-                locationUuid = viewModel.getLocationUuid()
-                currentSite = locations.firstOrNull { it.uuid == locationUuid}
-
-                setupAdapter()
-            }
-        }
-    }
-
     private fun getVisitsForParticipant() {
         lifecycleScope.launch {
             try {
@@ -142,38 +123,31 @@ class ReferralFragment : BaseFragment() {
         }
     }
 
-    private fun setupAdapter() {
-        val locationsWithoutCurrentSite = locations.filter { it.uuid != locationUuid }
-        adapter = if (locationsWithoutCurrentSite.isNotEmpty()) {
-            ArrayAdapter(
-                requireContext(),
-                R.layout.item_dropdown,
-                locationsWithoutCurrentSite.map { it.name })
-        } else {
-            ArrayAdapter(
-                requireContext(),
-                R.layout.item_dropdown,
-                listOf()
-            )
-        }
-        binding.dropdownClinics.setAdapter(adapter)
+    private fun setupReferralWithinFacilityDropdown() {
+        val dropdownOptions = listOf("Value1", "Value2", "Value3")
+        adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, dropdownOptions)
+        binding.referralPlaces.setAdapter(adapter)
     }
 
     private fun showErrorMessage(message: String) {
-        com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(message)
+        AlertDialog(requireContext()).showAlertDialog(message)
     }
 
     private fun onReferButtonClicked() {
-        val selectedClinic = if (isReferWithin && currentSite != null) currentSite!!.name else binding.dropdownClinics.text.toString()
         val referralReason = binding.editTextAdditionalInfo.text.toString()
+        val referralPlace = if (isReferWithin) {
+            binding.referralPlaces.text.toString()
+        } else {
+            binding.editTextReferOutsideFacility.text.toString()
+        }
 
-        if (!validateInputs(selectedClinic, referralReason)) return
+        if (!validateInputs(referralPlace, referralReason, isReferWithin)) return
 
-        val referralObservations = createReferralObservations(selectedClinic, referralReason)
+        val referralObservations = createReferralObservations(referralPlace, referralReason)
 
         lifecycleScope.launch {
             try {
-                onRefer(selectedClinic)
+                onRefer(referralPlace)
                 if (isAfterVisit) {
                     findParent<OnReferralPageFinishListener>()?.onReferralAfterVisitPageFinish(referralObservations)
                 } else {
@@ -203,27 +177,29 @@ class ReferralFragment : BaseFragment() {
         if (isChecked) {
             isReferWithin = false
             setNullInDropdown()
-            binding.linearLayoutClinic.visibility = View.VISIBLE
-            binding.textViewReferOutsideClinicSwitchLabel.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.colorPrimary)
-            )
-            binding.textViewReferWithinClinicSwitchLabel.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.colorTextOnLight)
-            )
-        } else {
-            isReferWithin = true
             binding.linearLayoutClinic.visibility = View.GONE
             binding.textViewReferOutsideClinicSwitchLabel.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+            )
+            binding.textViewReferWithinClinicSwitchLabel.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.colorTextOnLight)
+            )
+            binding.linearLayoutReferOutsideFacility.visibility = View.VISIBLE
+        } else {
+            isReferWithin = true
+            binding.linearLayoutClinic.visibility = View.VISIBLE
+            binding.textViewReferOutsideClinicSwitchLabel.setTextColor(
                 ContextCompat.getColor(requireContext(), R.color.colorTextOnLight)
             )
             binding.textViewReferWithinClinicSwitchLabel.setTextColor(
                 ContextCompat.getColor(requireContext(), R.color.colorPrimary)
             )
+            binding.linearLayoutReferOutsideFacility.visibility = View.GONE
         }
     }
 
     private fun setNullInDropdown() {
-        binding.dropdownClinics.setText(null, false)
+        binding.referralPlaces.setText(null, false)
     }
 
     private fun onDoNotReferClicked() {
@@ -236,21 +212,26 @@ class ReferralFragment : BaseFragment() {
         }
     }
 
-    private fun createReferralObservations(selectedClinic: String, referralReason: String): Map<String, String> {
+    private fun createReferralObservations(referralPlace: String, referralReason: String): Map<String, String> {
         return mutableMapOf<String, String>().apply {
-            put(Constants.REFERRAL_CLINIC_CONCEPT_NAME, selectedClinic)
+            put(Constants.REFERRAL_CLINIC_CONCEPT_NAME, referralPlace)
             put(Constants.REFERRAL_ADDITIONAL_INFO_CONCEPT_NAME, referralReason)
         }
     }
 
-    private fun validateInputs(selectedClinic: String, referralReason: String): Boolean {
+    private fun validateInputs(referralPlace: String, referralReason: String, isReferWithin: Boolean): Boolean {
         var isValid = true
+        val errorMessage = getString(R.string.referral_page_referral_clinic_cannot_be_empty)
 
-        if (selectedClinic.isEmpty()) {
-            binding.dropdownClinics.error = getString(R.string.referral_page_referral_clinic_cannot_be_empty)
+        if (referralPlace.isEmpty()) {
+            if (isReferWithin) {
+                binding.referralPlaces.error = errorMessage
+            } else {
+                binding.editTextReferOutsideFacility.error = errorMessage
+            }
             isValid = false
         } else {
-            binding.dropdownClinics.error = null
+            binding.referralPlaces.error = null
         }
 
         if (referralReason.isEmpty()) {
@@ -262,7 +243,6 @@ class ReferralFragment : BaseFragment() {
 
         return isValid
     }
-
 
     interface OnReferralPageFinishListener {
         fun onReferralAfterVisitPageFinish(referralObservations: Map<String, String> = emptyMap())
