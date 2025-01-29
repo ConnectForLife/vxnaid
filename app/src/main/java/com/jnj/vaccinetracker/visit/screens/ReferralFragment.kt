@@ -8,6 +8,9 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.EditText
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -49,6 +52,7 @@ class ReferralFragment : BaseFragment() {
     private var participantUuid: String? = null
     private var adapter: ArrayAdapter<String>? = null
     private var isReferWithin: Boolean = true
+    private var isOtherOptionSelected: Boolean = false
 
     val isAfterVisit: Boolean by lazy {
         requireArguments().getBoolean(IS_AFTER_VISIT, false)
@@ -56,6 +60,7 @@ class ReferralFragment : BaseFragment() {
 
     companion object {
         private const val IS_AFTER_VISIT = "isAfterVisit"
+        private const val OTHER_DROPDOWN_VALUE = "Other"
 
         fun create(isAfterVisit: Boolean = false): ReferralFragment {
             return ReferralFragment().apply {
@@ -124,9 +129,25 @@ class ReferralFragment : BaseFragment() {
     }
 
     private fun setupReferralWithinFacilityDropdown() {
-        val dropdownOptions = listOf("Value1", "Value2", "Value3")
+        val dropdownOptions = listOf(
+            "Value1",
+            "Value2",
+            "Value3",
+            OTHER_DROPDOWN_VALUE
+        )
         adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, dropdownOptions)
         binding.referralPlaces.setAdapter(adapter)
+
+        binding.referralPlaces.setOnItemClickListener { _, _, position, _, ->
+            val selectedOption = dropdownOptions[position]
+            if (selectedOption == OTHER_DROPDOWN_VALUE) {
+                isOtherOptionSelected = true
+                binding.linearLayoutReferOtherPlace.visibility = View.VISIBLE
+            } else {
+                isOtherOptionSelected = false
+                binding.linearLayoutReferOtherPlace.visibility = View.GONE
+            }
+        }
     }
 
     private fun showErrorMessage(message: String) {
@@ -136,12 +157,16 @@ class ReferralFragment : BaseFragment() {
     private fun onReferButtonClicked() {
         val referralReason = binding.editTextAdditionalInfo.text.toString()
         val referralPlace = if (isReferWithin) {
-            binding.referralPlaces.text.toString()
+            if (isOtherOptionSelected) {
+                binding.editTextReferOtherPlace.text.toString()
+            } else {
+                binding.referralPlaces.text.toString()
+            }
         } else {
             binding.editTextReferOutsideFacility.text.toString()
         }
 
-        if (!validateInputs(referralPlace, referralReason, isReferWithin)) return
+        if (!validateInputs(referralPlace, referralReason, isReferWithin, isOtherOptionSelected)) return
 
         val referralObservations = createReferralObservations(referralPlace, referralReason)
 
@@ -185,6 +210,7 @@ class ReferralFragment : BaseFragment() {
                 ContextCompat.getColor(requireContext(), R.color.colorTextOnLight)
             )
             binding.linearLayoutReferOutsideFacility.visibility = View.VISIBLE
+            binding.linearLayoutReferOtherPlace.visibility = View.GONE
         } else {
             isReferWithin = true
             binding.linearLayoutClinic.visibility = View.VISIBLE
@@ -195,6 +221,7 @@ class ReferralFragment : BaseFragment() {
                 ContextCompat.getColor(requireContext(), R.color.colorPrimary)
             )
             binding.linearLayoutReferOutsideFacility.visibility = View.GONE
+            binding.linearLayoutReferOtherPlace.visibility = View.GONE
         }
     }
 
@@ -219,30 +246,38 @@ class ReferralFragment : BaseFragment() {
         }
     }
 
-    private fun validateInputs(referralPlace: String, referralReason: String, isReferWithin: Boolean): Boolean {
+    private fun validateInputs(referralPlace: String, referralReason: String,
+                               isReferWithin: Boolean, isOtherOptionSelected: Boolean): Boolean {
         var isValid = true
-        val errorMessage = getString(R.string.referral_page_referral_clinic_cannot_be_empty)
 
-        if (referralPlace.isEmpty()) {
-            if (isReferWithin) {
-                binding.referralPlaces.error = errorMessage
-            } else {
-                binding.editTextReferOutsideFacility.error = errorMessage
-            }
-            isValid = false
-        } else {
-            binding.referralPlaces.error = null
+        fun setErrorIfEmpty(fieldValue: String, field: TextView, errorMessage: String) {
+            field.error = if (fieldValue.isEmpty()) errorMessage.also { isValid = false } else null
         }
 
-        if (referralReason.isEmpty()) {
-            binding.editTextAdditionalInfo.error = getString(R.string.referral_page_referral_reason_cannot_be_empty)
-            isValid = false
-        } else {
-            binding.editTextAdditionalInfo.error = null
+        val fieldErrorList = listOf(
+            Triple(
+                referralPlace,
+                when {
+                    isReferWithin && isOtherOptionSelected -> binding.editTextReferOtherPlace
+                    isReferWithin -> binding.referralPlaces
+                    else -> binding.editTextReferOutsideFacility
+                },
+                getString(R.string.referral_page_referral_place_cannot_be_empty)
+            ),
+            Triple(
+                referralReason,
+                binding.editTextAdditionalInfo,
+                getString(R.string.referral_page_referral_reason_cannot_be_empty)
+            )
+        )
+
+        fieldErrorList.forEach { (value, field, errorMessage) ->
+            setErrorIfEmpty(value, field, errorMessage)
         }
 
         return isValid
     }
+
 
     interface OnReferralPageFinishListener {
         fun onReferralAfterVisitPageFinish(referralObservations: Map<String, String> = emptyMap())

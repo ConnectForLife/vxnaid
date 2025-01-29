@@ -422,9 +422,10 @@
     <string name="referral_page_clinic_title">Refer to</string>
     <string name="referral_page_additional_info_title">Reason for referral</string>
     <string name="referral_page_additional_info_hint">Enter a reason for referral</string>
-    <string name="referral_page_referral_place_title">Referral place</string>
     <string name="referral_page_referral_place_hint">Enter a referral place</string>
-    <string name="referral_page_referral_clinic_cannot_be_empty">Referral place cannot be empty</string>
+    <string name="referral_page_referral_other_place_title">Other</string>
+    <string name="referral_page_referral_other_place_hint">Enter other referral place</string>
+    <string name="referral_page_referral_place_cannot_be_empty">Referral place cannot be empty</string>
     <string name="referral_page_referral_reason_cannot_be_empty">Referral reason cannot be empty</string>
     <string name="referral_page_success_referral_text">Child successfully referred to:</string>
     <string name="referral_page_failed_referral_text">Error while referring a child</string>

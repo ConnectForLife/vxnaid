@@ -82,6 +82,36 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearLayout_referOtherPlace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/textView_referOtherPlace"
+                    android:layout_width="155dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/referral_page_referral_other_place_title"
+                    android:textAppearance="@style/LabelText" />
+
+                <EditText
+                    android:id="@+id/editText_referOtherPlace"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="1"
+                    android:hint="@string/referral_page_referral_other_place_hint"
+                    android:inputType="textMultiLine"
+                    android:maxHeight="70sp"
+                    android:minLines="4"
+                    android:text=""
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/linearLayout_referOutsideFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,7 +124,7 @@
                     android:id="@+id/textView_referOutsideFacility"
                     android:layout_width="155dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/referral_page_referral_place_title"
+                    android:text="@string/referral_page_clinic_title"
                     android:textAppearance="@style/LabelText" />
 
                 <EditText
