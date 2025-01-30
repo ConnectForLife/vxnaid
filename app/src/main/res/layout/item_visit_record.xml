@@ -75,8 +75,10 @@
 
         <ImageView
             android:id="@+id/icon_eye"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
 
             android:contentDescription="@string/visits_overview_view_details_label"
             android:src="@drawable/eye_icon"

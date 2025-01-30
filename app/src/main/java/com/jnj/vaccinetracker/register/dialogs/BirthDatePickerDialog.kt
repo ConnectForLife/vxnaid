@@ -52,7 +52,7 @@ class BirthDatePickerDialog(
 
         if (selectedDate == null) {
             val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH) + 1
+            val month = c.get(Calendar.MONTH)
             val day = c.get(Calendar.DAY_OF_MONTH)
             datePicker.init(year, month, day, null)
         }
