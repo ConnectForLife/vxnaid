@@ -124,7 +124,7 @@ class ReferralFragment : BaseFragment() {
     }
 
     private fun setupReferralWithinFacilityDropdown() {
-        val dropdownOptions = listOf("Nutrition Clinic", "EID (Early Infant Diagnosis) Clinic", "Post Natal Care Clinic","Family Planning Clinic", "Others Specify")
+        val dropdownOptions = listOf("Value1", "Value2", "Value3")
         adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, dropdownOptions)
         binding.referralPlaces.setAdapter(adapter)
     }
