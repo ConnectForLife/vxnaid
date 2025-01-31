@@ -402,6 +402,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         } else if (!phone.get().isNullOrEmpty()) {
             phoneNumberToSubmit = fullPhoneNumber
         }
+
         if (!areInputsValid || !isNinValid)
             return
 
