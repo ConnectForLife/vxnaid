@@ -18,7 +18,7 @@ class BirthDatePickerDialog(
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_date_picker)
+        dialog.setContentView(R.layout.dialog_birth_date_picker)
 
         initializeViews(dialog)
         setupDatePicker()
@@ -52,7 +52,7 @@ class BirthDatePickerDialog(
 
         if (selectedDate == null) {
             val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
+            val month = c.get(Calendar.MONTH) + 1
             val day = c.get(Calendar.DAY_OF_MONTH)
             datePicker.init(year, month, day, null)
         }
