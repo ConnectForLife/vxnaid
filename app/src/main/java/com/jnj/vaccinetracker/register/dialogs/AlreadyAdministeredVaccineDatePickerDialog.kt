@@ -30,7 +30,7 @@ class AlreadyAdministeredVaccineDatePickerDialog(
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_schedule_visit_date_picker)
+        dialog.setContentView(R.layout.dialog_date_picker)
 
         initializeViews(dialog)
         setupDatePicker()
@@ -49,7 +49,7 @@ class AlreadyAdministeredVaccineDatePickerDialog(
     }
 
     private fun initializeViews(dialog: Dialog) {
-        datePicker = dialog.findViewById(R.id.scheduleVisitDatePicker)
+        datePicker = dialog.findViewById(R.id.datePicker)
         btnOk = dialog.findViewById(R.id.btn_ok)
         btnCancel = dialog.findViewById(R.id.btn_cancel)
     }

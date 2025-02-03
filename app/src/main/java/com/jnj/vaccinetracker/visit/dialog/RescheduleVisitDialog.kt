@@ -22,6 +22,7 @@ import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
+import com.jnj.vaccinetracker.common.dialogs.AlertDialog
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
@@ -79,7 +80,6 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(),
 
    companion object {
       private const val PARTICIPANT = "participant"
-      private const val CURRENT_VISIT_UUID = "currentVisitUuid"
       private const val IS_AFTER_CONTRAINDICATIONS = "isAfterContraIndications"
       const val TAG_DIALOG_RESCHEDULE_VISIT = "rescheduleVisitDialog"
 
@@ -126,17 +126,16 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(),
       }
 
       setupClickListeners()
-      setupInputListeners()
       return binding.root
    }
 
-   fun setupClickListeners() {
+   private fun setupClickListeners() {
       binding.btnSaveVisit.setOnClickListener {
          lifecycleScope.launch {
             try {
                validateDate()
                validateText()
-               if (visitDate != null) {
+               if (visitDate != null && rescheduleReasonEditText.text.isNotBlank()) {
                   if (!isAfterContraindications) {
                      createVisitUseCase.createVisit(
                         buildNextVisitObject(
@@ -167,7 +166,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(),
                   "Something went wrong during rescheduling a visit",
                   ex
                )
-               com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext())
+               AlertDialog(requireContext())
                   .showAlertDialog(getString(R.string.reschedule_visit_failed))
             }
          }
@@ -175,12 +174,6 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(),
 
       binding.btnFinish.setOnClickListener {
          dismissAllowingStateLoss()
-      }
-   }
-
-   private fun setupInputListeners() {
-      binding.editTextRescheduleReason.doAfterTextChanged {
-         binding.editTextRescheduleReason.error = null
       }
    }
 
