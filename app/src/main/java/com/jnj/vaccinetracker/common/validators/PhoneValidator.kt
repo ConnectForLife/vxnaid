@@ -18,13 +18,6 @@ class PhoneValidator @Inject constructor(private val phoneNumberUtil: PhoneNumbe
             logWarn("$fullPhoneNumber not matching with $phoneRegex")
             return false
         }
-        val phoneWithPlusPrefix = "+$fullPhoneNumber"
-        val phoneNumber = try {
-          phoneNumberUtil.parse(phoneWithPlusPrefix, null)
-        } catch (e: Exception) {
-          logWarn("Phone number invalid: ${e.message}")
-          return false
-        }
-        return phoneNumberUtil.isValidNumber(phoneNumber)
+       return true
     }
 }
