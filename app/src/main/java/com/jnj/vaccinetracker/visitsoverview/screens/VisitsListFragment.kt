@@ -67,7 +67,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_list, container, false)
 
@@ -268,7 +268,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     private fun showVisitDetailsDialog(visitData: VisitDataDTO) {
         lifecycleScope.launch {
             val participant = visitData.participant
-            val visitType = findVisitType(visitData)
+            val visitType = visitData.attributes[Constants.ATTRIBUTE_VISIT_TYPE_VXNAID] ?: ""
 
             val visitDetails = VisitDetailsDTO(
                 formattedVisitDate = visitData.formattedStartDateTime,
@@ -282,16 +282,5 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             val dialog = VisitDetailsDialog.newInstance(visitDetails, visitsKey)
             dialog.show(parentFragmentManager, "VisitDetailsDialog")
         }
-    }
-
-    private suspend fun findVisitType(visitData: VisitDataDTO): String {
-        val participant = visitData.participant
-        val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
-        return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
-            participant.birthDate.birthDateToString(),
-            visitData.formattedStartDateTime,
-            participantVisits,
-            configurationManager
-        )
     }
 }

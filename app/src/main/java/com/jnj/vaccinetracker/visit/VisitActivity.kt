@@ -222,10 +222,6 @@ class VisitActivity :
         binding.btnSubmit.visibility = View.VISIBLE
     }
 
-    fun makeSubmitBtnInvisible() {
-        binding.btnSubmit.visibility = View.INVISIBLE
-    }
-
     fun makeAddVaccineButtonVisible() {
         if (viewModel.isSuggesting.value == false && !isFirstTab) {
             binding.btnAddVaccine.visibility = View.VISIBLE
@@ -290,7 +286,6 @@ class VisitActivity :
 
     private fun onSuggestingSwitch(suggestingValue: Boolean) {
         if (!suggestingValue) {
-            val generalColor = ContextCompat.getColorStateList(this, R.color.colorTextOnLight)
             binding.tabLayout.backgroundTintList = null
             binding.viewPagerVisit.backgroundTintList = null
             makeAddVaccineButtonVisible()
