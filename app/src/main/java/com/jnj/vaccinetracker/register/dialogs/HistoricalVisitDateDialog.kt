@@ -72,8 +72,16 @@ class HistoricalVisitDateDialog() : BaseDialogFragment() {
    }
 
    private fun setupDatePicker() {
-      val c = Calendar.getInstance()
-      datePicker.maxDate = c.timeInMillis
+      val calendar = Calendar.getInstance()
+      calendar.add(Calendar.DAY_OF_YEAR, -1)
+      datePicker.maxDate = calendar.timeInMillis
+      //  historical visits are restricted to dates strictly before today.
+      datePicker.updateDate(
+         calendar.get(Calendar.YEAR),
+         calendar.get(Calendar.MONTH),
+         calendar.get(Calendar.DAY_OF_MONTH)
+      )
+
       birthDate?.let {
          try {
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

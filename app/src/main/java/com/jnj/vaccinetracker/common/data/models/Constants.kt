@@ -103,7 +103,7 @@ object Constants {
     const val CHILD_CATEGORY_REFUGEE = "Refugee"
 
     const val VISITS_OVERVIEW_SCHEDULED_VISITS_KEY = "Scheduled Visits"
-    const val VISITS_OVERVIEW_HISTORICAL_VISITS_KEY = "Historical Visits"
+    const val VISITS_OVERVIEW_HISTORICAL_VISITS_KEY = "Visit History"
     const val VISITS_OVERVIEW_MISSED_VISITS_KEY = "Missed Visits"
 
     const val VISIT_DATE_FILE_COLUMN_HEADER = "Visit Date"
