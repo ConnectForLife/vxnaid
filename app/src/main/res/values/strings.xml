@@ -469,7 +469,7 @@
     <string name="visits_overview_client_name_column_label">Child Name</string>
     <string name="visits_overview_details_visit_date_label">Visit Date:</string>
     <string name="visits_overview_details_scheduled_visit_date_label">Scheduled Visit Date:</string>
-    <string name="visits_overview_details_historical_visit_date_label">Today\'s Visit Date:</string>
+    <string name="visits_overview_details_historical_visit_date_label">Visit Date:</string>
     <string name="visits_overview_details_missed_visit_date_label">Missed Visit Date:</string>
     <string name="visits_overview_details_visit_schedule_label">Visit Schedule:</string>
     <string name="visits_overview_details_phone_number_label">Phone Number:</string>
