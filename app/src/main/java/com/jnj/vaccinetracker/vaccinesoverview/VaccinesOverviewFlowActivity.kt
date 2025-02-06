@@ -2,8 +2,10 @@ package com.jnj.vaccinetracker.vaccinesoverview
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
@@ -42,6 +44,7 @@ class VaccinesOverviewFlowActivity : BaseActivity() {
         return true
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun navigateToScreen(screen: VaccinesOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
         val fragment = when (screen) {
             VaccinesOverviewViewModel.Screen.VACCINES_OVERVIEW -> VaccinesOverviewFragment()

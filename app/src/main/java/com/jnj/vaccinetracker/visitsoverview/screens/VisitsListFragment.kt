@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.visitsoverview.screens
 
+import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
@@ -15,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -41,6 +43,8 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import java.io.File
+import java.io.FileOutputStream
 import java.io.OutputStream
 import java.util.Locale
 import javax.inject.Inject
@@ -152,10 +156,11 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     }
 
     private fun exportToExcel(visits: List<VisitDataDTO>) {
-        val fileName = "${buildFileName()}.xls"
-        val mimeType = "application/vnd.ms-excel"
+        val fileName = "${buildFileName()}.xlsx"
+        val mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        val file = File(requireContext().getExternalFilesDir(null), fileName)  // Use external storage
 
-        FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
+        FileOutputStream(file).use { outputStream ->
             val workbook = HSSFWorkbook()
             val sheet = workbook.createSheet(visitsKey.replace(" ", "_"))
 
@@ -183,7 +188,35 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             workbook.write(outputStream)
             workbook.close()
         }
+
+        openExcelFile(file)
     }
+
+    private fun openExcelFile(file: File) {
+        Log.d("ExcelFilePath", "File path: ${file.absolutePath}")
+        if (!file.exists()) {
+            Toast.makeText(requireContext(), "File not found!", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val uri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.provider",
+            file
+        )
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/vnd.ms-excel")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(requireContext(), "No app found to open Excel files. Please install an Excel reader.", Toast.LENGTH_LONG).show()
+        }
+    }
+
 
     private fun exportToCSV(visits: List<VisitDataDTO>) {
         val fileName = "${buildFileName()}.csv"
