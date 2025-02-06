@@ -738,6 +738,19 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     fun setNin(nin: String) {
         if (this.nin.get() == nin) return
         this.nin.set(nin)
+
+        val inferredGender = getGenderFromNin(nin)
+        inferredGender?.let {
+            this.gender.set(it)
+        }
+    }
+
+    private fun getGenderFromNin(nin: String): Gender? {
+        return when {
+            nin.startsWith("CM", ignoreCase = true) -> Gender.MALE
+            nin.startsWith("CF", ignoreCase = true) -> Gender.FEMALE
+            else -> null
+        }
     }
 
     fun setChildNumber(childNumber: String) {
