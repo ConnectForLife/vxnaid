@@ -61,7 +61,7 @@ class MultipleVisitsDialog : BaseDialogFragment() {
 
       viewModel.groupedVisitsByType.value?.get(visitType)?.forEach { visit ->
          val button = Button(requireContext()).apply {
-            text = DateUtil.convertDateToString(visit.startDate, DateFormat("yyyy-MM-dd HH:mm").toString())
+            text = DateUtil.convertDateToString(visit.startDate, DateFormat("yyyy-MM-dd").toString())
             layoutParams = LinearLayout.LayoutParams(
                LinearLayout.LayoutParams.MATCH_PARENT,
                LinearLayout.LayoutParams.WRAP_CONTENT

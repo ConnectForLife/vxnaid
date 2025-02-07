@@ -27,7 +27,6 @@ import com.jnj.vaccinetracker.common.exceptions.ParticipantAlreadyExistsExceptio
 import com.jnj.vaccinetracker.common.exceptions.ParticipantNinAlreadyExistsException
 import com.jnj.vaccinetracker.common.helpers.*
 import com.jnj.vaccinetracker.common.ui.BaseActivity
-import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.ui.model.DisplayValue
 import com.jnj.vaccinetracker.databinding.FragmentRegisterParticipantParticipantDetailsBinding
@@ -126,7 +125,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
         viewModel.birthWeightValidationMessage.observe(lifecycleOwner) { birthWeightValidationMessage ->
             logDebug("validate birth weight" + birthWeightValidationMessage)
-           // binding.birthWeightError.requestFocus()
         }
 
         viewModel.childCategory.observe(lifecycleOwner) {

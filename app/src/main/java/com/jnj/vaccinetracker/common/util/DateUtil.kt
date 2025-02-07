@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.common.util
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.soywiz.klock.DateFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -9,6 +10,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -22,6 +24,7 @@ class DateUtil {
 
         fun convertStringToDate(date: String, sourceFormat: String): Date? {
             val dateFormat = SimpleDateFormat(sourceFormat, Locale.getDefault())
+            dateFormat.timeZone = TimeZone.getTimeZone(Constants.UTC_TIME_ZONE_NAME)
             return dateFormat.parse(date)
         }
 

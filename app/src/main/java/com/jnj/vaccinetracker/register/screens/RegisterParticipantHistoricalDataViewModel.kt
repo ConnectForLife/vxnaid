@@ -2,7 +2,6 @@ package com.jnj.vaccinetracker.register.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
@@ -18,19 +17,19 @@ import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.helpers.uuid
 import com.jnj.vaccinetracker.common.util.DateUtil
-import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
+import com.jnj.vaccinetracker.register.model.HistoricalData
+import com.jnj.vaccinetracker.register.model.SubstancesData
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
-import com.soywiz.klock.DateFormat
+import com.soywiz.klock.DateTime
+import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
-import java.time.LocalDate
-import java.time.ZoneId
 import java.util.Date
 import javax.inject.Inject
 
@@ -41,8 +40,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    private val sessionExpiryObserver: SessionExpiryObserver,
    private val createVisitUseCase: CreateVisitUseCase,
    private val userRepository: UserRepository,
-   private val syncSettingsRepository: SyncSettingsRepository,
-   private val configurationManager: ConfigurationManager
+   private val syncSettingsRepository: SyncSettingsRepository
 ) : ViewModelBase() {
 
    val registerVaccinesSuccessEvents = eventFlow<ParticipantSummaryUiModel>()
@@ -55,8 +53,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    private val dosingVisit = mutableLiveData<VisitDetail>()
    val isEdit = mutableLiveData<Boolean>(false)
    val groupedVisitsByType = mutableLiveData<Map<String, List<VisitDetail>>>()
-
-   val visitTypesData = mutableLiveData<MutableMap<String, MutableMap<String, MutableMap<String, String>>>>(mutableMapOf())
+   val visitTypesData = mutableLiveData<MutableMap<String, HistoricalData>>(mutableMapOf())
 
    init {
       participantSummaryArg
@@ -101,16 +98,19 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       }
    }
 
-   private fun buildHistoricalVisitObject(participant: ParticipantSummaryUiModel, visitType: String): CreateVisit {
+   private fun buildHistoricalVisitObject(
+      participant: ParticipantSummaryUiModel,
+      visitType: String,
+      visitDate: Date
+   ): CreateVisit {
       val operatorUuid = userRepository.getUser()?.uuid
          ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
       val locationUuid = syncSettingsRepository.getSiteUuid()
          ?: throw NoSiteUuidAvailableException("Location not available")
-      val visitTime = convertLocalDateToDate(LocalDate.now())
       return CreateVisit(
          participantUuid = participant.participantUuid,
          visitType = Constants.VISIT_TYPE_DOSING,
-         startDatetime = visitTime,
+         startDatetime = visitDate,
          locationUuid = locationUuid,
          attributes = mapOf(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
@@ -121,20 +121,22 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    }
 
    @RequiresApi(Build.VERSION_CODES.O)
-   suspend fun createHistoricalVisit(participant: ParticipantSummaryUiModel, visitType: String, visitUuid: String) {
-      createVisitUseCase.createVisitWithGivenUuid(buildHistoricalVisitObject(participant, visitType), visitUuid)
+   suspend fun createHistoricalVisit(
+      participant: ParticipantSummaryUiModel,
+      visitType: String,
+      visitUuid: String,
+      visitDate: Date
+   ) {
+      createVisitUseCase.createVisitWithGivenUuid(buildHistoricalVisitObject(
+         participant, visitType, visitDate), visitUuid)
    }
 
-   private fun convertLocalDateToDate(localDate: LocalDate): Date {
-      val instant = localDate.atStartOfDay(ZoneId.of(Constants.UTC_TIME_ZONE_NAME)).toInstant()
-      return Date.from(instant)
-   }
-
-   private suspend fun doRegisterVisit(visitType: String, visitTypeData: MutableMap<String, MutableMap<String, String>>) {
+   private suspend fun doRegisterVisit(visitType: String, historicalData: HistoricalData) {
       val participant = participant.value ?: run {
          logError("No participant available.")
          return
       }
+
       val visits = visitManager.getVisitsForParticipant(participant.participantUuid)
       onVisitsLoaded(visits)
 
@@ -143,7 +145,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
          return
       }
 
-      val substanceObservations = visitTypeData[Constants.SUBSTANCES_AND_DATES_STR]?.mapValues {
+      val substanceObservations = historicalData.value[Constants.SUBSTANCES_AND_DATES_STR]?.substanceValueMap?.mapValues {
          mapOf(
             Constants.DATE_STR to it.value,
             Constants.MANUFACTURER_NAME_STR to "",
@@ -151,16 +153,17 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
          )
       }?.toMutableMap() ?: mutableMapOf()
 
-      val otherSubstancesAndValues = visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR] ?: mutableMapOf()
+      val otherSubstancesAndValues = historicalData.value[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]?.substanceValueMap ?: mutableMapOf()
       val visitUuid = uuid()
-      createHistoricalVisit(participant, visitType, visitUuid)
+      val visitDate = historicalData.visitDate ?: Date()
+      createHistoricalVisit(participant, visitType, visitUuid, visitDate)
 
       loading.set(true)
 
       scope.launch {
          try {
             visitManager.registerDosingVisit(
-               encounterDatetime = Date(),
+               encounterDatetime = visitDate,
                visitUuid = visitUuid,
                participantUuid = participant.participantUuid,
                dosingNumber = dosingVisit.dosingNumber ?: 0,
@@ -189,8 +192,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
          return
       }
 
-      visitData.forEach { (visitType, visitTypeData) ->
-         doRegisterVisit(visitType, visitTypeData)
+      visitData.forEach { (visitType, historicalData) ->
+         doRegisterVisit(visitType, historicalData)
       }
 
       participant.value?.let {
@@ -206,18 +209,41 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    fun addVisitTypeData(
       visitTypeName: String,
       substancesAndDates: MutableMap<String, String>?,
-      otherSubstancesAndValues: MutableMap<String, String>
+      otherSubstancesAndValues: MutableMap<String, String>,
+      visitDate: DateTime?
    ) {
       val currentData = visitTypesData.value ?: mutableMapOf()
-      val visitTypeEntry = currentData.getOrPut(visitTypeName) { mutableMapOf() }
-
-      visitTypeEntry[Constants.SUBSTANCES_AND_DATES_STR] = substancesAndDates ?: mutableMapOf()
-      visitTypeEntry[Constants.OTHER_SUBSTANCES_AND_VALUES_STR] = otherSubstancesAndValues
+      val visitTypeEntry = currentData.getOrPut(visitTypeName) { HistoricalData(null, emptyMap()) }
+      val substances = SubstancesData(substancesAndDates?.toMap() ?: emptyMap())
+      val otherSubstances = SubstancesData(otherSubstancesAndValues.toMap())
+      val updatedVisitTypeEntry = visitTypeEntry.copy(
+         visitDate = findVisitDate(visitDate, substances.substanceValueMap),
+         value = mapOf(
+            Constants.SUBSTANCES_AND_DATES_STR to substances,
+            Constants.OTHER_SUBSTANCES_AND_VALUES_STR to otherSubstances
+         )
+      )
+      currentData[visitTypeName] = updatedVisitTypeEntry
 
       visitTypesData.postValue(currentData)
    }
 
    fun getParticipantBirthDate(): String {
       return registerParticipant.value?.birthDate?.birthDateToString() ?: participant.value!!.birthDateText
+   }
+
+   private fun findVisitDate(visitDate: DateTime?, vaccines: Map<String, String>): Date {
+      if (visitDate != null) {
+         return visitDate.toDate()
+      }
+
+      if (vaccines.isNotEmpty()) {
+         val parsedDates = vaccines.values.mapNotNull { dateString ->
+            DateUtil.convertStringToDate(dateString, "yyyy-MM-dd")
+         }
+         return parsedDates.minOrNull()!!
+      }
+
+      return Date()
    }
 }

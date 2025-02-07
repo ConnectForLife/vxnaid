@@ -522,7 +522,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     suspend fun doRegistrationUsingRegisterRequest(
         request: RegisterParticipant,
-    ): ParticipantSummaryUiModel? {
+    ): ParticipantSummaryUiModel {
         loading.set(true)
 
         try {

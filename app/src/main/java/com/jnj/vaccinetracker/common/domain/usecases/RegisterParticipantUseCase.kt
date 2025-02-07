@@ -88,7 +88,6 @@ class RegisterParticipantUseCase @Inject constructor(
         attributes = attributes
     )
 
-
     suspend fun registerParticipant(registerParticipant: RegisterParticipant): DraftParticipant {
         val existingParticipant = findParticipantByParticipantIdUseCase.findByParticipantId(participantId = registerParticipant.participantId)
         if (existingParticipant != null ) {
@@ -140,8 +139,6 @@ class RegisterParticipantUseCase @Inject constructor(
             } catch (ex: Exception) {
                 logWarn("Upload participant failed", ex)
             }
-
-
 
             transactionRunner.withTransaction {
                 draftParticipantRepository.insert(participant, orReplace = false)

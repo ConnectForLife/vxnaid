@@ -192,7 +192,6 @@ class ParticipantManager @Inject constructor(
             )
     }
 
-
     suspend fun registerParticipant(request: RegisterParticipant): DraftParticipant {
         return registerParticipantUseCase.registerParticipant(request)
     }
@@ -200,105 +199,4 @@ class ParticipantManager @Inject constructor(
     suspend fun updateParticipant(request: UpdateParticipant): DraftParticipant {
         return updateParticipantUseCase.updateParticipant(request)
     }
-
-    suspend fun fullParticipantRegister(
-        participantId: String,
-        nin: String?,
-        childNumber: String?,
-        birthWeight: String?,
-        gender: Gender,
-        birthDate: DateTime,
-        isBirthDateEstimated: Boolean,
-        telephone: String?,
-        siteUuid: String,
-        language: String,
-        address: Address,
-        picture: ImageBytes?,
-        biometricsTemplateBytes: BiometricsTemplateBytes?,
-        fatherFirstName: String?,
-        fatherLastName: String?,
-        motherFirstName: String,
-        motherLastName: String,
-        childFirstName: String?,
-        childLastName: String?,
-        childCategory: String?,
-    ): DraftParticipant {
-        val request = getRegisterParticipant(
-            RegisterDetails(
-                participantId = participantId,
-                nin = nin,
-                childNumber = childNumber,
-                birthWeight = birthWeight,
-                gender = gender,
-                birthDate = birthDate,
-                isBirthDateEstimated = isBirthDateEstimated,
-                telephone = telephone,
-                siteUuid = siteUuid,
-                language = language,
-                address = address,
-                picture = picture,
-                biometricsTemplateBytes = biometricsTemplateBytes,
-                fatherFirstName = fatherFirstName,
-                fatherLastName = fatherLastName,
-                motherFirstName = motherFirstName,
-                motherLastName = motherLastName,
-                childFirstName = childFirstName,
-                childLastName = childLastName,
-                childCategory = childCategory
-            )
-        )
-        return registerParticipant(request)
-    }
-
-    suspend fun fullParticipantUpdate(
-        participantId: String,
-        nin: String?,
-        childNumber: String?,
-        birthWeight: String?,
-        gender: Gender,
-        birthDate: DateTime,
-        isBirthDateEstimated: Boolean,
-        telephone: String?,
-        siteUuid: String,
-        language: String,
-        address: Address,
-        picture: ImageBytes?,
-        biometricsTemplateBytes: BiometricsTemplateBytes?,
-        fatherFirstName: String?,
-        fatherLastName: String?,
-        motherFirstName: String,
-        motherLastName: String,
-        childFirstName: String?,
-        childLastName: String?,
-        childCategory: String?,
-        participantUuid: String,
-    ): DraftParticipant {
-        val registerRequest = getRegisterParticipant(
-            RegisterDetails(
-                participantId = participantId,
-                nin = nin,
-                childNumber = childNumber,
-                birthWeight = birthWeight,
-                gender = gender,
-                birthDate = birthDate,
-                isBirthDateEstimated = isBirthDateEstimated,
-                telephone = telephone,
-                siteUuid = siteUuid,
-                language = language,
-                address = address,
-                picture = picture,
-                biometricsTemplateBytes = biometricsTemplateBytes,
-                fatherFirstName = fatherFirstName,
-                fatherLastName = fatherLastName,
-                motherFirstName = motherFirstName,
-                motherLastName = motherLastName,
-                childFirstName = childFirstName,
-                childLastName = childLastName,
-                childCategory = childCategory
-            )
-        )
-        val updateRequest = getUpdateParticipant(registerRequest, participantUuid)
-        return updateParticipant(updateRequest)
-    }
-
 }

@@ -584,8 +584,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/participant_registration_details_label_gender"
-                        android:textAppearance="@style/LabelText"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/LabelText" />
 
                     <TextView
                         android:layout_width="wrap_content"

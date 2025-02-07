@@ -20,9 +20,9 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.dialogs.AlertDialog
 import com.jnj.vaccinetracker.common.helpers.dpToPx
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
-import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentRegisterHistoricalVisitsBinding
@@ -35,8 +35,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
-import java.util.Date
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -126,7 +124,7 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    }
 
    private fun showErrorMessage(message: String) {
-      com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(message)
+      AlertDialog(requireContext()).showAlertDialog(message)
    }
 
    private fun submitVaccineRegistration() {

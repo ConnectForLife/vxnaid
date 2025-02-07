@@ -24,6 +24,7 @@ import com.jnj.vaccinetracker.register.adapters.SubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
+import com.jnj.vaccinetracker.common.dialogs.AlertDialog
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
@@ -32,7 +33,6 @@ import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.SessionExpiryObserver
-import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.util.DateUtil
@@ -43,10 +43,8 @@ import com.jnj.vaccinetracker.register.dialogs.HistoricalVisitDateDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
 import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
-import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
-import com.jnj.vaccinetracker.visit.screens.ReferralFragment
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
@@ -135,8 +133,8 @@ class HistoricalDataForVisitTypeFragment :
 
    private fun applyReceivedLLINFilter(otherSubstance: OtherSubstanceDataModel): Boolean {
       val currentVisitType = arguments?.getString(ARG_VISIT_TYPE_NAME)
-      return otherSubstance.conceptName == Constants.CONCEPT_NAME_RECEIVED_LLIN && allDataViewModel.visitTypesData.value?.any { (_, subMap) ->
-         currentVisitType != viewModel.firstVisitTypeName && subMap[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]?.get(
+      return otherSubstance.conceptName == Constants.CONCEPT_NAME_RECEIVED_LLIN && allDataViewModel.visitTypesData.value?.any { (_, historicalData) ->
+         currentVisitType != viewModel.firstVisitTypeName && historicalData.value[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]?.substanceValueMap?.get(
             Constants.CONCEPT_NAME_RECEIVED_LLIN
          ) == Constants.YES_ANSWER
       } == true
@@ -168,18 +166,16 @@ class HistoricalDataForVisitTypeFragment :
 
    private fun handleCreateMode() {
       lifecycleScope.launch {
-      allDataViewModel.visitTypesData.value?.get(visitTypeName)?.let { visitTypeData ->
-         viewModel.substancesAndDates.value = visitTypeData[Constants.SUBSTANCES_AND_DATES_STR]
-         viewModel.otherSubstancesAndValues.value =
-            visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]
+         allDataViewModel.visitTypesData.value?.get(visitTypeName)?.let { historicalData ->
+            val substancesAndDatesMap = historicalData.value[Constants.SUBSTANCES_AND_DATES_STR]?.substanceValueMap?.toMutableMap()
+            val otherSubstancesAndValuesMap = historicalData.value[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]?.substanceValueMap?.toMutableMap()
 
-         viewModel.substancesData.value = mapToSubstanceDataList(
-            visitTypeData[Constants.SUBSTANCES_AND_DATES_STR],
-         )
-         viewModel.otherSubstancesData.value = mapToOtherSubstanceDataList(
-            visitTypeData[Constants.OTHER_SUBSTANCES_AND_VALUES_STR]
-         )
-      }
+            viewModel.substancesAndDates.value = substancesAndDatesMap
+            viewModel.otherSubstancesAndValues.value = otherSubstancesAndValuesMap
+
+            viewModel.substancesData.value = mapToSubstanceDataList(substancesAndDatesMap)
+            viewModel.otherSubstancesData.value = mapToOtherSubstanceDataList(otherSubstancesAndValuesMap)
+         }
       }
    }
 
@@ -281,6 +277,7 @@ class HistoricalDataForVisitTypeFragment :
          )
       }
    }
+
    private suspend fun mapEditOtherSubstanceDataList(
       observations: Map<String, ObservationValue>,
       otherDataList: List<OtherSubstanceDataModel>
@@ -404,7 +401,8 @@ class HistoricalDataForVisitTypeFragment :
          allDataViewModel.addVisitTypeData(
             viewModel.visitTypeName.value!!,
             viewModel.substancesAndDates.value,
-            viewModel.otherSubstancesAndValues.value!!
+            viewModel.otherSubstancesAndValues.value!!,
+            viewModel.visitDate.value
          )
          flowViewModel.navigateBack()
       }
@@ -479,7 +477,7 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private fun showErrorMessage(message: String) {
-      com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(message)
+      AlertDialog(requireContext()).showAlertDialog(message)
    }
 
    private fun getVisitForUpdate(): VisitDetail? {
@@ -567,7 +565,6 @@ class HistoricalDataForVisitTypeFragment :
          configurationManager
       )
    }
-
 
    private fun doesSubstancesHaveAnyDates(): Boolean {
       val substancesAndDates = viewModel.substancesAndDates.value

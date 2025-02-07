@@ -6,10 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,27 +16,20 @@ import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
+import com.jnj.vaccinetracker.common.dialogs.AlertDialog
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
-import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseFragment
-import com.jnj.vaccinetracker.databinding.FragmentReferralBinding
 import com.jnj.vaccinetracker.databinding.FragmentReportAdverseEffectsBinding
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.dialogs.AdverseEffectsSuccessfulDialog
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
-import com.jnj.vaccinetracker.participantflow.model.ParticipantUiModel
-import com.jnj.vaccinetracker.register.screens.RegisterParticipantHistoricalDataViewModel
-import com.jnj.vaccinetracker.register.screens.RegisterParticipantParticipantDetailsFragment
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
-import com.jnj.vaccinetracker.visit.VisitViewModel
-import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
-import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
@@ -93,7 +84,7 @@ class AdverseEffectsFragment : BaseFragment(),
     }
 
     private fun showErrorMessage(message: String) {
-        com.jnj.vaccinetracker.common.dialogs.AlertDialog(requireContext()).showAlertDialog(message)
+        AlertDialog(requireContext()).showAlertDialog(message)
     }
 
     fun onReferButtonClicked() {
