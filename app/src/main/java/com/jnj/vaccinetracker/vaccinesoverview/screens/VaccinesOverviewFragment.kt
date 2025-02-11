@@ -483,8 +483,6 @@ class VaccinesOverviewFragment : BaseFragment(),
         }
     }
 
-
-
     private fun buildFileName(): String {
         return "${getString(R.string.vaccines_overview_title).replace(" ", "_")}_${
             DateUtil.convertDateToString(
