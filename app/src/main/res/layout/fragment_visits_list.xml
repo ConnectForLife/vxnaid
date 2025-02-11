@@ -1,4 +1,5 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -146,12 +147,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="20sp"
+                android:paddingEnd="35dp"
                 android:text="@string/visits_overview_client_mothers_name_column_label"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
                 android:padding="8dp"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                tools:ignore="RtlSymmetry" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
