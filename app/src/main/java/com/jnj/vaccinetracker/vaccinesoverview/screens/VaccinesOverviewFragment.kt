@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.vaccinesoverview.screens
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -36,6 +38,7 @@ import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.util.CellRangeAddress
+import java.io.File
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -469,8 +472,18 @@ class VaccinesOverviewFragment : BaseFragment(),
 
             workbook.write(outputStream)
             workbook.close()
+
+            // open the file automatically
+            val file = File(requireContext().getExternalFilesDir(null), fileName)
+            if(file.exists()) {
+                openExcelFile(file)
+            }else {
+                print("File does not exits")
+            }
         }
     }
+
+
 
     private fun buildFileName(): String {
         return "${getString(R.string.vaccines_overview_title).replace(" ", "_")}_${
@@ -479,5 +492,26 @@ class VaccinesOverviewFragment : BaseFragment(),
                 DateFormat.FORMAT_DATE.toString()
             )
         }"
+    }
+
+    private fun openExcelFile(file: File) {
+        val fileUri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.file provider",
+            file
+        )
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(fileUri, "application/vnd.ms-excel")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        // Verify that the intent can be resolved
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
+            startActivity(intent)
+        } else {
+            // Handle the case where no app can handle the file
+            println("No app available to open Excel files")
+        }
     }
 }
