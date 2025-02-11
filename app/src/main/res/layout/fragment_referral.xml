@@ -196,7 +196,7 @@
                     android:id="@+id/btn_cancelReferral"
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/colorTextOnLight"
+                    android:backgroundTint="@color/colorPrimary"
                     android:text="@string/referral_page_cancel_button_title"
                     android:textAppearance="@style/ButtonTextStyling" />
 
@@ -231,7 +231,7 @@
                     android:id="@+id/btn_saveReferral"
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/colorPrimary"
+                    android:backgroundTint="@color/errorDark"
                     android:text="@string/referral_page_refer_button_title"
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
