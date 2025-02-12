@@ -1,19 +1,19 @@
 package com.jnj.vaccinetracker.vaccinesoverview.screens
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -472,14 +472,15 @@ class VaccinesOverviewFragment : BaseFragment(),
 
             workbook.write(outputStream)
             workbook.close()
+        }
 
-            // open the file automatically
-            val file = File(requireContext().getExternalFilesDir(null), fileName)
-            if(file.exists()) {
-                openExcelFile(file)
-            }else {
-                print("File does not exits")
-            }
+        val exportedFile = File(requireContext().getExternalFilesDir(null), fileName)
+        if (exportedFile.exists()) {
+            Log.d("Export", "File path: ${exportedFile.absolutePath}")
+            FileUtil.openFile(requireContext(),fileName)
+        } else {
+            Toast.makeText(context,
+                context?.getString(R.string.visits_overview_failed_to_open_file_message), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -490,26 +491,5 @@ class VaccinesOverviewFragment : BaseFragment(),
                 DateFormat.FORMAT_DATE.toString()
             )
         }"
-    }
-
-    private fun openExcelFile(file: File) {
-        val fileUri = FileProvider.getUriForFile(
-            requireContext(),
-            "${requireContext().packageName}.file provider",
-            file
-        )
-
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(fileUri, "application/vnd.ms-excel")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        // Verify that the intent can be resolved
-        if (intent.resolveActivity(requireContext().packageManager) != null) {
-            startActivity(intent)
-        } else {
-            // Handle the case where no app can handle the file
-            println("No app available to open Excel files")
-        }
     }
 }
