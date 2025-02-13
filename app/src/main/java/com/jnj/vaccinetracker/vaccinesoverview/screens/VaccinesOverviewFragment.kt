@@ -478,9 +478,6 @@ class VaccinesOverviewFragment : BaseFragment(),
         if (exportedFile.exists()) {
             Log.d("Export", "File path: ${exportedFile.absolutePath}")
             FileUtil.openFile(requireContext(),fileName)
-        } else {
-            Toast.makeText(context,
-                context?.getString(R.string.visits_overview_failed_to_open_file_message), Toast.LENGTH_LONG).show()
         }
     }
 

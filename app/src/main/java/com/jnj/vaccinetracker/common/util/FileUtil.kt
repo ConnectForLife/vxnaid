@@ -54,7 +54,7 @@ class FileUtil {
                 )
 
                 val intent = Intent(Intent.ACTION_VIEW).apply {
-                    setDataAndType(fileUri, getMimeType(fileName) ?: "*/*")
+                    setDataAndType(fileUri, fileName)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
 

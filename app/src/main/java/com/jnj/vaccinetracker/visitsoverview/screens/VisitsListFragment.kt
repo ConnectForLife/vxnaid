@@ -156,11 +156,11 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     }
 
     private fun exportToExcel(visits: List<VisitDataDTO>) {
-        val fileName = "${buildFileName()}.xlsx"
+        val fileName = "${buildFileName()}.xls"
         val mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         val file = File(requireContext().getExternalFilesDir(null), fileName)  // Use external storage
 
-        FileOutputStream(file).use { outputStream ->
+        FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
             val workbook = HSSFWorkbook()
             val sheet = workbook.createSheet(visitsKey.replace(" ", "_"))
 
