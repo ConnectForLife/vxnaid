@@ -72,10 +72,10 @@
     <string name="site_selection_btn_submit">Submit</string>
     <string name="site_selection_error_no_site_selected">Please select a site</string>
     <string name="match_or_register_patient_welcome">Welcome operator %s, you are currently at site %s</string>
-    <string name="match_or_register_patient_step_id_card">Scan or enter the Child\'s ID</string>
+    <string name="match_or_register_patient_step_id_card">Scan or Manually Enter the Child\'s ID</string>
     <string name="match_or_register_patient_step_phone">Enter the phone number</string>
     <string name="match_or_register_patient_step_iris_scan">Iris scan the Child\'s eye(s)</string>
-    <string name="match_or_register_patient_step_identify">Identify or register the Child</string>
+    <string name="match_or_register_patient_step_identify">Search Using Mother\'s Name</string>
     <string name="match_or_register_patient_step_visit">Follow-up on Child\'s visits</string>
     <string name="match_or_register_patient_step_index">Step %s</string>
     <string name="match_or_register_patient_btn_continue">Complete Return Visit </string>
@@ -229,7 +229,7 @@
     <string name="visit_dosing_error_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen and should not be administered.</string>
     <string name="visit_dosing_warning_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen. Please confirm you will administer a different vaccine.</string>
     <string name="visit_dosing_warning_different_manufacturer_title">Different Manufacturer Expected</string>
-    <string name="visit_schedule_adverse_effect_message">Please ensure to inform the patient about potential side effects of the vaccines.</string>
+    <string name="visit_schedule_adverse_effect_message">Please ensure to inform the Parents about potential side effects of the vaccines.</string>
     <string name="upcoming_visit_title">Next visit</string>
     <string name="upcoming_visit_type_follow_up">In Person Follow Up</string>
     <string name="upcoming_visit_type_dosing">Dosing</string>

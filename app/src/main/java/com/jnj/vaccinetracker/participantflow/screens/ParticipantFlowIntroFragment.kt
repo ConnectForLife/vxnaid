@@ -80,6 +80,7 @@ class ParticipantFlowIntroFragment : BaseFragment() {
                         height = 153.toPx()
                     }
                 }
+
                 ParticipantFlowViewModel.WorkflowItem.MATCHING -> {
                     view.label = this.getString(R.string.match_or_register_patient_step_identify)
                     view.stepIndex = this.getString(R.string.match_or_register_patient_step_index, index.toString())
