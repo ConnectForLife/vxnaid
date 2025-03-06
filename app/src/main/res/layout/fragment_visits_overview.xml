@@ -80,6 +80,30 @@
             android:textStyle="bold"
             app:cornerRadius="30dp" />
 
+
+
+
+            <Button
+                android:id="@+id/btn_new_registered_participant"
+                android:layout_width="500dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="70dp"
+                android:layout_marginBottom="70dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/sync_offline"
+                android:paddingLeft="2dp"
+                android:paddingTop="2dp"
+                android:paddingRight="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/visits_overview_new_registered_client"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:textColor="@color/colorTextOnSecondary"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                app:cornerRadius="30dp" />
+
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

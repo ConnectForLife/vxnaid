@@ -70,6 +70,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     ): View {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_list, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_registered_children, container, false)
 
         setupRecyclerView()
         loadVisitsData()
@@ -105,6 +106,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         }
         binding.visitsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.visitsRecyclerView.adapter = visitsAdapter
+
     }
 
     private fun loadVisitsData() {
@@ -112,8 +114,16 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> visitsListViewModel.getScheduledVisitsData()
             Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> visitsListViewModel.getHistoricalVisitsData()
             Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> visitsListViewModel.getMissedVisitsData()
+            Constants.REGISTERED_PARTICIPANT -> visitsListViewModel.fetchAllRegisteredChildren()
         }
     }
+
+    private fun loadRegisteredChildrenData() {
+        when (visitsKey) {
+            Constants.REGISTERED_PARTICIPANT -> visitsListViewModel.fetchAllRegisteredChildren()
+        }
+    }
+
 
     private fun setupObservers() {
         visitsListViewModel.visitDTOs.observe(viewLifecycleOwner) { visits ->

@@ -29,6 +29,8 @@ object Constants {
 
     // Visit
     const val ATTRIBUTE_VISIT_STATUS = "Visit Status"
+    const val ATTRIBUTE_PARTICIPANT_STATUS = "Participant Status"
+
     const val ATTRIBUTE_VISIT_DAYS_AFTER = "Up Window"
     const val ATTRIBUTE_VISIT_DAYS_BEFORE = "Low Window"
     const val ATTRIBUTE_VISIT_DOSE_NUMBER = "Dose number"
@@ -105,6 +107,7 @@ object Constants {
     const val VISITS_OVERVIEW_SCHEDULED_VISITS_KEY = "Scheduled Visits"
     const val VISITS_OVERVIEW_HISTORICAL_VISITS_KEY = "Visit History"
     const val VISITS_OVERVIEW_MISSED_VISITS_KEY = "Missed Visits"
+    const val REGISTERED_PARTICIPANT = "Registered Children"
 
     const val VISIT_DATE_FILE_COLUMN_HEADER = "Visit Date"
     const val CLIENT_ID_FILE_COLUMN_HEADER = "Client ID"

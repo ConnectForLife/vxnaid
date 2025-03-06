@@ -31,6 +31,12 @@ class VisitsOverviewFragment : BaseFragment() {
             navigateToVisitsList(Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY)
         }
 
+        binding.btnNewRegisteredParticipant.setOnClickListener {
+            navigateToVisitsList(Constants.REGISTERED_PARTICIPANT)
+           // navigateToRegisteredChildrenList(Constants.REGISTERED_PARTICIPANT)
+        }
+
+
         return binding.root
     }
 
@@ -50,4 +56,13 @@ class VisitsOverviewFragment : BaseFragment() {
             .addToBackStack(null)
             .commit()
     }
+
+//    private fun navigateToRegisteredChildrenList(registeredChildrenKey:String) {
+//        val fragment = VisitsListFragment(registeredChildrenKey)
+//        parentFragmentManager.beginTransaction()
+//            .replace(R.id.registeredChildren, fragment)
+//            .addToBackStack(null)
+//            .commit()
+//
+//    }
 }

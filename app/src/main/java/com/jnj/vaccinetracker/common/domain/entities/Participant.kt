@@ -21,6 +21,7 @@ sealed class ParticipantBase {
     abstract val childFirstName: String?
     abstract val childLastName: String?
 
+
     val phone: String? get() = attributes[Constants.ATTRIBUTE_TELEPHONE]
     val locationUuid: String? get() = attributes[Constants.ATTRIBUTE_LOCATION]
     val originalParticipantId: String? get() = attributes[Constants.ATTRIBUTE_ORIGINAL_PARTICIPANT_ID]
@@ -33,6 +34,8 @@ sealed class ParticipantBase {
     val childCategory: String? get() = attributes[Constants.ATTRIBUTE_CHILD_CATEGORY]
     val fullName: String get() = listOfNotNull(childFirstName, childLastName).joinToString(" ")
     val motherName: String get() = listOfNotNull(motherFirstName, motherLastName).joinToString(" ")
+    val participantStatus: String get() = attributes[Constants.ATTRIBUTE_PARTICIPANT_STATUS ] ?: Constants.EMPTY_STRING_VALUE
+
 }
 
 data class Participant(

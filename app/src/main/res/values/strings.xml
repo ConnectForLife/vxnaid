@@ -460,6 +460,7 @@
     <string name="visits_overview_scheduled_visits_title">Scheduled Visits</string>
     <string name="visits_overview_historical_visits_title">Visit History</string>
     <string name="visits_overview_missed_visits_title">Missed Visits</string>
+    <string name="visits_overview_new_registered_client">Registered Children</string>
     <string name="visits_overview_start_date_label">Start Date</string>
     <string name="visits_overview_end_date_label">End Date</string>
     <string name="visits_overview_not_set_label">Not set</string>
