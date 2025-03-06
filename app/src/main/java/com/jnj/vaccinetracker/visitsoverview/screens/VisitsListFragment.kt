@@ -74,6 +74,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
 
         setupRecyclerView()
         loadVisitsData()
+        loadRegisteredChildrenData()
         setupObservers()
         setupFilterButtons()
         setupDownloadButtons()
@@ -114,7 +115,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> visitsListViewModel.getScheduledVisitsData()
             Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> visitsListViewModel.getHistoricalVisitsData()
             Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> visitsListViewModel.getMissedVisitsData()
-            Constants.REGISTERED_PARTICIPANT -> visitsListViewModel.fetchAllRegisteredChildren()
+            // Constants.REGISTERED_PARTICIPANT -> visitsListViewModel.fetchAllRegisteredChildren()
         }
     }
 
