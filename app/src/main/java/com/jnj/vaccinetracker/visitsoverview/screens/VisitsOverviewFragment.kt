@@ -1,9 +1,12 @@
 package com.jnj.vaccinetracker.visitsoverview.screens
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
@@ -15,6 +18,7 @@ class VisitsOverviewFragment : BaseFragment() {
 
     private lateinit var binding: FragmentVisitsOverviewBinding
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_overview, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -31,11 +35,9 @@ class VisitsOverviewFragment : BaseFragment() {
             navigateToVisitsList(Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY)
         }
 
-        binding.btnNewRegisteredParticipant.setOnClickListener {
-            navigateToVisitsList(Constants.REGISTERED_PARTICIPANT)
-           // navigateToRegisteredChildrenList(Constants.REGISTERED_PARTICIPANT)
+        binding.btnRegisteredParticipant.setOnClickListener {
+            navigateToPatientList(Constants.REGISTERED_PARTICIPANT)
         }
-
 
         return binding.root
     }
@@ -49,7 +51,9 @@ class VisitsOverviewFragment : BaseFragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun navigateToVisitsList(visitsKey: String) {
+        Log.d("VisitsOverviewFragment", "Navigating to VisitsListFragment with key: $visitsKey")
         val fragment = VisitsListFragment(visitsKey)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
@@ -57,12 +61,13 @@ class VisitsOverviewFragment : BaseFragment() {
             .commit()
     }
 
-//    private fun navigateToRegisteredChildrenList(registeredChildrenKey:String) {
-//        val fragment = VisitsListFragment(registeredChildrenKey)
-//        parentFragmentManager.beginTransaction()
-//            .replace(R.id.registeredChildren, fragment)
-//            .addToBackStack(null)
-//            .commit()
-//
-//    }
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun navigateToPatientList(participantKey: String) {
+        Log.d("testing", "Navigating to PatientListFragment")
+        val fragment = RegisteredParticipantsFragment(participantKey)
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 }

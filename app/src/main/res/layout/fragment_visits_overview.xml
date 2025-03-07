@@ -80,11 +80,8 @@
             android:textStyle="bold"
             app:cornerRadius="30dp" />
 
-
-
-
             <Button
-                android:id="@+id/btn_new_registered_participant"
+                android:id="@+id/btn_registered_participant"
                 android:layout_width="500dp"
                 android:layout_height="0dp"
                 android:layout_gravity="center"

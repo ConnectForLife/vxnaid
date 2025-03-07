@@ -1,18 +1,12 @@
 package com.jnj.vaccinetracker.visitsoverview.screens
 
-import android.content.ContentValues
-import android.content.Intent
-import android.net.Uri
+
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -27,7 +21,6 @@ import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.util.DateUtil
-import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.databinding.FragmentVisitsListBinding
 import com.jnj.vaccinetracker.visitsoverview.model.VisitsListViewModel
 import com.jnj.vaccinetracker.visitsoverview.adapters.VisitsAdapter
@@ -41,7 +34,6 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import java.io.OutputStream
 import java.util.Locale
 import javax.inject.Inject
 
@@ -70,11 +62,9 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     ): View {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_list, container, false)
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_registered_children, container, false)
 
         setupRecyclerView()
         loadVisitsData()
-        loadRegisteredChildrenData()
         setupObservers()
         setupFilterButtons()
         setupDownloadButtons()
@@ -115,16 +105,8 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> visitsListViewModel.getScheduledVisitsData()
             Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> visitsListViewModel.getHistoricalVisitsData()
             Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> visitsListViewModel.getMissedVisitsData()
-            // Constants.REGISTERED_PARTICIPANT -> visitsListViewModel.fetchAllRegisteredChildren()
         }
     }
-
-    private fun loadRegisteredChildrenData() {
-        when (visitsKey) {
-            Constants.REGISTERED_PARTICIPANT -> visitsListViewModel.fetchAllRegisteredChildren()
-        }
-    }
-
 
     private fun setupObservers() {
         visitsListViewModel.visitDTOs.observe(viewLifecycleOwner) { visits ->

@@ -457,6 +457,8 @@
     <string name="validation_error_dialog_message">Please resolve the following issues:</string>
     <string name="participant_registration_details_error_no_birth_date">Please enter birth weight as integer</string>
     <string name="visits_overview_title">Visits Overview</string>
+    <string name="patients_overview_title">Registered Patients Overview</string>
+    <string name="participants_overview_title">Participant Overview</string>
     <string name="visits_overview_scheduled_visits_title">Scheduled Visits</string>
     <string name="visits_overview_historical_visits_title">Visit History</string>
     <string name="visits_overview_missed_visits_title">Missed Visits</string>

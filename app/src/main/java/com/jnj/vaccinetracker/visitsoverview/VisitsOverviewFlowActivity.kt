@@ -14,6 +14,7 @@ import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.ActivityVisitOverviewFlowBinding
 import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
+import com.jnj.vaccinetracker.visitsoverview.screens.RegisteredParticipantsFragment
 import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -45,9 +46,11 @@ class VisitsOverviewFlowActivity : BaseActivity() {
         return true
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun navigateToScreen(screen: VisitsOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
         val fragment = when (screen) {
             VisitsOverviewViewModel.Screen.VISITS_OVERVIEW -> VisitsOverviewFragment()
+            VisitsOverviewViewModel.Screen.REGISTERED_PATIENTS -> RegisteredParticipantsFragment(participantKey = toString())
             else -> null
         }
         screen?.let { title = getString(it.title) }

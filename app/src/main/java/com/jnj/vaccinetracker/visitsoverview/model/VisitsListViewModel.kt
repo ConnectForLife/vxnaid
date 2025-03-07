@@ -2,30 +2,25 @@ package com.jnj.vaccinetracker.visitsoverview.model
 
 import android.os.Bundle
 import androidx.lifecycle.viewModelScope
-import com.jnj.vaccinetracker.common.data.database.repositories.ParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
-import com.jnj.vaccinetracker.common.domain.entities.Participant
 import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
-import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class VisitsListViewModel @Inject constructor(
     private val visitRepository: VisitRepository,
-    private val participantRepository: ParticipantRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
     val visitDTOs = mutableLiveData<List<VisitDataDTO>>()
-    private val participantDataDTOs = mutableLiveData<List<ParticipantDataDTO>>()
     val isLoading = mutableLiveData<Boolean>()
 
     fun getScheduledVisitsData() {
@@ -58,17 +53,6 @@ class VisitsListViewModel @Inject constructor(
         }
     }
 
-    fun fetchAllRegisteredChildren() {
-        isLoading.value = true
-        viewModelScope.launch {
-            val registeredChildren = participantRepository.findAllByPhone(phone = null)
-                .filter { it.participantStatus == Constants.VISIT_STATUS_OCCURRED }
-            participantDataDTOs.value = createParticipantDTOList(registeredChildren)
-            isLoading.value = false
-        }
-    }
-
-
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
         val visitDataDTOList: MutableList<VisitDataDTO> = mutableListOf()
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
@@ -94,39 +78,8 @@ class VisitsListViewModel @Inject constructor(
                 visitDataDTOList.add(visitDataDTO)
             }
         }
-
         return visitDataDTOList
     }
-
-    private suspend fun createParticipantDTOList(participants: List<Participant>): List<ParticipantDataDTO> {
-        val participantDTOList: MutableList<ParticipantDataDTO> = mutableListOf()
-
-        participants.forEach { participant ->
-            val participantDTO = ParticipantDataDTO(
-                participantUuid = participant.participantUuid,
-                firstName = participant.childFirstName.toString(),
-                lastName = participant.childLastName.toString(),
-                gender = participant.gender.toString(),
-                birthDate = participant.dateModified,
-                homeLocation = participant.address?.let {
-                    // Concatenate fields to form a full address string
-                    listOfNotNull(
-                        it.address1,
-                        it.address2,
-                        it.cityVillage,
-                        it.stateProvince,
-                        it.country
-                    )
-                        .joinToString(", ")
-                },
-                phone = participant.childNumber,
-                attributes = participant.attributes
-            )
-            participantDTOList.add(participantDTO)
-        }
-        return participantDTOList
-    }
-
 
     override fun saveInstanceState(outState: Bundle) {}
 

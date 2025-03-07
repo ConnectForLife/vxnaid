@@ -43,7 +43,8 @@ class VisitsOverviewViewModel @Inject constructor(
     }
 
     enum class Screen(@StringRes val title: Int) {
-        VISITS_OVERVIEW(R.string.visits_overview_title)
+        VISITS_OVERVIEW(R.string.visits_overview_title),
+        REGISTERED_PATIENTS(R.string.patients_overview_title)
     }
 
     override fun saveInstanceState(outState: Bundle) {}

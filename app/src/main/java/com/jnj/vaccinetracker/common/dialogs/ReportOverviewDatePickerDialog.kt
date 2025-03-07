@@ -62,4 +62,5 @@ class ReportOverviewDatePickerDialog(
     interface VisitsOverviewDatePickerListener {
         fun onDatePicked(date: DateTime?, tag: String? = null)
     }
+
 }
