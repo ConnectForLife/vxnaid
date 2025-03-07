@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.visitsoverview.model
 
 import android.os.Bundle
 import androidx.lifecycle.viewModelScope
+import com.jnj.vaccinetracker.common.data.database.repositories.ParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight

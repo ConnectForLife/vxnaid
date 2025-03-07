@@ -81,7 +81,7 @@
             app:cornerRadius="30dp" />
 
             <Button
-                android:id="@+id/btn_registered_participant"
+                android:id="@+id/btnRegisteredParticipant"
                 android:layout_width="500dp"
                 android:layout_height="0dp"
                 android:layout_gravity="center"

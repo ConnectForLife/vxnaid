@@ -26,11 +26,18 @@ import com.soywiz.klock.jvm.toDate
 import java.util.Date
 import java.util.Locale
 
+
 @RequiresApi(Build.VERSION_CODES.Q)
-class RegisteredParticipantsFragment(private val participantKey: String) : BaseFragment(),
+class RegisteredParticipantsFragment(participantKey: String) : BaseFragment(),
     ReportOverviewDatePickerDialog.VisitsOverviewDatePickerListener {
 
     companion object {
+        private const val ARG_PARTICIPANT_KEY = "participantKey"
+        fun newInstance(participantKey: String) = RegisteredParticipantsFragment(participantKey).apply {
+            arguments = Bundle().apply {
+                putString(ARG_PARTICIPANT_KEY, participantKey)
+            }
+        }
         private const val START_DATE_PICKER_DIALOG_TAG = "startDatePicker"
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePicker"
     }
@@ -40,12 +47,20 @@ class RegisteredParticipantsFragment(private val participantKey: String) : BaseF
     private lateinit var patientAdapter: PatientAdapter
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+    private lateinit var participantKey: String
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        participantKey = arguments?.getString(ARG_PARTICIPANT_KEY) ?: throw IllegalArgumentException("Missing participantKey")
+        Log.d("Testing", "RegisteredParticipantsFragment onCreate called..............................")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("Testing", "RegisteredParticipantsFragment onCreateView called..................")
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_registered_children,
@@ -64,6 +79,8 @@ class RegisteredParticipantsFragment(private val participantKey: String) : BaseF
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("Testing", "RegisteredParticipantsFragment onViewCreated called>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
         binding.participantRecyclerView.adapter = patientAdapter// binding the adapter to recyclerview
         (activity as AppCompatActivity).supportActionBar?.apply {
             title = participantKey
@@ -84,7 +101,6 @@ class RegisteredParticipantsFragment(private val participantKey: String) : BaseF
             Constants.REGISTERED_PARTICIPANT -> registeredParticipantsViewModel.fetchAllPatients()
         }
     }
-
     private fun setupObservers() {
         registeredParticipantsViewModel.patientDTOs.observe(viewLifecycleOwner) { patients ->
             patients?.let {
@@ -96,6 +112,7 @@ class RegisteredParticipantsFragment(private val participantKey: String) : BaseF
             binding.progressBar.visibility = if (isLoading == true) View.VISIBLE else View.GONE
         }
     }
+
 
     private fun setupFilterButtons() {
         binding.btnStartDate.setOnClickListener {
@@ -110,49 +127,38 @@ class RegisteredParticipantsFragment(private val participantKey: String) : BaseF
             applyFilters()
         }
     }
-
     private fun applyFilters(
         patients: List<ParticipantDataDTO> = registeredParticipantsViewModel.patientDTOs.value ?: emptyList()
     ) {
         val searchText = binding.searchBox.text.toString().lowercase(Locale.getDefault())
-        Log.d("FilterDebug", "Search text: $searchText")
-
-        // Convert selectedStartDate and selectedEndDate to java.util.Date (DateEntity)
         val selectedStartDateAsJavaDate: Date? = selectedStartDate?.let { Date(it.unixMillisLong) }
         val selectedEndDateAsJavaDate: Date? = selectedEndDate?.let { Date(it.unixMillisLong) }
 
-        Log.d("FilterDebug", "Selected start date: $selectedStartDateAsJavaDate")
-        Log.d("FilterDebug", "Selected end date: $selectedEndDateAsJavaDate")
-
         val filteredPatients = patients.filter { patient ->
-            // Date comparison using java.util.Date methods
             val dateMatches =
                 (selectedStartDateAsJavaDate == null || !patient.startDatetime.before(selectedStartDateAsJavaDate)) &&
                         (selectedEndDateAsJavaDate == null || !patient.startDatetime.after(selectedEndDateAsJavaDate))
 
-            Log.d("FilterDebug", "Date matches for ${patient.participantId}: $dateMatches")
-
-            // Text search comparison
             val textSearchMatches =
                 patient.participantId.lowercase(Locale.getDefault()).contains(searchText) ||
                         patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
                         patient.motherName.lowercase(Locale.getDefault()).contains(searchText)
 
-            Log.d("FilterDebug", "Text search matches for ${patient.participantId}: $textSearchMatches")
-
             dateMatches && textSearchMatches
         }
 
-        Log.d("FilterDebug", "Filtered patients count: ${filteredPatients.size}")
-
-        // Format dates for display (this part is still fine)
         binding.labelStartDate.text = formatDate(selectedStartDate)
         binding.labelEndDate.text = formatDate(selectedEndDate)
 
-        // Submit the filtered list to the adapter
         patientAdapter.submitList(filteredPatients)
-    }
 
+        // Show empty view if the list is empty
+        if (filteredPatients.isEmpty()) {
+            binding.participantRecyclerView.visibility = View.GONE
+        } else {
+            binding.participantRecyclerView.visibility = View.VISIBLE
+        }
+    }
 
 
     private fun showDatePickerDialog(isStartDate: Boolean) {
