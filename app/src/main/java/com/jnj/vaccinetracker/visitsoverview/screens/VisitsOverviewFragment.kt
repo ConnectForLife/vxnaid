@@ -39,9 +39,7 @@ class VisitsOverviewFragment : BaseFragment() {
             Log.d("Testing", "Registered Participant button clicked............................")
             navigateToPatientList(Constants.REGISTERED_PARTICIPANT)
             Log.d("Testing", "Registered after clicking to naviagetopatientlist**********************************************************")
-
         }
-
         return binding.root
     }
 
@@ -61,24 +59,16 @@ class VisitsOverviewFragment : BaseFragment() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun navigateToPatientList(participantKey: String) {
-        Log.d("Testing", "Navigating to PatientListFragment...................................")
         val fragment = RegisteredParticipantsFragment.newInstance(participantKey)
-        Log.d("Testing", "Fragment created: ${fragment::class.simpleName}")
-
-        try {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container,fragment)
-                .addToBackStack(null)
-                .commit()
-            Log.d("Testing", "Fragment transaction committed...................................")
-        } catch (e: Exception) {
-            Log.e("Testing", "Fragment transaction failed", e)
-        }
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
+
 
 }

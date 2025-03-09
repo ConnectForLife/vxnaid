@@ -33,6 +33,7 @@ import com.jnj.vaccinetracker.vaccinesoverview.model.VaccinesOverviewViewModel
 import com.jnj.vaccinetracker.visit.VisitViewModel
 import com.jnj.vaccinetracker.visitsoverview.model.VisitsListViewModel
 import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
+import com.jnj.vaccinetracker.visitsoverview.screens.RegisteredParticipantsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -141,6 +142,11 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(RegisterParticipantParticipantDetailsViewModel::class)
     fun bindRegisterParticipantParticipantDetailsViewModel(model: RegisterParticipantParticipantDetailsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RegisteredParticipantsViewModel::class)
+    fun bindRegisteredParticipantViewModel(model: RegisteredParticipantsViewModel): ViewModel
 
     @Binds
     @IntoMap

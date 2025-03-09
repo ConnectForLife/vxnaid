@@ -28,15 +28,12 @@ class RegisteredParticipantsViewModel@Inject constructor(
         viewModelScope.launch {
             try {
                 val patients = participantRepository.findPatients()
-
                 // Log the size of the returned list or check the actual list
                 Log.d(".......................................................RegisteredParticipantsViewModel", "Number of patients: ${patients.size}")
-
 
                 if (patients.isEmpty()) {
                     Log.d("**********************************RegisteredParticipantsViewModel", "No patients found.")
                 }
-
                 // Set the patient DTO list if patients are found
                 patientDTOs.value = createParticipantDTOList(patients)
 
@@ -49,7 +46,6 @@ class RegisteredParticipantsViewModel@Inject constructor(
             }
         }
     }
-
 
 
     private fun getTodayMidnight(): Date {

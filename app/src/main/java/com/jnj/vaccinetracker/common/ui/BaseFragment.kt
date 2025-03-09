@@ -13,7 +13,6 @@ import javax.inject.Inject
  * @author maartenvangiel
  * @version 1
  */
-@AndroidEntryPoint
 abstract class BaseFragment : DaggerFragment(), ResourcesWrapper, MvvmView, UiFlowExt {
     private companion object {
         private const val TAG_VALIDATION_ERROR_DIALOG = "validationErrorDialog"

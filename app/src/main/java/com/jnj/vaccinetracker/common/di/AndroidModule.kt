@@ -63,6 +63,7 @@ import com.jnj.vaccinetracker.visit.screens.VisitVaccinesFragment
 import com.jnj.vaccinetracker.visit.screens.VisitCaptureDataFragment
 import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewFlowActivity
 import com.jnj.vaccinetracker.visitsoverview.dialog.VisitDetailsDialog
+import com.jnj.vaccinetracker.visitsoverview.screens.RegisteredParticipantsFragment
 import com.jnj.vaccinetracker.visitsoverview.screens.VisitsListFragment
 import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 import dagger.Module
@@ -297,4 +298,7 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindVaccinesOverviewFlowActivity(): VaccinesOverviewFlowActivity
+
+    @ContributesAndroidInjector
+    fun bindRegisteredParticipantsFragment(): RegisteredParticipantsFragment
 }
