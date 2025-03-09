@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.visitsoverview.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -27,7 +28,9 @@ import com.jnj.vaccinetracker.visitsoverview.adapters.PatientAdapter
 import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 import com.soywiz.klock.DateTime
 import android.graphics.Typeface
+import android.widget.ImageView
 import android.widget.TableLayout
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.soywiz.klock.jvm.toDate
 import java.util.Locale
@@ -182,6 +185,7 @@ class RegisteredParticipantsFragment : BaseFragment() {
             return
         }
 
+        // Create the header row
         val headerRow = TableRow(requireContext()).apply {
             layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
@@ -189,7 +193,9 @@ class RegisteredParticipantsFragment : BaseFragment() {
             )
         }
 
-        val headers = listOf("Participant ID", "Full Name")
+        // Define the headers
+        val headers = listOf("Participant ID", "Full Name", "View")
+
         headers.forEach { headerText ->
             val headerTextView = TextView(requireContext()).apply {
                 text = headerText
@@ -203,8 +209,11 @@ class RegisteredParticipantsFragment : BaseFragment() {
             }
             headerRow.addView(headerTextView)
         }
+
+        // Add the header row to the table
         tableLayout.addView(headerRow)
 
+        // Add rows for each patient
         filteredPatients.forEach { patient ->
             val row = TableRow(requireContext()).apply {
                 layoutParams = TableRow.LayoutParams(
@@ -213,6 +222,7 @@ class RegisteredParticipantsFragment : BaseFragment() {
                 )
             }
 
+            // Add Participant ID
             val idTextView = TextView(requireContext()).apply {
                 text = patient.participantId
                 textSize = 14f
@@ -223,6 +233,7 @@ class RegisteredParticipantsFragment : BaseFragment() {
             }
             row.addView(idTextView)
 
+            // Add Full Name
             val nameTextView = TextView(requireContext()).apply {
                 text = patient.fullName
                 textSize = 14f
@@ -233,7 +244,36 @@ class RegisteredParticipantsFragment : BaseFragment() {
             }
             row.addView(nameTextView)
 
+            // Add Eye Icon for the "View" column
+            val eyeIcon = ImageView(requireContext()).apply {
+                setImageResource(R.drawable.eye_icon) // Ensure you have an eye icon in your drawable resources
+                setPadding(16, 8, 16, 8) // Adjust padding to match the text rows
+                layoutParams = TableRow.LayoutParams(
+                    0, // Width set to 0 to allow weight to take effect
+                    TableRow.LayoutParams.WRAP_CONTENT, // Height wraps content
+                    1f
+                ).apply {
+                    gravity = Gravity.CENTER
+                }
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                adjustViewBounds = true
+                maxWidth = 24.dpToPx(requireContext())
+                maxHeight = 24.dpToPx(requireContext())
+
+                // Add a click listener for the eye icon (optional)
+                setOnClickListener {
+                    // Handle click event for the eye icon
+                    Log.d("EyeIconClick", "Clicked on eye icon for participant: ${patient.participantId}")
+
+                }
+            }
+            row.addView(eyeIcon)
+
             tableLayout.addView(row)
         }
+    }
+
+    fun Int.dpToPx(context: Context): Int {
+        return (this * context.resources.displayMetrics.density).toInt()
     }
 }

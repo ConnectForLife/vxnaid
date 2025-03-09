@@ -56,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="8dp"
-                android:text="Not set"
+                android:text="@string/not_set"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -65,7 +65,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Search"
+                android:hint="@string/search"
                 android:layout_marginStart="16dp"/>
         </LinearLayout>
 
@@ -96,7 +96,7 @@
             android:id="@+id/registeredChildren"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Registered Children"
+            android:text="@string/registered_children"
             android:textSize="20sp"
             android:padding="16dp"
             android:textStyle="bold"
@@ -131,13 +131,12 @@
 
         </ScrollView>
 
-
         <!-- Download Excel Button -->
         <Button
             android:id="@+id/btn_download_excel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Download Excel"
+            android:text="@string/download_excel"
             android:textSize="20sp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
