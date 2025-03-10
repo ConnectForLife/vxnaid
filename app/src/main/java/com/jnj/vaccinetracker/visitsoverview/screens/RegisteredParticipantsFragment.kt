@@ -120,7 +120,9 @@ class RegisteredParticipantsFragment : BaseFragment() {
     private fun setupFilterButtons() {
         binding.btnStartDate.setOnClickListener { showDatePickerDialog(true) }
         binding.btnEndDate.setOnClickListener { showDatePickerDialog(false) }
-        binding.searchBox.addTextChangedListener { applyFilters() }
+        binding.searchBox.addTextChangedListener {
+            applyFilters()
+        }
     }
 
     private fun applyFilters(

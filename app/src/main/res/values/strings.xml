@@ -511,6 +511,6 @@
     <string name="edge_case_duplicate_nin_message">Someone uploaded a child with the same NIN while your device was offline. Please update the NIN and inform the family about the change.</string>
     <string name="download_excel">Download Excel</string>
     <string name="registered_children">Registered Children</string>
-    <string name="search">Search</string>
+    <string name="search">search by Child name or mothers name</string>
     <string name="not_set">Not set</string>
 </resources>
