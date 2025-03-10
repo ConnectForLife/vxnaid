@@ -36,9 +36,7 @@ class VisitsOverviewFragment : BaseFragment() {
         }
 
         binding.btnRegisteredParticipant.setOnClickListener {
-            Log.d("Testing", "Registered Participant button clicked............................")
             navigateToPatientList(Constants.REGISTERED_PARTICIPANT)
-            Log.d("Testing", "Registered after clicking to naviagetopatientlist**********************************************************")
         }
         return binding.root
     }
@@ -69,6 +67,4 @@ class VisitsOverviewFragment : BaseFragment() {
             .addToBackStack(null)
             .commit()
     }
-
-
 }

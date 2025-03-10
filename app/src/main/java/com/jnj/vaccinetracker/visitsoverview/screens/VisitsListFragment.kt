@@ -97,7 +97,6 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         }
         binding.visitsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.visitsRecyclerView.adapter = visitsAdapter
-
     }
 
     private fun loadVisitsData() {

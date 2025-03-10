@@ -53,13 +53,4 @@ class VisitsAdapter(
         }
     }
 
-    class ParticipantDataDTODiffCallback : DiffUtil.ItemCallback<VisitDataDTO>() {
-        override fun areItemsTheSame(oldItem: VisitDataDTO, newItem: VisitDataDTO): Boolean {
-            return oldItem.participant.participantUuid == newItem.participant.participantUuid
-        }
-
-        override fun areContentsTheSame(oldItem: VisitDataDTO, newItem: VisitDataDTO): Boolean {
-            return oldItem == newItem
-        }
-    }
 }

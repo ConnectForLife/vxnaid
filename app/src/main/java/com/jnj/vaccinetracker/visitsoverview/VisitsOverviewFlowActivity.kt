@@ -29,7 +29,6 @@ class VisitsOverviewFlowActivity : BaseActivity() {
     private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
     private lateinit var binding: ActivityVisitOverviewFlowBinding
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.let { visitsOverviewViewModel.restoreInstanceState(it) }

@@ -25,12 +25,10 @@ class PatientAdapter : ListAdapter<ParticipantDataDTO, PatientAdapter.PatientVie
     class PatientViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val patientName: TextView = itemView.findViewById(R.id.patient_name)
         private val patientId: TextView = itemView.findViewById(R.id.patient_id)
-        //private val motherName: TextView = itemView.findViewById(R.id.mother_name)
 
         fun bind(patient: ParticipantDataDTO) {
             patientName.text = patient.fullName
             patientId.text = patient.participantId
-          //  motherName.text = patient.motherName
         }
     }
 
