@@ -187,29 +187,32 @@ class RegisteredParticipantsFragment : BaseFragment() {
             Log.d("TableUpdate", "No patients to display")
             return
         }
+
+        fun createTableCell(text: String, isHeader: Boolean = false): TextView {
+            return TextView(requireContext()).apply {
+                this.text = text
+                textSize = if (isHeader) 16f else 14f
+                setTypeface(null, if (isHeader) Typeface.BOLD else Typeface.NORMAL)
+                setTextColor(if (isHeader) Color.WHITE else Color.BLACK)
+                setPadding(16, 16, 16, 16)
+                gravity = Gravity.CENTER
+                layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f)
+                setBackgroundColor(if (isHeader) ContextCompat.getColor(requireContext(), R.color.colorPrimary) else Color.TRANSPARENT)
+            }
+        }
+
         val headerRow = TableRow(requireContext()).apply {
             layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT
             )
+            setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
         }
 
-        val headers = listOf("Participant ID", "Full Name", "View")
+        val headers = listOf("Participant ID", "Child Name", "View")
         headers.forEach { headerText ->
-            val headerTextView = TextView(requireContext()).apply {
-                text = headerText
-                setTypeface(null, Typeface.BOLD)
-                textSize = 16f
-                setTextColor(Color.WHITE)
-                setPadding(16, 16, 16, 16)
-                gravity = Gravity.CENTER
-                setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-                layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f)
-            }
-            headerRow.addView(headerTextView)
+            headerRow.addView(createTableCell(headerText, true))
         }
-
-        // Add the header row to the table
         tableLayout.addView(headerRow)
 
         // Add rows for each patient
@@ -219,41 +222,17 @@ class RegisteredParticipantsFragment : BaseFragment() {
                     TableRow.LayoutParams.MATCH_PARENT,
                     TableRow.LayoutParams.WRAP_CONTENT
                 )
+                setBackgroundResource(R.drawable.table_row_background) // Optional: Add borders for better alignment
             }
 
-            // Add Participant ID
-            val idTextView = TextView(requireContext()).apply {
-                text = patient.participantId
-                textSize = 14f
-                setTextColor(Color.BLACK)
-                setPadding(16, 8, 16, 8)
-                gravity = Gravity.START
-                layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f)
-            }
-            row.addView(idTextView)
-
-            // Add Full Name
-            val nameTextView = TextView(requireContext()).apply {
-                text = patient.fullName
-                textSize = 14f
-                setTextColor(Color.BLACK)
-                setPadding(16, 8, 16, 8)
-                gravity = Gravity.START
-                layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f)
-            }
-            row.addView(nameTextView)
+            row.addView(createTableCell(patient.participantId))
+            row.addView(createTableCell(patient.fullName))
 
             val eyeIcon = ImageView(requireContext()).apply {
                 setImageResource(R.drawable.eye_icon)
-                setPadding(16, 8, 16, 8)
-                layoutParams = TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                ).apply {
-                    gravity = Gravity.CENTER
-                }
-                scaleType = ImageView.ScaleType.FIT_CENTER
+                setPadding(16, 16, 16, 16)
+                layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f)
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
                 adjustViewBounds = true
                 maxWidth = 48.dpToPx(requireContext())
                 maxHeight = 48.dpToPx(requireContext())
@@ -264,9 +243,11 @@ class RegisteredParticipantsFragment : BaseFragment() {
                 dialog.showNow(requireActivity().supportFragmentManager, "PatientDetailsDialog")
             }
             row.addView(eyeIcon)
+
             tableLayout.addView(row)
         }
     }
+
 
     fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
@@ -295,6 +276,7 @@ class RegisteredParticipantsFragment : BaseFragment() {
             val workbook = HSSFWorkbook()
             val sheet = workbook.createSheet(participantKey.replace(" ", "_"))
 
+            // Create header row
             val headerRow = sheet.createRow(0)
             headerRow.createCell(0).setCellValue(Constants.VISIT_DATE_FILE_COLUMN_HEADER)
             headerRow.createCell(1).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
@@ -302,19 +284,23 @@ class RegisteredParticipantsFragment : BaseFragment() {
             headerRow.createCell(3).setCellValue(Constants.PHONE_NUMBER_FILE_COLUMN_HEADER)
             headerRow.createCell(4).setCellValue(Constants.CLIENT_MOTHER_NAME_FILE_HEADER)
 
-            patients.forEachIndexed { index, patients ->
+            // Add data rows
+            patients.forEachIndexed { index, patient ->
                 val row = sheet.createRow(index + 1)
-                row.createCell(0).setCellValue(patients.formattedStartDateTime)
-                row.createCell(1).setCellValue(patients.participantId)
-                row.createCell(2).setCellValue(patients.fullName)
-                row.createCell(4).setCellValue(patients.motherName)
+                row.createCell(0).setCellValue(patient.formattedStartDateTime)
+                row.createCell(1).setCellValue(patient.participantId)
+                row.createCell(2).setCellValue(patient.fullName)
+                row.createCell(4).setCellValue(patient.motherName)
             }
 
+            // Adjust column widths
             sheet.setColumnWidth(0, 4000)
             sheet.setColumnWidth(1, 4000)
             sheet.setColumnWidth(2, 7000)
             sheet.setColumnWidth(3, 4000)
             sheet.setColumnWidth(4, 7000)
+
+            // Write workbook to output stream
             workbook.write(outputStream)
             workbook.close()
         }
