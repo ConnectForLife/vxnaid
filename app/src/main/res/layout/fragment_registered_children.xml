@@ -33,14 +33,14 @@
                 android:id="@+id/btn_start_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Start Date" />
+                android:text="@string/visits_overview_start_date_label"/>
 
             <TextView
                 android:id="@+id/label_start_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="8dp"
-                android:text="Not set"
+                android:text="@string/visits_overview_not_set_label"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -48,7 +48,7 @@
                 android:id="@+id/btn_end_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="End Date"
+                android:text="@string/visits_overview_end_date_label"
                 android:layout_marginStart="16dp"/>
 
             <TextView

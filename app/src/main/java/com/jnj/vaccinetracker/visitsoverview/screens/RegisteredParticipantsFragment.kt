@@ -17,22 +17,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.dialogs.ReportOverviewDatePickerDialog
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.databinding.FragmentRegisteredChildrenBinding
-import com.jnj.vaccinetracker.visitsoverview.adapters.PatientAdapter
 import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 import com.soywiz.klock.DateTime
 import android.graphics.Typeface
 import android.widget.ImageView
-import android.widget.TableLayout
-import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
+import com.jnj.vaccinetracker.common.util.FileUtil
+import com.jnj.vaccinetracker.visitsoverview.adapters.PatientAdapter
+import com.jnj.vaccinetracker.visitsoverview.dialog.PatientDetailsDialog
+import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
+import com.soywiz.klock.DateFormat
 import com.soywiz.klock.jvm.toDate
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -52,6 +55,7 @@ class RegisteredParticipantsFragment : BaseFragment() {
         }
     }
 
+    private lateinit var patientAdapter: PatientAdapter
     private lateinit var binding: FragmentRegisteredChildrenBinding
     private val registeredParticipantsViewModel: RegisteredParticipantsViewModel by viewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
@@ -82,6 +86,7 @@ class RegisteredParticipantsFragment : BaseFragment() {
         setupFilterButtons()
         setupObservers()
         loadPatients()
+        setupDownloadButtons()
 
         return binding.root
     }
@@ -90,7 +95,6 @@ class RegisteredParticipantsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("Testing", "RegisteredParticipantsFragment onViewCreated called")
 
-        // Set up the action bar
         (activity as AppCompatActivity).supportActionBar?.apply {
             title = participantKey
             setDisplayHomeAsUpEnabled(true)
@@ -137,11 +141,9 @@ class RegisteredParticipantsFragment : BaseFragment() {
             dateMatches && textSearchMatches
         }
 
-        // Update the start/end date labels
         binding.labelStartDate.text = formatDate(selectedStartDate)
         binding.labelEndDate.text = formatDate(selectedEndDate)
 
-        // Update the table with filtered patients
         updateRegisteredPatientsTable(filteredPatients)
     }
 
@@ -155,7 +157,6 @@ class RegisteredParticipantsFragment : BaseFragment() {
         )
     }
 
-    // Called from the date picker dialog callback
     fun onDatePicked(date: DateTime?, tag: String?) {
         date?.let {
             if (tag == START_DATE_PICKER_DIALOG_TAG) {
@@ -165,7 +166,9 @@ class RegisteredParticipantsFragment : BaseFragment() {
                 selectedEndDate = it
                 binding.labelEndDate.text = formatDate(it)
             }
-            applyFilters() // Refresh the list after picking a date
+            if (selectedStartDate != null && selectedEndDate != null) {
+                applyFilters()
+            }
         }
     }
 
@@ -184,8 +187,6 @@ class RegisteredParticipantsFragment : BaseFragment() {
             Log.d("TableUpdate", "No patients to display")
             return
         }
-
-        // Create the header row
         val headerRow = TableRow(requireContext()).apply {
             layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
@@ -193,9 +194,7 @@ class RegisteredParticipantsFragment : BaseFragment() {
             )
         }
 
-        // Define the headers
         val headers = listOf("Participant ID", "Full Name", "View")
-
         headers.forEach { headerText ->
             val headerTextView = TextView(requireContext()).apply {
                 text = headerText
@@ -244,31 +243,27 @@ class RegisteredParticipantsFragment : BaseFragment() {
             }
             row.addView(nameTextView)
 
-            // Add Eye Icon for the "View" column
             val eyeIcon = ImageView(requireContext()).apply {
-                setImageResource(R.drawable.eye_icon) // Ensure you have an eye icon in your drawable resources
-                setPadding(16, 8, 16, 8) // Adjust padding to match the text rows
+                setImageResource(R.drawable.eye_icon)
+                setPadding(16, 8, 16, 8)
                 layoutParams = TableRow.LayoutParams(
-                    0, // Width set to 0 to allow weight to take effect
-                    TableRow.LayoutParams.WRAP_CONTENT, // Height wraps content
+                    0,
+                    TableRow.LayoutParams.WRAP_CONTENT,
                     1f
                 ).apply {
                     gravity = Gravity.CENTER
                 }
                 scaleType = ImageView.ScaleType.FIT_CENTER
                 adjustViewBounds = true
-                maxWidth = 24.dpToPx(requireContext())
-                maxHeight = 24.dpToPx(requireContext())
+                maxWidth = 48.dpToPx(requireContext())
+                maxHeight = 48.dpToPx(requireContext())
+            }
 
-                // Add a click listener for the eye icon (optional)
-                setOnClickListener {
-                    // Handle click event for the eye icon
-                    Log.d("EyeIconClick", "Clicked on eye icon for participant: ${patient.participantId}")
-
-                }
+            eyeIcon.setOnClickListener {
+                val dialog = PatientDetailsDialog.newInstance(patient, patient.participantId)
+                dialog.showNow(requireActivity().supportFragmentManager, "PatientDetailsDialog")
             }
             row.addView(eyeIcon)
-
             tableLayout.addView(row)
         }
     }
@@ -276,4 +271,53 @@ class RegisteredParticipantsFragment : BaseFragment() {
     fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
+
+    private fun buildFileName(): String {
+        return "${participantKey.replace(" ", "_")}_${
+            DateUtil.convertDateToString(
+                dateNow(),
+                DateFormat.FORMAT_DATE.toString()
+            )
+        }"
+    }
+
+    private fun setupDownloadButtons() {
+        binding.btnDownloadExcel.setOnClickListener {
+            exportToExcel(patientAdapter.currentList)
+        }
+    }
+
+    private fun exportToExcel(patients: List<ParticipantDataDTO>) {
+        val fileName = "${buildFileName()}.xls"
+        val mimeType = "application/vnd.ms-excel"
+
+        FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
+            val workbook = HSSFWorkbook()
+            val sheet = workbook.createSheet(participantKey.replace(" ", "_"))
+
+            val headerRow = sheet.createRow(0)
+            headerRow.createCell(0).setCellValue(Constants.VISIT_DATE_FILE_COLUMN_HEADER)
+            headerRow.createCell(1).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
+            headerRow.createCell(2).setCellValue(Constants.CLIENT_NAME_FILE_COLUMN_HEADER)
+            headerRow.createCell(3).setCellValue(Constants.PHONE_NUMBER_FILE_COLUMN_HEADER)
+            headerRow.createCell(4).setCellValue(Constants.CLIENT_MOTHER_NAME_FILE_HEADER)
+
+            patients.forEachIndexed { index, patients ->
+                val row = sheet.createRow(index + 1)
+                row.createCell(0).setCellValue(patients.formattedStartDateTime)
+                row.createCell(1).setCellValue(patients.participantId)
+                row.createCell(2).setCellValue(patients.fullName)
+                row.createCell(4).setCellValue(patients.motherName)
+            }
+
+            sheet.setColumnWidth(0, 4000)
+            sheet.setColumnWidth(1, 4000)
+            sheet.setColumnWidth(2, 7000)
+            sheet.setColumnWidth(3, 4000)
+            sheet.setColumnWidth(4, 7000)
+            workbook.write(outputStream)
+            workbook.close()
+        }
+    }
+
 }
