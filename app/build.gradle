@@ -15,10 +15,55 @@ ext.versionPatch = 0
 def productRootDir = "./"
 def productBinDir = new File(productRootDir, "bin")
 def productLibAndroidDir = new File(productRootDir, "libs")
-def archUsed = "armeabi-v7a,x86"
+def archUsed = "armeabi-v7a,arm64-v8a,x86,x86_64"
 def usedNdfList = ["Irises.ndf"]
 
 android {
+
+    packagingOptions {
+        exclude 'member-search-index.zip'
+        exclude 'jquery-ui.overrides.css'
+        exclude 'jquery/jquery-ui.min.css'
+        exclude 'index-all.html'
+        exclude 'jquery/jszip/dist/jszip.min.js'
+        exclude 'package-search-index.js'
+        exclude 'allclasses-index.html'
+        exclude 'index.html'
+        exclude 'member-search-index.js'
+        exclude 'jquery/external/jquery/jquery.js'
+        exclude 'stylesheet.css'
+        exclude 'com/neurotec/devices/fscanners/futronic/package-use.html'
+        exclude 'allpackages-index.html'
+        exclude 'help-doc.html'
+        exclude 'constant-values.html'
+        exclude 'legal/pako.md'
+        exclude 'jquery/jquery-ui.min.js'
+        exclude 'legal/jqueryUI.md'
+        exclude 'overview-tree.html'
+        exclude 'jquery/jszip/dist/jszip.js'
+        exclude 'com/neurotec/devices/fscanners/futronic/package-tree.html'
+        exclude 'allclasses.html'
+        exclude 'legal/jquery.md'
+        exclude 'type-search-index.zip'
+        exclude 'type-search-index.js'
+        exclude 'jquery/jszip-utils/dist/jszip-utils.js'
+        exclude 'search.js'
+        exclude 'resources/glass.png'
+        exclude 'element-list'
+        exclude 'jquery/jszip-utils/dist/jszip-utils-ie.js'
+        exclude 'jquery/jszip-utils/dist/jszip-utils-ie.min.js'
+        exclude 'legal/ASSEMBLY_EXCEPTION'
+        exclude 'jquery/jquery-3.6.1.min.js'
+        exclude 'serialized-form.html'
+        exclude 'package-search-index.zip'
+        exclude 'deprecated-list.html'
+        exclude 'legal/jszip.md'
+        exclude 'com/neurotec/devices/fscanners/futronic/package-summary.html'
+        exclude 'jquery/jszip-utils/dist/jszip-utils.min.js'
+        exclude 'overview-summary.html'
+        exclude 'script.js'
+        exclude 'resources/x.png'
+    }
     namespace = "com.jnj.vaccinetracker"
     compileSdkVersion config.buildConfig.compileSdkVersion
 
@@ -64,13 +109,13 @@ android {
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
             ndk {
-                abiFilters 'armeabi-v7a'
+                abiFilters 'armeabi-v7a','arm64-v8a'
                // abiFilters "armeabi-v7a","arm64-v8a","x86","x86_64"
             }
         }
         debug {
             ndk {
-               abiFilters 'x86', 'armeabi-v7a'
+               abiFilters 'armeabi-v7a','arm64-v8a'
                // abiFilters "armeabi-v7a","arm64-v8a","x86","x86_64"
             }
             versionNameSuffix "-debug"
