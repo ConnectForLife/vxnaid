@@ -57,7 +57,7 @@ class RegisteredParticipantsViewModel@Inject constructor(
         return calendar.time
     }
 
-    private suspend fun createParticipantDTOList(patients: List<RoomParticipantModel>): List<ParticipantDataDTO> {
+    private fun createParticipantDTOList(patients: List<RoomParticipantModel>): List<ParticipantDataDTO> {
         return patients.map { patient ->
             ParticipantDataDTO(
                 participantId = patient.participantId,

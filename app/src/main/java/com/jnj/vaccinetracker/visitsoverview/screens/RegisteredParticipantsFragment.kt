@@ -28,9 +28,11 @@ import com.soywiz.klock.DateTime
 import android.graphics.Typeface
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.util.FileUtil
 import com.jnj.vaccinetracker.visitsoverview.adapters.PatientAdapter
+import com.jnj.vaccinetracker.visitsoverview.adapters.VisitsAdapter
 import com.jnj.vaccinetracker.visitsoverview.dialog.PatientDetailsDialog
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import com.soywiz.klock.DateFormat
@@ -39,7 +41,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.Q)
-class RegisteredParticipantsFragment : BaseFragment() {
+class RegisteredParticipantsFragment : BaseFragment(),
+    ReportOverviewDatePickerDialog.VisitsOverviewDatePickerListener {
 
     companion object {
         private const val ARG_PARTICIPANT_KEY = "participantKey"
@@ -83,9 +86,9 @@ class RegisteredParticipantsFragment : BaseFragment() {
         )
         binding.lifecycleOwner = viewLifecycleOwner
 
-        setupFilterButtons()
-        setupObservers()
         loadPatients()
+        setupObservers()
+        setupFilterButtons()
         setupDownloadButtons()
 
         return binding.root
@@ -129,13 +132,10 @@ class RegisteredParticipantsFragment : BaseFragment() {
         patients: List<ParticipantDataDTO> = registeredParticipantsViewModel.patientDTOs.value ?: emptyList()
     ) {
         val searchText = binding.searchBox.text.toString().lowercase(Locale.getDefault())
-        val selectedStartDateAsJavaDate = selectedStartDate?.toDate()
-        val selectedEndDateAsJavaDate = selectedEndDate?.toDate()
-
         val filteredPatients = patients.filter { patient ->
             val dateMatches =
-                (selectedStartDateAsJavaDate == null || !patient.startDatetime.before(selectedStartDateAsJavaDate)) &&
-                        (selectedEndDateAsJavaDate == null || !patient.startDatetime.after(selectedEndDateAsJavaDate))
+                (selectedStartDate == null || patient.startDatetime >= selectedStartDate?.toDate()) &&
+                        (selectedEndDate == null || patient.startDatetime <= selectedEndDate?.toDate())
             val textSearchMatches =
                 patient.participantId.lowercase(Locale.getDefault()).contains(searchText) ||
                         patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
@@ -150,16 +150,15 @@ class RegisteredParticipantsFragment : BaseFragment() {
     }
 
     private fun showDatePickerDialog(isStartDate: Boolean) {
-        val datePickerDialog = ReportOverviewDatePickerDialog(
-            selectedDate = if (isStartDate) selectedStartDate else selectedEndDate
-        )
+        val datePickerDialog =
+            ReportOverviewDatePickerDialog(selectedDate = if (isStartDate) selectedStartDate else selectedEndDate)
         datePickerDialog.show(
             childFragmentManager,
             if (isStartDate) START_DATE_PICKER_DIALOG_TAG else END_DATE_PICKER_DIALOG_TAG
         )
     }
 
-    fun onDatePicked(date: DateTime?, tag: String?) {
+    override fun onDatePicked(date: DateTime?, tag: String?) {
         date?.let {
             if (tag == START_DATE_PICKER_DIALOG_TAG) {
                 selectedStartDate = it
@@ -176,7 +175,10 @@ class RegisteredParticipantsFragment : BaseFragment() {
 
     private fun formatDate(date: DateTime?): String {
         return date?.let {
-            DateUtil.convertDateToString(it.toDate(), "dd/MM/yyyy")
+            DateUtil.convertDateToString(
+                it.toDate(),
+                DateFormat.FORMAT_DATE.toString()
+            )
         } ?: "Not set"
     }
 
@@ -224,7 +226,7 @@ class RegisteredParticipantsFragment : BaseFragment() {
                     TableRow.LayoutParams.MATCH_PARENT,
                     TableRow.LayoutParams.WRAP_CONTENT
                 )
-                setBackgroundResource(R.drawable.table_row_background) // Optional: Add borders for better alignment
+                setBackgroundResource(R.drawable.table_row_background)
             }
 
             row.addView(createTableCell(patient.participantId))
