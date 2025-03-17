@@ -466,7 +466,7 @@
     <string name="visits_overview_start_date_label">Start Date</string>
     <string name="visits_overview_end_date_label">End Date</string>
     <string name="visits_overview_not_set_label">Not set</string>
-    <string name="visits_overview_search_hint">Search by Child ID or name</string>
+    <string name="visits_overview_search_hint">Search by ID, child or mother name</string>
     <string name="visits_overview_visit_date_column_label">Visit Date</string>
     <string name="visits_overview_client_id_column_label">Child ID</string>
     <string name="visits_overview_client_name_column_label">Child Name</string>
@@ -511,7 +511,7 @@
     <string name="edge_case_duplicate_nin_message">Someone uploaded a child with the same NIN while your device was offline. Please update the NIN and inform the family about the change.</string>
     <string name="download_excel">Download Excel</string>
     <string name="registered_children">Registered Children</string>
-    <string name="registered_children_search_hint">Search by ID, child or mother name </string>
+    <string name="registered_children_search_hint">Search by ID, child or mother name</string>
     <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
     <string name="children_overview_client_birthdate_column_label">Birthdate</string>
     <string name="not_set">Not set</string>
