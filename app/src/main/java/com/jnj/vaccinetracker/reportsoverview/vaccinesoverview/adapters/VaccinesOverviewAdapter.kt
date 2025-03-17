@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.vaccinesoverview.adapters
+package com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.adapters
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.databinding.ItemVaccinesOverviewRecordBinding
-import com.jnj.vaccinetracker.vaccinesoverview.dto.VaccinesOverviewDTO
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto.VaccinesOverviewDTO
 
-class VaccinesOverviewAdapter : ListAdapter<VaccinesOverviewDTO, VaccinesOverviewAdapter.VaccinesOverviewHolder>(VaccinesOverviewDataDTODiffCallback()) {
+class VaccinesOverviewAdapter : ListAdapter<VaccinesOverviewDTO, VaccinesOverviewAdapter.VaccinesOverviewHolder>(
+    VaccinesOverviewDataDTODiffCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VaccinesOverviewHolder {
         val binding = ItemVaccinesOverviewRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)

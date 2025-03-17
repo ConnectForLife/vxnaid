@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visitsoverview
+package com.jnj.vaccinetracker.visitsoverview.activity
 
 import android.content.Context
 import android.content.Intent
@@ -14,7 +14,6 @@ import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.ActivityVisitOverviewFlowBinding
 import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
-import com.jnj.vaccinetracker.visitsoverview.screens.RegisteredParticipantsFragment
 import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -29,6 +28,7 @@ class VisitsOverviewFlowActivity : BaseActivity() {
     private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
     private lateinit var binding: ActivityVisitOverviewFlowBinding
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.let { visitsOverviewViewModel.restoreInstanceState(it) }
@@ -50,7 +50,6 @@ class VisitsOverviewFlowActivity : BaseActivity() {
     private fun navigateToScreen(screen: VisitsOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
         val fragment = when (screen) {
             VisitsOverviewViewModel.Screen.VISITS_OVERVIEW -> VisitsOverviewFragment()
-            VisitsOverviewViewModel.Screen.REGISTERED_PATIENTS -> RegisteredParticipantsFragment()
             else -> null
         }
         screen?.let { title = getString(it.title) }

@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.vaccinesoverview.dto
+package com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto
 
 class VaccineObservationDTO(
     val vaccineName: String,

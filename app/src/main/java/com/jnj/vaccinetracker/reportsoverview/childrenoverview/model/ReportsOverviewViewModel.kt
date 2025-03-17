@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.visitsoverview.model
+package com.jnj.vaccinetracker.reportsoverview.childrenoverview.model
 
 import android.os.Bundle
 import androidx.annotation.StringRes
@@ -8,21 +8,21 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import javax.inject.Inject
 
-class VisitsOverviewViewModel @Inject constructor(
+class ReportsOverviewViewModel @Inject constructor(
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
 
     val currentScreen = mutableLiveData<Screen>()
     var navigationDirection = NavigationDirection.NONE
     private var screens = listOf<Screen>()
-    val launchVisitsOverviewFragmentFlowEvent = eventFlow<Unit>()
+    val launchReportsOverviewFragmentFlowEvent = eventFlow<Unit>()
 
     init {
         initScreens()
     }
 
-    fun onVisitsOverviewClick() {
-        launchVisitsOverviewFragmentFlowEvent.tryEmit(Unit)
+    fun onReportsOverviewClick() {
+        launchReportsOverviewFragmentFlowEvent.tryEmit(Unit)
     }
 
     private fun initScreens() {
@@ -31,7 +31,7 @@ class VisitsOverviewViewModel @Inject constructor(
     }
 
     private fun createScreens(): List<Screen> {
-        return mutableListOf(Screen.VISITS_OVERVIEW)
+        return mutableListOf(Screen.REPORTS_OVERVIEW)
     }
 
     private fun setInitialScreen() {
@@ -42,7 +42,7 @@ class VisitsOverviewViewModel @Inject constructor(
     }
 
     enum class Screen(@StringRes val title: Int) {
-        VISITS_OVERVIEW(R.string.visits_overview_title)
+        REPORTS_OVERVIEW(R.string.reports_overview_title)
     }
 
     override fun saveInstanceState(outState: Bundle) {}

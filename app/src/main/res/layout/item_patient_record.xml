@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="participant"
+            type="com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="@drawable/table_row_background">
+
+        <TextView
+            android:id="@+id/tv_clientId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{participant.participantId}"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_clientName"
+            app:layout_constraintWidth_percent="0.25" />
+
+        <TextView
+            android:id="@+id/tv_clientName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{participant.fullName}"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/tv_clientId"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_motherName"
+            app:layout_constraintWidth_percent="0.25" />
+
+        <TextView
+            android:id="@+id/tv_motherName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{participant.motherName}"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/tv_clientName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_birthDate"
+            app:layout_constraintWidth_percent="0.25" />
+
+        <TextView
+            android:id="@+id/tv_birthDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{participant.formattedBirthDate}"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/tv_motherName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.25" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

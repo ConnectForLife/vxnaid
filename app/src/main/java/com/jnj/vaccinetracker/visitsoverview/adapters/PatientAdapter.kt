@@ -1,46 +1,49 @@
 package com.jnj.vaccinetracker.visitsoverview.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.databinding.ItemPatientRecordBinding
 import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 
-class PatientAdapter : ListAdapter<ParticipantDataDTO, PatientAdapter.PatientViewHolder>(PatientDiffCallback) {
+class PatientAdapter : ListAdapter<ParticipantDataDTO, PatientAdapter.PatientViewHolder>(ParticipantDataDTODiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PatientViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_patient, parent, false)
-        return PatientViewHolder(view)
+        val binding = ItemPatientRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PatientViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: PatientViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val participant = getItem(position)
+        holder.bind(participant)
     }
 
-    class PatientViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val patientName: TextView = itemView.findViewById(R.id.patient_name)
-        private val patientId: TextView = itemView.findViewById(R.id.patient_id)
+    inner class PatientViewHolder(private val binding: ItemPatientRecordBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(participant: ParticipantDataDTO) {
+            binding.participant = participant
+            binding.executePendingBindings()
 
-        fun bind(patient: ParticipantDataDTO) {
-            patientName.text = patient.fullName
-            patientId.text = patient.participantId
+            val backgroundColor = if (bindingAdapterPosition % 2 == 0) {
+                ContextCompat.getColor(binding.root.context, R.color.row_odd_background)
+            } else {
+                ContextCompat.getColor(binding.root.context, R.color.row_even_background)
+            }
+
+            binding.root.setBackgroundColor(backgroundColor)
         }
     }
 
-    companion object {
-        private val PatientDiffCallback = object : DiffUtil.ItemCallback<ParticipantDataDTO>() {
-            override fun areItemsTheSame(oldItem: ParticipantDataDTO, newItem: ParticipantDataDTO): Boolean {
-                return oldItem.participantId == newItem.participantId
-            }
+    class ParticipantDataDTODiffCallback : DiffUtil.ItemCallback<ParticipantDataDTO>() {
+        override fun areItemsTheSame(oldItem: ParticipantDataDTO, newItem: ParticipantDataDTO): Boolean {
+            return oldItem.participantId == newItem.participantId
+        }
 
-            override fun areContentsTheSame(oldItem: ParticipantDataDTO, newItem: ParticipantDataDTO): Boolean {
-                return oldItem == newItem
-            }
+        override fun areContentsTheSame(oldItem: ParticipantDataDTO, newItem: ParticipantDataDTO): Boolean {
+            return oldItem == newItem
         }
     }
 }

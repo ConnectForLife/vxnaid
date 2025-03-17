@@ -80,7 +80,7 @@
     <string name="match_or_register_patient_step_index">Step %s</string>
     <string name="match_or_register_patient_btn_continue">Complete Return Visit </string>
     <string name="match_or_register_patient_intro">You will be guided step-by-step to identify or register the Child</string>
-    <string name="match_or_register_patient_intro_title">Match or register</string>
+    <string name="match_or_register_patient_intro_title">Home Page</string>
     <string name="iris_scan_left_title">Iris scan - Left eye</string>
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
@@ -456,13 +456,13 @@
     <string name="refer_outside_clinic_switch_label">Refer outside the Health Facility</string>
     <string name="validation_error_dialog_message">Please resolve the following issues:</string>
     <string name="participant_registration_details_error_no_birth_date">Please enter birth weight as integer</string>
-    <string name="visits_overview_title">Reports Overview</string>
+    <string name="visits_overview_title">Visits Overview</string>
+    <string name="reports_overview_title">Reports Overview</string>
     <string name="patients_overview_title">Registered Patients Overview</string>
     <string name="participants_overview_title">Participant Overview</string>
     <string name="visits_overview_scheduled_visits_title">Scheduled Visits</string>
     <string name="visits_overview_historical_visits_title">Visit History</string>
     <string name="visits_overview_missed_visits_title">Missed Visits</string>
-    <string name="visits_overview_new_registered_client">Registered Children</string>
     <string name="visits_overview_start_date_label">Start Date</string>
     <string name="visits_overview_end_date_label">End Date</string>
     <string name="visits_overview_not_set_label">Not set</string>
@@ -511,6 +511,8 @@
     <string name="edge_case_duplicate_nin_message">Someone uploaded a child with the same NIN while your device was offline. Please update the NIN and inform the family about the change.</string>
     <string name="download_excel">Download Excel</string>
     <string name="registered_children">Registered Children</string>
-    <string name="search">search by Child name or mothers name</string>
+    <string name="registered_children_search_hint">Search by ID, child or mother name </string>
+    <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
+    <string name="children_overview_client_birthdate_column_label">Birthdate</string>
     <string name="not_set">Not set</string>
 </resources>
