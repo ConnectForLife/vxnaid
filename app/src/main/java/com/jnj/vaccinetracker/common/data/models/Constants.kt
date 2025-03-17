@@ -29,7 +29,6 @@ object Constants {
 
     // Visit
     const val ATTRIBUTE_VISIT_STATUS = "Visit Status"
-    const val ATTRIBUTE_PARTICIPANT_STATUS = "Participant Status"
 
     const val ATTRIBUTE_VISIT_DAYS_AFTER = "Up Window"
     const val ATTRIBUTE_VISIT_DAYS_BEFORE = "Low Window"
