@@ -157,4 +157,8 @@ class ParticipantRepository @Inject constructor(
     override suspend fun findRegimen(participantUuid: String): String? {
         return participantAttributeDao.findAttribute(participantUuid, type = Constants.ATTRIBUTE_VACCINE)
     }
+
+    suspend fun findPatients(): List<RoomParticipantModel> {
+        return participantDao.findAllPatients()
+    }
 }

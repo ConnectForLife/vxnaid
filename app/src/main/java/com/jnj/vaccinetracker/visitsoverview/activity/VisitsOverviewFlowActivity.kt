@@ -1,39 +1,43 @@
-package com.jnj.vaccinetracker.vaccinesoverview
+package com.jnj.vaccinetracker.visitsoverview.activity
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.helpers.logWarn
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
-import com.jnj.vaccinetracker.databinding.ActivityVaccinesOverviewFlowBinding
-import com.jnj.vaccinetracker.vaccinesoverview.model.VaccinesOverviewViewModel
-import com.jnj.vaccinetracker.vaccinesoverview.screens.VaccinesOverviewFragment
+import com.jnj.vaccinetracker.databinding.ActivityVisitOverviewFlowBinding
+import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
+import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 
-class VaccinesOverviewFlowActivity : BaseActivity() {
+@RequiresApi(Build.VERSION_CODES.O)
+class VisitsOverviewFlowActivity : BaseActivity() {
 
     companion object {
         fun create(context: Context): Intent {
-            return Intent(context, VaccinesOverviewFlowActivity::class.java)
+            return Intent(context, VisitsOverviewFlowActivity::class.java)
         }
     }
 
-    private val vaccinesOverviewViewModel: VaccinesOverviewViewModel by viewModels { viewModelFactory }
-    private lateinit var binding: ActivityVaccinesOverviewFlowBinding
+    private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
+    private lateinit var binding: ActivityVisitOverviewFlowBinding
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        savedInstanceState?.let { vaccinesOverviewViewModel.restoreInstanceState(it) }
+        savedInstanceState?.let { visitsOverviewViewModel.restoreInstanceState(it) }
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_vaccines_overview_flow)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_visit_overview_flow)
         binding.lifecycleOwner = this
 
-        vaccinesOverviewViewModel.currentScreen.observe(this) { screen ->
-            navigateToScreen(screen, vaccinesOverviewViewModel.navigationDirection)
+        visitsOverviewViewModel.currentScreen.observe(this) { screen ->
+            navigateToScreen(screen, visitsOverviewViewModel.navigationDirection)
         }
     }
 
@@ -42,9 +46,10 @@ class VaccinesOverviewFlowActivity : BaseActivity() {
         return true
     }
 
-    private fun navigateToScreen(screen: VaccinesOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun navigateToScreen(screen: VisitsOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
         val fragment = when (screen) {
-            VaccinesOverviewViewModel.Screen.VACCINES_OVERVIEW -> VaccinesOverviewFragment()
+            VisitsOverviewViewModel.Screen.VISITS_OVERVIEW -> VisitsOverviewFragment()
             else -> null
         }
         screen?.let { title = getString(it.title) }

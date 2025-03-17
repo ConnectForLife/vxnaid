@@ -24,11 +24,11 @@ import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
+import com.jnj.vaccinetracker.reportsoverview.childrenoverview.activity.ReportsOverviewFlowActivity
+import com.jnj.vaccinetracker.reportsoverview.childrenoverview.model.ReportsOverviewViewModel
 import com.jnj.vaccinetracker.update.UpdateDialog
-import com.jnj.vaccinetracker.vaccinesoverview.VaccinesOverviewFlowActivity
-import com.jnj.vaccinetracker.vaccinesoverview.model.VaccinesOverviewViewModel
 import com.jnj.vaccinetracker.visit.VisitActivity
-import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewFlowActivity
+import com.jnj.vaccinetracker.visitsoverview.activity.VisitsOverviewFlowActivity
 import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -43,7 +43,7 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
    private val viewModel: ParticipantFlowViewModel by activityViewModels { viewModelFactory }
    private val viewModelParticipantFlow: ParticipantFlowMatchingViewModel by viewModels { viewModelFactory }
    private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
-   private val vaccinesOverviewViewModel: VaccinesOverviewViewModel by viewModels { viewModelFactory }
+   private val reportsOverviewViewModel: ReportsOverviewViewModel by viewModels { viewModelFactory }
 
    private lateinit var binding: FragmentParticipantAddOrSearchBinding
 
@@ -51,19 +51,21 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
       binding = DataBindingUtil.inflate(inflater, R.layout.fragment_participant_add_or_search, container, false)
       binding.viewModel = viewModel
       binding.lifecycleOwner = viewLifecycleOwner
-      binding.btnContinue.setOnClickListener {
-         viewModel.onSearchParticipant()
-      }
+
       binding.btnNewParticipant.setOnClickListener {
          viewModelParticipantFlow.onNewParticipantButtonClick()
+      }
+
+      binding.btnContinue.setOnClickListener {
+         viewModel.onSearchParticipant()
       }
 
       binding.btnVisitsOverview.setOnClickListener {
          visitsOverviewViewModel.onVisitsOverviewClick()
       }
 
-      binding.btnVaccinesOverview.setOnClickListener {
-         vaccinesOverviewViewModel.onVaccinesOverviewClick()
+      binding.btnReportsOverview.setOnClickListener {
+         reportsOverviewViewModel.onReportsOverviewClick()
       }
 
       setHasOptionsMenu(true)
@@ -97,16 +99,18 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
       }.launchIn(lifecycleOwner)
 
       visitsOverviewViewModel.launchVisitsOverviewFragmentFlowEvent.asFlow().onEach {
-         startActivityForResult(VisitsOverviewFlowActivity.create(
+         startActivityForResult(
+            VisitsOverviewFlowActivity.create(
             context = requireContext()
          ), Constants.REQ_VISITS_OVERVIEW)
          (requireActivity() as BaseActivity).setForwardAnimation()
       }.launchIn(lifecycleOwner)
 
-      vaccinesOverviewViewModel.launchVaccinesOverviewFragmentFlowEvent.asFlow().onEach {
-         startActivityForResult(VaccinesOverviewFlowActivity.create(
+      reportsOverviewViewModel.launchReportsOverviewFragmentFlowEvent.asFlow().onEach {
+         startActivityForResult(
+            ReportsOverviewFlowActivity.create(
             context = requireContext()
-         ), Constants.REQ_VACCINES_OVERVIEW)
+         ), Constants.REQ_REPORTS_OVERVIEW)
          (requireActivity() as BaseActivity).setForwardAnimation()
       }.launchIn(lifecycleOwner)
    }
@@ -146,8 +150,8 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
             startActivity(VisitsOverviewFlowActivity.create(requireContext()))
          }
 
-         Constants.REQ_VACCINES_OVERVIEW -> {
-            startActivity(VaccinesOverviewFlowActivity.create(requireContext()))
+         Constants.REQ_REPORTS_OVERVIEW -> {
+            startActivity(ReportsOverviewFlowActivity.create(requireContext()))
          }
 
          Constants.REQ_VISIT -> {

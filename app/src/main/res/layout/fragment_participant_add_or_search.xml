@@ -98,7 +98,7 @@
                 app:cornerRadius="30dp" />
 
             <Button
-                android:id="@+id/btn_vaccines_overview"
+                android:id="@+id/btn_reports_overview"
                 android:layout_width="500dp"
                 android:layout_height="0dp"
                 android:layout_gravity="center"
@@ -106,7 +106,7 @@
                 android:layout_marginBottom="50dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/sync_offline"
-                android:text="@string/vaccines_overview_title"
+                android:text="@string/reports_overview_title"
                 android:textAppearance="@style/ButtonTextStyling"
                 android:textColor="@color/colorTextOnSecondary"
                 android:textSize="34sp"

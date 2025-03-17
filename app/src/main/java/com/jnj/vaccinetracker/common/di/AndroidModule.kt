@@ -50,8 +50,9 @@ import com.jnj.vaccinetracker.register.dialogs.AlreadyAdministeredVaccineDatePic
 import com.jnj.vaccinetracker.register.dialogs.MultipleVisitsDialog
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
-import com.jnj.vaccinetracker.vaccinesoverview.VaccinesOverviewFlowActivity
-import com.jnj.vaccinetracker.vaccinesoverview.screens.VaccinesOverviewFragment
+import com.jnj.vaccinetracker.reportsoverview.childrenoverview.activity.ReportsOverviewFlowActivity
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.activity.VaccinesOverviewFlowActivity
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.screens.VaccinesOverviewFragment
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DialogVaccineBarcode
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
@@ -61,8 +62,10 @@ import com.jnj.vaccinetracker.visit.screens.ContraindicationsFragment
 import com.jnj.vaccinetracker.visit.screens.ReferralFragment
 import com.jnj.vaccinetracker.visit.screens.VisitVaccinesFragment
 import com.jnj.vaccinetracker.visit.screens.VisitCaptureDataFragment
-import com.jnj.vaccinetracker.visitsoverview.VisitsOverviewFlowActivity
+import com.jnj.vaccinetracker.visitsoverview.activity.VisitsOverviewFlowActivity
 import com.jnj.vaccinetracker.visitsoverview.dialog.VisitDetailsDialog
+import com.jnj.vaccinetracker.reportsoverview.childrenoverview.screens.RegisteredParticipantsFragment
+import com.jnj.vaccinetracker.reportsoverview.childrenoverview.screens.ReportsOverviewFragment
 import com.jnj.vaccinetracker.visitsoverview.screens.VisitsListFragment
 import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 import dagger.Module
@@ -297,4 +300,13 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindVaccinesOverviewFlowActivity(): VaccinesOverviewFlowActivity
+
+    @ContributesAndroidInjector
+    fun bindRegisteredParticipantsFragment(): RegisteredParticipantsFragment
+
+    @ContributesAndroidInjector
+    fun bindReportsOverviewFragment(): ReportsOverviewFragment
+
+    @ContributesAndroidInjector
+    fun bindReportsOverviewFlowActivity(): ReportsOverviewFlowActivity
 }

@@ -55,8 +55,11 @@ interface ParticipantDao : ParticipantDaoBase<ParticipantEntity, RoomParticipant
 
     @Query("delete from participant")
     override suspend fun deleteAll()
-}
 
+    @Query("select * from participant")
+    @Transaction
+    suspend fun findAllPatients(): List<RoomParticipantModel>
+}
 
 @Dao
 interface ParticipantAttributeDao : DaoBase<ParticipantAttributeEntity>, ObservableDao {

@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.vaccinesoverview.model
+package com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.model
 
 import android.os.Bundle
 import androidx.annotation.StringRes
@@ -15,7 +15,7 @@ import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
-import com.jnj.vaccinetracker.vaccinesoverview.dto.VaccineObservationDTO
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto.VaccineObservationDTO
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,7 +31,6 @@ class VaccinesOverviewViewModel @Inject constructor(
     val currentScreen = mutableLiveData<Screen>()
     var navigationDirection = NavigationDirection.NONE
     private var screens = listOf<Screen>()
-    val launchVaccinesOverviewFragmentFlowEvent = eventFlow<Unit>()
     val isLoading = mutableLiveData<Boolean>()
 
     init {
@@ -40,11 +39,6 @@ class VaccinesOverviewViewModel @Inject constructor(
 
     suspend fun getSubstancesConfig() : SubstancesConfig {
         return configurationManager.getSubstancesConfig()
-    }
-
-
-    fun onVaccinesOverviewClick() {
-        launchVaccinesOverviewFragmentFlowEvent.tryEmit(Unit)
     }
 
     fun getVaccinesData() {
