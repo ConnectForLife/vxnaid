@@ -78,7 +78,6 @@ class VisitsListViewModel @Inject constructor(
                 visitDataDTOList.add(visitDataDTO)
             }
         }
-
         return visitDataDTOList
     }
 

@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.vaccinesoverview.screens
+package com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.screens
 
 import android.os.Build
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -23,13 +24,13 @@ import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.databinding.FragmentVaccinesOverviewBinding
-import com.jnj.vaccinetracker.vaccinesoverview.adapters.VaccineDropdownItemAdapter
-import com.jnj.vaccinetracker.vaccinesoverview.adapters.VaccinesOverviewAdapter
-import com.jnj.vaccinetracker.vaccinesoverview.dto.VaccineObservationDTO
-import com.jnj.vaccinetracker.vaccinesoverview.dto.VaccinesOverviewDTO
-import com.jnj.vaccinetracker.vaccinesoverview.model.VaccinesOverviewViewModel
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.adapters.VaccineDropdownItemAdapter
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.adapters.VaccinesOverviewAdapter
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto.VaccineObservationDTO
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto.VaccinesOverviewDTO
 import com.jnj.vaccinetracker.common.dialogs.ReportOverviewDatePickerDialog
 import com.jnj.vaccinetracker.common.util.FileUtil
+import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.model.VaccinesOverviewViewModel
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
@@ -63,9 +64,10 @@ class VaccinesOverviewFragment : BaseFragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_vaccines_overview, container, false)
+    ): View {
+        setHasOptionsMenu(true)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_vaccines_overview, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
 
         setupRecyclerView()
         setupFilterFields()
@@ -79,10 +81,21 @@ class VaccinesOverviewFragment : BaseFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         (activity as AppCompatActivity).supportActionBar?.apply {
             title = getString(R.string.vaccines_administered_title)
             setDisplayHomeAsUpEnabled(true)
             setHomeButtonEnabled(true)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                parentFragmentManager.popBackStack()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

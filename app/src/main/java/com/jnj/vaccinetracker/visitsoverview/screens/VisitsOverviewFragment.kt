@@ -1,9 +1,11 @@
 package com.jnj.vaccinetracker.visitsoverview.screens
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
@@ -15,6 +17,7 @@ class VisitsOverviewFragment : BaseFragment() {
 
     private lateinit var binding: FragmentVisitsOverviewBinding
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_overview, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -42,6 +45,7 @@ class VisitsOverviewFragment : BaseFragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun navigateToVisitsList(visitsKey: String) {
         val fragment = VisitsListFragment(visitsKey)
         parentFragmentManager.beginTransaction()
