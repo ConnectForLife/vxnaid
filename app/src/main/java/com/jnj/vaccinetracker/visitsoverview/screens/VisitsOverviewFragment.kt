@@ -33,7 +33,6 @@ class VisitsOverviewFragment : BaseFragment() {
         binding.btnMissedVisits.setOnClickListener {
             navigateToVisitsList(Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY)
         }
-
         return binding.root
     }
 

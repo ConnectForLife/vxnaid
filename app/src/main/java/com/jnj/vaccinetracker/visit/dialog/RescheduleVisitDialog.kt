@@ -1,7 +1,6 @@
 package com.jnj.vaccinetracker.visit.dialog
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,14 +12,12 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
-import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.dialogs.AlertDialog
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
@@ -31,7 +28,6 @@ import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableExceptio
 import com.jnj.vaccinetracker.common.helpers.findDosingVisit
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
-import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.databinding.DialogRescheduleVisitBinding
@@ -39,11 +35,9 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.ScheduleVisitDatePickerDialog
 import com.jnj.vaccinetracker.sync.data.network.VaccineTrackerSyncApiDataSource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
-import com.jnj.vaccinetracker.visit.screens.ReferralFragment
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 

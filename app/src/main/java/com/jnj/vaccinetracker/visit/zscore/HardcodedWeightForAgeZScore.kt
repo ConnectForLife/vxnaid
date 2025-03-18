@@ -12,7 +12,7 @@ import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.dpToPx
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 
-class HardcodedWeightForAgeZScore(
+class    HardcodedWeightForAgeZScore(
    name: String,
    gender: Gender,
    birthDateText: String,

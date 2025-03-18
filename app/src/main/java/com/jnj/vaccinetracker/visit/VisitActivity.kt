@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -27,10 +26,8 @@ import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.ActivityVisitBinding
-import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
-import com.jnj.vaccinetracker.splash.SplashActivity
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
 import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog

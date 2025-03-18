@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.fragment.app.activityViewModels
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.visit.screens.VisitVaccinesFragment
 import com.jnj.vaccinetracker.visit.screens.VisitCaptureDataFragment

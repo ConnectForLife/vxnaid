@@ -27,7 +27,6 @@ import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
-import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.databinding.DialogVisitRegisteredSuccessBinding
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel

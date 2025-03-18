@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -14,7 +13,6 @@ import androidx.lifecycle.LifecycleOwner
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.domain.entities.Address
 import com.jnj.vaccinetracker.common.helpers.findParent
-import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.helpers.logVerbose
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogHomeLocationPickerBinding

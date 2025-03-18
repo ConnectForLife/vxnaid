@@ -2,11 +2,6 @@ package com.jnj.vaccinetracker.visit.zscore
 
 import android.graphics.Color
 import com.jnj.vaccinetracker.R
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-
 import com.jnj.vaccinetracker.common.domain.entities.Gender
 
 class MuacZScoreCalculator(
