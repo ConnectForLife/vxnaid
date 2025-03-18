@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.domain.entities.UpdateParticipant
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class ParticipantUpdateViewModel(private val participantManager: ParticipantManager): ViewModel() {
 

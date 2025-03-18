@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.common.helpers.findParent
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
-import com.jnj.vaccinetracker.databinding.DialogRegisterParticipantConfirmNoTelephoneBinding
 import com.jnj.vaccinetracker.databinding.DialogRegisterParticipantIdNotMatchingBinding
 
 /**

@@ -5,29 +5,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.util.Log
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentVisitCaptureDataBinding
-import com.jnj.vaccinetracker.databinding.ItemVisitHistoryTitleBinding
-import com.jnj.vaccinetracker.databinding.ItemVisitPreviousDoseBinding
 import com.jnj.vaccinetracker.splash.SplashActivity
-import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.visit.VisitViewModel
 import com.jnj.vaccinetracker.visit.adapters.OtherSubstanceItemAdapter
 import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
-import com.jnj.vaccinetracker.visit.zscore.InputFilterMinMax
-import kotlinx.coroutines.flow.onEach
 
 /**
  * @author maartenvangiel
