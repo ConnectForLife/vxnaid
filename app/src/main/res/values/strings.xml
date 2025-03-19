@@ -80,7 +80,8 @@
     <string name="match_or_register_patient_step_index">Option %s</string>
     <string name="match_or_register_patient_btn_continue">Complete Return Visit </string>
     <string name="match_or_register_patient_intro">Please select a child identification option</string>
-    <string name="match_or_register_patient_intro_title">Return Visit Guide</string>
+    <string name="complete_return_visit_title" translatable="false">Return Visit Guide</string>
+    <string name="match_or_register_patient_intro_title">Home Page</string>
     <string name="iris_scan_left_title">Iris scan - Left eye</string>
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
