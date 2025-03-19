@@ -52,5 +52,4 @@ class VisitsAdapter(
             return oldItem == newItem
         }
     }
-
 }

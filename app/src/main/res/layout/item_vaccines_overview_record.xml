@@ -4,7 +4,7 @@
     <data>
         <variable
             name="vaccineOverview"
-            type="com.jnj.vaccinetracker.vaccinesoverview.dto.VaccinesOverviewDTO" />
+            type="com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto.VaccinesOverviewDTO" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

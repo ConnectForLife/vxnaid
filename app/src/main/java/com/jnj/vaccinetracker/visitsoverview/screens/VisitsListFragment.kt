@@ -1,6 +1,5 @@
 package com.jnj.vaccinetracker.visitsoverview.screens
 
-
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater

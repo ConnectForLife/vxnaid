@@ -29,7 +29,6 @@ object Constants {
 
     // Visit
     const val ATTRIBUTE_VISIT_STATUS = "Visit Status"
-    const val ATTRIBUTE_PARTICIPANT_STATUS = "Participant Status"
 
     const val ATTRIBUTE_VISIT_DAYS_AFTER = "Up Window"
     const val ATTRIBUTE_VISIT_DAYS_BEFORE = "Low Window"
@@ -65,6 +64,7 @@ object Constants {
     const val REQ_VISIT = 12
     const val REQ_VISITS_OVERVIEW = 312
     const val REQ_VACCINES_OVERVIEW = 412
+    const val REQ_REPORTS_OVERVIEW = 512
 
     const val UTC_TIME_ZONE_NAME = "UTC"
 
@@ -114,6 +114,7 @@ object Constants {
     const val CLIENT_NAME_FILE_COLUMN_HEADER = "Client Name"
     const val PHONE_NUMBER_FILE_COLUMN_HEADER = "Phone Number"
     const val CLIENT_MOTHER_NAME_FILE_HEADER = "Mother Name"
+    const val CLIENT_BIRTHDATE_FILE_HEADER = "Birthdate"
 
     const val VACCINES_CATEGORY_NAME = "Immunization"
     const val GROUP_AGE_FIRST = "0-11 months"

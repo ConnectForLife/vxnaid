@@ -64,11 +64,15 @@
         <activity android:name="com.jnj.vaccinetracker.visit.VisitActivity" />
 
         <activity
-            android:name="com.jnj.vaccinetracker.visitsoverview.VisitsOverviewFlowActivity"
+            android:name="com.jnj.vaccinetracker.visitsoverview.activity.VisitsOverviewFlowActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name="com.jnj.vaccinetracker.vaccinesoverview.VaccinesOverviewFlowActivity"
+            android:name="com.jnj.vaccinetracker.reportsoverview.childrenoverview.activity.ReportsOverviewFlowActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.activity.VaccinesOverviewFlowActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <provider

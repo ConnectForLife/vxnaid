@@ -7,7 +7,7 @@
         android:padding="16dp">
 
         <LinearLayout
-            android:id="@+id/decision_buttons_container"
+            android:id="@+id/report_overviews_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginTop="32dp"
@@ -21,19 +21,19 @@
             app:layout_constraintTop_toBottomOf="parent">
 
         <Button
-            android:id="@+id/btn_scheduled_visits"
+            android:id="@+id/btn_vaccines_overview_report"
             android:layout_width="500dp"
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:layout_marginTop="70dp"
             android:layout_marginBottom="70dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTint="@color/alertLight"
             android:paddingLeft="2dp"
             android:paddingTop="2dp"
             android:paddingRight="2dp"
             android:paddingBottom="2dp"
-            android:text="@string/visits_overview_scheduled_visits_title"
+            android:text="@string/vaccines_overview_title"
             android:textAppearance="@style/ButtonTextStyling"
             android:textColor="@color/colorTextOnSecondary"
             android:textSize="34sp"
@@ -41,45 +41,24 @@
             app:cornerRadius="30dp" />
 
         <Button
-            android:id="@+id/btn_historical_visits"
+            android:id="@+id/btn_registered_children_report"
             android:layout_width="500dp"
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:layout_marginTop="70dp"
             android:layout_marginBottom="70dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/colorTextOnLight"
+            android:backgroundTint="@color/colorSecondaryDark"
             android:paddingLeft="2dp"
             android:paddingTop="2dp"
             android:paddingRight="2dp"
             android:paddingBottom="2dp"
-            android:text="@string/visits_overview_historical_visits_title"
+            android:text="@string/registered_children"
             android:textAppearance="@style/ButtonTextStyling"
             android:textColor="@color/colorTextOnSecondary"
             android:textSize="34sp"
             android:textStyle="bold"
             app:cornerRadius="30dp" />
-
-        <Button
-            android:id="@+id/btn_missed_visits"
-            android:layout_width="500dp"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="70dp"
-            android:layout_marginBottom="70dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/errorLight"
-            android:paddingLeft="2dp"
-            android:paddingTop="2dp"
-            android:paddingRight="2dp"
-            android:paddingBottom="2dp"
-            android:text="@string/visits_overview_missed_visits_title"
-            android:textAppearance="@style/ButtonTextStyling"
-            android:textColor="@color/colorTextOnSecondary"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            app:cornerRadius="30dp" />
-
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

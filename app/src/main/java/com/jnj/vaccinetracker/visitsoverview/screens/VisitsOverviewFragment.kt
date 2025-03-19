@@ -2,7 +2,6 @@ package com.jnj.vaccinetracker.visitsoverview.screens
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,10 +33,6 @@ class VisitsOverviewFragment : BaseFragment() {
         binding.btnMissedVisits.setOnClickListener {
             navigateToVisitsList(Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY)
         }
-
-        binding.btnRegisteredParticipant.setOnClickListener {
-            navigateToPatientList(Constants.REGISTERED_PARTICIPANT)
-        }
         return binding.root
     }
 
@@ -54,15 +49,6 @@ class VisitsOverviewFragment : BaseFragment() {
     private fun navigateToVisitsList(visitsKey: String) {
         val fragment = VisitsListFragment(visitsKey)
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun navigateToPatientList(participantKey: String) {
-        val fragment = RegisteredParticipantsFragment.newInstance(participantKey)
-        requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()

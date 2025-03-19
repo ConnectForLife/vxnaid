@@ -14,20 +14,16 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.mlkit.common.MlKitException
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.common.data.encryption.SharedPreference
 import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.databinding.ActivityScanBarcodeBinding
-import com.jnj.vaccinetracker.visit.VisitViewModel
-
 /**
  * @author maartenvangiel
  * @version 1

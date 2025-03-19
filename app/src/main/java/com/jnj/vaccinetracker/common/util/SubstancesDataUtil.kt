@@ -133,14 +133,29 @@ class SubstancesDataUtil {
             val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
             val hasEverBeenVaccinated = isAnySubstanceApplied(participantVisits)
 
-            // If child is < 6 weeks system should display 'At Birth' visit
-            // If child is 6+ weeks and never been vaccinated system should display '6 weeks' visit
             if (childAgeInWeeks < 6) {
                 return visitTypesOrdered[0] // At Birth
-            } else if (!hasEverBeenVaccinated) {
+            }
+
+            if (!hasEverBeenVaccinated) {
                 return visitTypesOrdered[1] // 6 weeks
+            }
+
+            // If the child has been vaccinated, determine the next visit based on the last visit
+            val lastVisit = participantVisits
+                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
+                .maxByOrNull { it.visitDate }
+
+            return if (lastVisit != null) {
+                val lastVisitType = getVisitTypeFromLastVisit(lastVisit, allSubstancesConfig)
+                val lastVisitIndex = visitTypesOrdered.indexOf(lastVisitType)
+                if (lastVisitIndex < visitTypesOrdered.size - 1) {
+                    visitTypesOrdered[lastVisitIndex + 1]
+                } else {
+                    "No visit scheduled"
+                }
             } else {
-                return findVisitTypeByChildAge(childAgeInWeeks, allSubstancesConfig)
+                findVisitTypeByChildAge(childAgeInWeeks, allSubstancesConfig)
             }
         }
 
@@ -161,17 +176,37 @@ class SubstancesDataUtil {
         ): String {
             val allSubstancesConfig = configurationManager.getSubstancesConfig()
             val visitTypesOrdered = getVisitTypesInOrder(allSubstancesConfig)
-            val suggestedSubstancesForChild = getSubstancesDataForVisitWithGivenDate(participantBirthDate, visitDate, participantVisits, configurationManager)
 
-            return when {
-                // Case 1: If there are suggested substances for the child
-                suggestedSubstancesForChild.isNotEmpty() -> {
-                    val visitTypesInSuggestedSubstances = getVisitTypesFromSubstances(suggestedSubstancesForChild)
-                    getBestVisitType(visitTypesInSuggestedSubstances, visitTypesOrdered)
+            // Find the most recent visit that has occurred
+            val lastVisit = participantVisits
+                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
+                .maxByOrNull { it.visitDate }
+
+            return if (lastVisit != null) {
+                val lastVisitType = getVisitTypeFromLastVisit(lastVisit, allSubstancesConfig)
+                val lastVisitIndex = visitTypesOrdered.indexOf(lastVisitType)
+                if (lastVisitIndex < visitTypesOrdered.size - 1) {
+                    visitTypesOrdered[lastVisitIndex + 1]
+                } else {
+                    "No visit scheduled"
                 }
-                // Case 2: If no suggested substances, check for the last visit
-                else -> getLastVisitType(participantVisits, allSubstancesConfig, visitTypesOrdered) ?: ""
+            } else {
+                // If there is no last visit, determine the visit type based on the visit date
+                val weeksNumberBetweenBirthdateAndVisit = DateUtil.getFullWeeksBetweenDates(participantBirthDate, visitDate)
+                findVisitTypeByChildAge(weeksNumberBetweenBirthdateAndVisit, allSubstancesConfig)
             }
+        }
+
+        private fun getVisitTypeFromLastVisit(
+            lastVisit: VisitDetail,
+            allSubstancesConfig: List<Substance>
+        ): String {
+            val substanceNames = extractSubstanceNamesFromObservations(lastVisit)
+            return substanceNames.mapNotNull { substanceName ->
+                allSubstancesConfig.find { it.conceptName == substanceName }?.visitType
+            }.maxByOrNull { visitType ->
+                getVisitTypesInOrder(allSubstancesConfig).indexOf(visitType)
+            } ?: ""
         }
 
         fun getVisitTypesInOrder(substances: List<Substance>): List<String> {

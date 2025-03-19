@@ -1,4 +1,4 @@
-package com.jnj.vaccinetracker.vaccinesoverview.adapters
+package com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
