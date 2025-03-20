@@ -133,7 +133,7 @@
     <string name="participant_registration_label_confirm_photo_or_try_again">Would you like to submit this photo or try again?</string>
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
     <string name="participant_registration_details_description">Please provide new Child\'s details below:</string>
-    <string name="participant_registration_details_action_update_participant" translatable="false">Update Details</string>
+    <string name="participant_registration_details_action_update_participant" translatable="false">Update Child Details</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
     <string name="participant_registration_load_camera">Load a Camera</string>
@@ -437,7 +437,7 @@
     <string name="visit_z_score_weight_hint">Fill weight first</string>
     <string name="visit_z_score_weight_for_height_hint">Fill weight and height first</string>
     <string name="participant_update">Child Update</string>
-    <string name="participant_matching_btn_edit_participant">Update Details</string>
+    <string name="participant_matching_btn_edit_participant">Update Child Details</string>
     <string name="participant_update_label_success">Child successfully updated</string>
     <string name="vaccine_capture_date_label">Capture Date</string>
     <string name="visit_schedule_next_visit_schedule_new_visit_button_label">Save Visit</string>
