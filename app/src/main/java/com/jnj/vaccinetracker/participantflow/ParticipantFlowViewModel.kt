@@ -209,14 +209,14 @@ class ParticipantFlowViewModel @Inject constructor(
                     WorkflowItem.PHONE.mandatory = step.mandatory
                     workflowItems.add(WorkflowItem.PHONE)
                 }
-                WorkflowItem.IRIS_SCAN.type -> {
-                    WorkflowItem.IRIS_SCAN.mandatory = step.mandatory
-                    workflowItems.add(WorkflowItem.IRIS_SCAN)
+                WorkflowItem.MOTHER_NAME.type -> {
+                    WorkflowItem.MOTHER_NAME.mandatory = step.mandatory
+                    workflowItems.add(WorkflowItem.MOTHER_NAME)
                 }
             }
         }
-        workflowItems.add(WorkflowItem.MATCHING)
-        workflowItems.add(WorkflowItem.VISIT)
+//        workflowItems.add(WorkflowItem.MATCHING)
+//        workflowItems.add(WorkflowItem.VISIT)
 
         return workflowItems
     }
@@ -259,10 +259,13 @@ class ParticipantFlowViewModel @Inject constructor(
             this.isManualSetParticipantId.set(false)
         } else {
             this.isManualSetParticipantId.set(manual)
-
         }
 
-        navigateForward()
+        if (!participantId.isNullOrEmpty()) {
+            navigateToMatchChildScreen()
+        } else {
+            navigateForward()
+        }
     }
 
     /**
@@ -272,12 +275,20 @@ class ParticipantFlowViewModel @Inject constructor(
     fun confirmPhone(countryCode: String?, phoneNumber: String?) {
         this.phoneCountryCode.set(countryCode)
         this.participantPhone.set(phoneNumber)
-        navigateForward()
+        if (!phoneNumber.isNullOrEmpty()) {
+            navigateToMatchChildScreen()
+        } else {
+            navigateForward()
+        }
     }
 
     fun confirmMotherName(motherName: String?) {
         this.motherName.set(motherName)
-        navigateForward()
+        if (!motherName.isNullOrEmpty()) {
+            navigateToMatchChildScreen()
+        } else {
+            navigateForward()
+        }
     }
 
     /**
@@ -351,6 +362,10 @@ class ParticipantFlowViewModel @Inject constructor(
         return false
     }
 
+    private fun navigateToMatchChildScreen() {
+        currentScreen.set(Screen.PARTICIPANT_MATCHING)
+    }
+
     fun onStartAdverseEffects() {
         navigateForward()
     }
@@ -396,7 +411,7 @@ class ParticipantFlowViewModel @Inject constructor(
 
     enum class Screen(@StringRes val title: Int) : Parcelable {
         ADD_OR_SEARCH_PARTICIPANT(R.string.match_or_register_patient_intro_title),
-        INTRO(R.string.match_or_register_patient_intro_title),
+        INTRO(R.string.complete_return_visit_title),
         PARTICIPANT_ID(R.string.participant_flow_child_number_title),
         PHONE(R.string.participant_flow_phone_title),
         MOTHER_NAME(R.string.participant_flow_mother_name_page_title),

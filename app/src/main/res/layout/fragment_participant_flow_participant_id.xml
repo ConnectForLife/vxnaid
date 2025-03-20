@@ -17,54 +17,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/label_intro"
-            style="@style/CustomAutoSizeText"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/participant_flow_participant_id_description"
-            android:textAppearance="@style/DescriptionText"
-            app:layout_constraintEnd_toStartOf="@+id/img_id_card"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/img_id_card"
-            android:layout_width="107dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="32dp"
-            android:adjustViewBounds="false"
-            android:cropToPadding="false"
-            android:scaleType="fitStart"
-            app:layout_constraintBottom_toBottomOf="@+id/label_intro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/label_intro"
-            app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/ic_id_card" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/btn_skip"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_intro">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/textView_manualIDSubtitle"
                 style="@style/CustomAutoSizeText"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginTop="32dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:text="@string/participant_flow_participant_id_label_manual_entry"
-                android:textAppearance="@style/ScreenTitle"/>
+                android:textAppearance="@style/ScreenTitle" />
 
             <EditText
                 android:id="@+id/edit_id_number"
@@ -88,8 +62,8 @@
                 android:layout_marginTop="32dp"
                 android:gravity="center_horizontal"
                 android:text="@string/participant_flow_participant_id_label_or"
-                android:textSize="24sp"
-                android:textColor="@color/colorTextOnLight"/>
+                android:textColor="@color/colorTextOnLight"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/textView_QRScannerSubtitle"
@@ -99,7 +73,7 @@
                 android:layout_marginTop="32dp"
                 android:layout_weight="0"
                 android:text="@string/participant_flow_participant_id_label_scan_code"
-                android:textAppearance="@style/ScreenTitle"/>
+                android:textAppearance="@style/ScreenTitle" />
 
             <ImageButton
                 android:id="@+id/btn_scan_code"
