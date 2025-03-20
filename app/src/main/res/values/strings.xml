@@ -122,9 +122,9 @@
     <string name="scan_barcode_permission_message">To be able to scan barcodes, you will need to give access to your camera.</string>
     <string name="scan_barcode_grant_permission">Grant permission</string>
     <string name="participant_matching_msg_no_iris_license">No iris license could be obtained, cannot perform matching.</string>
-    <string name="participant_matching_description">Please select matching Child or register a new Child:</string>
+    <string name="participant_matching_description">Please select a matching Child</string>
     <string name="participant_matching_btn_new_participant">Register a new child</string>
-    <string name="participant_matching_btn_match_selected">Match selected Child</string>
+    <string name="participant_matching_btn_match_selected">Vaccinate Child</string>
     <string name="participant_matching_label_no_results_this_site">No match found within your site.</string>
     <string name="participant_matching_label_other_results">The following matches were found outside your site:</string>
     <string name="participant_matching_label_amount_of_results">Total matches: %d</string>
@@ -134,7 +134,7 @@
     <string name="participant_registration_label_confirm_photo_or_try_again">Would you like to submit this photo or try again?</string>
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
     <string name="participant_registration_details_description">Please provide new Child\'s details below:</string>
-    <string name="participant_registration_details_action_update_participant">Update Child</string>
+    <string name="participant_registration_details_action_update_participant" translatable="false">Update Child Details</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
     <string name="participant_registration_load_camera">Load a Camera</string>
@@ -438,7 +438,7 @@
     <string name="visit_z_score_weight_hint">Fill weight first</string>
     <string name="visit_z_score_weight_for_height_hint">Fill weight and height first</string>
     <string name="participant_update">Child Update</string>
-    <string name="participant_matching_btn_edit_participant">Update Child</string>
+    <string name="participant_matching_btn_edit_participant">Update Child Details</string>
     <string name="participant_update_label_success">Child successfully updated</string>
     <string name="vaccine_capture_date_label">Capture Date</string>
     <string name="visit_schedule_next_visit_schedule_new_visit_button_label">Save Visit</string>
