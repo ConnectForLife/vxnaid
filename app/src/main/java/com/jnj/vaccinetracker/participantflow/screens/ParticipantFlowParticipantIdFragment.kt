@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
@@ -53,8 +54,8 @@ class ParticipantFlowParticipantIdFragment : BaseFragment() {
         binding.btnScanCode.setOnClickListener {
             startActivityForResult(ScanBarcodeActivity.create(requireContext(),ScanBarcodeActivity.PARTICIPANT), REQ_BARCODE)
         }
-        binding.btnSkip.setOnClickListener {
-            flowViewModel.confirmParticipantId(null, manual = false)
+        binding.btnBack.setOnClickListener {
+            navigateToFragment(ParticipantFlowIntroFragment())
         }
         binding.btnSubmit.setOnClickListener {
             val participantId = if (viewModel.canSubmit.get()) binding.editIdNumber.text.toString() else null
@@ -84,4 +85,10 @@ class ParticipantFlowParticipantIdFragment : BaseFragment() {
         }
     }
 
+    private fun navigateToFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 }

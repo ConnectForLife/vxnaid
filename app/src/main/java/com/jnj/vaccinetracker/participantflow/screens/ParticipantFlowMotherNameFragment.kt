@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.jnj.vaccinetracker.R
@@ -29,8 +30,8 @@ class ParticipantFlowMotherNameFragment : BaseFragment() {
             viewModel.validateInput(it.toString())
         }
 
-        binding.btnSkip.setOnClickListener {
-            flowViewModel.confirmMotherName(null)
+        binding.btnBack.setOnClickListener {
+            navigateToFragment(ParticipantFlowIntroFragment())
         }
 
         binding.btnSubmit.setOnClickListener {
@@ -39,5 +40,12 @@ class ParticipantFlowMotherNameFragment : BaseFragment() {
         }
 
         return binding.root
+    }
+
+    private fun navigateToFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

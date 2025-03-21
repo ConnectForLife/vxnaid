@@ -7,6 +7,7 @@
     <string name="general_label_log_out">Log out</string>
     <string name="general_label_retry">Retry</string>
     <string name="general_label_skip">Skip</string>
+    <string name="general_label_back" translatable="false">Back</string>
     <string name="general_label_submit">Submit</string>
     <string name="general_label_cancel">Cancel</string>
     <string name="general_label_confirm">Confirm</string>
