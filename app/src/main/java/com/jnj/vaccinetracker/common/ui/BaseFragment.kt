@@ -39,11 +39,11 @@ abstract class BaseFragment : DaggerFragment(), ResourcesWrapper, MvvmView, UiFl
 
     private fun startObservingWhenStarted() {
         viewLifecycleOwnerLiveData.observe(
-            this, { lifecycleOwner ->
-                if (lifecycleOwner != null)
-                    observeViewModel(lifecycleOwner)
-            }
-        )
+            this
+        ) { lifecycleOwner ->
+            if (lifecycleOwner != null)
+                observeViewModel(lifecycleOwner)
+        }
     }
 
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
@@ -53,4 +53,5 @@ abstract class BaseFragment : DaggerFragment(), ResourcesWrapper, MvvmView, UiFl
     fun displayValidationErrorDialog(errorList: List<String>) {
         ValidationErrorDialog.create(errorList).show(childFragmentManager, TAG_VALIDATION_ERROR_DIALOG)
     }
+
 }
