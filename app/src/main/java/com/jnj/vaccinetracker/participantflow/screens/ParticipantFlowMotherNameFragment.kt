@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -38,7 +39,7 @@ class ParticipantFlowMotherNameFragment : BaseFragment() {
             val motherName = if (viewModel.canSubmit.get()) binding.editTextMotherName.text.toString() else null
             flowViewModel.confirmMotherName(motherName)
         }
-
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return binding.root
     }
 

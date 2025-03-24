@@ -61,7 +61,7 @@ class ParticipantFlowParticipantIdFragment : BaseFragment() {
             val participantId = if (viewModel.canSubmit.get()) binding.editIdNumber.text.toString() else null
             flowViewModel.confirmParticipantId(participantId, manual = true)
         }
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return binding.root
     }
 

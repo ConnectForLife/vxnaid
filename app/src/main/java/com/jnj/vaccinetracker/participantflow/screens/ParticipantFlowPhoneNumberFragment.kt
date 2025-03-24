@@ -55,7 +55,7 @@ class ParticipantFlowPhoneNumberFragment : BaseFragment(), ParticipantFlowNoTele
                 viewModel.setPrefCountryCode(countryCode.toString())
             }
         }
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return binding.root
     }
 
