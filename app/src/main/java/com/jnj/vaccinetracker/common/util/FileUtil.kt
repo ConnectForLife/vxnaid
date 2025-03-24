@@ -7,10 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.FileProvider
 import com.jnj.vaccinetracker.R
 import java.io.File
 import java.io.OutputStream
@@ -58,7 +56,7 @@ class FileUtil {
                         // Use the original MediaStore URI
                         openFile(context, uri, mimeType)
                     } else {
-                        Toast.makeText(context, R.string.saved_file_but_not_found, Toast.LENGTH_LONG)
+                        Toast.makeText(context, R.string.File_doesnot_exist, Toast.LENGTH_LONG)
                             .show()
                     }
                 } catch (e: Exception) {
@@ -86,15 +84,6 @@ class FileUtil {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
 
-                if (intent.resolveActivity(context.packageManager) == null) {
-                    intent = Intent(Intent.ACTION_VIEW).apply {
-                        setDataAndType(uri, mimeType)
-                        setPackage("com.google.android.apps.docs")
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                }
-
                 if (intent.resolveActivity(context.packageManager) != null) {
                     context.startActivity(intent)
                 } else {
@@ -108,7 +97,7 @@ class FileUtil {
                     context.startActivity(chooser)
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, R.string.saved_file_but_not_found, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, R.string.File_doesnot_exist, Toast.LENGTH_LONG).show()
             }
         }
     }
