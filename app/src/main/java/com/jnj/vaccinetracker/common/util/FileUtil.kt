@@ -19,11 +19,7 @@ import java.io.OutputStream
 class FileUtil {
 
     companion object {
-        fun exportToFile(
-            context: Context,
-            fileName: String,
-            mimeType: String,
-            contentWriter: (OutputStream) -> Unit
+        fun exportToFile(context: Context, fileName: String, mimeType: String, contentWriter: (OutputStream) -> Unit
         ) {
             val resolver = context.contentResolver
 
@@ -53,22 +49,19 @@ class FileUtil {
                             context.getString(R.string.visits_overview_saving_file_success_message),
                             Toast.LENGTH_LONG
                         ).show()
-
                         // Grant persistent read permission
                         context.grantUriPermission(
                             context.packageName,
                             uri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION
                         )
-
                         // Use the original MediaStore URI
                         openFile(context, uri, mimeType)
                     } else {
-                        Toast.makeText(context, "File saved but not found", Toast.LENGTH_LONG)
+                        Toast.makeText(context, R.string.saved_file_but_not_found, Toast.LENGTH_LONG)
                             .show()
                     }
                 } catch (e: Exception) {
-                    Log.e("ExportFile", "Error saving file", e)
                     Toast.makeText(
                         context,
                         context.getString(R.string.visits_overview_saving_file_failure_message),
@@ -115,7 +108,7 @@ class FileUtil {
                     context.startActivity(chooser)
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Error opening file", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.saved_file_but_not_found, Toast.LENGTH_LONG).show()
             }
         }
     }

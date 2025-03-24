@@ -486,6 +486,8 @@
     <string name="visits_overview_download_excel_button_label">Download Excel</string>
     <string name="visits_overview_download_csv_button_label">Download CSV</string>
     <string name="visits_overview_saving_file_success_message">File saved in Downloads directory</string>
+    <string name="saved_file_but_not_found">File saved but not found</string>
+
     <string name="visits_overview_saving_file_failure_message">Something went wrong while saving file</string>
     <string name="visits_overview_no_available_app_message">No application available to open this file</string>
     <string name="visits_overview_failed_to_open_file_message">Failed to open the file</string>
