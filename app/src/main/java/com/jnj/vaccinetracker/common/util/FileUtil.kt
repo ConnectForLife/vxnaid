@@ -53,7 +53,7 @@ class FileUtil {
                         )
                         openFile(context, uri, mimeType)
                     } else {
-                        Toast.makeText(context, R.string.File_doesnot_exist, Toast.LENGTH_LONG)
+                        Toast.makeText(context, R.string.file_does_not_exist, Toast.LENGTH_LONG)
                             .show()
                     }
                 } catch (e: Exception) {
@@ -94,7 +94,7 @@ class FileUtil {
                     context.startActivity(chooser)
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, R.string.File_does_not_exist, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, R.string.file_does_not_exist, Toast.LENGTH_LONG).show()
             }
         }
     }
