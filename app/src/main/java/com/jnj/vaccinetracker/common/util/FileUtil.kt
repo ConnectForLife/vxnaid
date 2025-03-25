@@ -35,7 +35,6 @@ class FileUtil {
                         outputStream.flush()
                     }
 
-                    // Verify file exists
                     val file = File(
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                         fileName
@@ -47,13 +46,11 @@ class FileUtil {
                             context.getString(R.string.visits_overview_saving_file_success_message),
                             Toast.LENGTH_LONG
                         ).show()
-                        // Grant persistent read permission
                         context.grantUriPermission(
                             context.packageName,
                             uri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION
                         )
-                        // Use the original MediaStore URI
                         openFile(context, uri, mimeType)
                     } else {
                         Toast.makeText(context, R.string.File_doesnot_exist, Toast.LENGTH_LONG)
@@ -77,7 +74,7 @@ class FileUtil {
 
         private fun openFile(context: Context, uri: Uri, mimeType: String) {
             try {
-                var intent = Intent(Intent.ACTION_VIEW).apply {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, mimeType)
                     setPackage("com.microsoft.office.excel")
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -97,7 +94,7 @@ class FileUtil {
                     context.startActivity(chooser)
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, R.string.File_doesnot_exist, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, R.string.File_does_not_exist, Toast.LENGTH_LONG).show()
             }
         }
     }
