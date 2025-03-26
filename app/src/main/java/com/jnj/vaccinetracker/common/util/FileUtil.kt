@@ -7,17 +7,18 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.jnj.vaccinetracker.R
+import java.io.File
 import java.io.OutputStream
 
 @RequiresApi(Build.VERSION_CODES.Q)
 class FileUtil {
 
     companion object {
-        fun exportToFile(context: Context, fileName: String, mimeType: String, contentWriter: (OutputStream) -> Unit) {
+        fun exportToFile(context: Context, fileName: String, mimeType: String, contentWriter: (OutputStream) -> Unit
+        ) {
             val resolver = context.contentResolver
 
             val contentValues = ContentValues().apply {
@@ -31,35 +32,70 @@ class FileUtil {
                 try {
                     resolver.openOutputStream(uri)?.use { outputStream ->
                         contentWriter(outputStream)
+                        outputStream.flush()
                     }
-                    Toast.makeText(context, context.getString(R.string.visits_overview_saving_file_success_message), Toast.LENGTH_LONG).show()
-                    openFile(context, uri, mimeType)
+
+                    val file = File(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                        fileName
+                    )
+
+                    if (file.exists()) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.visits_overview_saving_file_success_message),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        context.grantUriPermission(
+                            context.packageName,
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+                        openFile(context, uri, mimeType)
+                    } else {
+                        Toast.makeText(context, R.string.file_does_not_exist, Toast.LENGTH_LONG)
+                            .show()
+                    }
                 } catch (e: Exception) {
-                    Log.e("ExportFile", "Error saving file", e)
-                    Toast.makeText(context, context.getString(R.string.visits_overview_saving_file_failure_message), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.visits_overview_saving_file_failure_message),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             } else {
-                Toast.makeText(context, context.getString(R.string.visits_overview_saving_file_failure_message), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.visits_overview_saving_file_failure_message),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
-        fun openFile(context: Context, uri: Uri, mimeType: String) {
+        private fun openFile(context: Context, uri: Uri, mimeType: String) {
             try {
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, mimeType)
+                    setPackage("com.microsoft.office.excel")
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
 
                 if (intent.resolveActivity(context.packageManager) != null) {
                     context.startActivity(intent)
                 } else {
-                    Toast.makeText(context, context.getString(R.string.visits_overview_no_available_app_message), Toast.LENGTH_LONG).show()
+                    val chooser = Intent.createChooser(
+                        Intent(Intent.ACTION_VIEW).apply {
+                            setDataAndType(uri, mimeType)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        },
+                        "Open with"
+                    )
+                    context.startActivity(chooser)
                 }
             } catch (e: Exception) {
-                Log.e("OpenFile", "Failed to open file", e)
-                Toast.makeText(context, context.getString(R.string.visits_overview_failed_to_open_file_message), Toast.LENGTH_LONG).show()
+                Toast.makeText(context, R.string.file_does_not_exist, Toast.LENGTH_LONG).show()
             }
         }
     }
-
 }
