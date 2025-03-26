@@ -71,12 +71,12 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_skip"
+            android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorTextOnLight"
             android:textAppearance="@style/ButtonTextStyling"
-            android:text="@string/general_label_skip"
+            android:text="@string/general_label_back"
             android:textColor="@color/colorTextOnSecondary"
             android:textSize="14sp"
             android:visibility="@{viewModel.canSkip ? View.VISIBLE : View.GONE}"

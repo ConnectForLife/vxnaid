@@ -7,6 +7,7 @@
     <string name="general_label_log_out">Log out</string>
     <string name="general_label_retry">Retry</string>
     <string name="general_label_skip">Skip</string>
+    <string name="general_label_back" translatable="false">Back</string>
     <string name="general_label_submit">Submit</string>
     <string name="general_label_cancel">Cancel</string>
     <string name="general_label_confirm">Confirm</string>
@@ -72,15 +73,15 @@
     <string name="site_selection_btn_submit">Submit</string>
     <string name="site_selection_error_no_site_selected">Please select a site</string>
     <string name="match_or_register_patient_welcome">Welcome operator %s, you are currently at site %s</string>
-    <string name="match_or_register_patient_step_id_card">Enter Child ID or Scan QR</string>
-    <string name="match_or_register_patient_step_phone">Enter a phone number</string>
+    <string name="match_or_register_patient_step_id_card">Child ID or QR-Code</string>
+    <string name="match_or_register_patient_step_phone">Phone number</string>
     <string name="match_or_register_patient_step_iris_scan">Iris scan the Child\'s eye(s)</string>
     <string name="match_or_register_patient_step_identify">Enter Mother\'s Name</string>
     <string name="match_or_register_patient_step_visit">Follow-up on Child\'s visits</string>
     <string name="match_or_register_patient_step_index">Option %s</string>
     <string name="match_or_register_patient_btn_continue">Complete Return Visit </string>
     <string name="match_or_register_patient_intro">Please select a child identification option</string>
-    <string name="complete_return_visit_title" translatable="false">Return Visit Guide</string>
+    <string name="complete_return_visit_title" translatable="false">Return To Visit Guide</string>
     <string name="match_or_register_patient_intro_title">Home Page</string>
     <string name="iris_scan_left_title">Iris scan - Left eye</string>
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
@@ -99,7 +100,7 @@
     <string name="participant_flow_phone_description">Please enter a mobile phone number</string>
     <string name="participant_flow_no_phone_description">Please confirm that the Child has no mobile phone. This will significantly increase the matching time.</string>
     <string name="participant_flow_mother_name_page_title">Mother\'s name</string>
-    <string name="participant_flow_mother_name_label" translatable="false">Enter mother\'s name</string>
+    <string name="participant_flow_mother_name_label" translatable="false">Mother\'s name</string>
     <string name="participant_flow_mother_name_hint" translatable="false">You can search using either the mother\'s first or last name</string>
     <string name="iris_scan_icon_description">Icon of iris scan</string>
     <string name="iris_scan_intro_right">Please scan the Child\'s RIGHT eye</string>

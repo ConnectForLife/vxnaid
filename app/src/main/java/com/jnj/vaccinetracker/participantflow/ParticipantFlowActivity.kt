@@ -115,9 +115,20 @@ class ParticipantFlowActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (!viewModel.navigateBack()) {
+        if (viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PARTICIPANT_MATCHING ||
+            viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PARTICIPANT_ID ||
+            viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PHONE ||
+            viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.MOTHER_NAME) {
+            navigateToHomePage()
+        } else if (!viewModel.navigateBack()) {
             logOut()
         }
+    }
+
+    private fun navigateToHomePage() {
+        viewModel.currentScreen.value = ParticipantFlowViewModel.Screen.INTRO
+        viewModel.navigationDirection = NavigationDirection.BACKWARD
+        navigateToScreen(viewModel.currentScreen.value, viewModel.navigationDirection)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

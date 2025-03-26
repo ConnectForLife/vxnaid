@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -75,7 +76,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         binding.btnReportAdverseEffects.setOnClickListener {
             viewModel.getSelectedParticipantSummary()?.let {startParticipantReportAdverseEffects(it)}
         }
-
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         return binding.root
     }
 

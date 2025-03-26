@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
@@ -43,8 +44,8 @@ class ParticipantFlowPhoneNumberFragment : BaseFragment(), ParticipantFlowNoTele
             viewModel.validateInput(it?.toString())
         }
 
-        binding.btnSkip.setOnClickListener {
-            viewModel.onSkipButtonClick()
+        binding.btnBack.setOnClickListener {
+            navigateToFragment(ParticipantFlowIntroFragment())
         }
         binding.btnSubmit.setOnClickListener {
             if (viewModel.canSubmit.get()) {
@@ -54,7 +55,7 @@ class ParticipantFlowPhoneNumberFragment : BaseFragment(), ParticipantFlowNoTele
                 viewModel.setPrefCountryCode(countryCode.toString())
             }
         }
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return binding.root
     }
 
@@ -98,4 +99,10 @@ class ParticipantFlowPhoneNumberFragment : BaseFragment(), ParticipantFlowNoTele
         viewModel.onConfirmNoPhoneClick()
     }
 
+    private fun navigateToFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 }
