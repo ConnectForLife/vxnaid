@@ -1,6 +1,5 @@
 package com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.screens
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -494,5 +493,4 @@ class VaccinesOverviewFragment : BaseFragment(),
             )
         }"
     }
-
 }

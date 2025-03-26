@@ -39,11 +39,11 @@ abstract class BaseFragment : DaggerFragment(), ResourcesWrapper, MvvmView, UiFl
 
     private fun startObservingWhenStarted() {
         viewLifecycleOwnerLiveData.observe(
-            this
-        ) { lifecycleOwner ->
-            if (lifecycleOwner != null)
-                observeViewModel(lifecycleOwner)
-        }
+            this, { lifecycleOwner ->
+                if (lifecycleOwner != null)
+                    observeViewModel(lifecycleOwner)
+            }
+        )
     }
 
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
