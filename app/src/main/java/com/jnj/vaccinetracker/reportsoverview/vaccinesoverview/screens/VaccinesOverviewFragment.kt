@@ -1,16 +1,19 @@
 package com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.screens
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -69,13 +72,21 @@ class VaccinesOverviewFragment : BaseFragment(),
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_vaccines_overview, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
 
+        selectedLocation = Constants.ALL_STRING
+        selectedAgeGroup = Constants.ALL_STRING
+
         setupRecyclerView()
-        setupFilterFields()
         initializeDefaultDates()
+        setupFilterFields()
         loadVaccinesData()
         setupObservers()
         setupDownloadButtons()
 
+        vaccinesOverviewViewModel.vaccineDTOs.observe(viewLifecycleOwner) { data ->
+            if (data != null) {
+                applyFilters(data)
+            }
+        }
         return binding.root
     }
 
@@ -170,6 +181,7 @@ class VaccinesOverviewFragment : BaseFragment(),
         applyFilters()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupVaccinesDropdown() {
         lifecycleScope.launch {
             vaccinesOverviewViewModel.substancesConfig.value =
@@ -193,6 +205,12 @@ class VaccinesOverviewFragment : BaseFragment(),
                 vaccineConceptNames,
                 selectedVaccineConceptNames
             )
+
+            if(selectedVaccineConceptNames.isEmpty()) {
+                selectedVaccineConceptNames.addAll(vaccineConceptNames)
+                vaccinesAdapter.isSelectAllChecked = true
+            }
+
             binding.autoCompleteVaccines.setAdapter(vaccinesAdapter)
             binding.autoCompleteVaccines.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
 
@@ -222,7 +240,6 @@ class VaccinesOverviewFragment : BaseFragment(),
                     selectedVaccineConceptNames.filter { it.isNotEmpty() }
                         .joinToString(", ") { findVaccineLabel(it) }
                 }
-
                 binding.labelSelectedVaccines.text = "${getString(R.string.selected_vaccines_label)} $selectedText"
 
                 binding.autoCompleteVaccines.setText(selectedText, false)
@@ -241,6 +258,7 @@ class VaccinesOverviewFragment : BaseFragment(),
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupLocationsDropdown() {
         val locations = listOf(
             Constants.ALL_STRING,
@@ -248,14 +266,19 @@ class VaccinesOverviewFragment : BaseFragment(),
             Constants.VISIT_PLACE_OUTREACH,
             Constants.VISIT_PLACE_SCHOOL
         )
+
         val locationsAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, locations)
         binding.autoCompleteLocations.setAdapter(locationsAdapter)
-
         binding.autoCompleteLocations.setText(Constants.ALL_STRING, false)
 
         binding.autoCompleteLocations.setOnItemClickListener { _, _, position, _ ->
             selectedLocation = locations[position]
             applyFilters()
+
+            if (selectedLocation != Constants.ALL_STRING) {
+                binding.autoCompleteVaccines.setText("")
+                selectedVaccineConceptNames.clear()
+            }
         }
     }
 
@@ -303,35 +326,93 @@ class VaccinesOverviewFragment : BaseFragment(),
         }
     }
 
+
+    @SuppressLint("SetTextI18n")
     private fun applyFilters(
-        vaccinesData: List<VaccineObservationDTO> = vaccinesOverviewViewModel.vaccineDTOs.value
-            ?: emptyList()
+        vaccinesData: List<VaccineObservationDTO> = vaccinesOverviewViewModel.vaccineDTOs.value ?: emptyList()
     ) {
+        val isStatic = { loc: String? -> loc.equals("static", ignoreCase = true) }
+        val isOutreach = { loc: String? ->
+            loc?.let {
+                it.equals("outreach", ignoreCase = true) ||
+                        it.equals("outreach immunization", ignoreCase = true) ||
+                        it.equals("outreach session", ignoreCase = true)
+            } ?: false
+        }
+        val isSchool = { loc: String? -> loc.equals("school", ignoreCase = true) }
+
         val filteredData = vaccinesData.filter { observation ->
+
             val dateMatches = if (observation.administerDate.isNotEmpty()) {
-                (selectedStartDate == null || DateUtil.convertStringToDate(
+                val observationDate = DateUtil.convertStringToDate(
                     observation.administerDate,
                     DateFormat.FORMAT_DATE.toString()
-                )!! >= selectedStartDate?.toDate()) &&
-                        (selectedEndDate == null || DateUtil.convertStringToDate(
-                            observation.administerDate,
-                            DateFormat.FORMAT_DATE.toString()
-                        )!! <= selectedEndDate?.toDate())
-            } else {
-                false
+                ) ?: return@filter false
+
+                (selectedStartDate == null || observationDate >= selectedStartDate!!.toDate()) &&
+                        (selectedEndDate == null || observationDate <= selectedEndDate!!.toDate())
+            } else false
+
+            val vaccineMatches = when {
+                selectedVaccineConceptNames.isEmpty() -> true
+                selectedVaccineConceptNames.contains(Constants.ALL_STRING) -> true
+                else -> selectedVaccineConceptNames.contains(observation.vaccineName)
             }
 
-            val vaccineMatches = selectedVaccineConceptNames.contains(observation.vaccineName)
-            val locationMatches =
-                selectedLocation == Constants.ALL_STRING|| observation.visitLocation == selectedLocation
-            val ageGroupMatches =
-                selectedAgeGroup == Constants.ALL_STRING || observation.ageGroup == selectedAgeGroup
+            val locationMatches = when (selectedLocation) {
+                Constants.ALL_STRING -> true
+                Constants.VISIT_PLACE_STATIC -> isStatic(observation.visitLocation)
+                Constants.VISIT_PLACE_OUTREACH -> isOutreach(observation.visitLocation)
+                Constants.VISIT_PLACE_SCHOOL -> isSchool(observation.visitLocation)
+                else -> false
+            }
 
+            val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
+                    observation.ageGroup == selectedAgeGroup
             dateMatches && vaccineMatches && locationMatches && ageGroupMatches
         }
 
-        val groupedVaccinesData = groupAndCount(filteredData)
+        val staticCount = filteredData.count { isStatic(it.visitLocation) }
+        val outreachCount = filteredData.count { isOutreach(it.visitLocation) }
+        val schoolCount = filteredData.count { isSchool(it.visitLocation) }
+
+        val groupedVaccinesData = groupAndCount(
+            if (selectedLocation == Constants.ALL_STRING) filteredData
+            else filteredData.filter {
+                when (selectedLocation) {
+                    Constants.VISIT_PLACE_STATIC -> isStatic(it.visitLocation)
+                    Constants.VISIT_PLACE_OUTREACH -> isOutreach(it.visitLocation)
+                    Constants.VISIT_PLACE_SCHOOL -> isSchool(it.visitLocation)
+                    else -> true
+                }
+            }
+        )
+
         vaccinesOverviewAdapter.submitList(groupedVaccinesData)
+
+        val displayTotal = when (selectedLocation) {
+            Constants.ALL_STRING -> filteredData.size
+            Constants.VISIT_PLACE_STATIC -> staticCount
+            Constants.VISIT_PLACE_OUTREACH -> outreachCount
+            Constants.VISIT_PLACE_SCHOOL -> schoolCount
+            else -> filteredData.size
+        }
+        binding.headerVaccineTotal.text = "Total: $displayTotal"
+
+        when {
+            selectedLocation == Constants.VISIT_PLACE_OUTREACH && outreachCount == 0 -> {
+                Toast.makeText(
+                    context,
+                    if (vaccinesData.none { isOutreach(it.visitLocation) })
+                        getString(R.string.no_outreach_vaccines_in_system)
+                    else getString(R.string.no_outreach_vaccines_match_filters),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            filteredData.isEmpty() -> {
+                Toast.makeText(context, getString(R.string.no_vaccines_match_filters), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun groupAndCount(vaccineObservations: List<VaccineObservationDTO>): List<VaccinesOverviewDTO> {
