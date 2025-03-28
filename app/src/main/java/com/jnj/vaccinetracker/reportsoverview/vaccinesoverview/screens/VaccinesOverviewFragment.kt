@@ -206,7 +206,7 @@ class VaccinesOverviewFragment : BaseFragment(),
                 selectedVaccineConceptNames
             )
 
-            if(selectedVaccineConceptNames.isEmpty()) {
+            if (selectedVaccineConceptNames.isEmpty()) {
                 selectedVaccineConceptNames.addAll(vaccineConceptNames)
                 vaccinesAdapter.isSelectAllChecked = true
             }
@@ -274,11 +274,6 @@ class VaccinesOverviewFragment : BaseFragment(),
         binding.autoCompleteLocations.setOnItemClickListener { _, _, position, _ ->
             selectedLocation = locations[position]
             applyFilters()
-
-            if (selectedLocation != Constants.ALL_STRING) {
-                binding.autoCompleteVaccines.setText("")
-                selectedVaccineConceptNames.clear()
-            }
         }
     }
 
@@ -331,15 +326,9 @@ class VaccinesOverviewFragment : BaseFragment(),
     private fun applyFilters(
         vaccinesData: List<VaccineObservationDTO> = vaccinesOverviewViewModel.vaccineDTOs.value ?: emptyList()
     ) {
-        val isStatic = { loc: String? -> loc.equals("static", ignoreCase = true) }
-        val isOutreach = { loc: String? ->
-            loc?.let {
-                it.equals("outreach", ignoreCase = true) ||
-                        it.equals("outreach immunization", ignoreCase = true) ||
-                        it.equals("outreach session", ignoreCase = true)
-            } ?: false
-        }
-        val isSchool = { loc: String? -> loc.equals("school", ignoreCase = true) }
+        val isStatic = { loc: String? -> loc.equals(Constants.VISIT_PLACE_STATIC, ignoreCase = true) }
+        val isOutreach = { loc: String? -> loc?.equals(Constants.VISIT_PLACE_OUTREACH, ignoreCase = true) ?: false }
+        val isSchool = { loc: String? -> loc.equals(Constants.VISIT_PLACE_SCHOOL, ignoreCase = true) }
 
         val filteredData = vaccinesData.filter { observation ->
 
