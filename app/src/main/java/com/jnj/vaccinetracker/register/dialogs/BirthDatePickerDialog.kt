@@ -2,7 +2,6 @@ package com.jnj.vaccinetracker.register.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
@@ -29,8 +28,6 @@ class BirthDatePickerDialog(
                 month = datePicker.month + 1,
                 day = datePicker.dayOfMonth
             )
-
-            Log.d("BirthDatePicker", "Selected Date: $selectedDate")
 
             (parentFragment as? BirthDatePickerListener)?.onBirthDatePicked(selectedDate!!, false)
             dialog.dismiss()
