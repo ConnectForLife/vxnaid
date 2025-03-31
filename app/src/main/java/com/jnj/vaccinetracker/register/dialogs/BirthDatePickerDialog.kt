@@ -2,12 +2,12 @@ package com.jnj.vaccinetracker.register.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
 import com.jnj.vaccinetracker.R
 import com.soywiz.klock.DateTime
-import java.util.Calendar
 
 class BirthDatePickerDialog(
     private var selectedDate: DateTime? = null,
@@ -24,7 +24,14 @@ class BirthDatePickerDialog(
         setupDatePicker()
 
         btnOk.setOnClickListener {
-            selectedDate = DateTime(datePicker.year, datePicker.month + 1, datePicker.dayOfMonth)
+            selectedDate = DateTime.createAdjusted(
+                year = datePicker.year,
+                month = datePicker.month + 1,
+                day = datePicker.dayOfMonth
+            )
+
+            Log.d("BirthDatePicker", "Selected Date: $selectedDate")
+
             (parentFragment as? BirthDatePickerListener)?.onBirthDatePicked(selectedDate!!, false)
             dialog.dismiss()
         }
@@ -47,14 +54,11 @@ class BirthDatePickerDialog(
             datePicker.updateDate(it.yearInt, it.month1 - 1, it.dayOfMonth)
         }
 
-        val c = Calendar.getInstance()
-        datePicker.maxDate = c.timeInMillis
+        val today = DateTime.now()
+        datePicker.maxDate = today.unixMillisLong
 
         if (selectedDate == null) {
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-            datePicker.init(year, month, day, null)
+            datePicker.init(today.yearInt, today.month1 - 1, today.dayOfMonth, null)
         }
     }
 
