@@ -1,5 +1,7 @@
 package com.jnj.vaccinetracker.participantflow.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.mappers.toDomain
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -7,6 +9,7 @@ import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.models.IrisPosition
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.BiometricsTemplateBytes
+import com.jnj.vaccinetracker.common.domain.entities.BirthDate
 import com.jnj.vaccinetracker.common.domain.entities.ParticipantMatch
 import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.domain.usecases.GetAddressMasterDataOrderUseCase
@@ -27,6 +30,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 class ParticipantFlowMatchingViewModel @Inject constructor(
@@ -189,6 +197,7 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun mapResponseParticipantToAppParticipant(
         responseParticipants: List<ParticipantMatch>,
         locationUuid: String,
@@ -208,6 +217,18 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
             }
             val addressMasterDataOrder =
                 getAddressMasterDataOrderUseCase.getAddressMasterDataOrder(participant.address?.country, isUseDefaultAsAlternative = true, onlyDropDowns = false)
+
+            val calendar = Calendar.getInstance()
+            calendar.time = participant.birthDate.toDate()
+            val birthDate = LocalDateTime.of(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                calendar.get(Calendar.SECOND)
+            )
+
             if (locationUuid == participantLocationUuid) {
                 ParticipantItem(
                     participant = ParticipantUiModel(
@@ -215,9 +236,9 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                         participantId = participant.participantId,
                         irisMatchingScore = participant.matchingScore,
                         birthDateText = (if (participant.isBirthDateEstimated) {
-                           RegisterParticipantParticipantDetailsViewModel.calculateAgeFromDate(participant.birthDate.toDateTime())
+                            calculateAgeFromDate(birthDate)
                         } else {
-                            participant.birthDate.toDateTime().format(DateFormat.FORMAT_DATE)
+                            birthDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         }),
                         isBirthDateEstimated = participant.isBirthDateEstimated,
                         gender = participant.gender,
@@ -243,9 +264,9 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                         participantId = participant.participantId,
                         irisMatchingScore = participant.matchingScore,
                         birthDateText = (if (participant.isBirthDateEstimated) {
-                            RegisterParticipantParticipantDetailsViewModel.calculateAgeFromDate(participant.birthDate.toDateTime())
+                            calculateAgeFromDate(birthDate)
                         } else {
-                            participant.birthDate.toDateTime().format(DateFormat.FORMAT_DATE)
+                            birthDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         }),
                         isBirthDateEstimated = participant.isBirthDateEstimated,
                         gender = participant.gender,
@@ -262,6 +283,21 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun calculateAgeFromDate(birthDate: LocalDateTime): String {
+        val now = LocalDateTime.now()
+        val years = now.year - birthDate.year
+        val months = now.monthValue - birthDate.monthValue
+        val days = now.dayOfMonth - birthDate.dayOfMonth
+        return "$years years, $months months, $days days"
+    }
+
+    fun BirthDate.toDate(): Date {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day)
+        return calendar.time
     }
 
     private fun loadParticipantPicture(participantUUID: String?) {
@@ -286,32 +322,32 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
     }
 
     fun setSelectedParticipant(matchingListItem: MatchingListItem): ParticipantSummaryUiModel? {
-      if (matchingListItem is ParticipantItem) {
-          selectedParticipant.set(matchingListItem.participant)
-          selectedParticipantImage.set(matchingListItem.picture)
-          return ParticipantSummaryUiModel(
-              participantUuid = matchingListItem.participant.participantUUID!!,
-              participantId = matchingListItem.participant.participantId!!,
-              gender = matchingListItem.participant.gender!!,
-              birthDateText = matchingListItem.participant.birthDateText!!,
-              isBirthDateEstimated = matchingListItem.participant.isBirthDateEstimated!!,
-              vaccine = null,
-              participantPicture = matchingListItem.picture
-          )
-      } else if (matchingListItem is OtherSiteParticipantItem) {
-          selectedParticipant.set(matchingListItem.participant)
-          return ParticipantSummaryUiModel(
-              participantUuid = matchingListItem.participant.participantUUID!!,
-              participantId = matchingListItem.participant.participantId!!,
-              gender = matchingListItem.participant.gender!!,
-              birthDateText = matchingListItem.participant.birthDateText!!,
-              isBirthDateEstimated = matchingListItem.participant.isBirthDateEstimated!!,
-              vaccine = null,
-              participantPicture = null
-          )
-      } else {
-          return null
-      }
+        if (matchingListItem is ParticipantItem) {
+            selectedParticipant.set(matchingListItem.participant)
+            selectedParticipantImage.set(matchingListItem.picture)
+            return ParticipantSummaryUiModel(
+                participantUuid = matchingListItem.participant.participantUUID!!,
+                participantId = matchingListItem.participant.participantId!!,
+                gender = matchingListItem.participant.gender!!,
+                birthDateText = matchingListItem.participant.birthDateText!!,
+                isBirthDateEstimated = matchingListItem.participant.isBirthDateEstimated!!,
+                vaccine = null,
+                participantPicture = matchingListItem.picture
+            )
+        } else if (matchingListItem is OtherSiteParticipantItem) {
+            selectedParticipant.set(matchingListItem.participant)
+            return ParticipantSummaryUiModel(
+                participantUuid = matchingListItem.participant.participantUUID!!,
+                participantId = matchingListItem.participant.participantId!!,
+                gender = matchingListItem.participant.gender!!,
+                birthDateText = matchingListItem.participant.birthDateText!!,
+                isBirthDateEstimated = matchingListItem.participant.isBirthDateEstimated!!,
+                vaccine = null,
+                participantPicture = null
+            )
+        } else {
+            return null
+        }
     }
 
     fun getSelectedParticipantSummary(): ParticipantSummaryUiModel? {
