@@ -33,6 +33,7 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import java.time.ZoneId
 import java.util.Locale
 import javax.inject.Inject
 
@@ -204,15 +205,28 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         visits: List<VisitDataDTO> = visitsListViewModel.visitDTOs.value ?: emptyList()
     ) {
         val searchText = binding.searchBox.text.toString().lowercase(Locale.getDefault())
+
         val filteredVisits = visits.filter { visit ->
-            val dateMatches =
-                (selectedStartDate == null || visit.startDatetime >= selectedStartDate?.toDate()) &&
-                        (selectedEndDate == null || visit.startDatetime <= selectedEndDate?.toDate())
+            val visitDate = visit.startDatetime.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+
+            val startDate = selectedStartDate?.toDate()?.toInstant()
+                ?.atZone(ZoneId.systemDefault())
+                ?.toLocalDate()
+
+            val endDate = selectedEndDate?.toDate()?.toInstant()
+                ?.atZone(ZoneId.systemDefault())
+                ?.toLocalDate()
+
+            val dateMatches = (startDate == null || visitDate >= startDate) &&
+                    (endDate == null || visitDate <= endDate)
 
             val textSearchMatches =
                 visit.participant.participantId.lowercase(Locale.getDefault()).contains(searchText) ||
                         visit.participant.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
                         visit.participant.motherName.lowercase(Locale.getDefault()).contains(searchText)
+
             dateMatches && textSearchMatches
         }
 
