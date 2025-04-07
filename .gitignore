@@ -31,3 +31,22 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Android Studio specific files
+*.iws
+.idea/
+*.ipr
+*.iws
+*.bak
+*.orig
+*.swp
+
+# Kotlin specific files
+.kotlin/sessions/
+.kotlin/daemon/
+
+# MacOS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db
