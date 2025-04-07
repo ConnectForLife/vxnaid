@@ -64,6 +64,7 @@
     <string name="login_label_validation_no_visit_place">Please select visit place</string>
     <string name="login_label_validation_no_backend_url">Please enter a valid backend URL</string>
     <string name="dialog_login_title">Session expired</string>
+    <string name="error_empty_outreach_name" translatable="false">Outreach name cannot be empty</string>
     <string name="dialog_login_description">Your session has expired. Please provide operator password to logon again or terminate current session.</string>
     <string name="dialog_login_btn_terminate">Terminate session</string>
     <string name="dialog_login_btn_renew">Renew login</string>
@@ -521,4 +522,7 @@
     <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
     <string name="children_overview_client_birthdate_column_label">Birthdate</string>
     <string name="not_set">Not set</string>
+    <string name="outreach_name">Outreach Name</string>
+    <string name="submit">Submit</string>
+    <string name="enter_outreach_name">Enter Outreach Name</string>
 </resources>

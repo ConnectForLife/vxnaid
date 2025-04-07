@@ -8,17 +8,15 @@ import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogRefreshSessionBinding
 import com.jnj.vaccinetracker.splash.SplashActivity
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-/**
- * @author maartenvangiel
- * @version 1
- */
 class RefreshSessionDialog : BaseDialogFragment() {
 
     private val viewModel: LoginViewModel by viewModels { viewModelFactory }
@@ -29,7 +27,6 @@ class RefreshSessionDialog : BaseDialogFragment() {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, 0)
         isCancelable = false
-
     }
 
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
@@ -39,11 +36,10 @@ class RefreshSessionDialog : BaseDialogFragment() {
             }
         }
         viewModel.loginCompleted
-            .asFlow()
             .onEach {
                 dismissAllowingStateLoss()
             }
-            .launchIn(lifecycleOwner)
+            .launchIn(lifecycleOwner.lifecycleScope)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -65,6 +61,11 @@ class RefreshSessionDialog : BaseDialogFragment() {
             visitPlaces
         )
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
+        binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
+            if (visitPlaces[position] == Constants.VISIT_PLACE_OUTREACH) {
+                OutreachNameDialogFragment().show(childFragmentManager, "OutreachNameDialog")
+            }
+        }
         return binding.root
     }
 
@@ -72,8 +73,9 @@ class RefreshSessionDialog : BaseDialogFragment() {
         val username = binding.editTextUsername.text.toString()
         val password = binding.editTextPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
+        val outreachName = viewModel.outreachName.value ?: ""
 
-        viewModel.login(username, password, visitPlace)
+        viewModel.login(username, password, visitPlace, outreachName)
     }
 
     private fun logout() {
@@ -81,5 +83,4 @@ class RefreshSessionDialog : BaseDialogFragment() {
         startActivity(SplashActivity.create(requireContext()))
         requireActivity().finishAffinity()
     }
-
 }

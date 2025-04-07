@@ -2,14 +2,17 @@ package com.jnj.vaccinetracker.login
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.jnj.vaccinetracker.R
@@ -21,12 +24,9 @@ import com.jnj.vaccinetracker.databinding.ActivityLoginBinding
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.settings.SettingsDialog
 import com.jnj.vaccinetracker.update.UpdateDialog
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-/**
- * @author maartenvangiel
- * @version 1
- */
 class LoginActivity : BaseActivity() {
 
     companion object {
@@ -46,6 +46,7 @@ class LoginActivity : BaseActivity() {
 
     private lateinit var binding: ActivityLoginBinding
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
@@ -87,6 +88,11 @@ class LoginActivity : BaseActivity() {
             visitPlaces
         )
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
+        binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
+            if (visitPlaces[position] == Constants.VISIT_PLACE_OUTREACH) {
+                OutreachNameDialogFragment().show(supportFragmentManager, "OutreachNameDialog")
+            }
+        }
 
         binding.root.setOnClickListener { hideKeyboard() }
         binding.btnUpdate.setOnClickListener { showUpdateDialog() }
@@ -99,13 +105,13 @@ class LoginActivity : BaseActivity() {
     override val isAuthenticatedOperatorScreen: Boolean
         get() = false
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun observeViewModel(lifecycleOwner: LifecycleOwner) {
         viewModel.loginCompleted
-            .asFlow()
             .onEach {
                 onLoginCompleted()
             }
-            .launchIn(lifecycleOwner)
+            .launchIn(lifecycleOwner.lifecycleScope)
 
         viewModel.prefillUsername.observe(lifecycleOwner) { prefillUsername ->
             if (binding.editUsername.text.isEmpty()) {
@@ -144,10 +150,12 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
+        val outreachName = viewModel.outreachName.value ?: ""
         saveVisitPlaceToMemory(visitPlace)
-        viewModel.login(username, password, visitPlace)
+        viewModel.login(username, password, visitPlace, outreachName)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onLoginCompleted() {
         startActivity(ParticipantFlowActivity.create(this))
         finish()

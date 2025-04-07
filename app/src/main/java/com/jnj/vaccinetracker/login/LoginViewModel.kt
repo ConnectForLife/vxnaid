@@ -1,5 +1,7 @@
 package com.jnj.vaccinetracker.login
 
+
+import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.BuildConfig
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
@@ -15,6 +17,8 @@ import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -22,12 +26,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import javax.inject.Inject
 
-
-/**
- * @author maartenvangiel
- * @author druelens
- * @version 2
- */
 class LoginViewModel @Inject constructor(
     private val loginManager: LoginManager,
     private val userRepository: UserRepository,
@@ -48,8 +46,10 @@ class LoginViewModel @Inject constructor(
     val deviceName = mutableLiveData<String>()
     val latestVersion = mutableLiveBoolean(true)
     private val prefillBackendUrl = mutableLiveData<String>()
+    val outreachName = mutableLiveData<String>()
 
-    val loginCompleted = eventFlow<Unit>()
+    private val _loginCompleted = MutableSharedFlow<Unit>()
+    val loginCompleted: SharedFlow<Unit> = _loginCompleted
 
     fun init(isLoginActivity: Boolean) {
         initState()
@@ -79,7 +79,7 @@ class LoginViewModel @Inject constructor(
             val user = loginManager.login(username, password)
             userRepository.saveUser(user, dateNow())
             loading.set(false)
-            loginCompleted.tryEmit(Unit)
+            _loginCompleted.emit(Unit)
         } catch (ex: OperatorAuthenticationException) {
             val stringResource = when (ex.reason) {
                 OperatorAuthenticationException.Reason.LocalCredentialsNotFound -> R.string.login_label_error_offline
@@ -100,13 +100,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Log in using username and password. backendUrl will be updated if its value is not null (useful for refreshing a login without replacing the backend url)
-     */
     fun login(
         username: String,
         password: String,
         visitPlace: String,
+        outreachName: String,
     ) {
         if (!validateInput(username, password, visitPlace)) return
         scope.launch {
@@ -114,17 +112,15 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Check for the latest version of the application
-     * if this app is being manually installed/updated (manual flavor)
-     */
+    fun setOutreachName(name: String) {
+        outreachName.set(name)
+    }
+
     private fun checkVersion() {
         versionNumber.set(BuildConfig.VERSION_NAME)
         if (isManualFlavor) {
             scope.launch {
                 try {
-                    // On the login screen we always want to call the API to check for update,
-                    // so we clear any cache present first
                     updateManager.clearLatestVersionCache()
                     latestVersion.set(updateManager.isLatestVersion())
                 } catch (ex: Throwable) {
@@ -132,14 +128,10 @@ class LoginViewModel @Inject constructor(
                     ex.rethrowIfFatal()
                     logError("Something went wrong retrieving the latest version: ", ex)
                 }
-
             }
         }
     }
 
-    /**
-     * get the device name from the user repository
-     */
     private fun getDeviceName() {
         println("get device name: ${userRepository.getDeviceName()}")
         deviceName.set(userRepository.getDeviceName())
