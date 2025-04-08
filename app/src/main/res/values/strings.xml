@@ -73,7 +73,7 @@
     <string name="site_selection_input_hint">Select site location</string>
     <string name="site_selection_btn_submit">Submit</string>
     <string name="site_selection_error_no_site_selected">Please select a site</string>
-    <string name="match_or_register_patient_welcome">Welcome operator %s, you are currently at site %s</string>
+    <string name="match_or_register_patient_welcome">Welcome operator %1$s, you are currently at site %2$s, %3$s</string>
     <string name="match_or_register_patient_step_id_card">Child ID or QR-Code</string>
     <string name="match_or_register_patient_step_phone">Phone number</string>
     <string name="match_or_register_patient_step_iris_scan">Iris scan the Child\'s eye(s)</string>

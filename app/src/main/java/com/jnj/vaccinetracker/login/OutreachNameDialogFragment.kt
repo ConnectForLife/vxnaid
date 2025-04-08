@@ -9,8 +9,14 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.domain.entities.Site
 
-class OutreachNameDialogFragment : DialogFragment() {
+class OutreachNameDialogFragment(private val viewModel: LoginViewModel) : DialogFragment() {
+    companion object {
+        fun newInstance(viewModel: LoginViewModel): OutreachNameDialogFragment {
+            return OutreachNameDialogFragment(viewModel)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,7 +30,7 @@ class OutreachNameDialogFragment : DialogFragment() {
         buttonSubmit.setOnClickListener {
             val outreachName = editTextOutreachName.text.toString()
             if (outreachName.isNotEmpty()) {
-                // TODO Handle the outreach name if needed
+                viewModel.outreachName.value = outreachName // Update outreachName in ViewModel
                 dismiss()
             } else {
                 Toast.makeText(requireContext(), getString(R.string.error_empty_outreach_name), Toast.LENGTH_SHORT).show()
@@ -33,9 +39,7 @@ class OutreachNameDialogFragment : DialogFragment() {
         return view
     }
 
-    companion object {
-        fun newInstance(): OutreachNameDialogFragment {
-            return OutreachNameDialogFragment()
-        }
-    }
+
+
+
 }

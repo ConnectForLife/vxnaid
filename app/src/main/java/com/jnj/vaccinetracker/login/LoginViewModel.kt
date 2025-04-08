@@ -1,15 +1,17 @@
 package com.jnj.vaccinetracker.login
 
-
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import com.jnj.vaccinetracker.BuildConfig
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.managers.LicenseManager
 import com.jnj.vaccinetracker.common.data.managers.LoginManager
 import com.jnj.vaccinetracker.common.data.managers.UpdateManager
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
+import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.exceptions.OperatorAuthenticationException
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.isManualFlavor
@@ -46,7 +48,16 @@ class LoginViewModel @Inject constructor(
     val deviceName = mutableLiveData<String>()
     val latestVersion = mutableLiveBoolean(true)
     private val prefillBackendUrl = mutableLiveData<String>()
+
+    val operator = mutableLiveData<String>()
+    val site = mutableLiveData<String>()
+
     val outreachName = mutableLiveData<String>()
+    val selectedVisitPlace = mutableLiveData<String>()
+
+    fun onVisitPlaceSelected(visitPlace: String) {
+        selectedVisitPlace.value = visitPlace
+    }
 
     private val _loginCompleted = MutableSharedFlow<Unit>()
     val loginCompleted: SharedFlow<Unit> = _loginCompleted
@@ -56,6 +67,36 @@ class LoginViewModel @Inject constructor(
         if (isLoginActivity) {
             checkVersion()
             getDeviceName()
+        }
+    }
+
+    val welcomeMessage: LiveData<String> = MediatorLiveData<String>().apply {
+        addSource(selectedVisitPlace) { updateWelcomeMessage() }
+        addSource(prefillUsername) { updateWelcomeMessage() }
+        addSource(deviceName) { updateWelcomeMessage() }
+        addSource(outreachName) { updateWelcomeMessage() }
+    }
+
+    private fun MediatorLiveData<String>.updateWelcomeMessage() {
+        val visitPlace = selectedVisitPlace.value ?: ""
+        val operatorName = prefillUsername.value ?: "Unknown Operator"
+        val siteName = deviceName.value ?: "Unknown Site"
+        val outreachName = outreachName.value ?: ""
+
+        value = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
+            resourcesWrapper.getString(
+                R.string.match_or_register_patient_welcome,
+                operatorName,
+                siteName,
+                if (outreachName.isNotEmpty()) "Outreach: $outreachName" else "Outreach"
+            )
+        } else {
+            resourcesWrapper.getString(
+                R.string.match_or_register_patient_welcome,
+                operatorName,
+                siteName,
+                "Static"
+            )
         }
     }
 
@@ -85,7 +126,7 @@ class LoginViewModel @Inject constructor(
                 OperatorAuthenticationException.Reason.LocalCredentialsNotFound -> R.string.login_label_error_offline
                 OperatorAuthenticationException.Reason.LocalCredentialsPasswordMismatch,
                 OperatorAuthenticationException.Reason.RemoteLoginError,
-                -> R.string.login_label_error_not_authenticated
+                    -> R.string.login_label_error_not_authenticated
                 OperatorAuthenticationException.Reason.SyncAdminRole -> R.string.login_label_error_sync_admin_role_not_allowed
                 OperatorAuthenticationException.Reason.NotOperatorRole -> R.string.login_label_error_opertor_role_required
             }

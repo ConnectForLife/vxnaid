@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.login
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,6 @@ import kotlinx.coroutines.flow.onEach
 class RefreshSessionDialog : BaseDialogFragment() {
 
     private val viewModel: LoginViewModel by viewModels { viewModelFactory }
-
     private lateinit var binding: DialogRefreshSessionBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,12 +29,37 @@ class RefreshSessionDialog : BaseDialogFragment() {
         isCancelable = false
     }
 
+    @SuppressLint("StringFormatMatches")
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
         viewModel.prefillUsername.observe(lifecycleOwner) { prefillUsername ->
             if (binding.editTextUsername.text.isEmpty()) {
                 binding.editTextUsername.setText(prefillUsername)
             }
         }
+
+        viewModel.selectedVisitPlace.observe(lifecycleOwner) { visitPlace ->
+            val operatorName = viewModel.prefillUsername.value ?: "Unknown Operator"
+            val siteName = viewModel.deviceName.value ?: "Unknown Site"
+            val outreachName = viewModel.outreachName.value ?: ""
+
+            val message = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
+                getString(
+                    R.string.match_or_register_patient_welcome,
+                    operatorName,
+                    siteName,
+                    if (outreachName.isNotEmpty()) "Outreach: $outreachName" else "Outreach"
+                )
+            } else {
+                getString(
+                    R.string.match_or_register_patient_welcome,
+                    operatorName,
+                    siteName,
+                    "Static"
+                )
+            }
+            binding.textViewWelcomeMessage.text = message
+        }
+
         viewModel.loginCompleted
             .onEach {
                 dismissAllowingStateLoss()
@@ -42,8 +67,13 @@ class RefreshSessionDialog : BaseDialogFragment() {
             .launchIn(lifecycleOwner.lifecycleScope)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_refresh_session, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.dialog_refresh_session, container, false)
         binding.viewModel = viewModel
         viewModel.init(false)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -62,8 +92,11 @@ class RefreshSessionDialog : BaseDialogFragment() {
         )
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
         binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
-            if (visitPlaces[position] == Constants.VISIT_PLACE_OUTREACH) {
-                OutreachNameDialogFragment().show(childFragmentManager, "OutreachNameDialog")
+            val selectedPlace = visitPlaces[position]
+            viewModel.onVisitPlaceSelected(selectedPlace)
+            if (selectedPlace == Constants.VISIT_PLACE_OUTREACH) {
+                OutreachNameDialogFragment.newInstance(viewModel)
+                    .show(childFragmentManager, "OutreachNameDialog")
             }
         }
         return binding.root

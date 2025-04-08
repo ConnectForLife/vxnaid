@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
@@ -13,17 +11,12 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.helpers.hideKeyboard
 import com.jnj.vaccinetracker.common.ui.BaseActivity
-import com.jnj.vaccinetracker.common.ui.SyncBanner
 import com.jnj.vaccinetracker.databinding.ActivityLoginBinding
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
-import com.jnj.vaccinetracker.settings.SettingsDialog
-import com.jnj.vaccinetracker.update.UpdateDialog
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -42,17 +35,24 @@ class LoginActivity : BaseActivity() {
         LoginActivityMenuHelper(supportFragmentManager)
     }
 
-    private val viewModel: LoginViewModel by viewModels { viewModelFactory }
 
+    private val viewModel: LoginViewModel by viewModels { viewModelFactory }
     private lateinit var binding: ActivityLoginBinding
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         viewModel.init(true)
+
+        // Observe selected visit place
+        viewModel.selectedVisitPlace.observe(this) { visitPlace ->
+            if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
+                OutreachNameDialogFragment.newInstance(viewModel).show(supportFragmentManager, "OutreachNameDialog")
+            }
+        }
+
 
         binding.btnLogin.setOnClickListener { login() }
         binding.editPassword.setOnEditorActionListener { _, actionId, _ ->
@@ -62,19 +62,6 @@ class LoginActivity : BaseActivity() {
             } else {
                 false
             }
-        }
-
-        val textInputPasswordLayout = findViewById<TextInputLayout>(R.id.textInputPassword)
-        val editPassword = findViewById<TextInputEditText>(R.id.edit_password)
-
-        textInputPasswordLayout.setEndIconOnClickListener {
-            if (editPassword.inputType == (android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
-                editPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            } else {
-                editPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-            }
-
-            editPassword.setSelection(editPassword.text?.length ?: 0)
         }
 
         val visitPlaces = listOf(
@@ -89,61 +76,19 @@ class LoginActivity : BaseActivity() {
         )
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
         binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
-            if (visitPlaces[position] == Constants.VISIT_PLACE_OUTREACH) {
-                OutreachNameDialogFragment().show(supportFragmentManager, "OutreachNameDialog")
-            }
+            viewModel.onVisitPlaceSelected(visitPlaces[position])
         }
 
         binding.root.setOnClickListener { hideKeyboard() }
-        binding.btnUpdate.setOnClickListener { showUpdateDialog() }
         observeViewModel(this)
     }
 
-    override val syncBanner: SyncBanner
-        get() = binding.syncBanner
-
-    override val isAuthenticatedOperatorScreen: Boolean
-        get() = false
-
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun observeViewModel(lifecycleOwner: LifecycleOwner) {
         viewModel.loginCompleted
             .onEach {
                 onLoginCompleted()
             }
             .launchIn(lifecycleOwner.lifecycleScope)
-
-        viewModel.prefillUsername.observe(lifecycleOwner) { prefillUsername ->
-            if (binding.editUsername.text.isEmpty()) {
-                binding.editUsername.setText(prefillUsername)
-            }
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_settings, menu)
-        loginActivityMenuHelper.onCreateOptionsMenu(menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (loginActivityMenuHelper.onOptionsItemSelected(item))
-            return true
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                showSettingsDialog()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun showSettingsDialog() {
-        SettingsDialog().show(supportFragmentManager, TAG_SETTINGS_DIALOG)
-    }
-
-    private fun showUpdateDialog() {
-        UpdateDialog().show(supportFragmentManager, TAG_UPDATE_DIALOG)
     }
 
     private fun login() {
@@ -151,7 +96,6 @@ class LoginActivity : BaseActivity() {
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
         val outreachName = viewModel.outreachName.value ?: ""
-        saveVisitPlaceToMemory(visitPlace)
         viewModel.login(username, password, visitPlace, outreachName)
     }
 

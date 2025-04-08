@@ -2,17 +2,21 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
         <variable
             name="viewModel"
             type="com.jnj.vaccinetracker.login.LoginViewModel" />
         <import type="android.view.View" />
     </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical">
+
+        <!-- Header Image -->
         <ImageView
             android:id="@+id/img_header"
             android:layout_width="match_parent"
@@ -23,12 +27,16 @@
             android:scaleType="centerInside"
             android:src="@drawable/ic_x_circle"
             app:tint="@color/colorTextOnPrimary" />
+
+        <!-- Progress Bar -->
         <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}" />
+
+        <!-- Title -->
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
@@ -39,6 +47,17 @@
             android:gravity="center_horizontal"
             android:text="@string/dialog_login_title"
             android:textAppearance="@style/PopupTitle" />
+
+        <TextView
+            android:id="@+id/textViewWelcomeMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/colorPrimaryDark"
+            tools:text="Welcome operator, you are currently at site X, Outreach: Y" />
+
         <TextView
             android:id="@+id/textView_description"
             android:layout_width="200dp"
@@ -49,6 +68,8 @@
             android:gravity="center_horizontal"
             android:text="@string/dialog_login_description"
             android:textAppearance="@style/GeneralText" />
+
+        <!-- Username Input -->
         <EditText
             android:id="@+id/editText_username"
             android:layout_width="match_parent"
@@ -61,6 +82,8 @@
             android:inputType="textEmailAddress"
             android:longClickable="false"
             android:textIsSelectable="false" />
+
+        <!-- Password Input -->
         <EditText
             android:id="@+id/editText_password"
             android:layout_width="match_parent"
@@ -72,6 +95,7 @@
             android:hint="@string/login_label_password"
             android:inputType="textPassword" />
 
+        <!-- Visit Place Dropdown -->
         <LinearLayout
             android:id="@+id/input_group_login_visit_location"
             android:layout_width="196dp"
@@ -96,11 +120,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:hint="@string/login_label_visit_location_hint"
-                    android:inputType="none" /> <!-- Add this line -->
-
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
+        <!-- Error Message -->
         <TextView
             android:id="@+id/error_textview"
             android:layout_width="wrap_content"
@@ -111,11 +135,14 @@
             android:visibility="@{viewModel.errorMessage == null ? View.GONE : View.VISIBLE}"
             android:textAppearance="@style/GeneralText"
             tools:text="Invalid credentials! Please try again." />
+
+        <!-- Buttons -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
+
             <Button
                 android:id="@+id/button_reset"
                 android:layout_width="wrap_content"
@@ -129,6 +156,7 @@
                 android:enabled="@{!viewModel.loading}"
                 android:text="@string/dialog_login_btn_terminate"
                 android:textColor="@color/colorTextOnSecondary" />
+
             <Button
                 android:id="@+id/button_login"
                 android:layout_width="wrap_content"

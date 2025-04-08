@@ -181,7 +181,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/login_label_visit_location_hint"
-                        android:inputType="none" />
+                        android:inputType="none"
+                        android:onItemClick="@{(parent, view, position, id) -> viewModel.onVisitPlaceSelected(parent.getItemAtPosition(position).toString())}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>

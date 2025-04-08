@@ -78,6 +78,11 @@ class ParticipantFlowViewModel @Inject constructor(
     val participantPhone = mutableLiveData<String>()
     // Note that for matching, you need the fullPhoneNumber in format: "${phoneCountryCode.get()}${participantPhone.get()}".replace(" ", "")
 
+    private val outreachName = mutableLiveData<String>()
+    val welcomeMessage = mutableLiveData<String>()
+    val welcomeMessageVisible = mutableLiveBoolean()
+
+
     // Mother name variables
     val motherName = mutableLiveData<String>()
 
@@ -96,6 +101,24 @@ class ParticipantFlowViewModel @Inject constructor(
 
     init {
         initState()
+    }
+
+    private fun updateWelcomeMessage() {
+        val operatorName = operator.value.orEmpty()
+        val siteName = site.value?.displayName.orEmpty()
+        val outreach = outreachName.value.orEmpty()
+        welcomeMessage.value = resourcesWrapper.getString(
+            R.string.match_or_register_patient_welcome,
+            operatorName,
+            siteName,
+            setOutreachName(name = outreach),
+            outreach
+        )
+    }
+
+    private fun setOutreachName(name: String) {
+        outreachName.value = name
+        updateWelcomeMessage()
     }
 
     //observe inside own coroutineScope so it can reload on specific events such as retry click
