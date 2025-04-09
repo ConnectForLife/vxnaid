@@ -16,7 +16,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_8_16">
 
         <ProgressBar
             android:id="@+id/progress_bar"
@@ -35,12 +36,12 @@
 
         <TextView
             android:id="@+id/textView_intro"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/margin_8_16"
+            android:textAlignment="center"
             android:text="@string/participant_matching_description"
+            android:textSize="@dimen/page_title_18_32"
             android:textAppearance="@style/LabelText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,8 +51,10 @@
             android:id="@+id/textView_match_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_24"
+            android:textStyle="bold"
+            android:layout_marginVertical="@dimen/margin_8_16"
             android:text="@{viewModel.matchCount == null ? `` : @string/participant_matching_label_amount_of_results(viewModel.matchCount)}"
             android:textAppearance="@style/DescriptionText"
             android:visibility="@{viewModel.matchCount == null ? View.INVISIBLE : View.VISIBLE}"
@@ -64,9 +67,7 @@
             android:id="@+id/recyclerView_participants"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginVertical="@dimen/margin_8_16"
             android:layout_marginBottom="16dp"
             android:background="@drawable/white_with_stroke"
             android:orientation="vertical"
@@ -76,52 +77,59 @@
             android:scrollbarThumbVertical="@color/colorSecondary"
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/btn_new_participant"
+            app:layout_constraintBottom_toTopOf="@+id/button_container"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView_match_count"
             tools:listitem="@layout/item_participant_matching_participant" />
 
-        <Button
-            android:id="@+id/btn_match_participant"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/button_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginBottom="16dp"
-            android:textAppearance="@style/ButtonTextStyling"
-            android:backgroundTint="@color/colorAccent"
-            android:text="@string/participant_matching_btn_match_selected"
-            android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
+            android:layout_marginVertical="@dimen/margin_8_16"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" >
 
-        <Button
-            android:id="@+id/btn_new_participant"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
-            android:textAppearance="@style/ButtonTextStyling"
-            android:backgroundTint="@color/colorAccent"
-            android:text="@string/participant_matching_btn_edit_participant"
-            android:textColor="@color/colorTextOnSecondary"
-            android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <Button
+                android:id="@+id/btn_match_participant"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:backgroundTint="@color/colorAccent"
+                android:text="@string/participant_matching_btn_match_selected"
+                android:textSize="@dimen/text_size_12_16"
+                android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
+                />
 
-        <Button
-            android:id="@+id/btn_report_adverse_effects"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:textAppearance="@style/ButtonTextStyling"
-            android:backgroundTint="@color/colorAccent"
-            android:text="@string/participant_matching_btn_report_adverse_effects"
-            android:textColor="@color/colorTextOnSecondary"
-            android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_match_participant"
-            app:layout_constraintEnd_toStartOf="@+id/btn_new_participant" />
+            <Button
+                android:id="@+id/btn_report_adverse_effects"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:backgroundTint="@color/colorAccent"
+                android:layout_marginHorizontal="@dimen/margin_8_16"
+                android:text="@string/participant_matching_btn_report_adverse_effects"
+                android:textSize="@dimen/text_size_12_16"
+                android:textColor="@color/colorTextOnSecondary"
+                android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <Button
+                android:id="@+id/btn_new_participant"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:backgroundTint="@color/colorAccent"
+                android:text="@string/participant_matching_btn_edit_participant"
+                android:textSize="@dimen/text_size_12_16"
+                android:textColor="@color/colorTextOnSecondary"
+                android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}" />
+
+        </LinearLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
