@@ -46,6 +46,13 @@
     <dimen name="btn_padding_8_16">8dp</dimen>
     <dimen name="btn_padding_16_32">16dp</dimen>
 
+    <!-- Logo -->
+    <dimen name="logo_width">150dp</dimen>
+    <dimen name="logo_height">80dp</dimen>
+
+    <!-- Icon sizes -->
+    <dimen name="icon_size">30dp</dimen>
+
     <!-- Home Screen  -->
     <dimen name="button_corner_radius">15dp</dimen>
     <dimen name="welcome_height">56dp</dimen>
