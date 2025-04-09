@@ -21,7 +21,7 @@
     <string name="general_label_cancel_setup">Exit Setup Wizard</string>
     <string name="general_label_continue_setup">Continue Setup</string>
     <string name="update_error_no_network">No network connection available. Please connect to the internet. If download is in progress, it will be resumed automatically.</string>
-    <string name="login_label_intro">Welcome operator, please login below to get started:</string>
+    <string name="login_label_intro">Welcome operator, please login below to get started</string>
     <string name="login_label_sign_in">Sign in</string>
     <string name="login_label_username">Username</string>
     <string name="login_label_password">Password</string>

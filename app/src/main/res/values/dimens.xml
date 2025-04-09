@@ -68,4 +68,8 @@
 
     <!-- Reports Overview -->
     <dimen name="report_overview_btn_padding_70_100_70">70dp</dimen>
+
+    <!-- contraindications  -->
+    <dimen name="contraindications_text_size">25sp</dimen>
+
 </resources>
