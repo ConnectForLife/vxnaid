@@ -23,7 +23,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="16dp">
 
             <ProgressBar
                 android:id="@+id/progress_bar"
@@ -75,6 +76,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/textView_sync_header"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/progress_bar"
+                app:layout_constraintVertical_bias="0.753"
                 app:srcCompat="@drawable/ic_sync"
                 app:tint="@color/colorPrimary" />
 
