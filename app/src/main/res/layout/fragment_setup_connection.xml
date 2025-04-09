@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:layout_margin="@dimen/margin_16_32">
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -43,6 +43,7 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="@dimen/padding_16_32"
+                android:layout_margin="@dimen/margin_16_32"
                 app:layout_constraintBottom_toTopOf="@+id/continue_button"
                 app:layout_constraintTop_toTopOf="parent">
 
