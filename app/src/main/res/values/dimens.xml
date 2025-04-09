@@ -7,4 +7,58 @@
     <dimen name="match_parent" tools:ignore="ReferenceType">@integer/int_match_parent</dimen>
     <dimen name="wrap_content" tools:ignore="ReferenceType">@integer/int_wrap_content</dimen>
     <dimen name="login_input_field_width">@dimen/match_parent</dimen>
+
+    <!-- General padding -->
+    <dimen name="padding_4">4dp</dimen>
+    <dimen name="padding_8">8dp</dimen>
+    <dimen name="padding_16">16dp</dimen>
+    <dimen name="padding_4_8">4dp</dimen>
+    <dimen name="padding_8_16">8dp</dimen>
+    <dimen name="padding_16_32">16dp</dimen>
+    <dimen name="padding_32_64">32dp</dimen>
+    <dimen name="padding_16_24">16dp</dimen>
+
+    <!-- General Margin -->
+    <dimen name="margin_4">4dp</dimen>
+    <dimen name="margin_8">8dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="margin_4_8">4dp</dimen>
+    <dimen name="margin_8_16">8dp</dimen>
+    <dimen name="margin_16_32">16dp</dimen>
+    <dimen name="margin_32_64">32dp</dimen>
+    <dimen name="margin_48_80">48dp</dimen>
+
+    <!-- General text sizes -->
+    <dimen name="text_12">12sp</dimen>
+    <dimen name="text_14">14sp</dimen>
+    <dimen name="text_16">16sp</dimen>
+    <dimen name="text_24">24sp</dimen>
+    <dimen name="text_size_12_16">12sp</dimen>
+    <dimen name="text_size_14_18">14sp</dimen>
+    <dimen name="text_size_16_20">16sp</dimen>
+    <dimen name="text_size_16_26">16sp</dimen>
+    <dimen name="page_title_18_32">18sp</dimen>
+    <dimen name="page_title_18_64">18sp</dimen>
+    <dimen name="btn_text_size_12_16">12</dimen>
+
+    <!-- Button padding -->
+    <dimen name="btn_padding_4_8">4dp</dimen>
+    <dimen name="btn_padding_8_16">8dp</dimen>
+    <dimen name="btn_padding_16_32">16dp</dimen>
+
+    <!-- Home Screen  -->
+    <dimen name="button_corner_radius">15dp</dimen>
+    <dimen name="welcome_height">56dp</dimen>
+    <dimen name="button_width">280dp</dimen>
+    <dimen name="button_height">80dp</dimen>
+    <dimen name="btn_text_size_18_32">18sp</dimen>
+    <dimen name="btn_margin_50_32_16">50dp</dimen>
+    <dimen name="btn_padding_32_64_20">32dp</dimen>
+
+    <!-- Return visit guide and visit overview Screen  -->
+    <dimen name="return_visit_guide_btn_margin_54_40_20">54dp</dimen>
+    <dimen name="return_visit_guide_btn_padding_32_70_32">32dp</dimen>
+
+    <!-- Reports Overview -->
+    <dimen name="report_overview_btn_padding_70_100_70">70dp</dimen>
 </resources>
