@@ -31,33 +31,40 @@ class RefreshSessionDialog : BaseDialogFragment() {
 
     @SuppressLint("StringFormatMatches")
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
+
         viewModel.prefillUsername.observe(lifecycleOwner) { prefillUsername ->
             if (binding.editTextUsername.text.isEmpty()) {
                 binding.editTextUsername.setText(prefillUsername)
             }
         }
 
-        viewModel.selectedVisitPlace.observe(lifecycleOwner) { visitPlace ->
+        fun updateWelcomeMessage() {
             val operatorName = viewModel.prefillUsername.value ?: "Unknown Operator"
-            val siteName = viewModel.deviceName.value ?: "Unknown Site"
             val outreachName = viewModel.outreachName.value ?: ""
-
-            val message = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
-                getString(
-                    R.string.match_or_register_patient_welcome,
-                    operatorName,
-                    siteName,
-                    if (outreachName.isNotEmpty()) "Outreach: $outreachName" else "Outreach"
-                )
+            val visitPlace = viewModel.selectedVisitPlace.value
+            val siteName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
+                if (outreachName.isNotEmpty()) outreachName else "Outreach"
             } else {
-                getString(
-                    R.string.match_or_register_patient_welcome,
-                    operatorName,
-                    siteName,
-                    "Static"
-                )
+                viewModel.deviceName.value ?: "Unknown Site"
             }
+            val visitType = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) "Outreach" else "Static"
+
+            val message = getString(
+                R.string.match_or_register_patient_welcome,
+                operatorName,
+                siteName,
+                visitType
+            )
+
             binding.textViewWelcomeMessage.text = message
+        }
+
+        viewModel.selectedVisitPlace.observe(lifecycleOwner) {
+            updateWelcomeMessage()
+        }
+
+        viewModel.outreachName.observe(lifecycleOwner) {
+            updateWelcomeMessage()
         }
 
         viewModel.loginCompleted
@@ -85,12 +92,14 @@ class RefreshSessionDialog : BaseDialogFragment() {
             Constants.VISIT_PLACE_OUTREACH,
             Constants.VISIT_PLACE_SCHOOL
         )
+
         val adapter = ArrayAdapter(
             requireContext(),
             R.layout.item_dropdown,
             visitPlaces
         )
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
+
         binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
             val selectedPlace = visitPlaces[position]
             viewModel.onVisitPlaceSelected(selectedPlace)
@@ -99,6 +108,7 @@ class RefreshSessionDialog : BaseDialogFragment() {
                     .show(childFragmentManager, "OutreachNameDialog")
             }
         }
+
         return binding.root
     }
 

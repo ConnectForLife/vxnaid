@@ -9,9 +9,12 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.common.domain.entities.Site
-
+/**
+ * @author sharif Magembe
+ * @version 1
+ */
 class OutreachNameDialogFragment(private val viewModel: LoginViewModel) : DialogFragment() {
+
     companion object {
         fun newInstance(viewModel: LoginViewModel): OutreachNameDialogFragment {
             return OutreachNameDialogFragment(viewModel)
@@ -28,9 +31,10 @@ class OutreachNameDialogFragment(private val viewModel: LoginViewModel) : Dialog
         val buttonSubmit = view.findViewById<Button>(R.id.button_submit)
 
         buttonSubmit.setOnClickListener {
-            val outreachName = editTextOutreachName.text.toString()
+            val outreachName = editTextOutreachName.text.toString().trim()
             if (outreachName.isNotEmpty()) {
-                viewModel.outreachName.value = outreachName // Update outreachName in ViewModel
+                viewModel.setOutreachName(outreachName)
+                viewModel.outreachName.value = outreachName
                 dismiss()
             } else {
                 Toast.makeText(requireContext(), getString(R.string.error_empty_outreach_name), Toast.LENGTH_SHORT).show()
@@ -38,8 +42,4 @@ class OutreachNameDialogFragment(private val viewModel: LoginViewModel) : Dialog
         }
         return view
     }
-
-
-
-
 }

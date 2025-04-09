@@ -1,17 +1,14 @@
 package com.jnj.vaccinetracker.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.BuildConfig
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.managers.LicenseManager
 import com.jnj.vaccinetracker.common.data.managers.LoginManager
 import com.jnj.vaccinetracker.common.data.managers.UpdateManager
-import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
-import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.exceptions.OperatorAuthenticationException
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.isManualFlavor
@@ -50,7 +47,8 @@ class LoginViewModel @Inject constructor(
     private val prefillBackendUrl = mutableLiveData<String>()
 
     val operator = mutableLiveData<String>()
-    val site = mutableLiveData<String>()
+    val site = MutableLiveData<String>().apply { value = "Unknown Site" }
+    private val welcomeMessage = MutableLiveData<String>()
 
     val outreachName = mutableLiveData<String>()
     val selectedVisitPlace = mutableLiveData<String>()
@@ -67,36 +65,6 @@ class LoginViewModel @Inject constructor(
         if (isLoginActivity) {
             checkVersion()
             getDeviceName()
-        }
-    }
-
-    val welcomeMessage: LiveData<String> = MediatorLiveData<String>().apply {
-        addSource(selectedVisitPlace) { updateWelcomeMessage() }
-        addSource(prefillUsername) { updateWelcomeMessage() }
-        addSource(deviceName) { updateWelcomeMessage() }
-        addSource(outreachName) { updateWelcomeMessage() }
-    }
-
-    private fun MediatorLiveData<String>.updateWelcomeMessage() {
-        val visitPlace = selectedVisitPlace.value ?: ""
-        val operatorName = prefillUsername.value ?: "Unknown Operator"
-        val siteName = deviceName.value ?: "Unknown Site"
-        val outreachName = outreachName.value ?: ""
-
-        value = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
-            resourcesWrapper.getString(
-                R.string.match_or_register_patient_welcome,
-                operatorName,
-                siteName,
-                if (outreachName.isNotEmpty()) "Outreach: $outreachName" else "Outreach"
-            )
-        } else {
-            resourcesWrapper.getString(
-                R.string.match_or_register_patient_welcome,
-                operatorName,
-                siteName,
-                "Static"
-            )
         }
     }
 
@@ -154,7 +122,20 @@ class LoginViewModel @Inject constructor(
     }
 
     fun setOutreachName(name: String) {
-        outreachName.set(name)
+        outreachName.value = name
+        updateWelcomeMessage()
+    }
+
+    private fun updateWelcomeMessage()    {
+        val operatorName = operator.value.orEmpty()
+        val sitName = site.value.orEmpty()
+        val outreachName = outreachName.value.orEmpty()
+        welcomeMessage.value = resourcesWrapper.getString(
+            R.string.match_or_register_patient_welcome,
+            operatorName,
+            sitName,
+            if (outreachName.isNotEmpty()) "Outreach: $outreachName" else "Outreach"
+        )
     }
 
     private fun checkVersion() {

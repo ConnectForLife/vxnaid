@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.participantflow.screens
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
@@ -20,6 +21,7 @@ import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentParticipantAddOrSearchBinding
+import com.jnj.vaccinetracker.login.LoginViewModel
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
@@ -44,11 +46,21 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
    private val viewModelParticipantFlow: ParticipantFlowMatchingViewModel by viewModels { viewModelFactory }
    private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
    private val reportsOverviewViewModel: ReportsOverviewViewModel by viewModels { viewModelFactory }
+   private val loginViewModel : LoginViewModel by activityViewModels { viewModelFactory }
 
    private lateinit var binding: FragmentParticipantAddOrSearchBinding
 
-   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-      binding = DataBindingUtil.inflate(inflater, R.layout.fragment_participant_add_or_search, container, false)
+   override fun onCreateView(
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
+   ): View {
+      binding = DataBindingUtil.inflate(
+         inflater,
+         R.layout.fragment_participant_add_or_search,
+         container,
+         false
+      )
       binding.viewModel = viewModel
       binding.lifecycleOwner = viewLifecycleOwner
 
@@ -101,20 +113,56 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
       visitsOverviewViewModel.launchVisitsOverviewFragmentFlowEvent.asFlow().onEach {
          startActivityForResult(
             VisitsOverviewFlowActivity.create(
-            context = requireContext()
-         ), Constants.REQ_VISITS_OVERVIEW)
+               context = requireContext()
+            ), Constants.REQ_VISITS_OVERVIEW
+         )
          (requireActivity() as BaseActivity).setForwardAnimation()
       }.launchIn(lifecycleOwner)
 
       reportsOverviewViewModel.launchReportsOverviewFragmentFlowEvent.asFlow().onEach {
          startActivityForResult(
             ReportsOverviewFlowActivity.create(
-            context = requireContext()
-         ), Constants.REQ_REPORTS_OVERVIEW)
+               context = requireContext()
+            ), Constants.REQ_REPORTS_OVERVIEW
+         )
          (requireActivity() as BaseActivity).setForwardAnimation()
       }.launchIn(lifecycleOwner)
+
+      loginViewModel.selectedVisitPlace.observe(viewLifecycleOwner) { visitPlace ->
+         logInfo("Visit Place Updated: $visitPlace")
+         updateWelcomeMessage()
+      }
+
+      loginViewModel.outreachName.observe(viewLifecycleOwner) { outreachName ->
+         logInfo("Outreach Name Updated: $outreachName")
+         updateWelcomeMessage()
+      }
+      updateWelcomeMessage()
    }
 
+   @SuppressLint("StringFormatMatches")
+   fun updateWelcomeMessage() {
+      val operatorName = loginViewModel.prefillUsername.value ?: "Unknown Operator"
+      val outreachName = loginViewModel.outreachName.value ?: ""
+      val visitPlace = loginViewModel.selectedVisitPlace.value
+      val siteName: String = when (visitPlace) {
+         Constants.VISIT_PLACE_OUTREACH -> {
+            if (outreachName.isNotEmpty()) outreachName else "Outreach"
+         }
+         else -> {
+            loginViewModel.deviceName.value ?: "Unknown Site"
+         }
+      }
+      val visitType = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) "Outreach" else "Static"
+
+      val message = getString(
+         R.string.match_or_register_patient_welcome,
+         operatorName,
+         siteName,
+         visitType
+      )
+      binding.labelWelcome.text = message
+   }
    private fun onNewVersionAvailable() {
       // Launch new dialog if none visible before
       if (requireActivity().supportFragmentManager.findFragmentByTag(TAG_UPDATE_DIALOG) == null)
@@ -135,7 +183,8 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
       if (resultCode != Activity.RESULT_OK) return
       when (requestCode) {
          Constants.REQ_REGISTER_PARTICIPANT -> {
-            val participant = data?.getParcelableExtra<ParticipantSummaryUiModel>(RegisterParticipantFlowActivity.EXTRA_PARTICIPANT)
+            val participant =
+               data?.getParcelableExtra<ParticipantSummaryUiModel>(RegisterParticipantFlowActivity.EXTRA_PARTICIPANT)
             if (participant == null) {
                // If no participant passed, we will return to the start of the identification flow
                startActivity(ParticipantFlowActivity.create(requireContext()))

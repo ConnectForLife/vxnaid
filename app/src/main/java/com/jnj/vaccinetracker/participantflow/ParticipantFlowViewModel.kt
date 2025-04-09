@@ -23,6 +23,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.neurotec.biometrics.NSubject
 import com.neurotec.io.NFile
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -61,7 +62,7 @@ class ParticipantFlowViewModel @Inject constructor(
     val currentScreen = mutableLiveData<Screen>()
     val loading = mutableLiveBoolean()
     val site = mutableLiveData<SiteUiModel>()
-    val operator = mutableLiveData<String>()
+    val operator = mutableLiveData<String?>()
     val errorMessage = mutableLiveData<String>()
 
     //id variables
@@ -78,10 +79,8 @@ class ParticipantFlowViewModel @Inject constructor(
     val participantPhone = mutableLiveData<String>()
     // Note that for matching, you need the fullPhoneNumber in format: "${phoneCountryCode.get()}${participantPhone.get()}".replace(" ", "")
 
-    private val outreachName = mutableLiveData<String>()
+    val outreachName = mutableLiveData<String>()
     val welcomeMessage = mutableLiveData<String>()
-    val welcomeMessageVisible = mutableLiveBoolean()
-
 
     // Mother name variables
     val motherName = mutableLiveData<String>()
@@ -149,6 +148,7 @@ class ParticipantFlowViewModel @Inject constructor(
     /**
      * should only ever be called ONCE!
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun initState() {
         userRepository.observeUserDisplay().onEach { display ->
             operator.value = display

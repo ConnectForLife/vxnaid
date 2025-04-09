@@ -35,7 +35,6 @@ class LoginActivity : BaseActivity() {
         LoginActivityMenuHelper(supportFragmentManager)
     }
 
-
     private val viewModel: LoginViewModel by viewModels { viewModelFactory }
     private lateinit var binding: ActivityLoginBinding
 
@@ -52,7 +51,6 @@ class LoginActivity : BaseActivity() {
                 OutreachNameDialogFragment.newInstance(viewModel).show(supportFragmentManager, "OutreachNameDialog")
             }
         }
-
 
         binding.btnLogin.setOnClickListener { login() }
         binding.editPassword.setOnEditorActionListener { _, actionId, _ ->
