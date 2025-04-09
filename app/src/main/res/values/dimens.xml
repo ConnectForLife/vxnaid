@@ -65,11 +65,11 @@
     <!-- Return visit guide and visit overview Screen  -->
     <dimen name="return_visit_guide_btn_margin_54_40_20">54dp</dimen>
     <dimen name="return_visit_guide_btn_padding_32_70_32">32dp</dimen>
+    <dimen name="complete_input_text_size_18_24">18sp</dimen>
 
     <!-- Reports Overview -->
     <dimen name="report_overview_btn_padding_70_100_70">70dp</dimen>
 
     <!-- contraindications  -->
     <dimen name="contraindications_text_size">25sp</dimen>
-
 </resources>
