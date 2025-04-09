@@ -47,7 +47,7 @@
                 app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.724"
+                app:layout_constraintVertical_bias="0.931"
                 app:srcCompat="@drawable/ic_baseline_checklist"
                 app:tint="@color/colorPrimary" />
 
@@ -67,7 +67,7 @@
                     android:id="@+id/textView_permissions_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/margin_16_32"
+                    android:layout_marginBottom="@dimen/margin_8_16"
                     android:text="@string/setup_permission_title"
                     android:textSize="@dimen/page_title_18_32"
                     android:textAlignment="center"
@@ -81,10 +81,10 @@
 
                     <ImageView
                         android:id="@+id/img_permission_doze"
-                        android:layout_width="@dimen/icon_size"
-                        android:layout_height="@dimen/icon_size"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
-                        android:layout_marginVertical="@dimen/margin_4_8"
+                        android:layout_marginVertical="@dimen/margin_4"
                         android:visibility="@{viewModel.showPermissionDoze ? View.VISIBLE : View.GONE}"
                         app:imageDrawable="@{viewModel.permissionDoze ? @drawable/ic_idmatch_correct : @drawable/ic_idmatch_incorrect}"
                         tools:src="@drawable/ic_idmatch_correct" />
@@ -127,8 +127,8 @@
 
                     <ImageView
                         android:id="@+id/img_permission_camera"
-                        android:layout_width="@dimen/icon_size"
-                        android:layout_height="@dimen/icon_size"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
                         app:imageDrawable="@{viewModel.permissionCamera ? @drawable/ic_idmatch_correct : @drawable/ic_idmatch_incorrect}"
                         tools:src="@drawable/ic_idmatch_correct"/>
@@ -170,8 +170,8 @@
 
                     <ImageView
                         android:id="@+id/img_permission_install"
-                        android:layout_width="@dimen/icon_size"
-                        android:layout_height="@dimen/icon_size"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:visibility="@{viewModel.showPermissionInstall ? View.VISIBLE : View.GONE}"
                         app:imageDrawable="@{viewModel.permissionInstall ? @drawable/ic_idmatch_correct : @drawable/ic_idmatch_incorrect}"
