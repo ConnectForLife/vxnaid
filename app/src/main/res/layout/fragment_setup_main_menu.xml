@@ -42,7 +42,7 @@
                     android:id="@+id/textView_connection_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:layout_marginTop="@dimen/margin_4_8"
                     android:text="@string/setup_main_menu_title"
                     android:textAlignment="center"
                     android:textSize="@dimen/page_title_18_32"
