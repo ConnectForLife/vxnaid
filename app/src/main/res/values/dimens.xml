@@ -39,7 +39,6 @@
     <dimen name="text_size_16_26">16sp</dimen>
     <dimen name="page_title_18_32">18sp</dimen>
     <dimen name="page_title_18_64">18sp</dimen>
-    <dimen name="btn_text_size_12_16">12</dimen>
 
     <!-- Button padding -->
     <dimen name="btn_padding_4_8">4dp</dimen>
@@ -72,4 +71,8 @@
 
     <!-- contraindications  -->
     <dimen name="contraindications_text_size">25sp</dimen>
+
+    <!-- Visits -->
+    <dimen name="visit_list_item_text_12_16">12sp</dimen>
+    <dimen name="eye_icon">20dp</dimen>
 </resources>
