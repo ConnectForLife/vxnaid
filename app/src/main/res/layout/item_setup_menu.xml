@@ -17,9 +17,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:gravity="center"
+        android:gravity="start"
         android:minHeight="?attr/listPreferredItemHeight"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -28,7 +28,7 @@
             android:id="@+id/img_is_done"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:padding="@dimen/padding_4"
+            android:layout_marginHorizontal="@dimen/margin_16"
             android:visibility="@{model.showCheckmark ? View.VISIBLE : View.INVISIBLE}"
             app:imageDrawable="@{model.done ? @drawable/ic_idmatch_correct : @drawable/ic_idmatch_incorrect}"
             tools:src="@drawable/ic_idmatch_correct" />
@@ -40,6 +40,7 @@
             android:padding="@dimen/padding_4"
             android:text="@{model.displayName(context)}"
             android:textAppearance="@style/LabelText"
+            android:textSize="20sp"
             tools:text="Placeholder" />
     </LinearLayout>
 

@@ -135,7 +135,7 @@
     <string name="participant_registration_label_take_picture">Please take a clear and well-lit photo of the Child</string>
     <string name="participant_registration_label_confirm_photo_or_try_again">Would you like to submit this photo or try again?</string>
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
-    <string name="participant_registration_details_description">Please provide new Child\'s details below:</string>
+    <string name="participant_registration_details_description">Please provide new child\'s details below</string>
     <string name="participant_registration_details_action_update_participant" translatable="false">Update Child Details</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
