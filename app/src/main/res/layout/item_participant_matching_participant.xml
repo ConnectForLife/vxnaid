@@ -63,9 +63,9 @@
             android:id="@+id/textView_facility"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text='@{"Facility:                  " + item.siteName.display}'
+            android:text='@{"Facility Name:       " + item.siteName.display}'
             android:textSize="@dimen/text_size_14_18"
-            tools:text="Belgium, Street 1" />
+            tools:text="CFL Clinic" />
 
         <TextView
             android:id="@+id/textView_vaccine"

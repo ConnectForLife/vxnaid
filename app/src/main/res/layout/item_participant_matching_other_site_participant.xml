@@ -30,8 +30,7 @@
             android:id="@+id/textView_childID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginVertical="@dimen/margin_8_16"
+            android:layout_marginTop="@dimen/margin_8_16"
             android:text='@{"Child ID:                 " + (item.participant.participantId != null ? item.participant.participantId : "")}'
             android:textAppearance="@style/GeneralText"
             android:textSize="@dimen/text_size_14_18"
@@ -68,10 +67,10 @@
             android:id="@+id/textView_facility"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text='@{"Facility:                  " + item.siteName.display}'
+            android:text='@{"Facility Name:      " + item.siteName.display}'
             android:textAppearance="@style/GeneralText"
             android:textSize="@dimen/text_size_14_18"
-            tools:text="Uganda,KYAMUSWA,KYAMUSWA,BUZINGO,NAKIBANGA" />
+            tools:text="CLF Clinic" />
 
         <Button
             android:id="@+id/border"
