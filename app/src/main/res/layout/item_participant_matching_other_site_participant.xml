@@ -21,20 +21,29 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_8_16"
         android:background="@drawable/participant_item_bg"
         android:orientation="vertical"
-        app:selected="@{selected}">
+        app:selected="@{selected}"
+        android:layout_marginStart="@dimen/margin_8_16">
 
         <TextView
-            android:id="@+id/textView_childID"
+            android:id="@+id/textView_childNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_8_16"
-            android:text='@{"Child ID:                 " + (item.participant.participantId != null ? item.participant.participantId : "")}'
+            android:layout_marginTop="8dp"
+            android:text='@{"Child Number:      " + (item.participant.childNumber != null ? item.participant.childNumber : "")}'
             android:textAppearance="@style/GeneralText"
             android:textSize="@dimen/text_size_14_18"
-            tools:text="VIY0UPWF" />
+            tools:text="98574328" />
+
+        <TextView
+            android:id="@+id/textView_telephone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text='@{"Mobile Phone:      " + (item.participant.telephone != null ? item.participant.telephone : "")}'
+            android:textAppearance="@style/GeneralText"
+            android:textSize="@dimen/text_size_14_18"
+            tools:text="111222333" />
 
         <TextView
             android:id="@+id/textView_birthDate"
@@ -55,28 +64,19 @@
             tools:text="Mother Name" />
 
         <TextView
-            android:id="@+id/textView_telephone"
+            android:id="@+id/textView_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text='@{"Mobile Phone:      " + (item.participant.telephone != null ? item.participant.telephone : "")}'
+            android:text='@{"Address:                " + item.participant.homeLocation}'
             android:textAppearance="@style/GeneralText"
             android:textSize="@dimen/text_size_14_18"
-            tools:text="111222333" />
-
-        <TextView
-            android:id="@+id/textView_facility"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text='@{"Facility Name:      " + item.siteName.display}'
-            android:textAppearance="@style/GeneralText"
-            android:textSize="@dimen/text_size_14_18"
-            tools:text="CLF Clinic" />
+            tools:text="Uganda,KYAMUSWA,KYAMUSWA,BUZINGO,NAKIBANGA" />
 
         <Button
             android:id="@+id/border"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="@dimen/margin_8"
+            android:layout_marginTop="8dp"
             android:background="@color/colorPrimaryLight" />
 
     </LinearLayout>
