@@ -149,7 +149,7 @@
                 android:layout_weight="1"
                 android:textSize="20sp"
                 android:paddingEnd="35dp"
-                android:text="@string/visits_overview_client_mothers_name_column_label_mobile"
+                android:text="@string/visits_overview_client_mothers_name_column_label"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
