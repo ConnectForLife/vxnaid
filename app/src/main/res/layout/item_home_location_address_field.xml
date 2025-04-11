@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:minHeight="74dp"
+        android:minHeight="45dp"
         android:orientation="horizontal">
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:minHeight="74dp"
+            android:minHeight="60dp"
             android:hint="@{addressField.displayName}"
             android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
 
@@ -54,11 +54,10 @@
             android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
         />
 
-
         <EditText
             android:id="@+id/editText"
             android:layout_width="0dp"
-            android:layout_height="74dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
             android:hint="@{addressField.displayName}"
             android:inputType="text"
@@ -68,7 +67,4 @@
             app:error="@{addressField.errorMessage}" />
 
     </LinearLayout>
-
-
-
 </layout>
