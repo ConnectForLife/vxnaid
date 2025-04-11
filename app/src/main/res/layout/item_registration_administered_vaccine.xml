@@ -22,29 +22,29 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:padding="8dp">
+            android:padding="@dimen/margin_4_8">
 
             <TextView
                 android:id="@+id/textView_participantId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="@dimen/margin_8_16"
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 android:text="@{item.label}"
                 android:textAppearance="@style/GeneralText"
                 android:textStyle="bold"
+                android:textSize="@dimen/text_size_14_18"
                 tools:text="Vaccine" />
 
 
             <TextView
                 android:id="@+id/label_vaccination_date"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
-                android:layout_weight="1"
                 android:textAppearance="@style/LabelText" />
 
             <ImageButton
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="@dimen/margin_4_8"
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/baseline_close_24"
@@ -66,11 +66,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="@dimen/margin_8_16"
                 android:layout_weight="1"
                 android:hint="@string/vaccine_never_administered"
                 android:maxHeight="70sp"
-                android:textSize="18sp" />
+                android:textSize="@dimen/text_size_14_18" />
 
 
             <Button
@@ -82,6 +82,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="@string/vaccine_capture_date_label"
+                android:textSize="@dimen/text_size_14_18"
                 android:textAppearance="@style/ButtonTextStyling" />
 
         </LinearLayout>

@@ -31,7 +31,7 @@
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:orientation="vertical"
-            android:paddingHorizontal="@dimen/padding_8_16"
+            android:paddingHorizontal="32dp"
             app:layout_constraintBottom_toTopOf="@+id/btn_submit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,13 +44,13 @@
                 android:text="@string/participant_registration_administered_vaccines_description"
                 android:textAlignment="center"
                 android:textAppearance="@style/ScreenTitle"
-                android:textSize="@dimen/text_size_14_18" />
+                android:textSize="20sp" />
 
             <View
                 android:id="@+id/separator"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginVertical="@dimen/margin_8"
+                android:layout_marginVertical="@dimen/margin_4"
                 android:background="@color/colorPrimary" />
 
             <LinearLayout
@@ -70,16 +70,13 @@
                     android:scrollbars="vertical" />
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center">
+                android:layout_height="wrap_content">
 
                 <Button
                     android:id="@+id/btn_addVaccine"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorPrimary"
                     android:text="@string/participant_registration_administered_vaccines_add_vaccine"
@@ -91,26 +88,25 @@
 
                 <TextView
                     android:id="@+id/textView_capture_historical_data"
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/participant_registration_historical_data_description"
                     android:textAlignment="center"
                     android:textAppearance="@style/ScreenTitle"
-                    android:textSize="@dimen/text_size_14_18"
+                    android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <View
                 android:id="@+id/separator_data"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginVertical="@dimen/margin_4"
+                android:layout_marginVertical="@dimen/margin_8"
                 android:background="@color/colorPrimary" />
 
             <LinearLayout
@@ -119,7 +115,7 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="@dimen/margin_8"
                 android:layout_marginBottom="@dimen/margin_8"
-                android:layout_weight="3"
+                android:layout_weight="2"
                 android:orientation="vertical">
 
                 <androidx.recyclerview.widget.RecyclerView
