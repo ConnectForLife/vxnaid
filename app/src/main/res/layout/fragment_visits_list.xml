@@ -170,7 +170,7 @@
                 android:layout_weight="1"
                 android:padding="@dimen/padding_8"
                 android:textSize="@dimen/text_size_14_18"
-                android:text="@string/visits_overview_client_name_column_label"
+                android:text="@string/visits_overview_client_name_column_label_mobile"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
