@@ -41,7 +41,7 @@
     <dimen name="button_width">600dp</dimen>
     <dimen name="button_height">120dp</dimen>
     <dimen name="btn_text_size_18_32">32sp</dimen>
-    <dimen name="btn_margin_50_32_16">32dp</dimen>
+    <dimen name="btn_margin_32_32_16">32dp</dimen>
     <dimen name="btn_padding_32_64_20">64dp</dimen>
 
     <!-- Return visit guide and visit overview Screen  -->

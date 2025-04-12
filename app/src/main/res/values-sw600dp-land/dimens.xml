@@ -5,7 +5,7 @@
     <dimen name="margin_8_16">4dp</dimen>
 
     <!-- Home Screen -->
-    <dimen name="btn_margin_50_32_16">16dp</dimen>
+    <dimen name="btn_margin_32_32_16">16dp</dimen>
     <dimen name="btn_padding_32_64_20">20dp</dimen>
 
     <!-- Return visit guide and visit overview Screen  -->
