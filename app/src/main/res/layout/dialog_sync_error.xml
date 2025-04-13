@@ -90,7 +90,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
+                android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_8_16"
                 android:layout_marginTop="@dimen/margin_16_32"
                 android:layout_marginEnd="@dimen/margin_8_16"
@@ -103,11 +103,11 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_8_16"
+                    android:layout_marginEnd="@dimen/margin_4"
                     android:backgroundTint="@color/alertLight"
                     android:textAppearance="@style/ButtonTextStyling"
                     android:enabled="@{viewModel.loading ? false : true }"
-                    android:text="@string/sync_error_btn_delete_all"
+                    android:text="@string/sync_error_btn_delete_all_mobile"
                     android:visibility="@{viewModel.showDeleteAllSyncErrorsButton ? View.VISIBLE : View.GONE }" />
 
                 <Button
@@ -115,7 +115,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_8_16"
+                    android:layout_marginEnd="@dimen/margin_4"
                     android:enabled="@{viewModel.loading ? false : true }"
                     android:text="@string/sync_error_btn_share"
                     android:backgroundTint="@color/colorPrimary"
@@ -133,6 +133,5 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>
