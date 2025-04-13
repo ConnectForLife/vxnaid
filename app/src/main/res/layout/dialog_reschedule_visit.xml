@@ -14,7 +14,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="677dp">
+        android:layout_height="680dp">
 
         <ImageView
             android:id="@+id/img_header"
@@ -136,33 +136,32 @@
                 android:textAppearance="@style/ButtonTextStyling" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_finish"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:text="@string/general_label_close"
-            android:textAppearance="@style/ButtonTextStyling"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.316"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/next_visit_date_container" />
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal"
+           android:layout_margin="@dimen/margin_16"
+           android:gravity="center"
+           app:layout_constraintTop_toBottomOf="@+id/next_visit_date_container" >
 
-        <Button
-            android:id="@+id/btn_save_visit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:text="@string/reschedule_visit_button_label"
-            android:textAppearance="@style/ButtonTextStyling"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.768"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/next_visit_date_container" />
+           <Button
+               android:id="@+id/btn_finish"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:backgroundTint="@color/colorPrimary"
+               android:text="@string/general_label_close"
+               android:layout_marginEnd="@dimen/margin_16"
+               android:textAppearance="@style/ButtonTextStyling"
+               />
+
+           <Button
+               android:id="@+id/btn_save_visit"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:backgroundTint="@color/colorPrimary"
+               android:text="@string/reschedule_visit_button_label"
+               android:textAppearance="@style/ButtonTextStyling" />
+       </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
