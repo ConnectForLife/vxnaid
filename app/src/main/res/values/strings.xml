@@ -98,7 +98,7 @@
     <string name="participant_flow_participant_id_label_or">- OR -</string>
     <string name="participant_flow_participant_id_label_scan_code">Scan QR-Code</string>
     <string name="participant_flow_phone_title">Mobile Phone Number</string>
-    <string name="participant_flow_phone_description">Please enter a mobile phone number</string>
+    <string name="participant_flow_phone_description">Please enter a mobile number</string>
     <string name="participant_flow_no_phone_description">Please confirm that the Child has no mobile phone. This will significantly increase the matching time.</string>
     <string name="participant_flow_mother_name_page_title">Mother\'s Name</string>
     <string name="participant_flow_mother_name_label" translatable="false">Mother\'s name</string>
