@@ -505,6 +505,9 @@
     <string name="dialog_multiple_visits_text">Please select a visit:</string>
     <string name="vaccine_change_date_label">Change Date</string>
     <string name="no_outreach_vaccines_in_system">No outreach vaccines in system</string>
+    <string name="no_school_vaccines_in_system">No school vaccines in system</string>
+    <string name="no_school_vaccines_match_filters">No school vaccines match current filters</string>
+
     <string name="no_outreach_vaccines_match_filters">No outreach vaccines match current filters</string>
     <string name="no_vaccines_match_filters">No vaccines match all filters</string>
     <string name="dialog_missing_substances_empty_text_validation_message">Provide a reason</string>

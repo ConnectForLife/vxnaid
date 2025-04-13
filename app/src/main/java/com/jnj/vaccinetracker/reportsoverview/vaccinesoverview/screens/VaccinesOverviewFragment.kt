@@ -321,7 +321,6 @@ class VaccinesOverviewFragment : BaseFragment(),
         }
     }
 
-
     @SuppressLint("SetTextI18n")
     private fun applyFilters(
         vaccinesData: List<VaccineObservationDTO> = vaccinesOverviewViewModel.vaccineDTOs.value ?: emptyList()
@@ -330,8 +329,8 @@ class VaccinesOverviewFragment : BaseFragment(),
         val isOutreach = { loc: String? -> loc?.equals(Constants.VISIT_PLACE_OUTREACH, ignoreCase = true) ?: false }
         val isSchool = { loc: String? -> loc.equals(Constants.VISIT_PLACE_SCHOOL, ignoreCase = true) }
 
+        // Filter data based on selected criteria
         val filteredData = vaccinesData.filter { observation ->
-
             val dateMatches = if (observation.administerDate.isNotEmpty()) {
                 val observationDate = DateUtil.convertStringToDate(
                     observation.administerDate,
@@ -359,19 +358,27 @@ class VaccinesOverviewFragment : BaseFragment(),
             val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                     observation.ageGroup == selectedAgeGroup
             dateMatches && vaccineMatches && locationMatches && ageGroupMatches
-        }
+        }.distinctBy { it.vaccineName + it.administerDate + it.visitLocation } // Remove duplicates
 
+        // Count entries for each location type
         val staticCount = filteredData.count { isStatic(it.visitLocation) }
         val outreachCount = filteredData.count { isOutreach(it.visitLocation) }
         val schoolCount = filteredData.count { isSchool(it.visitLocation) }
 
-        val groupedVaccinesData = groupAndCount(filteredData)
+        // Debugging: Log details of filtered data
+        filteredData.forEach { observation ->
+            Log.d("FilterDebugDetails", "Location: ${observation.visitLocation}, Vaccine: ${observation.vaccineName}, Date: ${observation.administerDate}")
+        }
+        Log.d("FilterDebug", "Static: $staticCount, Outreach: $outreachCount, School: $schoolCount, Total: ${filteredData.size}")
 
+        // Update UI with filtered data
+        val groupedVaccinesData = groupAndCount(filteredData)
         vaccinesOverviewAdapter.submitList(groupedVaccinesData)
 
         val displayTotal = filteredData.size
         binding.headerVaccineTotal.text = "Total: $displayTotal"
 
+        // Show appropriate messages based on filtered results
         when {
             selectedLocation == Constants.VISIT_PLACE_OUTREACH && outreachCount == 0 -> {
                 Toast.makeText(
@@ -382,11 +389,21 @@ class VaccinesOverviewFragment : BaseFragment(),
                     Toast.LENGTH_LONG
                 ).show()
             }
+            selectedLocation == Constants.VISIT_PLACE_SCHOOL && schoolCount == 0 -> {
+                Toast.makeText(
+                    context,
+                    if (vaccinesData.none { isSchool(it.visitLocation) })
+                        getString(R.string.no_school_vaccines_in_system)
+                    else getString(R.string.no_school_vaccines_match_filters),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
             filteredData.isEmpty() -> {
                 Toast.makeText(context, getString(R.string.no_vaccines_match_filters), Toast.LENGTH_SHORT).show()
             }
         }
     }
+
     private fun groupAndCount(vaccineObservations: List<VaccineObservationDTO>): List<VaccinesOverviewDTO> {
         return vaccineObservations
             .groupBy { it.vaccineName }
