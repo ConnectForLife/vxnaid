@@ -150,7 +150,7 @@
     <string name="participant_registration_details_label_telephone">Mobile phone</string>
     <string name="participant_registration_details_telephone_hint">Enter mobile phone</string>
     <string name="participant_registration_details_label_birth_order" translatable="false"> Birth Order</string>
-    <string name ="participant_registration_details_birth_weight" translatable="false">Birth Weight (kg)</string>
+    <string name="participant_registration_details_birth_weight" translatable="false">Birth Weight (kg)</string>
     <string name="participant_registration_details_label_home_location">Address</string>
     <string name="participant_registration_details_home_location_hint">Enter the Child\'s address</string>
     <string name="participant_registration_details_action_set_home_location">Set address</string>
@@ -479,9 +479,10 @@
     <string name="visits_overview_details_visit_schedule_label">Visit Schedule:</string>
     <string name="visits_overview_details_phone_number_label">Phone Number:</string>
     <string name="visits_overview_details_client_id_label">Child ID:</string>
-    <string name ="patient_details_dialog_header"> Child Details:</string>
+    <string name="patient_details_dialog_header"> Child Details:</string>
     <string name="visits_overview_details_client_name_label">Child Name:</string>
     <string name="visits_overview_details_close_button_label">Close</string>
+    <string name="visits_overview_details_edit_button_label">Edit</string>
     <string name="visits_overview_total_visit_count_label">Total Visit Count: %1$d</string>
     <string name="visits_overview_view_details_label">View Details</string>
     <string name="visits_overview_download_excel_button_label">Download Excel</string>

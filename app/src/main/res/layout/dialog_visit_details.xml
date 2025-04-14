@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+
         <variable
             name="visitDetails"
             type="com.jnj.vaccinetracker.visitsoverview.dto.VisitDetailsDTO" />
@@ -11,14 +11,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="2dp"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="24dp"
         android:background="@android:color/white"
+        android:minWidth="300dp"
         android:minHeight="300dp"
-        android:minWidth="300dp">
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="24dp">
 
         <TableLayout
             android:layout_width="match_parent"
@@ -37,15 +37,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/visits_overview_details_visit_date_label"
-                    android:textStyle="bold"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/value_visit_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@{visitDetails.formattedVisitDate}"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow
@@ -60,15 +61,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/visits_overview_details_visit_schedule_label"
-                    android:textStyle="bold"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/value_vaccines"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@{visitDetails.visitType}"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow
@@ -82,15 +84,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/visits_overview_details_phone_number_label"
-                    android:textStyle="bold"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/value_phone_number"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@{visitDetails.phoneNumber}"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow
@@ -104,15 +107,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/visits_overview_details_client_id_label"
-                    android:textStyle="bold"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/value_client_id"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@{visitDetails.clientID}"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow
@@ -126,15 +130,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/visits_overview_details_client_name_label"
-                    android:textStyle="bold"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/value_client_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@{visitDetails.clientFullName}"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow
@@ -148,24 +153,43 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/visits_overview_client_mothers_name_column_label"
-                    android:textStyle="bold"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/value_client_mother_Name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@{visitDetails.clientMotherName}"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
             </TableRow>
 
         </TableLayout>
 
-        <Button
-            android:id="@+id/close_button"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/visits_overview_details_close_button_label" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/close_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="@string/visits_overview_details_close_button_label" />
+
+            <Button
+                android:id="@+id/btn_edit_child_details"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:text="@string/visits_overview_details_edit_button_label" />
+
+        </LinearLayout>
+
     </LinearLayout>
 </layout>
