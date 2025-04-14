@@ -35,22 +35,25 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:minHeight="60dp"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="true"
             android:hint="@{addressField.displayName}"
+            android:inputType="none"
+            android:minHeight="60dp"
             android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
+
 
         <!-- Fake TextView to use to set in an error state to allow an error to be shown for the TextView -->
         <android.widget.TextView
             android:id="@+id/tvInvisibleError"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
-            android:layout_alignRight="@+id/spinner"
-            android:layout_alignBottom="@+id/spinner"
             android:layout_marginTop="0dp"
-            android:paddingTop="0dp"
-            android:paddingRight="50dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:paddingTop="0dp"
+            android:paddingEnd="50dp"
             android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
         />
 
