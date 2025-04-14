@@ -130,7 +130,7 @@
     <string name="participant_matching_label_other_results">The following matches were found outside your site:</string>
     <string name="participant_matching_label_amount_of_results">Total matches: %d</string>
     <string name="participant_registration_picture_title">New Child photo</string>
-    <string name="participant_registration_details_title">New Child details</string>
+    <string name="participant_registration_details_title">Child details</string>
     <string name="participant_registration_label_take_picture">Please take a clear and well-lit photo of the Child</string>
     <string name="participant_registration_label_confirm_photo_or_try_again">Would you like to submit this photo or try again?</string>
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
@@ -146,7 +146,6 @@
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_unspecified" translatable="false">Unspecified</string>
-
     <string name="participant_registration_details_label_year_of_birth">Year of birth</string>
     <string name="participant_registration_details_label_National_Identification_Number">NIN</string>
     <string name="participant_registration_details_year_of_birth_hint" translatable="false">xxxx</string>
