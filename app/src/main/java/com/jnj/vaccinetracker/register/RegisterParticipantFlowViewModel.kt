@@ -40,7 +40,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
             nin = "",
             childNumber = "",
             birthWeight = "",
-            gender = Gender.UNSPECIFIED,
+            gender = Gender.OTHERS,
             birthDate = null,
             isBirthDateEstimated = false,
             telephone = "",
