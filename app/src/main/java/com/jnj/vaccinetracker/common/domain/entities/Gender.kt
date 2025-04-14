@@ -20,7 +20,7 @@ enum class Gender(@StringRes val translation: Int) : Parcelable {
 
     val code: String
         get() = when (this) {
-            OTHERS -> "U"
+            OTHERS -> "O"
             MALE -> "M"
             FEMALE -> "F"
         }
