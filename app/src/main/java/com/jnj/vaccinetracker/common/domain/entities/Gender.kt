@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 enum class Gender(@StringRes val translation: Int) : Parcelable {
-    @field:Json(name = "U")
+    @field:Json(name = "O")
     OTHERS(R.string.gender_others),
 
     @field:Json(name = "M")
