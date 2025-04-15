@@ -87,7 +87,7 @@
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
     <string name="visits_overview_client_mothers_name_column_label">Mother\'s Name</string>
-    <string name="participant_flow_child_number_title">Child ID Number</string>
+    <string name="participant_flow_child_number_title">Child Number</string>
     <string name="participant_flow_participant_id_title">Child ID</string>
     <string name="participant_flow_participant_id_hint">Scan Child ID QR Code</string>
     <string name="participant_flow_participant_id_scanned">The format of the ID is not supported</string>
@@ -130,11 +130,12 @@
     <string name="participant_matching_label_other_results">The following matches were found outside your site:</string>
     <string name="participant_matching_label_amount_of_results">Total matches: %d</string>
     <string name="participant_registration_picture_title">New Child photo</string>
-    <string name="participant_registration_details_title">New Child details</string>
+    <string name="participant_registration_details_title">Child details</string>
     <string name="participant_registration_label_take_picture">Please take a clear and well-lit photo of the Child</string>
     <string name="participant_registration_label_confirm_photo_or_try_again">Would you like to submit this photo or try again?</string>
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
-    <string name="participant_registration_details_description">Please provide new Child\'s details below:</string>
+    <string name="participant_registration_details_description">Please Enter New Child\'s Details</string>
+    <string name="participant_update_details_description" translatable="false">Update Child Details</string>
     <string name="participant_registration_details_action_update_participant" translatable="false">Update Child Details</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
@@ -416,7 +417,8 @@
     <string name="general_label_enter_text">Enter text</string>
     <string name="general_label_label">Label</string>
     <string name="participant_registration_description_success">Does the child require vaccination?</string>
-    <string name="participant_registration_historic_visits_title">Please complete the data for all past visits:</string>
+    <string name="participant_registration_historic_visits_title">Please complete the data for all past visits</string>
+    <string name="participant_past_visits_title">Update Past Visits</string>
     <string name="vaccine_never_administered">Never administered</string>
     <string name="participant_registration_historical_data_description">Please capture historical data:</string>
     <string name="referral_page_title">Refer to Health Facility</string>
@@ -502,7 +504,7 @@
     <string name="selected_vaccines_label">Selected Vaccines:</string>
     <string name="vaccines_excel_report_date_range_label_set">Date Range: %1$s - %2$s</string>
     <string name="vaccines_excel_report_date_range_label_not_set">Date Range: not set, data comes from the entire period</string>
-    <string name="go_to_historical_visits">Visit History</string>
+    <string name="go_to_historical_visits">Update Past Visits</string>
     <string name="dialog_multiple_visits_text">Please select a visit:</string>
     <string name="vaccine_change_date_label">Change Date</string>
     <string name="no_outreach_vaccines_in_system">No outreach vaccines in system</string>
