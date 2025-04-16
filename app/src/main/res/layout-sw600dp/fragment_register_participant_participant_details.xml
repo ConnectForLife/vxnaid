@@ -37,10 +37,10 @@
                 android:id="@+id/textView_intro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/participant_registration_details_description"
+                android:gravity="center"
+                android:text="@{viewModel.participantUuid != null ? @string/participant_update_details_description : @string/participant_registration_details_description}"
                 android:textAppearance="@style/ScreenTitle" />
 
             <LinearLayout
@@ -64,15 +64,15 @@
                         android:maxLines="1"
                         android:text="@string/participant_flow_participant_id_title"
                         android:textAppearance="@style/LabelText" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/participant_registration_add_asterisk"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
                         android:layout_marginStart="1dp"
                         android:layout_marginEnd="7dp"
-                        />
+                        android:text="@string/participant_registration_add_asterisk"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <ImageButton
@@ -92,9 +92,9 @@
                     android:hint="@string/participant_flow_participant_id_hint"
                     android:maxLines="1"
                     android:text="@{viewModel.participantId}"
+                    android:textAlignment="center"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textAlignment="center"
                     app:error="@{viewModel.participantIdValidationMessage}" />
 
                 <Button
@@ -104,14 +104,15 @@
                     android:layout_weight="3"
                     android:text="@string/generate_Qr_code"
                     android:textAppearance="@style/ButtonTextStyling"
-                    android:visibility="@{viewModel.participantUuid != null &amp;&amp; (flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty()) ? View.GONE : View.VISIBLE}"/>
+                    android:visibility="@{viewModel.participantUuid != null &amp;&amp; (flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty()) ? View.GONE : View.VISIBLE}" />
+
                 <ImageView
                     android:id="@+id/img_participant_picture"
                     android:layout_width="88dp"
                     android:layout_height="111dp"
                     android:layout_marginTop="16dp"
-                    app:imageUiModel="@{flowViewModel.participantPicture}"
                     android:onClick="@{() -> flowViewModel.onChildPictureClicked()}"
+                    app:imageUiModel="@{flowViewModel.participantPicture}"
                     app:srcCompat="@drawable/ic_avatar_operator" />
 
                 <ImageButton
@@ -151,13 +152,14 @@
                         android:maxLines="2"
                         android:text="@string/participant_flow_child_number_title"
                         android:textAppearance="@style/LabelText" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
                         android:text="@string/participant_registration_add_asterisk"
                         android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
-                        android:layout_marginStart="2dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <EditText
@@ -274,10 +276,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
                         android:text="@string/participant_registration_add_asterisk"
                         android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
-                        android:layout_marginStart="2dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <EditText
@@ -403,12 +405,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
                         android:text="@string/participant_registration_add_asterisk"
                         android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
-                        android:layout_marginStart="2dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
                 >
+
                 <TextView
                     android:id="@+id/textView_participantHomeLocation"
                     android:layout_width="0dp"
@@ -447,8 +450,8 @@
                     android:id="@+id/label_phone"
                     android:layout_width="155dp"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/LabelText"
-                    android:text="@string/participant_registration_details_label_telephone" />
+                    android:text="@string/participant_registration_details_label_telephone"
+                    android:textAppearance="@style/LabelText" />
 
                 <com.hbb20.CountryCodePicker
                     android:id="@+id/country_code_picker_phone"
@@ -496,10 +499,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
                         android:text="@string/participant_registration_add_asterisk"
                         android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
-                        android:layout_marginStart="2dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <TextView
@@ -522,8 +525,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorPrimary"
-                    android:text="@string/participant_registration_details_action_set_birth_date"
                     android:enabled="@{viewModel.estimatedAgeText == null || viewModel.estimatedAgeText.isEmpty()}"
+                    android:text="@string/participant_registration_details_action_set_birth_date"
                     android:textAppearance="@style/ButtonTextStyling" />
             </LinearLayout>
 
@@ -562,9 +565,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorPrimary"
+                    android:enabled="@{viewModel.birthDateText == null || viewModel.birthDateText.isEmpty()}"
                     android:text="@string/participant_registration_details_action_set_estimated_age"
-                    android:textAppearance="@style/ButtonTextStyling"
-                    android:enabled="@{viewModel.birthDateText == null || viewModel.birthDateText.isEmpty()}" />
+                    android:textAppearance="@style/ButtonTextStyling" />
 
             </LinearLayout>
 
@@ -592,12 +595,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/participant_registration_add_asterisk"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
                         android:layout_marginStart="1dp"
                         android:layout_marginEnd="7dp"
-                        />
+                        android:text="@string/participant_registration_add_asterisk"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <RadioGroup
@@ -663,9 +665,9 @@
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
                     android:hint="@string/general_label_kg"
-                    android:text="@{viewModel.birthWeight}"
                     android:importantForAutofill="no"
                     android:inputType="numberDecimal"
+                    android:text="@{viewModel.birthWeight}"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -682,23 +684,23 @@
                     android:backgroundTint="@color/colorPrimary"
                     android:text="@{viewModel.participantUuid != null ? @string/participant_registration_details_action_update_participant : @string/participant_registration_details_action_register_participant}"
                     android:textAppearance="@style/ButtonTextStyling"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/btn_goToHistorical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/colorTextOnLight"
                     android:text="@string/go_to_historical_visits"
                     android:textAppearance="@style/ButtonTextStyling"
-                    android:backgroundTint="@color/colorTextOnLight"
                     android:visibility="@{viewModel.participantUuid != null &amp;&amp; (flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty()) ? View.VISIBLE : View.INVISIBLE}"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

@@ -20,6 +20,7 @@
         <import type="android.text.InputType" />
 
     </data>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -42,26 +43,26 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_16_32"
                     android:layout_marginBottom="@dimen/margin_16_32"
-                     android:text="@{viewModel.participantUuid != null ? @string/participant_update_details_description : @string/participant_registration_details_description}"
-                    android:textSize="@dimen/page_title_18_32"
+                    android:text="@{viewModel.participantUuid != null ? @string/participant_update_details_description : @string/participant_registration_details_description}"
                     android:textAlignment="center"
-                    android:textAppearance="@style/ScreenTitle" />
+                    android:textAppearance="@style/ScreenTitle"
+                    android:textSize="@dimen/page_title_18_32" />
 
                 <LinearLayout
                     android:id="@+id/input_group_participant_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/margin_8_16">
+                    android:layout_marginTop="@dimen/margin_8_16"
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="3"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_weight="3"
                         android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="8dp">
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -73,14 +74,15 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/participant_flow_participant_id_title"
                                 android:textAppearance="@style/LabelText" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginStart="1dp"
+                                android:layout_marginEnd="7dp"
                                 android:text="@string/participant_registration_add_asterisk"
                                 android:textColor="@android:color/holo_red_dark"
-                                android:textSize="18sp"
-                                android:layout_marginStart="1dp"
-                                android:layout_marginEnd="7dp"/>
+                                android:textSize="18sp" />
 
                             <ImageButton
                                 android:id="@+id/btn_scan_participant_id"
@@ -98,8 +100,8 @@
                                 android:hint="@string/participant_flow_participant_id_hint"
                                 android:maxLines="1"
                                 android:text="@{viewModel.participantId}"
-                                android:textSize="@dimen/complete_input_text_size_18_24"
                                 android:textAlignment="center"
+                                android:textSize="@dimen/complete_input_text_size_18_24"
                                 app:error="@{viewModel.participantIdValidationMessage}" />
 
                             <ImageButton
@@ -121,35 +123,37 @@
                             <Button
                                 android:id="@+id/btnGenerateQrCode"
                                 android:layout_width="0dp"
-                                android:layout_weight="3"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="3"
                                 android:text="@string/generate_Qr_code"
                                 android:textAppearance="@style/ButtonTextStyling"
-                                android:visibility="@{viewModel.participantUuid != null &amp;&amp; (flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty()) ? View.GONE : View.VISIBLE}"/>
+                                android:visibility="@{viewModel.participantUuid != null &amp;&amp; (flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty()) ? View.GONE : View.VISIBLE}" />
 
                         </LinearLayout>
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
-                                  
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
                         <ImageView
                             android:id="@+id/img_participant_picture"
                             android:layout_width="match_parent"
                             android:layout_height="100dp"
-                            app:imageUiModel="@{flowViewModel.participantPicture}"
                             android:onClick="@{() -> flowViewModel.onChildPictureClicked()}"
+                            app:imageUiModel="@{flowViewModel.participantPicture}"
                             app:srcCompat="@drawable/ic_avatar_operator" />
                     </LinearLayout>
-              
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/input_group_child_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:layout_marginVertical="@dimen/margin_4"
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="150dp"
@@ -177,8 +181,8 @@
                     <EditText
                         android:id="@+id/editText_child_number"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:hint="@string/participant_flow_child_number_title"
                         android:longClickable="false"
                         android:text="@{viewModel.childNumber}"
@@ -191,8 +195,8 @@
                     android:id="@+id/input_group_NIN"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:layout_marginVertical="@dimen/margin_4"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/participant_registration_details_label_nin"
@@ -205,8 +209,8 @@
                     <EditText
                         android:id="@+id/edit_participant_nin"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:hint="@string/participant_registration_details_label_National_Identification_Number"
                         android:longClickable="false"
                         android:text="@{viewModel.nin}"
@@ -219,14 +223,14 @@
                     android:id="@+id/input_group_child_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:layout_marginVertical="@dimen/margin_4"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/participant_registration_details_label_child_name"
@@ -241,16 +245,16 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_4"
                         android:orientation="horizontal"
-                        android:weightSum="2"
-                        android:layout_marginTop="@dimen/margin_4">
+                        android:weightSum="2">
 
                         <EditText
                             android:id="@+id/edit_child_first_name"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
                             android:hint="@string/participant_registration_details_hint_first_name"
                             android:longClickable="false"
                             android:text="@{viewModel.childFirstName}"
@@ -261,8 +265,8 @@
                             android:id="@+id/edit_child_last_name"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="4dp"
+                            android:layout_weight="1"
                             android:hint="@string/participant_registration_details_hint_last_name"
                             android:longClickable="false"
                             android:text="@{viewModel.childLastName}"
@@ -277,14 +281,14 @@
                     android:id="@+id/input_group_mother_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:layout_marginVertical="@dimen/margin_4"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/participant_registration_details_label_mother_name"
@@ -297,25 +301,25 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="2dp"
                             android:text="@string/participant_registration_add_asterisk"
                             android:textColor="@android:color/holo_red_dark"
-                            android:textSize="18sp"
-                            android:layout_marginStart="2dp" />
+                            android:textSize="18sp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:orientation="horizontal"
-                        android:weightSum="2"
-                        android:layout_marginTop="8dp">
+                        android:weightSum="2">
 
                         <EditText
                             android:id="@+id/edit_mother_first_name"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
                             android:hint="@string/participant_registration_details_hint_first_name"
                             android:longClickable="false"
                             android:text="@{viewModel.motherFirstName}"
@@ -326,8 +330,8 @@
                             android:id="@+id/edit_mother_last_name"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="4dp"
+                            android:layout_weight="1"
                             android:hint="@string/participant_registration_details_hint_last_name"
                             android:longClickable="false"
                             android:text="@{viewModel.motherLastName}"
@@ -341,14 +345,14 @@
                     android:id="@+id/input_group_father_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:layout_marginVertical="@dimen/margin_4"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="start">
+                        android:gravity="start"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/participant_registration_details_label_father_name"
@@ -362,16 +366,16 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:orientation="horizontal"
-                        android:weightSum="2"
-                        android:layout_marginTop="8dp">
+                        android:weightSum="2">
 
                         <EditText
                             android:id="@+id/edit_father_first_name"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
                             android:hint="@string/participant_registration_details_hint_first_name"
                             android:longClickable="false"
                             android:text="@{viewModel.fatherFirstName}"
@@ -382,8 +386,8 @@
                             android:id="@+id/edit_father_last_name"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="4dp"
+                            android:layout_weight="1"
                             android:hint="@string/participant_registration_details_hint_last_name"
                             android:longClickable="false"
                             android:text="@{viewModel.fatherLastName}"
@@ -397,23 +401,23 @@
                     android:id="@+id/input_group_child_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:layout_marginVertical="@dimen/margin_4"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/participant_registration_details_label_child_category"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:maxLines="2"
+                        android:paddingBottom="4dp"
                         android:text="@string/participant_registration_details_label_child_category"
-                        android:textAppearance="@style/LabelText"
-                        android:paddingBottom="4dp"/>
+                        android:textAppearance="@style/LabelText" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         app:error="@{viewModel.childCategoryValidationMessage}">
 
                         <AutoCompleteTextView
@@ -431,9 +435,9 @@
                     android:id="@+id/input_group_home_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginTop="@dimen/margin_4"
-                    android:layout_marginBottom="@dimen/margin_8">
+                    android:layout_marginBottom="@dimen/margin_8"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -457,18 +461,18 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/participant_registration_add_asterisk"
                                 android:textColor="@android:color/holo_red_dark"
-                                android:textSize="18sp"/>
+                                android:textSize="18sp" />
                         </LinearLayout>
 
                         <Button
                             android:id="@+id/btn_set_home_location"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="0dp"
-                            android:layout_weight="2"
                             android:layout_height="wrap_content"
+                            android:layout_weight="2"
                             android:backgroundTint="@color/colorPrimary"
                             android:text="@string/participant_registration_details_action_set_home_location"
-                            android:textAppearance="@style/ButtonTextStyling"
-                            style="@style/Widget.AppCompat.Button.Small"/>
+                            android:textAppearance="@style/ButtonTextStyling" />
 
                     </LinearLayout>
 
@@ -490,23 +494,23 @@
                     android:id="@+id/input_group_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="@dimen/margin_4">
+                    android:layout_marginTop="@dimen/margin_4"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/label_phone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/LabelText"
-                        android:text="@string/participant_registration_details_label_telephone" />
+                        android:text="@string/participant_registration_details_label_telephone"
+                        android:textAppearance="@style/LabelText" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_4"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="@dimen/margin_4">
-                       
+                        android:orientation="horizontal">
+
                         <com.hbb20.CountryCodePicker
                             android:id="@+id/country_code_picker_phone"
                             android:layout_width="wrap_content"
@@ -514,7 +518,7 @@
                             app:ccp_clickable="false"
                             app:ccp_countryPreference="UG"
                             app:ccp_defaultNameCode="UG"
-                            app:ccp_showArrow="false"/>
+                            app:ccp_showArrow="false" />
 
                         <EditText
                             android:id="@+id/edit_telephone"
@@ -531,21 +535,20 @@
                     </LinearLayout>
 
 
-
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/input_group_year_of_birth"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:layout_marginVertical="@dimen/margin_4"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="@dimen/margin_8">
+                        android:layout_marginBottom="@dimen/margin_8"
+                        android:orientation="horizontal">
 
                         <LinearLayout
                             android:layout_width="150dp"
@@ -562,22 +565,22 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginStart="2dp"
                                 android:text="@string/participant_registration_add_asterisk"
                                 android:textColor="@android:color/holo_red_dark"
-                                android:textSize="18sp"
-                                android:layout_marginStart="2dp" />
+                                android:textSize="18sp" />
                         </LinearLayout>
 
                         <Button
                             android:id="@+id/btn_pick_date"
                             style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="0dp"
-                            android:layout_weight="2"
                             android:layout_height="wrap_content"
+                            android:layout_weight="2"
                             android:backgroundTint="@color/colorPrimary"
-                            android:text="@string/participant_registration_details_action_set_birth_date"
                             android:enabled="@{viewModel.estimatedAgeText == null || viewModel.estimatedAgeText.isEmpty()}"
-                            android:textAppearance="@style/ButtonTextStyling"/>
+                            android:text="@string/participant_registration_details_action_set_birth_date"
+                            android:textAppearance="@style/ButtonTextStyling" />
 
                     </LinearLayout>
 
@@ -598,33 +601,33 @@
                     android:id="@+id/input_group_estimatedAge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:layout_marginVertical="@dimen/margin_4"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="@dimen/margin_8">
+                        android:layout_marginBottom="@dimen/margin_8"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/label_estimatedAge"
                             android:layout_width="150dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/participant_registration_details_label_estimated_age"
                             android:layout_gravity="center_vertical"
+                            android:text="@string/participant_registration_details_label_estimated_age"
                             android:textAppearance="@style/LabelText" />
 
                         <Button
                             android:id="@+id/btn_estimatedDate"
                             style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="0dp"
-                            android:layout_weight="2"
                             android:layout_height="wrap_content"
+                            android:layout_weight="2"
                             android:backgroundTint="@color/colorPrimary"
+                            android:enabled="@{viewModel.birthDateText == null || viewModel.birthDateText.isEmpty()}"
                             android:text="@string/participant_registration_details_action_set_estimated_age"
-                            android:textAppearance="@style/ButtonTextStyling"
-                            android:enabled="@{viewModel.birthDateText == null || viewModel.birthDateText.isEmpty()}" />
+                            android:textAppearance="@style/ButtonTextStyling" />
 
                     </LinearLayout>
 
@@ -644,9 +647,9 @@
                     android:id="@+id/input_group_gender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/margin_4"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -664,12 +667,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/participant_registration_add_asterisk"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:textSize="18sp"
                             android:layout_marginStart="1dp"
                             android:layout_marginEnd="16dp"
-                            />
+                            android:text="@string/participant_registration_add_asterisk"
+                            android:textColor="@android:color/holo_red_dark"
+                            android:textSize="18sp" />
                     </LinearLayout>
 
                     <RadioGroup
@@ -698,7 +700,7 @@
                             android:layout_weight="1"
                             android:checked="@{viewModel.gender == Gender.FEMALE}"
                             android:text="@string/gender_female"
-                            android:textSize="18sp"/>
+                            android:textSize="18sp" />
                     </RadioGroup>
 
                     <TextView
@@ -709,16 +711,16 @@
                         android:focusable="true"
                         android:focusableInTouchMode="true"
                         android:paddingTop="0dp"
-                        app:error="@{viewModel.genderValidationMessage}"/>
+                        app:error="@{viewModel.genderValidationMessage}" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/input_group_birth_weight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/margin_4"
                     android:gravity="start"
-                    android:orientation="horizontal"
-                    android:layout_marginVertical="@dimen/margin_4">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/participant_registration_details_label_birth_weight"
@@ -731,13 +733,13 @@
                     <EditText
                         android:id="@+id/edit_birth_weight"
                         android:layout_width="0dp"
-                        android:layout_weight="2"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_4"
+                        android:layout_weight="2"
                         android:hint="@string/general_label_kg"
-                        android:text="@{viewModel.birthWeight}"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"
+                        android:text="@{viewModel.birthWeight}"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -750,21 +752,21 @@
                         android:id="@+id/buttonContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center"
                         android:layout_marginTop="@dimen/margin_16_32"
+                        android:gravity="center"
+                        android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent">
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
 
                         <Button
                             android:id="@+id/btn_submit"
                             android:layout_width="0dp"
-                            android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/margin_4"
-                            android:paddingVertical="@dimen/padding_4"
+                            android:layout_weight="1"
                             android:backgroundTint="@color/colorPrimary"
+                            android:paddingVertical="@dimen/padding_4"
                             android:text="@{viewModel.participantUuid != null ? @string/participant_registration_details_action_update_participant_mobile_version : @string/participant_registration_details_action_register_participant}"
                             android:textAppearance="@style/ButtonTextStyling"
                             android:textSize="@dimen/text_14" />
@@ -772,13 +774,13 @@
                         <Button
                             android:id="@+id/btn_goToHistorical"
                             android:layout_width="0dp"
-                            android:layout_weight="1"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/colorTextOnLight"
                             android:paddingVertical="@dimen/padding_4"
                             android:text="@string/go_to_historical_visits"
-                            android:textSize="@dimen/text_14"
                             android:textAppearance="@style/ButtonTextStyling"
-                            android:backgroundTint="@color/colorTextOnLight"
+                            android:textSize="@dimen/text_14"
                             android:visibility="@{viewModel.participantUuid != null &amp;&amp; (flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty()) ? View.VISIBLE : View.INVISIBLE}" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
