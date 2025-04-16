@@ -43,11 +43,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/margin_16"
                 android:padding="@dimen/btn_padding_8_16"
-                android:text="@string/participant_registration_historic_visits_title"
                 android:textAlignment="center"
-                android:textAppearance="@style/ScreenTitle"
                 android:textSize="@dimen/page_title_18_32"
-                android:visibility="@{viewModel.isEdit ? View.INVISIBLE : View.VISIBLE}" />
+                android:visibility="@{viewModel.isEdit ? View.INVISIBLE : View.VISIBLE}"
+                android:layout_marginTop="50dp"
+                android:text="@{viewModel.isEdit ? @string/participant_past_visits_title : @string/participant_registration_historic_visits_title}"
+                android:textAppearance="@style/ScreenTitle" />
+
 
             <ScrollView
                 android:layout_width="match_parent"

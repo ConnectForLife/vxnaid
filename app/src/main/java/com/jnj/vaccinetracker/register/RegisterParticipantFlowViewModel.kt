@@ -40,7 +40,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
             nin = "",
             childNumber = "",
             birthWeight = "",
-            gender = Gender.MALE,
+            gender = Gender.OTHERS,
             birthDate = null,
             isBirthDateEstimated = false,
             telephone = "",
@@ -183,7 +183,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
     }
 
     fun confirmRegistrationWithCaptureVaccinesPage(registerParticipant: RegisterParticipant) {
-       this.registerParticipant.set(registerParticipant)
+        this.registerParticipant.set(registerParticipant)
         navigateForward()
     }
 
@@ -192,6 +192,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         navigationDirection = NavigationDirection.FORWARD
         currentScreen.set(Screen.PARTICIPANT_CAPTURE_HISTORICAL_DATA)
     }
+
     fun openHistoricalDataForVisitType(visitTypeName: String, visitUuid: String? = null) {
         this.visitTypeName.set(visitTypeName)
         this.visitUuid.set(visitUuid)
