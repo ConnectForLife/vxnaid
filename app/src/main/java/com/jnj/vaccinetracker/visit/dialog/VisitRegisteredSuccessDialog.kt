@@ -96,7 +96,6 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         saveVisitButton = binding.root.findViewById(R.id.btn_save_visit)
         closeButton = binding.root.findViewById(R.id.btn_finish)
         proposedDateTextVisit = binding.root.findViewById(R.id.proposed_next_visit_date_value)
-        
         closeButton.visibility = View.GONE
 
         lifecycleScope.launch {
