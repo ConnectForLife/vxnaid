@@ -45,12 +45,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text='@{"Child Number:      " + (item.participant.childNumber != null ? item.participant.childNumber : "")}'
+            android:text='@{"Child Number:      " + (item.participant.participantId != null ? item.participant.participantId : "")}'
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/motherName"
             app:layout_constraintStart_toEndOf="@+id/imageView_participantPhoto"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="98574328" />
+
+        <TextView
+            android:id="@+id/textView_yearOfBirth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:      ~" + item.participant.birthDateText : "Date of Birth:        " + item.participant.birthDateText}'
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/textView_homeLocation"
+            app:layout_constraintStart_toStartOf="@+id/motherName"
+            app:layout_constraintTop_toBottomOf="@+id/motherName"
+            tools:text="1992" />
 
         <TextView
             android:id="@+id/textView_phoneNumber"
@@ -99,16 +110,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView_homeLocation"
             tools:text="Vaccine" />
 
-        <TextView
-            android:id="@+id/textView_yearOfBirth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:      ~" + item.participant.birthDateText : "Date of Birth:        " + item.participant.birthDateText}'
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/textView_homeLocation"
-            app:layout_constraintStart_toStartOf="@+id/motherName"
-            app:layout_constraintTop_toBottomOf="@+id/motherName"
-            tools:text="1992" />
+
 
         <Button
             android:id="@+id/border"
