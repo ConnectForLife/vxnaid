@@ -96,6 +96,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         saveVisitButton = binding.root.findViewById(R.id.btn_save_visit)
         closeButton = binding.root.findViewById(R.id.btn_finish)
         proposedDateTextVisit = binding.root.findViewById(R.id.proposed_next_visit_date_value)
+        closeButton.visibility = View.GONE
 
         lifecycleScope.launch {
             val nextVisitProposedDateAsLocalDate = findProposedNextVisitDateAsLocalDate()
@@ -125,7 +126,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                        nextVisitDateContainerLinearLayout.visibility = View.GONE
                        proposedDateContainerLinearLayout.visibility = View.GONE
                        saveVisitButton.visibility = View.GONE
-
+                       closeButton.visibility = View.VISIBLE
                        val layoutParams = closeButton.layoutParams as ConstraintLayout.LayoutParams
                        layoutParams.horizontalBias = 0.5f
                        closeButton.layoutParams = layoutParams
