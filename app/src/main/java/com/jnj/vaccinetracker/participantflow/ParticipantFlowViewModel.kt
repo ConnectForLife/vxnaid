@@ -5,6 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.collection.ArrayMap
+import androidx.lifecycle.MediatorLiveData
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.helpers.AndroidFiles
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -61,16 +62,19 @@ class ParticipantFlowViewModel @Inject constructor(
     val currentScreen = mutableLiveData<Screen>()
     val loading = mutableLiveBoolean()
     val site = mutableLiveData<SiteUiModel>()
-    val operator = mutableLiveData<String>()
+    val operator = mutableLiveData<String?>()
     val errorMessage = mutableLiveData<String>()
-
+    val outreachName = mutableLiveData<String?>()
+    val welcomeText = MediatorLiveData<String>()
+    fun setOutreachName(name: String) {
+        outreachName.value = name
+    }
     //id variables
     val participantId = mutableLiveData<String>()
     val participantUuid = mutableLiveData<String>()
     private val barcodeParticipantId = mutableLiveData<String>()
     val isManualSetParticipantId = mutableLiveData<Boolean>()
     var navigationDirection = NavigationDirection.NONE
-
     var selectedParticipant = mutableLiveData<ParticipantSummaryUiModel>()
 
     // Phone variables
@@ -96,6 +100,20 @@ class ParticipantFlowViewModel @Inject constructor(
 
     init {
         initState()
+        val updateWelcome = {
+            val operatorName = operator.value ?: ""
+            val siteName = site.value?.displayName ?: ""
+            val outreach = outreachName.value
+            welcomeText.value = if (!outreach.isNullOrBlank()) {
+                "Welcome operator $operatorName, you are currently at site $siteName ($outreach)"
+            } else {
+                "Welcome operator $operatorName, you are currently at site $siteName"
+            }
+        }
+
+        welcomeText.addSource(operator) { updateWelcome() }
+        welcomeText.addSource(site) { updateWelcome() }
+        welcomeText.addSource(outreachName) { updateWelcome() }
     }
 
     //observe inside own coroutineScope so it can reload on specific events such as retry click
@@ -300,7 +318,7 @@ class ParticipantFlowViewModel @Inject constructor(
      */
     fun confirmIrisScan(eye: IrisPosition, scanned: Boolean, mandatoryIrisCallback: (() -> Unit)? = null) {
         irisScans[eye] = scanned
-        val isLastEye = eye == IrisPosition.values().last()
+        val isLastEye = eye == IrisPosition.entries.last()
         //when finished with all the iris authentication steps we save the iris template. If no valid save state, screen will not advance.
         if (isLastEye && !saveIrisTemplate() && mandatoryIrisCallback != null) {
             mandatoryIrisCallback()
@@ -432,7 +450,7 @@ class ParticipantFlowViewModel @Inject constructor(
 
         companion object CREATOR : Parcelable.Creator<Screen> {
             override fun createFromParcel(parcel: Parcel): Screen {
-                return values()[parcel.readInt()]
+                return entries[parcel.readInt()]
             }
 
             override fun newArray(size: Int): Array<Screen?> {
@@ -440,5 +458,6 @@ class ParticipantFlowViewModel @Inject constructor(
             }
         }
     }
+
 
 }

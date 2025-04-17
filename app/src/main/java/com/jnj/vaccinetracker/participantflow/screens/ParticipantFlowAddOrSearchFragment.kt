@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -20,6 +21,7 @@ import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentParticipantAddOrSearchBinding
+import com.jnj.vaccinetracker.login.LoginViewModel
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
@@ -44,6 +46,8 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
    private val viewModelParticipantFlow: ParticipantFlowMatchingViewModel by viewModels { viewModelFactory }
    private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
    private val reportsOverviewViewModel: ReportsOverviewViewModel by viewModels { viewModelFactory }
+   private val loginViewModel: LoginViewModel by activityViewModels { viewModelFactory }
+
 
    private lateinit var binding: FragmentParticipantAddOrSearchBinding
 
@@ -68,6 +72,21 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
          reportsOverviewViewModel.onReportsOverviewClick()
       }
 
+      // Observe the selectedVisitPlace from LoginViewModel
+      loginViewModel.selectedVisitPlace.observe(viewLifecycleOwner) { visitPlace ->
+         val colorResId = when (visitPlace) {
+            Constants.VISIT_PLACE_OUTREACH -> R.color.sync_offline
+            Constants.VISIT_PLACE_STATIC -> R.color.black
+            else -> R.color.barcode_field_box_stroke
+         }
+         try {
+            val color = requireContext().getColor(colorResId)
+            binding.labelWelcome.setTextColor(color)
+         } catch (e: Exception) {
+            Log.e("ParticipantFlowFragment", "Error setting color: ${e.message}")
+         }
+      }
+
       setHasOptionsMenu(true)
       (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
@@ -83,6 +102,7 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
          .onEach {
             onNewVersionAvailable()
          }.launchIn(lifecycleOwner)
+
       viewModelParticipantFlow.launchRegistrationFlowEvents.asFlow().onEach {
          startActivityForResult(
             RegisterParticipantFlowActivity.create(

@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.login
 
+import android.util.Log
 import com.jnj.vaccinetracker.BuildConfig
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
@@ -48,6 +49,7 @@ class LoginViewModel @Inject constructor(
     val deviceName = mutableLiveData<String>()
     val latestVersion = mutableLiveBoolean(true)
     private val prefillBackendUrl = mutableLiveData<String>()
+    val selectedVisitPlace = mutableLiveData<String>()
 
     val loginCompleted = eventFlow<Unit>()
 
@@ -57,6 +59,10 @@ class LoginViewModel @Inject constructor(
             checkVersion()
             getDeviceName()
         }
+    }
+
+    fun setSelectedVisitPlace(visitPlace: String) {
+        selectedVisitPlace.set(visitPlace)
     }
 
     private fun initState() {
@@ -174,5 +180,9 @@ class LoginViewModel @Inject constructor(
         }
 
         return validated
+    }
+
+    fun setOutreachName(outreachName: String) {
+        Log.d("LoginViewModel", "Outreach name set: $outreachName")
     }
 }

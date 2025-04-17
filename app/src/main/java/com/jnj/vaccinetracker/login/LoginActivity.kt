@@ -2,12 +2,14 @@ package com.jnj.vaccinetracker.login
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.textfield.TextInputEditText
@@ -86,7 +88,21 @@ class LoginActivity : BaseActivity() {
             R.layout.item_dropdown,
             visitPlaces
         )
+
+        binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
+            val selectedPlace = visitPlaces[position]
+            viewModel.setSelectedVisitPlace(selectedPlace)
+        }
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
+
+        // Add listener for dropdown selection
+        binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
+            val selectedPlace = visitPlaces[position]
+            if (selectedPlace == Constants.VISIT_PLACE_OUTREACH) {
+                // Show OutreachNameDialog
+                OutreachNameDialog.newInstance().show(supportFragmentManager, "OutreachNameDialog")
+            }
+        }
 
         binding.root.setOnClickListener { hideKeyboard() }
         binding.btnUpdate.setOnClickListener { showUpdateDialog() }
@@ -148,6 +164,7 @@ class LoginActivity : BaseActivity() {
         viewModel.login(username, password, visitPlace)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onLoginCompleted() {
         startActivity(ParticipantFlowActivity.create(this))
         finish()

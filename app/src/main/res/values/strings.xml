@@ -524,4 +524,7 @@
     <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
     <string name="children_overview_client_birthdate_column_label">Birthdate</string>
     <string name="not_set">Not set</string>
+    <string name="outreach_name">outreach_name</string>
+    <string name="enter_outreach_name">enter_outreach_name</string>
+    <string name="error_empty_outreach_name">error_empty_outreach_name</string>
 </resources>
