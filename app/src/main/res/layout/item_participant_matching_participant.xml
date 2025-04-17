@@ -110,8 +110,6 @@
             app:layout_constraintTop_toBottomOf="@+id/textView_homeLocation"
             tools:text="Vaccine" />
 
-
-
         <Button
             android:id="@+id/border"
             android:layout_width="0dp"

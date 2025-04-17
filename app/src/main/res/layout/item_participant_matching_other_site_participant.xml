@@ -80,8 +80,6 @@
             android:textAppearance="@style/GeneralText"
             tools:text="Uganda,KYAMUSWA,KYAMUSWA,BUZINGO,NAKIBANGA" />
 
-
-
         <Button
             android:id="@+id/border"
             android:layout_width="match_parent"
