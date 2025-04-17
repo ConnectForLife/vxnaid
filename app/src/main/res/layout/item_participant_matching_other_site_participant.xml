@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/participant_item_bg"
         android:orientation="vertical"
+        android:layout_marginTop="8dp"
         app:selected="@{selected}">
 
         <TextView
@@ -75,8 +76,8 @@
             android:id="@+id/textView_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text='@{"Address:                " + item.participant.homeLocation}'
+            android:layout_marginStart="12dp"
+            android:text='@{"Address:                 " + item.participant.homeLocation}'
             android:textAppearance="@style/GeneralText"
             tools:text="Uganda,KYAMUSWA,KYAMUSWA,BUZINGO,NAKIBANGA" />
 

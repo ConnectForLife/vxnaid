@@ -40,75 +40,66 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_avatar_operator" />
 
-        <TextView
-            android:id="@+id/textView_childNumber"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/details_container"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginStart="16dp"
-            android:text='@{"Child Number:      " + (item.participant.participantId != null ? item.participant.participantId : "")}'
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/motherName"
+            android:layout_marginVertical="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView_participantPhoto"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="98574328" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView_yearOfBirth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:      ~" + item.participant.birthDateText : "Date of Birth:        " + item.participant.birthDateText}'
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/textView_homeLocation"
-            app:layout_constraintStart_toStartOf="@+id/motherName"
-            app:layout_constraintTop_toBottomOf="@+id/motherName"
-            tools:text="1992" />
+            <TextView
+                android:id="@+id/textView_childNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{"Child ID:               " + (item.participant.participantId != null ? item.participant.participantId : "")}'
+                android:textSize="18sp"
+                tools:text="98574328" />
 
-        <TextView
-            android:id="@+id/textView_phoneNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text='@{"Mobile Phone:      " + (item.participant.telephone != null ? item.participant.telephone : "")}'
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/motherName"
-            app:layout_constraintStart_toStartOf="@+id/textView_childNumber"
-            app:layout_constraintTop_toBottomOf="@+id/textView_childNumber"
-            tools:text="777123456" />
+            <TextView
+                android:id="@+id/textView_yearOfBirth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:      ~" + item.participant.birthDateText : "Date of Birth:      " + item.participant.birthDateText}'
+                android:textSize="18sp"
+                tools:text="1992" />
 
-        <TextView
-            android:id="@+id/motherName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text='@{"Mother Name:      " + (item.participant.motherFirstName != null ? item.participant.motherFirstName : "") + " " + (item.participant.motherLastName != null ? item.participant.motherLastName : "")}'
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/textView_yearOfBirth"
-            app:layout_constraintStart_toStartOf="@+id/textView_childNumber"
-            app:layout_constraintTop_toBottomOf="@+id/textView_phoneNumber"
-            tools:text="Mother Name" />
+            <TextView
+                android:id="@+id/motherName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{"Mother Name:      " + (item.participant.motherFirstName != null ? item.participant.motherFirstName : "") + " " + (item.participant.motherLastName != null ? item.participant.motherLastName : "")}'
+                android:textSize="17sp"
+                tools:text="Mother's Name" />
 
-        <TextView
-            android:id="@+id/textView_homeLocation"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text='@{"Address:                " + item.participant.homeLocation}'
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/textView_vaccine"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView_yearOfBirth"
-            app:layout_constraintTop_toBottomOf="@+id/textView_yearOfBirth"
-            tools:text="Belgium, Street 1" />
+            <TextView
+                android:id="@+id/textView_phoneNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{"Mobile Phone:    " + (item.participant.telephone != null ? item.participant.telephone : "")}'
+                android:textSize="18sp"
+                tools:text="+256 777777777" />
 
-        <TextView
-            android:id="@+id/textView_vaccine"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@{item.participant.vaccine.display}"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView_homeLocation"
-            app:layout_constraintTop_toBottomOf="@+id/textView_homeLocation"
-            tools:text="Vaccine" />
+            <TextView
+                android:id="@+id/textView_siteName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{"Facility Name:     " + item.siteName.display}'
+                android:textSize="18sp"
+                tools:text="Facility Name" />
+
+            <TextView
+                android:id="@+id/textView_homeLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{"Address:               " + item.participant.homeLocation}'
+                android:textSize="18sp"
+                tools:text="Belgium, Street 1" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/border"
@@ -119,7 +110,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView_vaccine" />
+            app:layout_constraintTop_toBottomOf="@+id/details_container" />
 
         <ImageView
             android:id="@+id/imageView_IRISMatch_Icon"
