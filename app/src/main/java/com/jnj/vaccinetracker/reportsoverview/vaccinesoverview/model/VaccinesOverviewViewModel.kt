@@ -67,13 +67,17 @@ class VaccinesOverviewViewModel @Inject constructor(
             .map { it.conceptName }
 
         for (visit in visits) {
-            val participant  = participantsMap[visit.participantUuid]
+            val participant = participantsMap[visit.participantUuid]
             if (participant != null) {
                 for ((key, observation) in visit.observations) {
                     val vaccineConceptName = vaccineConceptDateNames.find { key == "$it ${Constants.DATE_STR}" }
                     if (vaccineConceptName != null) {
                         val ageGroup = calculateChildAgeGroup(participant.birthDate)
-                        vaccineObservationDTOList.add(VaccineObservationDTO(vaccineConceptName, observation.value, visit.visitLocation, ageGroup))
+                        val visitLocation = visit.visitLocation ?: Constants.ALL_STRING // Default to "All" if location is null
+                        val dto = VaccineObservationDTO(vaccineConceptName, observation.value, visitLocation, ageGroup)
+                        if (!vaccineObservationDTOList.contains(dto)) { // Avoid duplicates
+                            vaccineObservationDTOList.add(dto)
+                        }
                     }
                 }
             }
