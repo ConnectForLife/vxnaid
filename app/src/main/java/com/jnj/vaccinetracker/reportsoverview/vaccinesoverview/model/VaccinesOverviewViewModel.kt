@@ -73,7 +73,8 @@ class VaccinesOverviewViewModel @Inject constructor(
                     val vaccineConceptName = vaccineConceptDateNames.find { key == "$it ${Constants.DATE_STR}" }
                     if (vaccineConceptName != null) {
                         val ageGroup = calculateChildAgeGroup(participant.birthDate)
-                        val dto = VaccineObservationDTO(vaccineConceptName, observation.value, visit.visitLocation, ageGroup)
+                        val visitLocation = visit.visitLocation ?: Constants.ALL_STRING // Default to "All" if location is null
+                        val dto = VaccineObservationDTO(vaccineConceptName, observation.value, visitLocation, ageGroup)
                         if (!vaccineObservationDTOList.contains(dto)) { // Avoid duplicates
                             vaccineObservationDTOList.add(dto)
                         }
