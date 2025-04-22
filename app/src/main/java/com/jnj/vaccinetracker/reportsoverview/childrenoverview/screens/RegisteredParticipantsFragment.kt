@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.reportsoverview.childrenoverview.screens
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -10,23 +11,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.dialogs.ReportOverviewDatePickerDialog
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.util.DateUtil
-import com.jnj.vaccinetracker.databinding.FragmentRegisteredChildrenBinding
-import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
-import com.soywiz.klock.DateTime
-import android.view.MenuItem
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.util.FileUtil
-import com.jnj.vaccinetracker.visitsoverview.adapters.PatientAdapter
+import com.jnj.vaccinetracker.databinding.FragmentRegisteredChildrenBinding
 import com.jnj.vaccinetracker.reportsoverview.childrenoverview.model.RegisteredParticipantsViewModel
+import com.jnj.vaccinetracker.visitsoverview.adapters.PatientAdapter
+import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 import com.soywiz.klock.DateFormat
+import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import java.time.ZoneId
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -115,23 +116,29 @@ class RegisteredParticipantsFragment : BaseFragment(),
         }
     }
 
-    private fun applyFilters(
+private fun applyFilters(
         patients: List<ParticipantDataDTO> = registeredParticipantsViewModel.patientDTOs.value ?: emptyList()
     ) {
         val searchText = binding.searchBox.text.toString().lowercase(Locale.getDefault())
         val filteredPatients = patients.filter { patient ->
+            val normalizedRegistrationDate = patient.registrationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            val normalizedStartDate = selectedStartDate?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
+            val normalizedEndDate = selectedEndDate?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
+
             val dateMatches =
-                (selectedStartDate == null || patient.birthDate.toDate() >= selectedStartDate?.toDate()) &&
-                        (selectedEndDate == null || patient.birthDate.toDate() <= selectedEndDate?.toDate())
+                (normalizedStartDate == null || normalizedRegistrationDate >= normalizedStartDate) &&
+                (normalizedEndDate == null || normalizedRegistrationDate <= normalizedEndDate)
+
             val textSearchMatches =
                 patient.participantId.lowercase(Locale.getDefault()).contains(searchText) ||
-                        patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
-                        patient.motherName.lowercase(Locale.getDefault()).contains(searchText)
+                patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
+                patient.motherName.lowercase(Locale.getDefault()).contains(searchText)
+
             dateMatches && textSearchMatches
         }
 
         binding.totalPatientCount.text =
-                getString(R.string.children_overview_total_children_count_label, filteredPatients.size)
+            getString(R.string.children_overview_total_children_count_label, filteredPatients.size)
 
         patientAdapter.submitList(filteredPatients)
     }
