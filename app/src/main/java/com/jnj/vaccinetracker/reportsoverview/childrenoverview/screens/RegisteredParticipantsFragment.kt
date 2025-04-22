@@ -122,13 +122,13 @@ private fun applyFilters(
     ) {
         val searchText = binding.searchBox.text.toString().lowercase(Locale.getDefault())
         val filteredPatients = patients.filter { patient ->
-            val normalizedRegistrationDate = patient.registrationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            val normalizedStartDate = selectedStartDate?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
-            val normalizedEndDate = selectedEndDate?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
+            val childRegistrationDate = patient.registrationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            val startDate = selectedStartDate?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
+            val endDate = selectedEndDate?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
 
             val dateMatches =
-                (normalizedStartDate == null || normalizedRegistrationDate >= normalizedStartDate) &&
-                (normalizedEndDate == null || normalizedRegistrationDate <= normalizedEndDate)
+                (startDate == null || childRegistrationDate >= startDate) &&
+                (endDate == null || childRegistrationDate <= endDate)
 
             val textSearchMatches =
                 patient.participantId.lowercase(Locale.getDefault()).contains(searchText) ||
