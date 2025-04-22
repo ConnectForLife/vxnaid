@@ -15,4 +15,7 @@ data class VisitDataDTO(
     val participant: ParticipantBase
 ) {
     val formattedStartDateTime: String get() = DateUtil.convertDateToString(startDatetime, DateFormat.FORMAT_DATE.toString())
+    val visitype: String
+        get() = attributes["Visit type Vxnaid"] ?: ""
+
 }

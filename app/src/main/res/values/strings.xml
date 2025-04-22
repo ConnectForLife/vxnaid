@@ -448,7 +448,7 @@
     <string name="participant_matching_btn_edit_participant">Update Child Details</string>
     <string name="participant_update_label_success">Child successfully updated</string>
     <string name="vaccine_capture_date_label">Capture Date</string>
-    <string name="visit_schedule_next_visit_schedule_new_visit_button_label">Save Visit</string>
+    <string name="visit_schedule_next_visit_schedule_new_visit_button_label">Save Next Visit Date</string>
     <string name="refer_finish_visit_text">----  choose how to finish the visit  ----</string>
     <string name="label_change_visit_type">Change Visit Type</string>
     <string name="adverse_effects_page_failed_text">Reporting of adverse effects failed.</string>
@@ -479,6 +479,7 @@
     <string name="visits_overview_client_id_column_label">Child ID</string>
     <string name="visits_overview_client_name_column_label">Child Name</string>
     <string name="visits_overview_client_name_column_label_mobile">Child</string>
+    <string name="visits_overview_visit_type_label">Visit Type</string>
     <string name="visits_overview_details_visit_date_label">Visit Date:</string>
     <string name="visits_overview_details_scheduled_visit_date_label">Scheduled Visit Date:</string>
     <string name="visits_overview_details_historical_visit_date_label">Visit Date:</string>
@@ -526,7 +527,7 @@
     <string name="registered_children">Registered Children</string>
     <string name="registered_children_search_hint">Search by ID, child or mother name</string>
     <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
-    <string name="children_overview_client_birthdate_column_label">Birthdate</string>
+    <string name="children_overview_client_birthdate_column_label">Date of Birth</string>
     <string name="not_set">Not set</string>
     <string name="eye_title" translatable="false">e</string>
 </resources>

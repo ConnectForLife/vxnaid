@@ -149,6 +149,19 @@
                 android:textColor="@android:color/white" />
 
             <TextView
+                android:id="@+id/header_clientBirthdate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/text_size_14_18"
+                android:text="@string/children_overview_client_birthdate_column_label"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@color/colorTextOnLight"
+                android:padding="8dp"
+                android:textColor="@android:color/white" />
+
+            <TextView
                 android:id="@+id/header_clientName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -167,7 +180,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="@dimen/text_size_14_18"
-                android:text="@string/visits_overview_client_mothers_name_column_label_mobile"
+                android:paddingEnd="35dp"
+                android:text="@string/visits_overview_client_mothers_name_column_label"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
@@ -175,18 +189,6 @@
                 android:textColor="@android:color/white"
                 tools:ignore="RtlSymmetry" />
 
-            <TextView
-                android:id="@+id/header_clientBirthdate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="@dimen/text_size_14_18"
-                android:text="@string/children_overview_client_birthdate_column_label"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:background="@color/colorTextOnLight"
-                android:padding="8dp"
-                android:textColor="@android:color/white" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
