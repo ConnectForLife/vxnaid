@@ -329,54 +329,25 @@ class VaccinesOverviewFragment : BaseFragment(),
         val isOutreach = { loc: String? -> loc?.equals(Constants.VISIT_PLACE_OUTREACH, ignoreCase = true) ?: false }
         val isSchool = { loc: String? -> loc.equals(Constants.VISIT_PLACE_SCHOOL, ignoreCase = true) }
 
-        // Filter data based on selected criteria
-        val filteredData = vaccinesData.filter { observation ->
-            val dateMatches = if (observation.administerDate.isNotEmpty()) {
-                val observationDate = DateUtil.convertStringToDate(
-                    observation.administerDate,
-                    DateFormat.FORMAT_DATE.toString()
-                ) ?: return@filter false
-
-                (selectedStartDate == null || observationDate >= selectedStartDate!!.toDate()) &&
-                        (selectedEndDate == null || observationDate <= selectedEndDate!!.toDate())
-            } else false
-
-            val vaccineMatches = when {
-                selectedVaccineConceptNames.isEmpty() -> true
-                selectedVaccineConceptNames.contains(Constants.ALL_STRING) -> true
-                else -> selectedVaccineConceptNames.contains(observation.vaccineName)
-            }
-
-            val locationMatches = when (selectedLocation) {
-                Constants.ALL_STRING -> true
-                Constants.VISIT_PLACE_STATIC -> isStatic(observation.visitLocation)
-                Constants.VISIT_PLACE_OUTREACH -> isOutreach(observation.visitLocation)
-                Constants.VISIT_PLACE_SCHOOL -> isSchool(observation.visitLocation)
-                else -> false
-            }
-
-            val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
-                    observation.ageGroup == selectedAgeGroup
-            dateMatches && vaccineMatches && locationMatches && ageGroupMatches
-        }.distinctBy { it.vaccineName + it.administerDate + it.visitLocation } // Remove duplicates
+        // Deduplicate across all locations
+        val uniqueEntries = vaccinesData.distinctBy { it.vaccineName + it.administerDate }
 
         // Count entries for each location type
-        val staticCount = filteredData.count { isStatic(it.visitLocation) }
-        val outreachCount = filteredData.count { isOutreach(it.visitLocation) }
-        val schoolCount = filteredData.count { isSchool(it.visitLocation) }
+        val staticCount = uniqueEntries.count { isStatic(it.visitLocation) }
+        val outreachCount = uniqueEntries.count { isOutreach(it.visitLocation) }
+        val schoolCount = uniqueEntries.count { isSchool(it.visitLocation) }
 
-        // Debugging: Log details of filtered data
-        filteredData.forEach { observation ->
-            Log.d("FilterDebugDetails", "Location: ${observation.visitLocation}, Vaccine: ${observation.vaccineName}, Date: ${observation.administerDate}")
-        }
-        Log.d("FilterDebug", "Static: $staticCount, Outreach: $outreachCount, School: $schoolCount, Total: ${filteredData.size}")
+        // Calculate total without duplicates
+        val totalCount = staticCount + outreachCount + schoolCount
+
+        // Log counts for debugging
+        Log.d("FilterDebug", "Static: $staticCount, Outreach: $outreachCount, School: $schoolCount, Total: $totalCount")
 
         // Update UI with filtered data
-        val groupedVaccinesData = groupAndCount(filteredData)
+        val groupedVaccinesData = groupAndCount(uniqueEntries)
         vaccinesOverviewAdapter.submitList(groupedVaccinesData)
 
-        val displayTotal = filteredData.size
-        binding.headerVaccineTotal.text = "Total: $displayTotal"
+        binding.headerVaccineTotal.text = "Total: $totalCount"
 
         // Show appropriate messages based on filtered results
         when {
@@ -398,7 +369,7 @@ class VaccinesOverviewFragment : BaseFragment(),
                     Toast.LENGTH_LONG
                 ).show()
             }
-            filteredData.isEmpty() -> {
+            uniqueEntries.isEmpty() -> {
                 Toast.makeText(context, getString(R.string.no_vaccines_match_filters), Toast.LENGTH_SHORT).show()
             }
         }
