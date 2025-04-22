@@ -103,12 +103,12 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
-                android:id="@+id/header_visitDate"
+                android:id="@+id/header_clientId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="20sp"
-                android:text="@string/visits_overview_visit_date_column_label"
+                android:text="@string/visits_overview_client_id_column_label"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
@@ -116,12 +116,12 @@
                 android:textColor="@android:color/white" />
 
             <TextView
-                android:id="@+id/header_clientId"
+                android:id="@+id/header_visitDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="20sp"
-                android:text="@string/visits_overview_client_id_column_label"
+                android:text="@string/visits_overview_visit_date_column_label"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
