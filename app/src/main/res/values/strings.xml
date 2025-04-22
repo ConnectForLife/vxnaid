@@ -523,6 +523,6 @@
     <string name="registered_children">Registered Children</string>
     <string name="registered_children_search_hint">Search by ID, child or mother name</string>
     <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
-    <string name="children_overview_client_birthdate_column_label">Birthdate</string>
+    <string name="children_overview_client_birthdate_column_label">Date of Birth</string>
     <string name="not_set">Not set</string>
 </resources>
