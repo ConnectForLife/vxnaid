@@ -117,7 +117,7 @@ class RegisteredParticipantsFragment : BaseFragment(),
         }
     }
 
-private fun applyFilters(
+    private fun applyFilters(
         patients: List<ParticipantDataDTO> = registeredParticipantsViewModel.patientDTOs.value ?: emptyList()
     ) {
         val searchText = binding.searchBox.text.toString().lowercase(Locale.getDefault())
