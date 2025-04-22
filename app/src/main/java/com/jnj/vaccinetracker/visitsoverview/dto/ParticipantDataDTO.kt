@@ -6,13 +6,15 @@ import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.parcelize.Parcelize
+import java.util.Date
 
 @Parcelize
 data class ParticipantDataDTO(
     val participantId: String,
     val fullName: String,
     val motherName: String,
-    val birthDate: DateTime
+    val birthDate: DateTime,
+    val registrationDate: Date
 ) : Parcelable {
     val formattedBirthDate: String get() = DateUtil.convertDateToString(birthDate.toDate(),
         DateFormat.FORMAT_DATE.toString())

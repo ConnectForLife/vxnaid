@@ -23,6 +23,19 @@
             android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_birthDate"
+            app:layout_constraintWidth_percent="0.25" />
+
+        <TextView
+            android:id="@+id/tv_birthDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{participant.formattedBirthDate}"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/tv_clientId"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_clientName"
             app:layout_constraintWidth_percent="0.25" />
 
@@ -34,7 +47,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
-            app:layout_constraintStart_toEndOf="@id/tv_clientId"
+            app:layout_constraintStart_toEndOf="@id/tv_birthDate"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_motherName"
             app:layout_constraintWidth_percent="0.25" />
@@ -48,21 +61,6 @@
             android:textStyle="bold"
             android:gravity="center"
             app:layout_constraintStart_toEndOf="@id/tv_clientName"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_birthDate"
-            app:layout_constraintWidth_percent="0.25" />
-
-        <TextView
-            android:id="@+id/tv_birthDate"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@{participant.formattedBirthDate}"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            app:layout_constraintStart_toEndOf="@id/tv_motherName"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintWidth_percent="0.25" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

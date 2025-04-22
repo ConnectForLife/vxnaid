@@ -28,6 +28,8 @@ import com.soywiz.klock.DateFormat
 import com.soywiz.klock.jvm.toDate
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.util.Locale
+import java.time.ZoneId
+
 
 @RequiresApi(Build.VERSION_CODES.Q)
 class RegisteredParticipantsFragment : BaseFragment(),
@@ -120,18 +122,24 @@ class RegisteredParticipantsFragment : BaseFragment(),
     ) {
         val searchText = binding.searchBox.text.toString().lowercase(Locale.getDefault())
         val filteredPatients = patients.filter { patient ->
+            val childRegistrationDate = patient.registrationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            val startDate = selectedStartDate?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
+            val endDate = selectedEndDate?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
+
             val dateMatches =
-                (selectedStartDate == null || patient.birthDate.toDate() >= selectedStartDate?.toDate()) &&
-                        (selectedEndDate == null || patient.birthDate.toDate() <= selectedEndDate?.toDate())
+                (startDate == null || childRegistrationDate >= startDate) &&
+                (endDate == null || childRegistrationDate <= endDate)
+
             val textSearchMatches =
                 patient.participantId.lowercase(Locale.getDefault()).contains(searchText) ||
-                        patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
-                        patient.motherName.lowercase(Locale.getDefault()).contains(searchText)
+                patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
+                patient.motherName.lowercase(Locale.getDefault()).contains(searchText)
+
             dateMatches && textSearchMatches
         }
 
         binding.totalPatientCount.text =
-                getString(R.string.children_overview_total_children_count_label, filteredPatients.size)
+            getString(R.string.children_overview_total_children_count_label, filteredPatients.size)
 
         patientAdapter.submitList(filteredPatients)
     }
