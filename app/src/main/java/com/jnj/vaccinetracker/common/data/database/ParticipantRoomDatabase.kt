@@ -5,6 +5,8 @@ import android.content.Context
 import android.database.SQLException
 import android.database.sqlite.SQLiteException
 import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.jnj.vaccinetracker.common.data.database.converters.*
 import com.jnj.vaccinetracker.common.data.database.daos.*
 import com.jnj.vaccinetracker.common.data.database.daos.base.count
@@ -33,7 +35,7 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 object ParticipantRoomDatabaseConfig {
-    const val CURRENT_VERSION = 14
+    const val CURRENT_VERSION = 15
     const val FILE_NAME = "participants.db"
 }
 
@@ -82,7 +84,7 @@ object ParticipantRoomDatabaseConfig {
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13,spec = ParticipantAutoMigrationSpec12to13::class),
         AutoMigration(from = 13, to = 14),
-
+        AutoMigration(from = 14, to = 15),
 
     ]
 )
@@ -256,12 +258,18 @@ abstract class ParticipantRoomDatabase : RoomDatabase() {
         ): ParticipantRoomDatabase {
             val dbInfo = DbInfo(name, passphraseProvider)
             val swappableFactory = SwappableOpenHelperFactory(dbInfo)
+            val migration14To15 = object : Migration(14, 15) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL("ALTER TABLE visit ADD COLUMN isFirstVisitFromClinic INTEGER NOT NULL DEFAULT 0")
+                }
+            }
             return Room.databaseBuilder(
                 context,
                 ParticipantRoomDatabase::class.java,
                 name,
             ).setAutoCloseTimeout(1000, TimeUnit.DAYS)
                 .openHelperFactory(swappableFactory)
+                .addMigrations(migration14To15)
                 .build().also {
                     it.factory = swappableFactory
                 }

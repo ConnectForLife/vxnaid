@@ -26,12 +26,10 @@ sealed class VisitSyncRecord : SyncRecordBase {
         override val dateModified: SyncDate,
         override val visitUuid: String,
         val visitType: String,
-        /**
-         * example: "2021-02-11 10:49:26.0"
-         */
         val startDatetime: Date,
         val attributes: List<AttributeDto>,
         val observations: List<ObservationDto>,
+        val isFirstVisitFromClinic: Boolean // Added this property
     ) : VisitSyncRecord() {
         companion object {
             fun Update.toDomain() = Visit(
@@ -42,6 +40,7 @@ sealed class VisitSyncRecord : SyncRecordBase {
                 observations = observations.toMap(),
                 dateModified = dateModified.date,
                 visitType = visitType,
+                isFirstVisitFromClinic = isFirstVisitFromClinic // Pass the value here
             )
         }
     }
@@ -55,11 +54,9 @@ sealed class VisitSyncRecord : SyncRecordBase {
     ) : VisitSyncRecord() {
         companion object {
             fun Delete.toDomain() = DeletedSyncRecord.Visit(visitUuid, participantUuid, dateModified)
-
         }
     }
 }
-
 
 fun VisitSyncRecord.toFailedSyncRecordDownload(dateLastDownloadAttempt: DateEntity): FailedSyncRecordDownload {
     return FailedSyncRecordDownload.Visit(visitUuid, participantUuid, dateModified, dateLastDownloadAttempt)

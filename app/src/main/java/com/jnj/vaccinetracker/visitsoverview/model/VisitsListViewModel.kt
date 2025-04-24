@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.visitsoverview.model
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
@@ -32,12 +33,23 @@ class VisitsListViewModel @Inject constructor(
             isLoading.value = false
         }
     }
-
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
+            val allVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+            Log.d("VisitsListViewModel", "Total visits retrieved: ${allVisits.size}")
+
+            val historicalVisits = allVisits.filter { visit ->
+                val isFirstVisit = visit.isFirstVisitFromClinic
+                val isHistoricalVisit = visitRepository.hasHistoricalVisits(visit.participantUuid, visit.startDatetime)
+                Log.d("VisitsListViewModel", "Visit UUID: ${visit.visitUuid}, isFirstVisitFromClinic: $isFirstVisit, isHistoricalVisit: $isHistoricalVisit")
+
+                // Include only visits that started from the facility and exclude historical visits
+                isFirstVisit && !isHistoricalVisit
+            }
+
+            Log.d("VisitsListViewModel", "Number of patients meeting criteria: ${historicalVisits.size}")
+
             visitDTOs.value = createVisitDTOList(historicalVisits)
             isLoading.value = false
         }

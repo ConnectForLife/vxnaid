@@ -18,4 +18,5 @@ data class RoomVisitModel(
     override val dateModified: DateEntity,
     override val visitType: String,
     override val participantUuid: String,
+    val isFirstVisitFromClinic: Boolean // New property
 ) : VisitEntityBase, VisitSyncBase

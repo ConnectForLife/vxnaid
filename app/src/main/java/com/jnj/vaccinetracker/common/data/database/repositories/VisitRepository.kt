@@ -42,6 +42,7 @@ class VisitRepository @Inject constructor(
         startDatetime = startDatetime,
         visitType = visitType,
         participantUuid = participantUuid,
+        isFirstVisitFromClinic = isFirstVisitFromClinic // Map the property
     )
 
     private fun Visit.toPersistence() = VisitEntity(
@@ -49,10 +50,13 @@ class VisitRepository @Inject constructor(
         startDatetime = startDatetime,
         visitType = visitType,
         participantUuid = participantUuid,
-        dateModified = dateModified
+        dateModified = dateModified,
+        isFirstVisitFromClinic = isFirstVisitFromClinic // Include the new attribute
     )
 
-    override suspend fun findMostRecentDateModifiedOccurrence(): DateModifiedOccurrence? = visitDao.findMostRecentDateModifiedOccurrence().toDomain()
+    override suspend fun findMostRecentDateModifiedOccurrence(): DateModifiedOccurrence? =
+        visitDao.findMostRecentDateModifiedOccurrence().toDomain()
+
     override suspend fun findAllByParticipantUuid(participantUuid: String): List<Visit> {
         return visitDao.findAllByParticipantUuid(participantUuid).map { it.toDomain() }
     }
@@ -61,7 +65,10 @@ class VisitRepository @Inject constructor(
         return visitDao.findAllVisits().map { it.toDomain() }
     }
 
-    override suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String): List<Visit> {
+    override suspend fun findAllVisitsByAttributeTypeAndValue(
+        type: String,
+        value: String
+    ): List<Visit> {
         return visitDao.findAllVisitsByAttributeTypeAndValue(type, value).map { it.toDomain() }
     }
 
@@ -80,49 +87,65 @@ class VisitRepository @Inject constructor(
         }
     }
 
-    override suspend fun findByVisitUuid(visitUuid: String): Visit? = visitDao.findByVisitUuid(visitUuid)?.toDomain()
+    override suspend fun findByVisitUuid(visitUuid: String): Visit? =
+        visitDao.findByVisitUuid(visitUuid)?.toDomain()
 
-    override suspend fun insert(model: Visit, orReplace: Boolean) = transactionRunner.withTransaction {
-        try {
-            if (orReplace) {
-                //we assume due to foreign keys, the related child rows will be deleted as well
-                val isDeleted = visitDao.deleteByVisitUuid(model.visitUuid) > 0
-                if (isDeleted) {
-                    logInfo("deleted visit for replace ${model.visitUuid}")
+    override suspend fun insert(model: Visit, orReplace: Boolean) =
+        transactionRunner.withTransaction {
+            try {
+                if (orReplace) {
+                    //we assume due to foreign keys, the related child rows will be deleted as well
+                    val isDeleted = visitDao.deleteByVisitUuid(model.visitUuid) > 0
+                    if (isDeleted) {
+                        logInfo("deleted visit for replace ${model.visitUuid}")
+                    }
                 }
-            }
 
-            val insertedVisit = visitDao.insert(model.toPersistence()) > 0
-            if (!insertedVisit) {
-                throw InsertEntityException("Cannot save visit: ${model.visitUuid}", orReplace = orReplace)
-            }
-
-            val attributes = model.attributes.map { it.toVisitAttributeEntity(model.visitUuid) }
-            if (attributes.isNotEmpty()) {
-                val insertedAttributes = visitAttributeDao.insertOrReplaceAll(attributes)
-                    .all { it > 0 }
-                if (!insertedAttributes) {
-                    throw InsertEntityException("Cannot save attributes for visit: ${model.visitUuid}", orReplace = orReplace)
+                val insertedVisit = visitDao.insert(model.toPersistence()) > 0
+                if (!insertedVisit) {
+                    throw InsertEntityException(
+                        "Cannot save visit: ${model.visitUuid}",
+                        orReplace = orReplace
+                    )
                 }
-            }
 
-            val observations = model.observations.map { it.toVisitObservationEntity(model.visitUuid) }
-            if (observations.isNotEmpty()) {
-                val insertedObservations = visitObservationDao.insertOrReplaceAll(observations)
-                    .all { it > 0 }
-                if (!insertedObservations) {
-                    throw InsertEntityException("Cannot save observations for visit: ${model.visitUuid}", orReplace = orReplace)
+                val attributes = model.attributes.map { it.toVisitAttributeEntity(model.visitUuid) }
+                if (attributes.isNotEmpty()) {
+                    val insertedAttributes = visitAttributeDao.insertOrReplaceAll(attributes)
+                        .all { it > 0 }
+                    if (!insertedAttributes) {
+                        throw InsertEntityException(
+                            "Cannot save attributes for visit: ${model.visitUuid}",
+                            orReplace = orReplace
+                        )
+                    }
                 }
+
+                val observations =
+                    model.observations.map { it.toVisitObservationEntity(model.visitUuid) }
+                if (observations.isNotEmpty()) {
+                    val insertedObservations = visitObservationDao.insertOrReplaceAll(observations)
+                        .all { it > 0 }
+                    if (!insertedObservations) {
+                        throw InsertEntityException(
+                            "Cannot save observations for visit: ${model.visitUuid}",
+                            orReplace = orReplace
+                        )
+                    }
+                }
+            } catch (throwable: Throwable) {
+                yield()
+                throwable.rethrowIfFatal()
+                if (throwable is InsertEntityException)
+                    throw throwable
+                else
+                    throw InsertEntityException(
+                        cause = throwable,
+                        message = "Something went wrong during save visit",
+                        orReplace = orReplace
+                    )
             }
-        } catch (throwable: Throwable) {
-            yield()
-            throwable.rethrowIfFatal()
-            if (throwable is InsertEntityException)
-                throw throwable
-            else
-                throw InsertEntityException(cause = throwable, message = "Something went wrong during save visit", orReplace = orReplace)
         }
-    }
 
     override suspend fun deleteAll() {
         visitDao.deleteAll()
@@ -136,5 +159,16 @@ class VisitRepository @Inject constructor(
 
     override fun observeChanges(): Flow<Long> {
         return visitDao.observeChanges()
+    }
+
+//    suspend fun findVisitsFromClinic(): List<Unit> {
+//        return this.visitDao.findVisitsFromClinic().map { it.toDomain() }
+//    }
+
+    suspend fun hasHistoricalVisits(participantUuid: String, date: DateEntity): Boolean {
+        return visitDao.findVisitsBeforeDate(date).any { it.participantUuid == participantUuid }
+    }
+    suspend fun findVisitByVisitUuid(visitUuid: String): Visit? {
+        return visitDao.findByVisitUuid(visitUuid)?.toDomain()
     }
 }

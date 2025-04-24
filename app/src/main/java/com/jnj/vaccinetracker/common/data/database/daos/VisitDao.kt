@@ -58,6 +58,9 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
 
     @Query("delete from visit")
     override suspend fun deleteAll()
+
+    @Query("SELECT * FROM visit WHERE isFirstVisitFromClinic = 1")
+    fun findVisitsFromClinic(): List<VisitEntity>
 }
 
 @Dao
@@ -73,3 +76,4 @@ interface VisitObservationDao : DaoBase<VisitObservationEntity>, ObservableDao {
     @Query("select count(*) from visit_observation")
     override fun observeChanges(): Flow<Long>
 }
+

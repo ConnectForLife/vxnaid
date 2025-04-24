@@ -3,7 +3,6 @@ package com.jnj.vaccinetracker.common.domain.entities
 import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.data.models.Constants
 
-
 sealed class VisitBase {
     abstract val startDatetime: DateEntity
     abstract val participantUuid: String
@@ -20,6 +19,7 @@ data class Visit(
     val observations: Map<String, ObservationValue>,
     val dateModified: DateEntity,
     override val visitType: String,
+    val isFirstVisitFromClinic: Boolean
 ) : VisitBase() {
     val visitLocation: String get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION] ?: Constants.EMPTY_STRING_VALUE
     val visitStatus: String get() = attributes[Constants.ATTRIBUTE_VISIT_STATUS] ?: Constants.EMPTY_STRING_VALUE
@@ -50,4 +50,3 @@ data class DraftVisitEncounter(
 
     override val visitType: String get() = Constants.VISIT_TYPE_DOSING
 }
-

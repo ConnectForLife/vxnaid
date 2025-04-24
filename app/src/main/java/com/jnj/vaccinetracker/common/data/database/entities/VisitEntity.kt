@@ -16,6 +16,8 @@ data class VisitEntity(
     override val startDatetime: DateEntity,
     @ColumnInfo(index = true)
     override val dateModified: DateEntity,
+    @ColumnInfo(name = "isFirstVisitFromClinic", defaultValue = "0")
+    val isFirstVisitFromClinic: Boolean = false
 ) : VisitEntityBase, VisitSyncBase, ParticipantUuidContainer {
     companion object {
         const val ID = VisitBase.COL_VISIT_UUID
