@@ -327,9 +327,10 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 if (birthWeight < 2.0 || birthWeight > 8.0) {
                     binding.editBirthWeight.text = null
                 } else {
-                    viewModel.setBirthWeight(birthWeight.toString())
+                    val formattedBirthWeight = "%.1f".format(birthWeight)
+                    viewModel.setBirthWeight(formattedBirthWeight)
                     flowViewModel.registerDetails.value?.let { currentDetails ->
-                        val updatedDetails = currentDetails.copy(birthWeight = birthWeight.toString())
+                        val updatedDetails = currentDetails.copy(birthWeight = formattedBirthWeight)
                         flowViewModel.registerDetails.set(updatedDetails)
                     }
                 }
