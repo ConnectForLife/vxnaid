@@ -33,27 +33,44 @@ class VisitsListViewModel @Inject constructor(
             isLoading.value = false
         }
     }
+
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            val allVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-            Log.d("VisitsListViewModel", "Total visits retrieved: ${allVisits.size}")
+            try {
+                // Retrieve all visits
+                val allVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+                Log.d("VisitsListViewModel", "Total visits retrieved: ${allVisits.size}")
 
-            val historicalVisits = allVisits.filter { visit ->
-                val isFirstVisit = visit.isFirstVisitFromClinic
-                val isHistoricalVisit = visitRepository.hasHistoricalVisits(visit.participantUuid, visit.startDatetime)
-                Log.d("VisitsListViewModel", "Visit UUID: ${visit.visitUuid}, isFirstVisitFromClinic: $isFirstVisit, isHistoricalVisit: $isHistoricalVisit")
+                // Filter visits based on visitDate >= registrationDate
+                val filteredVisits = allVisits.filter { visit ->
+                    val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+                    if (participant != null) {
+                        val registrationDate = participant.registrationDate
+                        val visitDate = visit.startDatetime
 
-                // Include only visits that started from the facility and exclude historical visits
-                isFirstVisit && !isHistoricalVisit
+                        Log.d("VisitsListViewModel", "Visit UUID: ${visit.visitUuid}, Visit Date: $visitDate, Registration Date: $registrationDate")
+
+                        // Include visits where visitDate >= registrationDate
+                        visitDate >= registrationDate
+                    } else {
+                        Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+                        false
+                    }
+                }
+
+                Log.d("VisitsListViewModel", "Number of visits meeting criteria: ${filteredVisits.size}")
+
+                // Convert filtered visits into DTOs
+                visitDTOs.value = createVisitDTOList(filteredVisits)
+            } catch (e: Exception) {
+                Log.e("VisitsListViewModel", "Error fetching filtered visits data", e)
+            } finally {
+                isLoading.value = false
             }
-
-            Log.d("VisitsListViewModel", "Number of patients meeting criteria: ${historicalVisits.size}")
-
-            visitDTOs.value = createVisitDTOList(historicalVisits)
-            isLoading.value = false
         }
     }
+
 
     fun getMissedVisitsData() {
         isLoading.value = true
@@ -70,14 +87,20 @@ class VisitsListViewModel @Inject constructor(
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
 
         visits.forEach { visit ->
+            // Populate participantsMap if the participant is not already present
             if (!participantsMap.containsKey(visit.participantUuid)) {
-                val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-                participantsMap[visit.participantUuid] = participant
+                try {
+                    val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+                    participantsMap[visit.participantUuid] = participant
+                } catch (e: Exception) {
+                    Log.e("VisitsListViewModel", "Error fetching participant for UUID: ${visit.participantUuid}", e)
+                    participantsMap[visit.participantUuid] = null
+                }
             }
         }
 
         visits.forEach { visit ->
-            val participant  = participantsMap[visit.participantUuid]
+            val participant = participantsMap[visit.participantUuid]
             if (participant != null) {
                 val visitDataDTO = VisitDataDTO(
                     visitUuid = visit.visitUuid,
@@ -88,6 +111,8 @@ class VisitsListViewModel @Inject constructor(
                     participant = participant
                 )
                 visitDataDTOList.add(visitDataDTO)
+            } else {
+                Log.w("VisitsListViewModel", "Skipping visit with UUID: ${visit.visitUuid} due to missing participant")
             }
         }
         return visitDataDTOList
