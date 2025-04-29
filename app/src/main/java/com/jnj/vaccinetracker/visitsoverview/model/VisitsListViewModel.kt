@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.visitsoverview.model
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
@@ -36,12 +37,47 @@ class VisitsListViewModel @Inject constructor(
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
-            visitDTOs.value = createVisitDTOList(historicalVisits)
-            isLoading.value = false
+            try {
+                // Retrieve all visits
+                val allVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+                Log.d("VisitsListViewModel", "Total visits retrieved: ${allVisits.size}")
+
+                // Filter visits based on visitDate >= registrationDate
+                val filteredVisits = allVisits.filter { visit ->
+                    val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+                    if (participant != null) {
+                        val registrationDate = participant.registrationDate
+                        val visitDate = visit.startDatetime
+
+                        Log.d("VisitsListViewModel", "Visit UUID: ${visit.visitUuid}, Visit Date: $visitDate, Registration Date: $registrationDate")
+
+                        // Include visits where visitDate >= registrationDate
+                        visitDate >= registrationDate
+                    } else {
+                        Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+                        false
+                    }
+                }
+                Log.d("VisitsListViewModel", "Number of visits meeting criteria: ${filteredVisits.size}")
+                // Convert filtered visits into DTOs
+                visitDTOs.value = createVisitDTOList(filteredVisits)
+            } catch (e: Exception) {
+                Log.e("VisitsListViewModel", "Error fetching filtered visits data", e)
+            } finally {
+                isLoading.value = false
+            }
         }
     }
+
+//    fun getHistoricalVisitsData() {
+//        isLoading.value = true
+//        viewModelScope.launch {
+//            val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+//                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
+//            visitDTOs.value = createVisitDTOList(historicalVisits)
+//            isLoading.value = false
+//        }
+//    }
 
     fun getMissedVisitsData() {
         isLoading.value = true
