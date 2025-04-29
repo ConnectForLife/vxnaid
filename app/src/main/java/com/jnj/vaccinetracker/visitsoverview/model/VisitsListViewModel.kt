@@ -69,16 +69,6 @@ class VisitsListViewModel @Inject constructor(
         }
     }
 
-//    fun getHistoricalVisitsData() {
-//        isLoading.value = true
-//        viewModelScope.launch {
-//            val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-//                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
-//            visitDTOs.value = createVisitDTOList(historicalVisits)
-//            isLoading.value = false
-//        }
-//    }
-
     fun getMissedVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
