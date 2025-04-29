@@ -318,18 +318,19 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.setPhone(phoneNumber)
             flowViewModel.phoneNumber.set(phoneNumber)
         }
-        
+
         binding.editBirthWeight.doAfterTextChanged {
             val birthWeightString = it?.toString().orEmpty()
-            val birthWeight = birthWeightString.toIntOrNull()
+            val birthWeight = birthWeightString.toDoubleOrNull()
 
             if (birthWeight != null) {
-                if (birthWeight < 2 || birthWeight > 8) {
+                if (birthWeight < 2.0 || birthWeight > 8.0) {
                     binding.editBirthWeight.text = null
                 } else {
-                    viewModel.setBirthWeight(birthWeight.toString())
+                    val formattedBirthWeight = "%.1f".format(birthWeight)
+                    viewModel.setBirthWeight(formattedBirthWeight)
                     flowViewModel.registerDetails.value?.let { currentDetails ->
-                        val updatedDetails = currentDetails.copy(birthWeight = birthWeight.toString())
+                        val updatedDetails = currentDetails.copy(birthWeight = formattedBirthWeight)
                         flowViewModel.registerDetails.set(updatedDetails)
                     }
                 }
