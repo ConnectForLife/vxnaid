@@ -37,7 +37,7 @@
 
     <!-- Home Screen  -->
     <dimen name="button_corner_radius">20dp</dimen>
-    <dimen name="welcome_height">56dp</dimen>
+    <dimen name="welcome_height">70dp</dimen>
     <dimen name="button_width">600dp</dimen>
     <dimen name="button_height">120dp</dimen>
     <dimen name="btn_text_size_18_32">32sp</dimen>
