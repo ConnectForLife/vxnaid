@@ -1,0 +1,17 @@
+<resources>
+    <dimen name="login_input_field_width">400dp</dimen>
+
+    <!-- General Margin -->
+    <dimen name="margin_8_16">4dp</dimen>
+
+    <!-- Home Screen -->
+    <dimen name="btn_margin_32_32_16">16dp</dimen>
+    <dimen name="btn_padding_32_64_20">20dp</dimen>
+
+    <!-- Return visit guide and visit overview Screen  -->
+    <dimen name="return_visit_guide_btn_margin_54_40_20">20dp</dimen>
+    <dimen name="return_visit_guide_btn_padding_32_70_32">32dp</dimen>
+
+    <!-- Reports Overview -->
+    <dimen name="report_overview_btn_padding_70_100_70">70dp</dimen>
+</resources>
