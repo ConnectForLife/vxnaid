@@ -1,3 +1,61 @@
 <resources>
     <dimen name="login_input_field_width">400dp</dimen>
+
+    <!-- General padding -->
+    <dimen name="padding_4_8">8dp</dimen>
+    <dimen name="padding_8_16">16dp</dimen>
+    <dimen name="padding_16_32">32dp</dimen>
+    <dimen name="padding_32_64">64dp</dimen>
+    <dimen name="padding_16_24">24dp</dimen>
+
+    <!-- General Margin -->
+    <dimen name="margin_4_8">8dp</dimen>
+    <dimen name="margin_8_16">16dp</dimen>
+    <dimen name="margin_16_32">32dp</dimen>
+    <dimen name="margin_32_64">64dp</dimen>
+    <dimen name="margin_48_80">80dp</dimen>
+
+    <!-- General text sizes -->
+    <dimen name="text_size_12_16">16sp</dimen>
+    <dimen name="text_size_16_20">20sp</dimen>
+    <dimen name="text_size_14_18">18sp</dimen>
+    <dimen name="text_size_16_26">26sp</dimen>
+    <dimen name="page_title_18_32">32sp</dimen>
+    <dimen name="page_title_18_64">64sp</dimen>
+
+    <!-- Button padding -->
+    <dimen name="btn_padding_4_8">8dp</dimen>
+    <dimen name="btn_padding_8_16">16dp</dimen>
+    <dimen name="btn_padding_16_32">32dp</dimen>
+
+    <!-- Logo -->
+    <dimen name="logo_width">200dp</dimen>
+    <dimen name="logo_height">100dp</dimen>
+
+    <!-- Icon sizes -->
+    <dimen name="icon_size">40dp</dimen>
+
+    <!-- Home Screen  -->
+    <dimen name="button_corner_radius">20dp</dimen>
+    <dimen name="welcome_height">56dp</dimen>
+    <dimen name="button_width">600dp</dimen>
+    <dimen name="button_height">120dp</dimen>
+    <dimen name="btn_text_size_18_32">32sp</dimen>
+    <dimen name="btn_margin_32_32_16">32dp</dimen>
+    <dimen name="btn_padding_32_64_20">64dp</dimen>
+
+    <!-- Return visit guide and visit overview Screen  -->
+    <dimen name="return_visit_guide_btn_margin_54_40_20">40dp</dimen>
+    <dimen name="return_visit_guide_btn_padding_32_70_32">70dp</dimen>
+    <dimen name="complete_input_text_size_18_24">24sp</dimen>
+
+    <!-- Reports Overview -->
+    <dimen name="report_overview_btn_padding_70_100_70">100dp</dimen>
+
+    <!-- contraindications  -->
+    <dimen name="contraindications_text_size">50sp</dimen>
+
+    <!-- Visits -->
+    <dimen name="visit_list_item_text_12_16">16sp</dimen>
+    <dimen name="eye_icon">30dp</dimen>
 </resources>
