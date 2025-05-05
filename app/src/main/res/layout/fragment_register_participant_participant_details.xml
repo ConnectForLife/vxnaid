@@ -22,9 +22,11 @@
     </data>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:focusableInTouchMode="true">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -46,7 +48,7 @@
                     android:text="@{viewModel.participantUuid != null ? @string/participant_update_details_description : @string/participant_registration_details_description}"
                     android:textAlignment="center"
                     android:textAppearance="@style/ScreenTitle"
-                    android:textSize="@dimen/page_title_18_32" />
+                    android:textSize="@dimen/text_24" />
 
                 <LinearLayout
                     android:id="@+id/input_group_participant_id"
