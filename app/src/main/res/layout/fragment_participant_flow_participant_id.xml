@@ -21,12 +21,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_margin="@dimen/margin_16_32"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/btn_skip"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -35,9 +31,10 @@
                 android:id="@+id/textView_manualIDSubtitle"
                 style="@style/CustomAutoSizeText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:layout_height="51dp"
+                android:layout_weight="1"
                 android:text="@string/participant_flow_participant_id_label_manual_entry"
+                android:textAlignment="center"
                 android:textAppearance="@style/ScreenTitle" />
 
             <EditText
@@ -50,7 +47,8 @@
                 android:inputType="textVisiblePassword"
                 android:longClickable="false"
                 android:textIsSelectable="false"
-                android:textSize="18sp"
+                android:textSize="@dimen/complete_input_text_size_18_24"
+                android:textAlignment="center"
                 tools:ignore="TextFields" />
 
             <TextView
@@ -73,6 +71,7 @@
                 android:layout_marginTop="32dp"
                 android:layout_weight="0"
                 android:text="@string/participant_flow_participant_id_label_scan_code"
+                android:textAlignment="center"
                 android:textAppearance="@style/ScreenTitle" />
 
             <ImageButton
