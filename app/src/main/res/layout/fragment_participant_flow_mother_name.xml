@@ -16,17 +16,17 @@
 
         <TextView
             android:id="@+id/label_intro"
-            style="@style/CustomAutoSizeText"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="32dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_16_32"
+            android:layout_marginTop="@dimen/margin_8_16"
             android:text="@string/participant_flow_mother_name_label"
             android:textAppearance="@style/ScreenTitle"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            style="@style/CustomAutoSizeText" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -48,7 +48,8 @@
                 android:longClickable="false"
                 android:text="@{viewModel.motherName}"
                 android:textIsSelectable="false"
-                android:textSize="18sp" />
+                android:textAlignment="center"
+                android:textSize="@dimen/complete_input_text_size_18_24" />
         </LinearLayout>
 
         <Button
