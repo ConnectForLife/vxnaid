@@ -22,7 +22,6 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -40,6 +39,10 @@
                     android:dropDownWidth="300dp"
                     android:ellipsize="end"
                     android:hint="@string/vaccine_name_label"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:focusableInTouchMode="false"
                     android:maxLines="1"
                     android:scrollHorizontally="true" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -66,7 +69,10 @@
                     android:id="@+id/autoComplete_locations"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:focusableInTouchMode="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -81,7 +87,10 @@
                     android:id="@+id/autoComplete_ageGroups"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:focusableInTouchMode="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
