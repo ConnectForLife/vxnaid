@@ -40,15 +40,15 @@
             android:id="@+id/details_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginHorizontal="@dimen/margin_16"
             android:gravity="center_horizontal"
-            android:layout_marginHorizontal="@dimen/margin_8"
+            android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@+id/progress_bar">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
@@ -56,7 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/participant_flow_participant_id_title"
-                    android:textAppearance="@style/LabelText"/>
+                    android:textAppearance="@style/LabelText" />
 
                 <TextView
                     android:id="@+id/textView_pre_gender"
@@ -71,14 +71,14 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="@string/participant_registration_details_label_date_of_birth"
-                    android:textAppearance="@style/LabelText"/>
+                    android:textAppearance="@style/LabelText" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
@@ -86,14 +86,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.participant.participantId}"
-                    android:textAppearance="@style/GeneralText"/>
+                    android:textAppearance="@style/GeneralText" />
 
                 <TextView
                     android:id="@+id/textView_gender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.participant.gender == null ? `` : context.getString(viewModel.participant.gender.translation)}"
-                    android:textAppearance="@style/GeneralText"/>
+                    android:textAppearance="@style/GeneralText" />
 
                 <TextView
                     android:id="@+id/textView_yearOfBirth"
@@ -106,7 +106,7 @@
 
             <LinearLayout
                 android:layout_width="120dp"
-                android:layout_height="80dp"
+                android:layout_height="77dp"
                 android:orientation="vertical">
 
                 <ImageView
@@ -138,7 +138,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_8"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/margin_8"
             android:layout_marginEnd="@dimen/margin_8"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -148,6 +148,7 @@
                 android:id="@+id/layout_visit_type"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.216"
@@ -217,8 +218,8 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginHorizontal="@dimen/margin_8"
+            android:layout_marginTop="@dimen/margin_4"
             android:background="@drawable/white_with_stroke"
             android:backgroundTint="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="@id/input_group_visit_type"
@@ -247,10 +248,11 @@
             android:id="@+id/viewPager_visit"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/margin_8"
             android:layout_marginHorizontal="@dimen/margin_8"
+            android:layout_marginBottom="@dimen/margin_8"
             android:background="@drawable/white_with_stroke"
             android:backgroundTint="@color/colorAccent"
+            android:textSize="@dimen/text_12"
             app:layout_constraintBottom_toTopOf="@+id/btn_submit"
             app:layout_constraintEnd_toEndOf="@+id/tabLayout"
             app:layout_constraintStart_toStartOf="@+id/tabLayout"
@@ -262,7 +264,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/margin_4"
             android:backgroundTint="@color/colorPrimary"
             android:enabled="@{viewModel.loading ? false : true}"
             android:text="@string/general_label_submit"
@@ -279,7 +281,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/margin_4"
             android:backgroundTint="@color/colorTextOnLight"
             android:enabled="@{viewModel.loading ? false : true}"
             android:text="@string/participant_registration_administered_vaccines_add_vaccine"
