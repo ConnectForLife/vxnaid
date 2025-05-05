@@ -41,16 +41,12 @@ class VisitsListViewModel @Inject constructor(
                 // Retrieve all visits
                 val allVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
                 Log.d("VisitsListViewModel", "Total visits retrieved: ${allVisits.size}")
-
                 // Filter visits based on visitDate >= registrationDate
                 val filteredVisits = allVisits.filter { visit ->
                     val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
                     if (participant != null) {
                         val registrationDate = participant.registrationDate
                         val visitDate = visit.startDatetime
-
-                        Log.d("VisitsListViewModel", "Visit UUID: ${visit.visitUuid}, Visit Date: $visitDate, Registration Date: $registrationDate")
-
                         // Include visits where visitDate >= registrationDate
                         visitDate >= registrationDate
                     } else {
@@ -58,7 +54,6 @@ class VisitsListViewModel @Inject constructor(
                         false
                     }
                 }
-                Log.d("VisitsListViewModel", "Number of visits meeting criteria: ${filteredVisits.size}")
                 // Convert filtered visits into DTOs
                 visitDTOs.value = createVisitDTOList(filteredVisits)
             } catch (e: Exception) {
