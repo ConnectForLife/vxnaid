@@ -17,22 +17,36 @@
 
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/participant_item_bg"
-        android:orientation="vertical"
-        app:selected="@{selected}"
-        android:padding="@dimen/padding_8_16">
+        app:selected="@{selected}">
+
+        <ImageView
+            android:id="@+id/imageView_participantPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
+            android:scaleType="fitStart"
+            app:imageUiModel="@{item.picture}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_avatar_operator" />
 
         <LinearLayout
             android:id="@+id/details_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginStart="@dimen/margin_4"
-            android:layout_marginVertical="@dimen/margin_8"
+            android:layout_marginStart="16dp"
+            android:layout_marginVertical="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView_participantPhoto"
             app:layout_constraintTop_toTopOf="parent">
@@ -42,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text='@{"Child ID:               " + (item.participant.participantId != null ? item.participant.participantId : "")}'
-                android:textSize="@dimen/text_14"
+                android:textSize="18sp"
                 tools:text="98574328" />
 
             <TextView
@@ -50,15 +64,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:      ~" + item.participant.birthDateText : "Date of Birth:      " + item.participant.birthDateText}'
-                android:textSize="@dimen/text_14"
+                android:textSize="18sp"
                 tools:text="1992" />
 
             <TextView
                 android:id="@+id/motherName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text='@{"Mother Name:    " + (item.participant.motherFirstName != null ? item.participant.motherFirstName : "") + " " + (item.participant.motherLastName != null ? item.participant.motherLastName : "")}'
-                android:textSize="@dimen/text_14"
+                android:text='@{"Mother Name:      " + (item.participant.motherFirstName != null ? item.participant.motherFirstName : "") + " " + (item.participant.motherLastName != null ? item.participant.motherLastName : "")}'
+                android:textSize="17sp"
                 tools:text="Mother's Name" />
 
             <TextView
@@ -66,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text='@{"Mobile Phone:    " + (item.participant.telephone != null ? item.participant.telephone : "")}'
-                android:textSize="@dimen/text_14"
+                android:textSize="18sp"
                 tools:text="+256 777777777" />
 
             <TextView
@@ -74,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text='@{"Facility Name:     " + item.siteName.display}'
-                android:textSize="@dimen/text_14"
+                android:textSize="18sp"
                 tools:text="Facility Name" />
 
             <TextView
@@ -82,20 +96,55 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text='@{"Address:               " + item.participant.homeLocation}'
-                android:textSize="@dimen/text_14"
+                android:textSize="18sp"
                 tools:text="Belgium, Street 1" />
 
         </LinearLayout>
 
         <Button
             android:id="@+id/border"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:background="@color/colorPrimaryLight"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/details_container" />
-    </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView_IRISMatch_Icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="32dp"
+            android:visibility="@{item.irisMatch ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView_PhoneMatch_Icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_iris_scan" />
+
+        <ImageView
+            android:id="@+id/imageView_PhoneMatch_Icon"
+            android:layout_width="55dp"
+            android:layout_height="41dp"
+            android:layout_marginEnd="32dp"
+            android:visibility="@{item.participantPhoneMatch ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView_IDMatch_Icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_phone" />
+
+        <ImageView
+            android:id="@+id/imageView_IDMatch_Icon"
+            android:layout_width="55dp"
+            android:layout_height="41dp"
+            android:layout_marginEnd="32dp"
+            android:visibility="@{item.participantIdMatch ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_id_card" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

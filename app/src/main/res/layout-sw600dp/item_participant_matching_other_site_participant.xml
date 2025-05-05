@@ -22,64 +22,63 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/participant_item_bg"
-        android:layout_marginTop="8dp"
         android:orientation="vertical"
-        app:selected="@{selected}"
-        android:layout_marginStart="@dimen/margin_8_16">
+        android:layout_marginTop="8dp"
+        app:selected="@{selected}">
 
         <TextView
             android:id="@+id/textView_childNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text='@{"Child ID:               " + (item.participant.participantId != null ? item.participant.participantId : "")}'
+            android:text='@{"Child ID:                 " + (item.participant.participantId != null ? item.participant.participantId : "")}'
             android:textAppearance="@style/GeneralText"
-            android:textSize="@dimen/text_14"
             tools:text="98574328" />
 
         <TextView
             android:id="@+id/textView_birthDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:    ~" + item.participant.birthDateText : "Date of Birth:      " + item.participant.birthDateText}'
+            android:layout_marginStart="16dp"
+            android:text='@{item.participant.isBirthDateEstimated ? "Date of Birth:      ~" + item.participant.birthDateText : "Date of Birth:        " + item.participant.birthDateText}'
             android:textAppearance="@style/GeneralText"
-            android:textSize="@dimen/text_14"
             tools:text="2024-01-01" />
 
         <TextView
             android:id="@+id/motherName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text='@{"Mother Name:    " + (item.participant.motherFirstName != null ? item.participant.motherFirstName : "") + " " + (item.participant.motherLastName != null ? item.participant.motherLastName : "")}'
+            android:layout_marginStart="16dp"
+            android:text='@{"Mother Name:      " + (item.participant.motherFirstName != null ? item.participant.motherFirstName : "") + " " + (item.participant.motherLastName != null ? item.participant.motherLastName : "")}'
             android:textAppearance="@style/GeneralText"
-            android:textSize="@dimen/text_14"
             tools:text="Mother Name" />
 
         <TextView
             android:id="@+id/textView_telephone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text='@{"Mobile Phone:    " + (item.participant.telephone != null ? item.participant.telephone : "")}'
+            android:layout_marginStart="16dp"
+            android:text='@{"Mobile Phone:      " + (item.participant.telephone != null ? item.participant.telephone : "")}'
             android:textAppearance="@style/GeneralText"
-            android:textSize="@dimen/text_14"
             tools:text="111222333" />
 
         <TextView
             android:id="@+id/textViewSiteName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text='@{"Facility Name:    " + item.siteName.display}'
+            android:layout_marginStart="16dp"
+            android:text='@{"Facility Name:      " + item.siteName.display}'
             android:textAppearance="@style/GeneralText"
-            android:textSize="@dimen/text_14"
             tools:text="CFL Clinic" />
 
         <TextView
             android:id="@+id/textView_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text='@{"Address:              " + item.participant.homeLocation}'
+            android:layout_marginStart="12dp"
+            android:text='@{"Address:                 " + item.participant.homeLocation}'
             android:textAppearance="@style/GeneralText"
-            android:textSize="@dimen/text_14"
             tools:text="Uganda,KYAMUSWA,KYAMUSWA,BUZINGO,NAKIBANGA" />
 
         <Button
