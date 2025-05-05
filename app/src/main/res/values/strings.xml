@@ -486,6 +486,7 @@
     <string name="visits_overview_details_client_id_label">Child ID:</string>
     <string name="patient_details_dialog_header"> Child Details:</string>
     <string name="visits_overview_details_client_name_label">Child Name:</string>
+    <string name="visits_overview_details_mother_name_label">Mother\'s Name:</string>
     <string name="visits_overview_details_close_button_label">Close</string>
     <string name="visits_overview_total_visit_count_label">Total Visit Count: %1$d</string>
     <string name="visits_overview_view_details_label">View Details</string>
