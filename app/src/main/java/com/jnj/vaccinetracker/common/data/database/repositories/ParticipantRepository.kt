@@ -52,7 +52,8 @@ class ParticipantRepository @Inject constructor(
             .withLocationUuid(locationUuid)
             .withBirthWeight(birthWeight),
         biometricsTemplate = templateFile,
-        image = imageFile
+        image = imageFile,
+        registrationDate = dateModified,
     )
 
     private fun Participant.toPersistence() = ParticipantEntity(
