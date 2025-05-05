@@ -45,8 +45,7 @@
                     android:layout_marginVertical="@dimen/margin_4"
                     android:text="@{viewModel.participantUuid != null ? @string/participant_update_details_description : @string/participant_registration_details_description}"
                     android:textAlignment="center"
-                    android:textAppearance="@style/ScreenTitle"
-                    android:textSize="@dimen/page_title_18_32" />
+                    android:textAppearance="@style/ScreenTitle"/>
 
                 <LinearLayout
                     android:id="@+id/input_group_participant_id"
