@@ -16,7 +16,6 @@
         android:layout_height="match_parent"
         android:layout_margin="@dimen/margin_8_16">
 
-
         <TextView
             android:id="@+id/label_introduction"
             style="@style/CustomAutoSizeText"
@@ -31,7 +30,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints" />
-
 
         <LinearLayout
             android:id="@+id/auth_steps_container"
