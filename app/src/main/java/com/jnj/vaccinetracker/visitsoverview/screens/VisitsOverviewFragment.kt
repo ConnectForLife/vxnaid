@@ -27,7 +27,7 @@ class VisitsOverviewFragment : BaseFragment() {
         }
 
         binding.btnHistoricalVisits.setOnClickListener {
-            navigateToVisitsList(Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY)
+            navigateToVisitsList(Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY_OFFLINE)
         }
 
         binding.btnMissedVisits.setOnClickListener {

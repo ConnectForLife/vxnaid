@@ -16,5 +16,5 @@ data class RoomDraftVisitModel(
     val attributes: List<DraftVisitAttributeEntity>,
     override val draftState: DraftState = DraftState.initialState(),
     override val participantUuid: String,
-    override val visitType: String,
+    override val visitType: String
 ) : DraftVisitEntityBase, ParticipantUuidContainer

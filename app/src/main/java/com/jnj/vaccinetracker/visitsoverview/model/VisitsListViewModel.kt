@@ -2,21 +2,26 @@ package com.jnj.vaccinetracker.visitsoverview.model
 
 import android.os.Bundle
 import androidx.lifecycle.viewModelScope
+import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
+import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 class VisitsListViewModel @Inject constructor(
     private val visitRepository: VisitRepository,
+    private val draftVisitRepository: DraftVisitRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
@@ -41,6 +46,35 @@ class VisitsListViewModel @Inject constructor(
             visitDTOs.value = createVisitDTOList(historicalVisits)
             isLoading.value = false
         }
+    }
+
+    fun getCombinedHistoricalVisitsData() {
+        isLoading.value = true
+        viewModelScope.launch {
+            val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
+
+            val draftHistoricalVisits = draftVisitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+            val convertedDraftVisits = draftHistoricalVisits.map { draftVisit ->
+                convertDraftVisitToVisitOffline(draftVisit)
+            }
+            val combinedVisits = convertedDraftVisits + historicalVisits
+            visitDTOs.value = createVisitDTOList(combinedVisits)
+            logInfo("Combined ${combinedVisits.size} visits into VisitDTOs")
+            isLoading.value = false
+        }
+    }
+
+    fun convertDraftVisitToVisitOffline(draftVisit: DraftVisit): Visit {
+        return Visit(
+            visitUuid = draftVisit.visitUuid,
+            startDatetime = draftVisit.startDatetime,
+            visitType = draftVisit.visitType,
+            participantUuid = draftVisit.participantUuid,
+            attributes = draftVisit.attributes,
+            observations = emptyMap(), // Replace with actual observation mapping if needed
+            dateModified = Date(System.currentTimeMillis())
+        )
     }
 
     fun getMissedVisitsData() {
