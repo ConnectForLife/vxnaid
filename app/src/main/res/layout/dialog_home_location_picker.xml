@@ -23,7 +23,8 @@
             android:id="@+id/label_home_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="@dimen/margin_4_8"
+            android:textAlignment="center"
             android:text="@string/home_location_picker_title"
             android:textAppearance="@style/ScreenTitle" />
 
@@ -36,9 +37,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/margin_4_8"
             android:gravity="center_vertical"
-            android:minHeight="52dp"
+            android:minHeight="45dp"
             android:orientation="horizontal">
 
             <TextView
@@ -52,7 +53,8 @@
             <Spinner
                 android:id="@+id/spinner_country"
                 style="@android:style/Widget.Material.Spinner.Underlined"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:hint="@string/home_location_picker_label_country" />
 
