@@ -87,6 +87,7 @@
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
     <string name="visits_overview_client_mothers_name_column_label">Mother\'s Name</string>
+    <string name="visits_overview_client_mothers_name_column_label_mobile" translatable="false">Mother</string>
     <string name="participant_flow_child_number_title">Child Number</string>
     <string name="participant_flow_participant_id_title">Child ID</string>
     <string name="participant_flow_participant_id_hint">Scan Child ID QR Code</string>
@@ -527,5 +528,6 @@
     <string name="registered_children_search_hint">Search by ID, child or mother name</string>
     <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
     <string name="children_overview_client_birthdate_column_label">Date of Birth</string>
+    <string name="children_overview_client_birthdate_column_label_mobile">Birth Date</string>
     <string name="not_set">Not set</string>
 </resources>
