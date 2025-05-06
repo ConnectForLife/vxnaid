@@ -176,7 +176,7 @@
                 android:text="@string/visits_overview_details_close_button_label" />
 
             <Button
-                android:id="@+id/edit_button"
+                android:id="@+id/child_details_button"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
