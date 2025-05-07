@@ -5,12 +5,15 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
@@ -39,6 +42,7 @@ import com.jnj.vaccinetracker.register.dialogs.*
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
+import java.util.Locale
 
 /**
  * @author maartenvangiel
@@ -319,23 +323,41 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             flowViewModel.phoneNumber.set(phoneNumber)
         }
 
-        binding.editBirthWeight.doAfterTextChanged {
-            val birthWeightString = it?.toString().orEmpty()
-            val birthWeight = birthWeightString.toDoubleOrNull()
+        val birthWeightWatcher = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val input = s?.toString().orEmpty().replace(',', '.')
+                val birthWeight = input.toDoubleOrNull()
 
-            if (birthWeight != null) {
-                if (birthWeight < 2.0 || birthWeight > 8.0) {
-                    binding.editBirthWeight.text = null
-                } else {
-                    val formattedBirthWeight = "%.1f".format(birthWeight)
-                    viewModel.setBirthWeight(formattedBirthWeight)
-                    flowViewModel.registerDetails.value?.let { currentDetails ->
-                        val updatedDetails = currentDetails.copy(birthWeight = formattedBirthWeight)
-                        flowViewModel.registerDetails.set(updatedDetails)
+                if (input.isBlank()) {
+                    viewModel.setBirthWeight("")
+                    flowViewModel.registerDetails.value?.let {
+                        flowViewModel.registerDetails.set(it.copy(birthWeight = ""))
                     }
+                    return
+                }
+
+                if (birthWeight != null && birthWeight in 2.0..8.0) {
+                    viewModel.setBirthWeight(input)
+                    flowViewModel.registerDetails.value?.let {
+                        flowViewModel.registerDetails.set(it.copy(birthWeight = input))
+                    }
+                } else if (birthWeight != null) {
+                    Toast.makeText(
+                        binding.root.context,
+                        "Please enter a number between 2.0 and 8.0",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    binding.editBirthWeight.removeTextChangedListener(this)
+                    binding.editBirthWeight.setText("")
+                    binding.editBirthWeight.addTextChangedListener(this)
                 }
             }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
+
+        binding.editBirthWeight.addTextChangedListener(birthWeightWatcher)
 
         binding.editMotherFirstName.doAfterTextChanged {
             val motherFirstName = it?.toString().orEmpty()
