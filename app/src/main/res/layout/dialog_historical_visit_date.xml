@@ -37,6 +37,17 @@
             android:text="@string/dialog_historical_visit_text"
             android:textAppearance="@style/PopupTitle" />
 
+        <TextView
+            android:id="@+id/textViewError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="gone"
+            android:text="@string/error_date_already_used"
+            android:layout_marginTop="8dp"
+            android:padding="8dp" />
+
+
 
         <DatePicker
             android:id="@+id/datePicker"

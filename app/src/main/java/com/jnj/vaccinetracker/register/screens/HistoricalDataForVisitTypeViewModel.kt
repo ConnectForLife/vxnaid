@@ -155,4 +155,9 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
       currentMap[key] = value
       liveDataMap.postValue(currentMap)
    }
+
+   fun getUsedVisitDates(): List<String> {
+      return substancesAndDates.value?.map { it.value } ?: emptyList()
+      //return historicalVisitDates.value?.map { it.format("yyyy-MM-dd") } ?: emptyList()
+   }
 }
