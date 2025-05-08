@@ -12,6 +12,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.R
@@ -55,6 +57,7 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 class HistoricalDataForVisitTypeFragment :
    BaseFragment(),
+   HistoricalVisitDateDialog.VisitDateValidator,
    OtherSubstanceItemAdapter.AddSubstanceValueListener,
    HistoricalVisitDateDialog.HistoricalVisitDateListener,
    VaccineDialog.AddVaccineListener {
@@ -122,10 +125,9 @@ class HistoricalDataForVisitTypeFragment :
       if (!doesSubstancesHaveAnyDates() && viewModel.isLocalEdit.value != true) {
          viewModel.filterSubstanceDates.value = false
          val birthDate = allDataViewModel.getParticipantBirthDate()
-         val usedDates = viewModel.getUsedVisitDates()
          HistoricalVisitDateDialog.create(
              birthDate = birthDate,
-             usedDates = usedDates
+
          ).show(childFragmentManager, TAG_HISTORICAL_VISIT_DATE)
       }
       lifecycleScope.launch {
@@ -594,5 +596,23 @@ class HistoricalDataForVisitTypeFragment :
       val currentSubstances = viewModel.substancesData.value?.toMutableList() ?: mutableListOf()
       currentSubstances.add(vaccine)
       viewModel.substancesData.value = currentSubstances
+   }
+
+   private val usedDatesByVisitType = mutableMapOf<String, MutableSet<String>>()
+   private val filledVisits = mutableSetOf<String>()
+
+   fun addUsedDate(date: DateTime, visitType: String) {
+      val dateStr = date.format("yyyy-MM-dd")
+      usedDatesByVisitType.getOrPut(visitType) { mutableSetOf() }.add(dateStr)
+      filledVisits.add(visitType)
+   }
+
+   override fun isDateAlreadyUsed(date: DateTime, visitType: String): Boolean {
+      val dateStr = date.format("yyyy-MM-dd")
+      return usedDatesByVisitType.any { (type, dates) -> type != visitType && dates.contains(dateStr) }
+   }
+
+   override fun isVisitAlreadyFilled(visitType: String): Boolean {
+      return filledVisits.contains(visitType)
    }
 }

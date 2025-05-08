@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.register.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -17,6 +18,8 @@ import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -27,6 +30,8 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
 ) : ViewModelBase() {
 
    data class Args(val visitTypeName: String?, val visitUuid: String?)
+   private val _historicalVisitDates = MutableLiveData<Set<String>>(emptySet())
+   private val historicalVisitDates: LiveData<Set<String>> = _historicalVisitDates
 
    private val args = MutableStateFlow<Args?>(null)
    val visitTypeName = MutableLiveData<String?>()
@@ -156,8 +161,20 @@ class HistoricalDataForVisitTypeViewModel @Inject constructor(
       liveDataMap.postValue(currentMap)
    }
 
-   fun getUsedVisitDates(): List<String> {
-      return substancesAndDates.value?.map { it.value } ?: emptyList()
-      //return historicalVisitDates.value?.map { it.format("yyyy-MM-dd") } ?: emptyList()
+
+   private val filledVisits = mutableSetOf<String>()
+
+   fun onVisitRecorded(visitType: String, selectedDate: LocalDate?) {
+      if (visitType.isNotEmpty() && selectedDate != null) {
+         val formattedDate = selectedDate.format(DateTimeFormatter.ISO_DATE)
+         _historicalVisitDates.value = _historicalVisitDates.value.orEmpty().plus(formattedDate)
+         filledVisits.add(visitType)
+      }
    }
+
+   fun getNextRequiredVisit(): String? {
+      val allVisitTypes = listOf("At Birth", "6 Weeks", "10 Weeks", "18 Months")
+      return allVisitTypes.firstOrNull { !filledVisits.contains(it) }
+   }
+
 }

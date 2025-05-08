@@ -57,6 +57,13 @@
             android:calendarViewShown="false"
             android:datePickerMode="calendar" />
 
+        <Spinner
+            android:id="@+id/visitTypeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:entries="@array/visit_types" />
+
         <!-- Buttons -->
         <LinearLayout
             style="?android:attr/buttonBarStyle"
