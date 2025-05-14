@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -68,14 +69,33 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    private val _actionLiveData = MutableLiveData<String>()
    val actionLiveData: LiveData<String> = _actionLiveData
 
+   private val atBirthVisitDate = mutableLiveData<DateTime?>()
+
+   fun isDateValidForVisitType(visitType: String, selectedDate: DateTime): Boolean {
+      if (visitType == "At Birth") return true
+      val birthDate = atBirthVisitDate.value ?: return true
+      return selectedDate >= birthDate
+   }
+
+   fun setAtBirthVisitDate(date: DateTime) {
+      atBirthVisitDate.value = date
+   }
+
    private val disabledDatesByVisitType: MutableMap<String, Set<Long>> = mutableMapOf()
 
    fun getDisabledDatesForVisitType(visitType: String): Set<Long> {
-      return disabledDatesByVisitType[visitType] ?: emptySet()
+      return if (visitType == "At Birth") {
+         emptySet() // No restriction for At Birth
+      } else {
+         disabledDatesByVisitType[visitType] ?: emptySet()
+      }
    }
 
+
    fun setDisabledDatesForVisitType(visitType: String, dates: Set<Long>) {
-      disabledDatesByVisitType[visitType] = dates
+      if (visitType != "At Birth") {
+         disabledDatesByVisitType[visitType] = dates
+      }
    }
 
    fun addDisabledDate(date: Long) {

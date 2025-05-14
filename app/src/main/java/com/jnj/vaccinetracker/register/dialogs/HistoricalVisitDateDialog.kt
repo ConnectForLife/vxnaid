@@ -33,8 +33,8 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
    private lateinit var binding: DialogHistoricalVisitDateBinding
    private val disabledDates = mutableSetOf<Long>()
 
-
    private val viewModel: RegisterParticipantHistoricalDataViewModel by activityViewModels()
+
 
    companion object {
       private const val BIRTH_DATE_STR = "birthDateStr"
@@ -53,13 +53,13 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
       }
    }
 
+   @RequiresApi(Build.VERSION_CODES.O)
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       arguments?.getString(BIRTH_DATE_STR)?.let { birthDate = it }
 
       arguments?.getString(DISABLED_DATES_KEY)?.split(",")?.mapNotNull { it.toLongOrNull() }?.let {
          disabledDates.addAll(viewModel.getAllDisabledDates())
-
       }
 
       setStyle(STYLE_NO_TITLE, 0)
@@ -76,20 +76,31 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
       btnOk.setOnClickListener {
          val selectedDate = DateTime(datePicker.year, datePicker.month + 1, datePicker.dayOfMonth)
          val normalized = selectedDate.unixMillisLong.toMidnight()
+         val visitType = arguments?.getString(VISIT_TYPE) ?: return@setOnClickListener
 
-         if (disabledDates.contains(normalized)) {
-            Toast.makeText(requireContext(), "This date is already used. Please select another.", Toast.LENGTH_SHORT).show()
-            Log.d("DatePicker", "Blocked attempt to select a disabled date: $normalized")
-            return@setOnClickListener
+         if (visitType != "At Birth") {
+            // Validate against birth date
+            if (!viewModel.isDateValidForVisitType(visitType, selectedDate)) {
+               Toast.makeText(requireContext(), "Selected date must be after birth date", Toast.LENGTH_SHORT).show()
+               return@setOnClickListener
+            }
+
+            // Check for duplicate dates
+            if (disabledDates.contains(normalized)) {
+               Toast.makeText(requireContext(), "This date is already used. Please select another.", Toast.LENGTH_SHORT).show()
+               Log.d("DatePicker", "Blocked attempt to select a disabled date: $normalized")
+               return@setOnClickListener
+            }
+
+            viewModel.addDisabledDate(normalized)
+
+            val currentDisabledDates = viewModel.getDisabledDatesForVisitType(visitType).toMutableSet()
+            currentDisabledDates.add(normalized)
+            viewModel.setDisabledDatesForVisitType(visitType, currentDisabledDates)
          }
 
+         // Always notify listener
          findParent<HistoricalVisitDateListener>()?.onDatePicked(selectedDate)
-         viewModel.addDisabledDate(normalized)
-
-         val visitType = arguments?.getString(VISIT_TYPE) ?: return@setOnClickListener
-         val currentDisabledDates = viewModel.getDisabledDatesForVisitType(visitType).toMutableSet()
-         currentDisabledDates.add(normalized)
-         viewModel.setDisabledDatesForVisitType(visitType, currentDisabledDates)
 
          dismissAllowingStateLoss()
       }
@@ -132,7 +143,9 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
          selectedCalendar.set(Calendar.MILLISECOND, 0)
          val selectedDateMillis = selectedCalendar.timeInMillis
 
-         if (disabledDates.contains(selectedDateMillis)) {
+         val visitType = arguments?.getString(VISIT_TYPE) ?: ""
+
+         if (visitType != "At Birth" && disabledDates.contains(selectedDateMillis)) {
             Toast.makeText(requireContext(), "This date is already used. Please select another.", Toast.LENGTH_SHORT).show()
             Log.d("DatePicker", "Selected date is disabled")
 
