@@ -19,6 +19,7 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
@@ -39,9 +40,8 @@ class VisitsListViewModel @Inject constructor(
             val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
 
-            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(getTodayMidnight())
+            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
             val draftVisitParticipantIds = draftScheduledVisitsEncounter.map { it.participantUuid }.toSet()
-
             // Remove scheduled visits with the same participant ID as in draftVisitEncounter
             val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit ->
                 !draftVisitParticipantIds.contains(scheduledVisit.participantUuid)
