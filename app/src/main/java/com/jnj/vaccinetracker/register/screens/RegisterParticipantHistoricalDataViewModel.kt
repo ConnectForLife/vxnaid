@@ -85,7 +85,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
 
    fun getDisabledDatesForVisitType(visitType: String): Set<Long> {
       return if (visitType == "At Birth") {
-         emptySet() // No restriction for At Birth
+         emptySet()
       } else {
          disabledDatesByVisitType[visitType] ?: emptySet()
       }
