@@ -30,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import javax.inject.Inject
-import android.text.Html
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.StyleSpan
