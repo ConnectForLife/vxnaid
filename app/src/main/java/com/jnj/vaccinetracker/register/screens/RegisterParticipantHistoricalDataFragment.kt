@@ -29,8 +29,10 @@ import com.jnj.vaccinetracker.databinding.FragmentRegisterHistoricalVisitsBindin
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
+import com.jnj.vaccinetracker.register.dialogs.HistoricalVisitDateDialog
 import com.jnj.vaccinetracker.register.dialogs.MultipleVisitsDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantSuccessfulDialog
+import com.soywiz.klock.DateTime
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -98,6 +100,19 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
                .show(childFragmentManager, TAG_SUCCESS_DIALOG)
          }
          .launchIn(lifecycleOwner.lifecycleScope)
+   }
+
+   private fun showDatePickerDialog() {
+     val birthDate = viewModel.getParticipantBirthDate()
+      val visitType = "historical"
+      val disabledDates = viewModel.getDisabledDatesForVisitType(visitType)
+
+      val dialog = HistoricalVisitDateDialog.create(birthDate, disabledDates, visitType)
+      dialog.show(parentFragmentManager, "HistoricalVisitDateDialog")
+   }
+
+   fun onDatePicked(date: DateTime) {
+      viewModel.setHistoricalVisitDate(date)
    }
 
    private fun setupClickListeners() {
