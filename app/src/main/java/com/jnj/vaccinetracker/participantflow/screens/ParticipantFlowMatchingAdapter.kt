@@ -23,7 +23,7 @@ class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (Particip
 
     fun updateItems(items: List<ParticipantFlowMatchingViewModel.MatchingListItem>) {
         this.items = items
-        selectedPosition = null // Clear selection when items are updated
+        selectedPosition = null 
         notifyDataSetChanged()
     }
 

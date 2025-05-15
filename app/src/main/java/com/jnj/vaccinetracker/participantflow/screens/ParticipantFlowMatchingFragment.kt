@@ -32,6 +32,10 @@ import com.jnj.vaccinetracker.visit.VisitActivity
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
+/**
+ * @author maartenvangiel
+ * @version 1
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 class ParticipantFlowMatchingFragment : BaseFragment() {
 
@@ -181,8 +185,10 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
             Constants.REQ_REGISTER_PARTICIPANT -> {
                 val participant = data?.getParcelableExtra<ParticipantSummaryUiModel>(RegisterParticipantFlowActivity.EXTRA_PARTICIPANT)
                 if (participant == null) {
+                    // If no participant passed, we will return to the start of the identification flow
                     startActivity(ParticipantFlowActivity.create(requireContext()))
                 } else {
+                    // If participant passed, we continue
                     startParticipantVisitContraindications(participant, true)
                 }
                 requireActivity().finish()
