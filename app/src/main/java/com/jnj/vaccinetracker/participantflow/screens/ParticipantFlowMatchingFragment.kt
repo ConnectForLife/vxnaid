@@ -32,10 +32,6 @@ import com.jnj.vaccinetracker.visit.VisitActivity
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-/**
- * @author maartenvangiel
- * @version 1
- */
 @RequiresApi(Build.VERSION_CODES.O)
 class ParticipantFlowMatchingFragment : BaseFragment() {
 
@@ -74,7 +70,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         }
 
         binding.btnReportAdverseEffects.setOnClickListener {
-            viewModel.getSelectedParticipantSummary()?.let {startParticipantReportAdverseEffects(it)}
+            viewModel.getSelectedParticipantSummary()?.let { startParticipantReportAdverseEffects(it) }
         }
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         return binding.root
@@ -164,12 +160,18 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(!visible)
     }
 
-    private fun onItemSelected(matchingListItem: ParticipantFlowMatchingViewModel.MatchingListItem) {
-        val selectedParticipant = viewModel.setSelectedParticipant(matchingListItem)
-        if (selectedParticipant != null) {
-            flowViewModel.selectedParticipant.value = selectedParticipant
+    private fun onItemSelected(matchingListItem: ParticipantFlowMatchingViewModel.MatchingListItem?) {
+        if (matchingListItem == null) {
+            clearSelectedParticipant()
+        } else {
+            flowViewModel.selectedParticipant.value = viewModel.setSelectedParticipant(matchingListItem)
             setButtonsVisibility(true)
         }
+    }
+
+    fun clearSelectedParticipant() {
+        flowViewModel.selectedParticipant.value = null
+        setButtonsVisibility(false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -179,10 +181,8 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
             Constants.REQ_REGISTER_PARTICIPANT -> {
                 val participant = data?.getParcelableExtra<ParticipantSummaryUiModel>(RegisterParticipantFlowActivity.EXTRA_PARTICIPANT)
                 if (participant == null) {
-                    // If no participant passed, we will return to the start of the identification flow
                     startActivity(ParticipantFlowActivity.create(requireContext()))
                 } else {
-                    // If participant passed, we continue
                     startParticipantVisitContraindications(participant, true)
                 }
                 requireActivity().finish()
