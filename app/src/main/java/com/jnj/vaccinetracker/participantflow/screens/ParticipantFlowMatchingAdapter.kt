@@ -9,6 +9,10 @@ import com.jnj.vaccinetracker.databinding.ItemParticipantMatchingOtherSitePartic
 import com.jnj.vaccinetracker.databinding.ItemParticipantMatchingParticipantBinding
 import com.jnj.vaccinetracker.databinding.ItemParticipantMatchingSubtitleBinding
 
+/**
+ * @author maartenvangiel
+ * @version 1
+ */
 class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (ParticipantFlowMatchingViewModel.MatchingListItem?) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -23,7 +27,7 @@ class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (Particip
 
     fun updateItems(items: List<ParticipantFlowMatchingViewModel.MatchingListItem>) {
         this.items = items
-        selectedPosition = null 
+        selectedPosition = null
         notifyDataSetChanged()
     }
 
