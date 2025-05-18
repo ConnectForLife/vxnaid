@@ -326,13 +326,28 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         val birthWeightWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val input = s?.toString().orEmpty().replace(',', '.')
-                val birthWeight = input.toDoubleOrNull()
+
+                val decimalPattern = Regex("^\\d{1,2}(\\.\\d?)?$")
 
                 if (input.isBlank()) {
                     viewModel.setBirthWeight("")
                     flowViewModel.registerDetails.value?.let {
                         flowViewModel.registerDetails.set(it.copy(birthWeight = ""))
                     }
+                    return
+                }
+
+                val birthWeight = input.toDoubleOrNull()
+
+                if (!decimalPattern.matches(input)) {
+                    Toast.makeText(
+                        binding.root.context,
+                        "Please enter a number with only one decimal place (e.g., 2.8)",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    binding.editBirthWeight.removeTextChangedListener(this)
+                    binding.editBirthWeight.setText("")
+                    binding.editBirthWeight.addTextChangedListener(this)
                     return
                 }
 
