@@ -74,7 +74,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         }
 
         binding.btnReportAdverseEffects.setOnClickListener {
-            viewModel.getSelectedParticipantSummary()?.let {startParticipantReportAdverseEffects(it)}
+            viewModel.getSelectedParticipantSummary()?.let { startParticipantReportAdverseEffects(it) }
         }
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         return binding.root
@@ -164,12 +164,18 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(!visible)
     }
 
-    private fun onItemSelected(matchingListItem: ParticipantFlowMatchingViewModel.MatchingListItem) {
-        val selectedParticipant = viewModel.setSelectedParticipant(matchingListItem)
-        if (selectedParticipant != null) {
-            flowViewModel.selectedParticipant.value = selectedParticipant
+    private fun onItemSelected(matchingListItem: ParticipantFlowMatchingViewModel.MatchingListItem?) {
+        if (matchingListItem == null) {
+            clearSelectedParticipant()
+        } else {
+            flowViewModel.selectedParticipant.value = viewModel.setSelectedParticipant(matchingListItem)
             setButtonsVisibility(true)
         }
+    }
+
+    fun clearSelectedParticipant() {
+        flowViewModel.selectedParticipant.value = null
+        setButtonsVisibility(false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
