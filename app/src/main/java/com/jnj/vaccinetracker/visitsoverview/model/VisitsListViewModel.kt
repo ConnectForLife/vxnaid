@@ -38,41 +38,57 @@ class VisitsListViewModel @Inject constructor(
         isLoading.value = true
         viewModelScope.launch {
             try {
-                // Retrieve all visits
                 val allVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                Log.d("VisitsListViewModel", "Total visits retrieved: ${allVisits.size}")
-                // Filter visits based on visitDate >= registrationDate
+                Log.d("HistoricalVisits", "Total visits retrieved: ${allVisits.size}")
+
                 val filteredVisits = allVisits.filter { visit ->
-                    val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+                    val participant = findParticipantByParticipantUuidUseCase
+                        .findByParticipantUuid(visit.participantUuid)
+
                     if (participant != null) {
                         val registrationDate = participant.registrationDate
                         val visitDate = visit.startDatetime
-                        // Include visits where visitDate >= registrationDate
-                        visitDate >= registrationDate
+                        val isValid = visitDate >= registrationDate
+                        isValid
                     } else {
-                        Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+                        Log.w("HistoricalVisits", "Participant not found for UUID: ${visit.participantUuid}")
                         false
                     }
                 }
-                // Convert filtered visits into DTOs
+
+                Log.d("HistoricalVisits", "Filtered visits count: ${filteredVisits.size}")
                 visitDTOs.value = createVisitDTOList(filteredVisits)
             } catch (e: Exception) {
-                Log.e("VisitsListViewModel", "Error fetching filtered visits data", e)
+                e.printStackTrace()
+                Log.e("HistoricalVisits", "Error fetching historical visits data", e)
             } finally {
                 isLoading.value = false
             }
         }
     }
 
+
     fun getMissedVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
-                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
-            visitDTOs.value = createVisitDTOList(missedVisits)
-            isLoading.value = false
+            try {
+                val allVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
+                Log.d("MissedVisits", "Total visits before today: ${allVisits.size}")
+
+                val missedVisits = allVisits.filter { visit ->
+                    val isScheduled = visit.visitStatus == Constants.VISIT_STATUS_SCHEDULED
+                    isScheduled
+                }
+
+                visitDTOs.value = createVisitDTOList(missedVisits)
+            } catch (e: Exception) {
+                Log.e("MissedVisits", "Error fetching missed visits data", e)
+            } finally {
+                isLoading.value = false
+            }
         }
     }
+
 
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
         val visitDataDTOList: MutableList<VisitDataDTO> = mutableListOf()
