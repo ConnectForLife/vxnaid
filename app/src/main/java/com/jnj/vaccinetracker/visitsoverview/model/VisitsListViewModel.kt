@@ -71,21 +71,10 @@ class VisitsListViewModel @Inject constructor(
     fun getMissedVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            try {
-                val allVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
-                Log.d("MissedVisits", "Total visits before today: ${allVisits.size}")
-
-                val missedVisits = allVisits.filter { visit ->
-                    val isScheduled = visit.visitStatus == Constants.VISIT_STATUS_SCHEDULED
-                    isScheduled
-                }
-
-                visitDTOs.value = createVisitDTOList(missedVisits)
-            } catch (e: Exception) {
-                Log.e("MissedVisits", "Error fetching missed visits data", e)
-            } finally {
-                isLoading.value = false
-            }
+            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
+                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
+            visitDTOs.value = createVisitDTOList(missedVisits)
+            isLoading.value = false
         }
     }
 
