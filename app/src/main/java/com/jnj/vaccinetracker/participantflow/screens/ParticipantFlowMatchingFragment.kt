@@ -74,7 +74,7 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
         }
 
         binding.btnReportAdverseEffects.setOnClickListener {
-            viewModel.getSelectedParticipantSummary()?.let {startParticipantReportAdverseEffects(it)}
+            viewModel.getSelectedParticipantSummary()?.let { startParticipantReportAdverseEffects(it) }
         }
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         return binding.root
@@ -89,8 +89,23 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
             }.launchIn(lifecycleOwner)
 
         viewModel.items.observe(lifecycleOwner) { items ->
-            adapter.updateItems(items.orEmpty())
+            val itemList = items.orEmpty()
+            adapter.updateItems(itemList)
+
+            when {
+                itemList.size == 1 -> {
+                    viewModel.setSelectedParticipant(itemList[0])
+                    setButtonsVisibility(true)
+                }
+                itemList.size > 1 -> {
+                    setButtonsVisibility(false)
+                }
+                else -> {
+                    setButtonsVisibility(false)
+                }
+            }
         }
+
         viewModel.errorMessage.observe(lifecycleOwner) { errorMessage ->
             errorSnackbar?.dismiss()
 
@@ -140,11 +155,27 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
             motherName = motherName))
     }
 
-    private fun onItemSelected(matchingListItem: ParticipantFlowMatchingViewModel.MatchingListItem) {
-        val selectedParticipant = viewModel.setSelectedParticipant(matchingListItem)
-        if (selectedParticipant != null) {
-            flowViewModel.selectedParticipant.value = selectedParticipant
+    private fun setButtonsVisibility(visible: Boolean) {
+        val visibility = if (visible) View.VISIBLE else View.GONE
+        binding.btnNewParticipant.visibility = visibility
+        binding.btnMatchParticipant.visibility = visibility
+        binding.btnReportAdverseEffects.visibility = visibility
+
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(!visible)
+    }
+
+    private fun onItemSelected(matchingListItem: ParticipantFlowMatchingViewModel.MatchingListItem?) {
+        if (matchingListItem == null) {
+            clearSelectedParticipant()
+        } else {
+            flowViewModel.selectedParticipant.value = viewModel.setSelectedParticipant(matchingListItem)
+            setButtonsVisibility(true)
         }
+    }
+
+    fun clearSelectedParticipant() {
+        flowViewModel.selectedParticipant.value = null
+        setButtonsVisibility(false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

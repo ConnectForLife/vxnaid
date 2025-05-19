@@ -1,7 +1,10 @@
 package com.jnj.vaccinetracker.register.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
@@ -30,6 +33,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -54,6 +58,55 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    val isEdit = mutableLiveData<Boolean>(false)
    val groupedVisitsByType = mutableLiveData<Map<String, List<VisitDetail>>>()
    val visitTypesData = mutableLiveData<MutableMap<String, HistoricalData>>(mutableMapOf())
+   private val _historicalVisitDates = MutableLiveData<List<DateTime>>(emptyList())
+   val historicalVisitDates: LiveData<List<DateTime>> get() = _historicalVisitDates
+   private val _disabledDates = MutableLiveData<MutableSet<Long>>().apply {
+      value = mutableSetOf()
+   }
+   private val disabledDates: LiveData<MutableSet<Long>> = _disabledDates
+   private val allDisabledDates = mutableSetOf<Long>()
+   fun getAllDisabledDates(): Set<Long> = allDisabledDates
+   private val _actionLiveData = MutableLiveData<String>()
+   val actionLiveData: LiveData<String> = _actionLiveData
+
+   private val atBirthVisitDate = mutableLiveData<DateTime?>()
+
+   fun isDateValidForVisitType(visitType: String, selectedDate: DateTime): Boolean {
+      if (visitType == "At Birth") return true
+      val birthDate = atBirthVisitDate.value ?: return true
+      return selectedDate >= birthDate
+   }
+
+   fun setAtBirthVisitDate(date: DateTime) {
+      atBirthVisitDate.value = date
+   }
+
+   private val disabledDatesByVisitType: MutableMap<String, Set<Long>> = mutableMapOf()
+
+   fun getDisabledDatesForVisitType(visitType: String): Set<Long> {
+      return if (visitType == "At Birth") {
+         emptySet()
+      } else {
+         disabledDatesByVisitType[visitType] ?: emptySet()
+      }
+   }
+
+
+   fun setDisabledDatesForVisitType(visitType: String, dates: Set<Long>) {
+      if (visitType != "At Birth") {
+         disabledDatesByVisitType[visitType] = dates
+      }
+   }
+
+   fun addDisabledDate(date: Long) {
+      allDisabledDates.add(date)
+   }
+
+   fun setAllDisabledDates(dates: Set<Long>) {
+      allDisabledDates.clear()
+      allDisabledDates.addAll(dates)
+   }
+
 
    init {
       participantSummaryArg
@@ -97,6 +150,18 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
          logError("Failed to get visits for participant: ", ex)
       }
    }
+
+   // Extension function to convert a Long timestamp to midnight time
+   private fun Long.toMidnight(): Long {
+      val cal = java.util.Calendar.getInstance()
+      cal.timeInMillis = this
+      cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
+      cal.set(java.util.Calendar.MINUTE, 0)
+      cal.set(java.util.Calendar.SECOND, 0)
+      cal.set(java.util.Calendar.MILLISECOND, 0)
+      return cal.timeInMillis
+   }
+
 
    private fun buildHistoricalVisitObject(
       participant: ParticipantSummaryUiModel,
@@ -225,6 +290,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       )
       currentData[visitTypeName] = updatedVisitTypeEntry
 
+
       visitTypesData.postValue(currentData)
    }
 
@@ -245,5 +311,11 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       }
 
       return Date()
+   }
+
+   fun setHistoricalVisitDate(date: DateTime) {
+        _historicalVisitDates.value = _historicalVisitDates.value?.plus(date) ?: listOf(date)
+        Log.d("HistoricalVisit", "Set historical visit date: $date")
+
    }
 }

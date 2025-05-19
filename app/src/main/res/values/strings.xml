@@ -136,7 +136,7 @@
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
     <string name="participant_registration_details_description">Please Enter New Child\'s Details</string>
     <string name="participant_update_details_description" translatable="false">Update Child Details</string>
-    <string name="participant_registration_details_action_update_participant" translatable="false">Update Child Details</string>
+    <string name="participant_registration_details_action_update_participant" translatable="false">Save</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
     <string name="participant_registration_load_camera">Load a Camera</string>
