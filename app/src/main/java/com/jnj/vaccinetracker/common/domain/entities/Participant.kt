@@ -7,7 +7,6 @@ import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.models.Constants
 
 sealed class ParticipantBase {
-    abstract val registrationDate: DateEntity
     abstract val participantUuid: String
     abstract val nin: String?
     abstract val image: ParticipantImageFileBase?
@@ -51,15 +50,14 @@ data class Participant(
     override val attributes: Map<String, String>,
     override val address: Address?,
     override val childFirstName: String?,
-    override val childLastName: String?,
-    override val registrationDate: DateEntity
+    override val childLastName: String?
 ) : ParticipantBase(), SyncBase {
 
 }
 
 data class DraftParticipant(
     override val participantUuid: String,
-    override val registrationDate: DateEntity,
+    val registrationDate: DateEntity,
     override val image: DraftParticipantImageFile?,
     override val biometricsTemplate: DraftParticipantBiometricsTemplateFile?,
     override val participantId: String,
@@ -112,6 +110,5 @@ fun DraftParticipant.toParticipantWithoutAssets(): Participant = Participant(
     attributes = attributes,
     address = address,
     childFirstName = childFirstName,
-    childLastName = childLastName,
-    registrationDate = registrationDate
+    childLastName = childLastName
 )

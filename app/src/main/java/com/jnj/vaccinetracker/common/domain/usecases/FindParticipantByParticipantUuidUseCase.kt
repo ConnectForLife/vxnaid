@@ -36,7 +36,6 @@ class FindParticipantByParticipantUuidUseCase @Inject constructor(
             address = address,
             childFirstName = childFirstName,
             childLastName = childLastName,
-            registrationDate = dateModified.date,
         )
     }
 
