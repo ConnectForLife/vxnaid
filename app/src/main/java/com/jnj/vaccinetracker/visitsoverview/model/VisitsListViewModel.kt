@@ -102,7 +102,14 @@ class VisitsListViewModel @Inject constructor(
                 convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)
             }
 
+            val filteredDraftVisitsEncounter = convertedDraftVisitsEncounter.filter { draftVisitEncounter ->
+                draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid }
+            }
+            val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + filteredVisits
+
+
             val combinedVisits = convertedDraftVisits + convertedDraftVisitsEncounter + historicalVisits
+
             logInfo("Combined ${combinedVisits.size} visits into VisitDTOs")
 
             visitDTOs.value = createVisitDTOList(combinedVisits)
