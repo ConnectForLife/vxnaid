@@ -53,7 +53,6 @@ class ParticipantRepository @Inject constructor(
             .withBirthWeight(birthWeight),
         biometricsTemplate = templateFile,
         image = imageFile,
-        registrationDate = dateModified,
     )
 
     private fun Participant.toPersistence() = ParticipantEntity(
