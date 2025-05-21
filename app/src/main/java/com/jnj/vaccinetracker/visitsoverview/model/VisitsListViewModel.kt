@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.visitsoverview.model
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
@@ -21,12 +22,14 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 
 class VisitsListViewModel @Inject constructor(
     private val visitRepository: VisitRepository,
     private val draftVisitRepository: DraftVisitRepository,
+    private  val draftParticipantRepository: DraftParticipantRepository,
     private val draftVisitEncounterRepository: DraftVisitEncounterRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
     override val dispatchers: AppCoroutineDispatchers
@@ -64,32 +67,38 @@ class VisitsListViewModel @Inject constructor(
                 .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
             Log.d("VisitsListViewModel", "Total visits retrieved: ${historicalVisits.size}")
 
-//            // Filter visits based on visitDate >= registrationDate
-//            val filteredVisits = historicalVisits.mapNotNull { visit ->
-//                val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-//                if (participant != null) {
-//                    val registrationDate = participant.registrationDate
-//                    val visitDate = visit.startDatetime
-//
-//                    if (visitDate >= registrationDate) {
-//                        Log.d(
-//                            "VisitsListViewModel",
-//                            "Included visit: participantUuid=${visit.participantUuid}, visitDate=$visitDate, registrationDate=$registrationDate"
-//                        )
-//                        visit
-//                    } else {
-//                        Log.d(
-//                            "VisitsListViewModel",
-//                            "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$visitDate, registrationDate=$registrationDate"
-//                        )
-//                        null
-//                    }
-//                } else {
-//                    Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
-//                    null
-//                }
-//            }
-//            Log.d("VisitsListViewModel", "Filtered visits (visitDate >= registrationDate): ${filteredVisits.size}")
+            val filteredVisits = historicalVisits.mapNotNull { visit ->
+                val draftParticipant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
+                //   val participant = participantRepository.findByParticipantUuid(visit.participantUuid)
+
+                if (draftParticipant != null) {
+                    val registrationDate = draftParticipant.registrationDate
+                    //   val registrationDateFromParticipant = participant?.registrationDate
+                    val visitDate = visit.startDatetime
+
+                    // Normalize both dates to midnight
+                    val normalizedVisitDate = normalizeToMidnight(visitDate)
+                    val normalizedRegistrationDate = normalizeToMidnight(registrationDate)
+
+                    if (normalizedVisitDate >= normalizedRegistrationDate) {
+                        Log.d(
+                            "VisitsListViewModel",
+                            "Included visit: participantUuid=${visit.participantUuid}, visitDate=$normalizedVisitDate, registrationDate=$normalizedRegistrationDate"
+                        )
+                        visit
+                    } else {
+                        Log.d(
+                            "VisitsListViewModel",
+                            "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$normalizedVisitDate, registrationDate=$normalizedRegistrationDate"
+                        )
+                        null
+                    }
+                } else {
+                    Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+                    null
+                }
+            }
+            //   Log.w("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
 
             // Keep this section as-is
             val draftHistoricalVisits = draftVisitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
@@ -106,12 +115,15 @@ class VisitsListViewModel @Inject constructor(
                 draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid }
             }
 
-            val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + historicalVisits
+            val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + filteredVisits
 
             logInfo("Combined ${combinedVisits.size} visits into VisitDTOs")
 
             visitDTOs.value = createVisitDTOList(combinedVisits)
+            Log.w("VisitsListViewModel", "Filtered visits: ${combinedVisits.size}")
+
             isLoading.value = false
+
         }
     }
 
@@ -182,4 +194,14 @@ class VisitsListViewModel @Inject constructor(
     override fun saveInstanceState(outState: Bundle) {}
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {}
+
+    private fun normalizeToMidnight(date: Date): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.time
+    }
 }
