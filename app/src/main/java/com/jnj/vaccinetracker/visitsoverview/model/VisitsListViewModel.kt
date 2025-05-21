@@ -106,7 +106,7 @@ class VisitsListViewModel @Inject constructor(
                 draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid }
             }
 
-            val combinedVisits = convertedDraftVisits + convertedDraftVisitsEncounter + historicalVisits
+            val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + historicalVisits
 
             logInfo("Combined ${combinedVisits.size} visits into VisitDTOs")
 
