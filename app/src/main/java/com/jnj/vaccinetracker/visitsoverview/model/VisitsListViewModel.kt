@@ -1,7 +1,9 @@
 package com.jnj.vaccinetracker.visitsoverview.model
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
@@ -22,8 +24,11 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class VisitsListViewModel @Inject constructor(
@@ -59,6 +64,7 @@ class VisitsListViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
@@ -77,19 +83,22 @@ class VisitsListViewModel @Inject constructor(
                     val visitDate = visit.startDatetime
 
                     // Normalize both dates to midnight
-                    val normalizedVisitDate = normalizeToMidnight(visitDate)
-                    val normalizedRegistrationDate = normalizeToMidnight(registrationDate)
+                    val removedVisitTime = removeTimeFromDateTime(visitDate)
+                    val removedRegistrationTime = removeTimeFromDateTime(registrationDate)
 
-                    if (normalizedVisitDate >= normalizedRegistrationDate) {
+                    val visitDateWithoutTime: LocalDate = LocalDate.parse(removedVisitTime)
+                    val registrationDateWithoutTime: LocalDate = LocalDate.parse(removedRegistrationTime)
+
+                    if (visitDateWithoutTime >= registrationDateWithoutTime) {
                         Log.d(
                             "VisitsListViewModel",
-                            "Included visit: participantUuid=${visit.participantUuid}, visitDate=$normalizedVisitDate, registrationDate=$normalizedRegistrationDate"
+                            "Included visit: participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime"
                         )
                         visit
                     } else {
                         Log.d(
                             "VisitsListViewModel",
-                            "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$normalizedVisitDate, registrationDate=$normalizedRegistrationDate"
+                            "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime"
                         )
                         null
                     }
@@ -98,7 +107,7 @@ class VisitsListViewModel @Inject constructor(
                     null
                 }
             }
-            //   Log.w("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
+               Log.w("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
 
             // Keep this section as-is
             val draftHistoricalVisits = draftVisitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
@@ -195,13 +204,9 @@ class VisitsListViewModel @Inject constructor(
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {}
 
-    private fun normalizeToMidnight(date: Date): Date {
-        val calendar = Calendar.getInstance()
-        calendar.time = date
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-        return calendar.time
+    private fun removeTimeFromDateTime(date: Date): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateStr = sdf.format(date)
+        return dateStr
     }
 }
