@@ -75,14 +75,14 @@ class VisitsListViewModel @Inject constructor(
 
             val filteredVisits = historicalVisits.mapNotNull { visit ->
                 val draftParticipant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
-                //   val participant = participantRepository.findByParticipantUuid(visit.participantUuid)
+               // val participant = participantRepository.findByParticipantUuid(visit.participantUuid)
 
                 if (draftParticipant != null) {
                     val registrationDate = draftParticipant.registrationDate
                     //   val registrationDateFromParticipant = participant?.registrationDate
                     val visitDate = visit.startDatetime
 
-                    // Normalize both dates to midnight
+                    // remove time from date
                     val removedVisitTime = removeTimeFromDateTime(visitDate)
                     val removedRegistrationTime = removeTimeFromDateTime(registrationDate)
 
@@ -135,7 +135,6 @@ class VisitsListViewModel @Inject constructor(
 
         }
     }
-
 
     private fun convertDraftVisitToVisitOffline(draftVisit: DraftVisit): Visit {
         return Visit(
