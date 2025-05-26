@@ -75,11 +75,9 @@ class VisitsListViewModel @Inject constructor(
 
             val filteredVisits = historicalVisits.mapNotNull { visit ->
                 val draftParticipant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
-               // val participant = participantRepository.findByParticipantUuid(visit.participantUuid)
 
                 if (draftParticipant != null) {
                     val registrationDate = draftParticipant.registrationDate
-                    //   val registrationDateFromParticipant = participant?.registrationDate
                     val visitDate = visit.startDatetime
 
                     // remove time from date
