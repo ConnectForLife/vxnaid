@@ -328,40 +328,57 @@ class VaccinesOverviewFragment : BaseFragment(),
         val isStatic = { loc: String? -> loc.equals(Constants.VISIT_PLACE_STATIC, ignoreCase = true) }
         val isOutreach = { loc: String? -> loc?.equals(Constants.VISIT_PLACE_OUTREACH, ignoreCase = true) ?: false }
         val isSchool = { loc: String? -> loc.equals(Constants.VISIT_PLACE_SCHOOL, ignoreCase = true) }
-        val uniqueEntries = vaccinesData.distinctBy { it.vaccineName + it.administerDate }
 
-        val filteredByVaccineName = if (selectedVaccineConceptNames.isNotEmpty() && selectedVaccineConceptNames.first() != Constants.ALL_STRING) {
-            uniqueEntries.filter { selectedVaccineConceptNames.contains(it.vaccineName) }
-        } else {
-            uniqueEntries
+        // Filter data based on selected criteria
+        val filteredData = vaccinesData.filter { observation ->
+            val dateMatches = if (observation.administerDate.isNotEmpty()) {
+                val observationDate = DateUtil.convertStringToDate(
+                    observation.administerDate,
+                    DateFormat.FORMAT_DATE.toString()
+                ) ?: return@filter false
+
+                (selectedStartDate == null || observationDate >= selectedStartDate!!.toDate()) &&
+                        (selectedEndDate == null || observationDate <= selectedEndDate!!.toDate())
+            } else false
+
+            val vaccineMatches = when {
+                selectedVaccineConceptNames.isEmpty() -> true
+                selectedVaccineConceptNames.contains(Constants.ALL_STRING) -> true
+                else -> selectedVaccineConceptNames.contains(observation.vaccineName)
+            }
+
+            val locationMatches = when (selectedLocation) {
+                Constants.ALL_STRING -> true
+                Constants.VISIT_PLACE_STATIC -> isStatic(observation.visitLocation)
+                Constants.VISIT_PLACE_OUTREACH -> isOutreach(observation.visitLocation)
+                Constants.VISIT_PLACE_SCHOOL -> isSchool(observation.visitLocation)
+                else -> false
+            }
+
+            val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
+                    observation.ageGroup == selectedAgeGroup
+            dateMatches && vaccineMatches && locationMatches && ageGroupMatches
+        }.distinctBy { it.vaccineName + it.administerDate + it.visitLocation } // Remove duplicates
+
+        // Count entries for each location type
+        val staticCount = filteredData.count { isStatic(it.visitLocation) }
+        val outreachCount = filteredData.count { isOutreach(it.visitLocation) }
+        val schoolCount = filteredData.count { isSchool(it.visitLocation) }
+
+        // Debugging: Log details of filtered data
+        filteredData.forEach { observation ->
+            Log.d("FilterDebugDetails", "Location: ${observation.visitLocation}, Vaccine: ${observation.vaccineName}, Date: ${observation.administerDate}")
         }
+        Log.d("FilterDebug", "Static: $staticCount, Outreach: $outreachCount, School: $schoolCount, Total: ${filteredData.size}")
 
-        val staticCount = filteredByVaccineName.count { isStatic(it.visitLocation) }
-        val outreachCount = filteredByVaccineName.count { isOutreach(it.visitLocation) }
-        val schoolCount = filteredByVaccineName.count { isSchool(it.visitLocation) }
-
-        val totalCount = when (selectedLocation) {
-            Constants.VISIT_PLACE_STATIC -> staticCount
-            Constants.VISIT_PLACE_OUTREACH -> outreachCount
-            Constants.VISIT_PLACE_SCHOOL -> schoolCount
-            Constants.ALL_STRING -> staticCount + outreachCount + schoolCount
-            else -> 0
-        }
-        Log.d("FilterDebug", "Static: $staticCount, Outreach: $outreachCount, School: $schoolCount, Total: $totalCount")
-
-        val filteredData = when (selectedLocation) {
-            Constants.ALL_STRING -> filteredByVaccineName // Include all locations
-            Constants.VISIT_PLACE_STATIC -> filteredByVaccineName.filter { isStatic(it.visitLocation) }
-            Constants.VISIT_PLACE_OUTREACH -> filteredByVaccineName.filter { isOutreach(it.visitLocation) }
-            Constants.VISIT_PLACE_SCHOOL -> filteredByVaccineName.filter { isSchool(it.visitLocation) }
-            else -> emptyList()
-        }
         // Update UI with filtered data
         val groupedVaccinesData = groupAndCount(filteredData)
         vaccinesOverviewAdapter.submitList(groupedVaccinesData)
 
-        binding.headerVaccineTotal.text = "Total: $totalCount"
+        val displayTotal = filteredData.size
+        binding.headerVaccineTotal.text = "Total: $displayTotal"
 
+        // Show appropriate messages based on filtered results
         when {
             selectedLocation == Constants.VISIT_PLACE_OUTREACH && outreachCount == 0 -> {
                 Toast.makeText(
