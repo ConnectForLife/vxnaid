@@ -329,8 +329,18 @@ class VaccinesOverviewFragment : BaseFragment(),
         val isOutreach = { loc: String? -> loc?.equals(Constants.VISIT_PLACE_OUTREACH, ignoreCase = true) ?: false }
         val isSchool = { loc: String? -> loc.equals(Constants.VISIT_PLACE_SCHOOL, ignoreCase = true) }
 
+        // Filter out entries without a location
+        val validLocationData = vaccinesData.filter { it.visitLocation.isNotEmpty() }
+
+        // Count entries for each location type before filtering
+        val staticCountUn = validLocationData.count { isStatic(it.visitLocation) }
+        val outreachCountUn = validLocationData.count { isOutreach(it.visitLocation) }
+        val schoolCountUn = validLocationData.count { isSchool(it.visitLocation) }
+        val totalCountUn = validLocationData.size
+        Log.d("FilterDebug", "Unfiltered Static: $staticCountUn, Outreach: $outreachCountUn, School: $schoolCountUn, Total: $totalCountUn")
+
         // Filter data based on selected criteria
-        val filteredData = vaccinesData.filter { observation ->
+        val filteredData = validLocationData.filter { observation ->
             val dateMatches = if (observation.administerDate.isNotEmpty()) {
                 val observationDate = DateUtil.convertStringToDate(
                     observation.administerDate,
@@ -364,26 +374,26 @@ class VaccinesOverviewFragment : BaseFragment(),
         val staticCount = filteredData.count { isStatic(it.visitLocation) }
         val outreachCount = filteredData.count { isOutreach(it.visitLocation) }
         val schoolCount = filteredData.count { isSchool(it.visitLocation) }
+        val totalCount = filteredData.size
+        Log.d("FilterDebug", "Filtered Static: $staticCount, Outreach: $outreachCount, School: $schoolCount, Total: $totalCount")
 
         // Debugging: Log details of filtered data
         filteredData.forEach { observation ->
             Log.d("FilterDebugDetails", "Location: ${observation.visitLocation}, Vaccine: ${observation.vaccineName}, Date: ${observation.administerDate}")
         }
-        Log.d("FilterDebug", "Static: $staticCount, Outreach: $outreachCount, School: $schoolCount, Total: ${filteredData.size}")
 
         // Update UI with filtered data
         val groupedVaccinesData = groupAndCount(filteredData)
         vaccinesOverviewAdapter.submitList(groupedVaccinesData)
 
-        val displayTotal = filteredData.size
-        binding.headerVaccineTotal.text = "Total: $displayTotal"
+        binding.headerVaccineTotal.text = "Total: $totalCount"
 
         // Show appropriate messages based on filtered results
         when {
             selectedLocation == Constants.VISIT_PLACE_OUTREACH && outreachCount == 0 -> {
                 Toast.makeText(
                     context,
-                    if (vaccinesData.none { isOutreach(it.visitLocation) })
+                    if (validLocationData.none { isOutreach(it.visitLocation) })
                         getString(R.string.no_outreach_vaccines_in_system)
                     else getString(R.string.no_outreach_vaccines_match_filters),
                     Toast.LENGTH_LONG
@@ -392,7 +402,7 @@ class VaccinesOverviewFragment : BaseFragment(),
             selectedLocation == Constants.VISIT_PLACE_SCHOOL && schoolCount == 0 -> {
                 Toast.makeText(
                     context,
-                    if (vaccinesData.none { isSchool(it.visitLocation) })
+                    if (validLocationData.none { isSchool(it.visitLocation) })
                         getString(R.string.no_school_vaccines_in_system)
                     else getString(R.string.no_school_vaccines_match_filters),
                     Toast.LENGTH_LONG
