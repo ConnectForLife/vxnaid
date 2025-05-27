@@ -332,13 +332,6 @@ class VaccinesOverviewFragment : BaseFragment(),
         // Filter out entries without a location
         val validLocationData = vaccinesData.filter { it.visitLocation.isNotEmpty() }
 
-        // Count entries for each location type before filtering
-        val staticCountUn = validLocationData.count { isStatic(it.visitLocation) }
-        val outreachCountUn = validLocationData.count { isOutreach(it.visitLocation) }
-        val schoolCountUn = validLocationData.count { isSchool(it.visitLocation) }
-        val totalCountUn = validLocationData.size
-        Log.d("FilterDebug", "Unfiltered Static: $staticCountUn, Outreach: $outreachCountUn, School: $schoolCountUn, Total: $totalCountUn")
-
         // Filter data based on selected criteria
         val filteredData = validLocationData.filter { observation ->
             val dateMatches = if (observation.administerDate.isNotEmpty()) {
@@ -375,12 +368,9 @@ class VaccinesOverviewFragment : BaseFragment(),
         val outreachCount = filteredData.count { isOutreach(it.visitLocation) }
         val schoolCount = filteredData.count { isSchool(it.visitLocation) }
         val totalCount = filteredData.size
+
         Log.d("FilterDebug", "Filtered Static: $staticCount, Outreach: $outreachCount, School: $schoolCount, Total: $totalCount")
 
-        // Debugging: Log details of filtered data
-        filteredData.forEach { observation ->
-            Log.d("FilterDebugDetails", "Location: ${observation.visitLocation}, Vaccine: ${observation.vaccineName}, Date: ${observation.administerDate}")
-        }
 
         // Update UI with filtered data
         val groupedVaccinesData = groupAndCount(filteredData)
