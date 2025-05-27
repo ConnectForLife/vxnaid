@@ -12,6 +12,7 @@ import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipa
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipantEntity
 import com.jnj.vaccinetracker.common.data.database.mappers.toDomain
 import com.jnj.vaccinetracker.common.data.database.mappers.toDraftPersistence
+import com.jnj.vaccinetracker.common.data.database.models.RoomParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.update.RoomUpdateParticipantDraftStateModel
 import com.jnj.vaccinetracker.common.data.database.repositories.base.DeleteByDraftParticipant
@@ -222,5 +223,9 @@ class DraftParticipantRepository @Inject constructor(
 
     override suspend fun findRegimen(participantUuid: String): String? {
         return draftParticipantAttributeDao.findAttribute(participantUuid, type = Constants.ATTRIBUTE_VACCINE)
+    }
+
+    suspend fun findAllDraftParticipants(): List<RoomDraftParticipantModel> {
+        return draftParticipantDao.findAllDraftParticipants()
     }
 }
