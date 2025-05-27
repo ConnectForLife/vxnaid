@@ -25,23 +25,21 @@ class RegisteredParticipantsViewModel @Inject constructor(
     fun fetchAllPatients() {
         isLoading.value = true
         viewModelScope.launch {
-            // Fetch participants
             val patients = participantRepository.findPatients()
 
             // Fetch draft participants
-            val draftPatients = draftParticipantRepository.findAllDraftParticipants()
+            val draftParticipant = draftParticipantRepository.findDraftParticipants()
 
-            // Convert both to ParticipantDataDTO
-            val regularParticipantDTOs = createParticipantDTOList(patients)
-            val draftParticipantDTOs = createDraftParticipantDTOList(draftPatients)
+            val participantDTOs = createParticipantDTOList(patients)
+            val draftParticipantDTOs = createDraftParticipantDTOList(draftParticipant)
 
             // Merge, sort by registration date, and update LiveData
-            patientDTOs.value = (regularParticipantDTOs + draftParticipantDTOs)
-                .sortedByDescending { it.registrationDate } // Sort by registration date in descending order
+            patientDTOs.value = (participantDTOs + draftParticipantDTOs)
+                .sortedByDescending { it.registrationDate }
 
             Log.d(
                 "RegisteredChildren",
-                "Fetched ${regularParticipantDTOs.size} regular participants and ${draftParticipantDTOs.size} draft participants. Total: ${patientDTOs.value?.size ?: 0}"
+                "Fetched ${participantDTOs.size} regular participants and ${draftParticipantDTOs.size} draft participants. Total: ${patientDTOs.value?.size ?: 0}"
             )
             isLoading.value = false
         }

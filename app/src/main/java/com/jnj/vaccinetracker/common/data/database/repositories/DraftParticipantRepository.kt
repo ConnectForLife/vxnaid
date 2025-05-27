@@ -225,7 +225,7 @@ class DraftParticipantRepository @Inject constructor(
         return draftParticipantAttributeDao.findAttribute(participantUuid, type = Constants.ATTRIBUTE_VACCINE)
     }
 
-    suspend fun findAllDraftParticipants(): List<RoomDraftParticipantModel> {
+    suspend fun findDraftParticipants(): List<RoomDraftParticipantModel> {
         return draftParticipantDao.findAllDraftParticipants()
     }
 }
