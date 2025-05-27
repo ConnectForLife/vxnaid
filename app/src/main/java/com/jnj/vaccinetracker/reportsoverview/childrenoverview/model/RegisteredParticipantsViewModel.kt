@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class RegisteredParticipantsViewModel @Inject constructor(
     private val participantRepository: ParticipantRepository,
-    private val draftParticipantRepository: DraftParticipantRepository, // Inject DraftParticipantRepository
+    private val draftParticipantRepository: DraftParticipantRepository,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
     val patientDTOs = MutableLiveData<List<ParticipantDataDTO>>()
@@ -35,11 +35,14 @@ class RegisteredParticipantsViewModel @Inject constructor(
             val regularParticipantDTOs = createParticipantDTOList(patients)
             val draftParticipantDTOs = createDraftParticipantDTOList(draftPatients)
 
-            // Merge and update LiveData
-            patientDTOs.value = regularParticipantDTOs + draftParticipantDTOs
+            // Merge, sort by registration date, and update LiveData
+            patientDTOs.value = (regularParticipantDTOs + draftParticipantDTOs)
+                .sortedByDescending { it.registrationDate } // Sort by registration date in descending order
 
-//            logging
-            Log.d("RegisteredChildren", "Fetched ${regularParticipantDTOs.size} regular participants and ${draftParticipantDTOs.size} draft participants Total: ${patientDTOs.value?.size ?: 0}")
+            Log.d(
+                "RegisteredChildren",
+                "Fetched ${regularParticipantDTOs.size} regular participants and ${draftParticipantDTOs.size} draft participants. Total: ${patientDTOs.value?.size ?: 0}"
+            )
             isLoading.value = false
         }
     }
