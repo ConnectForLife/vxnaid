@@ -14,7 +14,7 @@ import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class RegisteredParticipantsViewModel @Inject constructor(
+class RegisteredParticipantsViewModel@Inject constructor(
     private val participantRepository: ParticipantRepository,
     private val draftParticipantRepository: DraftParticipantRepository,
     override val dispatchers: AppCoroutineDispatchers
