@@ -58,6 +58,9 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
 
     @Query("delete from visit")
     override suspend fun deleteAll()
+
+
+
 }
 
 @Dao

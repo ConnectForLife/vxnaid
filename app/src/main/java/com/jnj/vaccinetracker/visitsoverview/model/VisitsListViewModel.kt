@@ -68,6 +68,7 @@ class VisitsListViewModel @Inject constructor(
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
+
             val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
             if (currentLocationUuid.isNullOrEmpty()) {
@@ -83,6 +84,43 @@ class VisitsListViewModel @Inject constructor(
                     visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
                         .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
                         .filter { visit -> isParticipantFromLocation(visit, currentLocationUuid) }
+//
+//                val historicalVisitsByLocation = visitRepository.findVisitsByLocationUuid(currentLocationUuid)
+//                    .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
+//
+
+
+
+
+
+                val allHistoricalVisits = visitRepository.findAllVisits()
+                if (allHistoricalVisits.isEmpty()) {
+                    Log.w("VisitsListViewModel", "No historical visits found.")
+                } else {
+                    Log.w("VisitsListViewModel", "Historical visits: ${allHistoricalVisits.size}")
+                    val occurred = allHistoricalVisits.filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
+                    if (occurred.isEmpty()) {
+                        Log.w("VisitsListViewModel", "No occurred visits found.")
+                    } else {
+                        Log.w("VisitsListViewModel", "Occurred visits: ${occurred.size}")
+                        //val yesOrNo = isParticipantFromLocation( currentLocationUuid)
+                    }
+
+
+
+
+
+                }
+
+
+
+                val draftVisits = draftVisitRepository.findAllVisits()
+
+                if(draftVisits.isEmpty()) {
+                    Log.w("VisitsListViewModel", "No draft visits found.")
+                } else {
+                    Log.w("VisitsListViewModel", "Draft visits: ${draftVisits.size}")
+                }
 
                 Log.d("VisitsListViewModel", "Filtered visits retrieved: ${historicalVisits.size}")
 
@@ -130,7 +168,6 @@ class VisitsListViewModel @Inject constructor(
                 } else {
                     Log.w("VisitsListViewModel", "Draft visits: ${draftHistoricalVisits.size}")
                 }
-
 
                 val draftHistoricalVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
 
@@ -233,7 +270,13 @@ class VisitsListViewModel @Inject constructor(
 
     private suspend fun isParticipantFromLocation(visit: Visit, locationUuid: String): Boolean {
         val participant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
-        return participant?.locationUuid == locationUuid
+        if (participant == null) {
+            Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+            return false
+        }  else {
+            Log.d("VisitsListViewModel", "Participant found: ${participant.participantUuid}, Location UUID: ${participant.locationUuid}")
+        }
+        return participant.locationUuid == locationUuid
     }
 
 }
