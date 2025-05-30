@@ -7,7 +7,6 @@ import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftVisitDao
 import com.jnj.vaccinetracker.common.data.database.entities.base.toMap
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftVisitAttributeEntity.Companion.toDraftVisitAttributeEntity
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftVisitEntity
-import com.jnj.vaccinetracker.common.data.database.models.RoomVisitModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftVisitModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.update.RoomUpdateVisitDraftStateModel
 import com.jnj.vaccinetracker.common.data.database.repositories.base.DraftVisitRepositoryBase
@@ -68,6 +67,10 @@ class DraftVisitRepository @Inject constructor(
 
     override suspend fun findAllByParticipantUuid(participantUuid: String): List<DraftVisit> {
         return draftVisitDao.findAllByParticipantUuid(participantUuid).map { it.toDomain() }
+    }
+
+    override suspend fun findVisitsByLocationUuid(locationUuid: String): List<DraftVisit> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun findByVisitUuid(visitUuid: String): DraftVisit? = draftVisitDao.findByVisitUuid(visitUuid)?.toDomain()

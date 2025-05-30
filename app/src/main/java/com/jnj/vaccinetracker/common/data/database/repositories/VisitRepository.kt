@@ -73,6 +73,11 @@ class VisitRepository @Inject constructor(
         return visitDao.findVisitsBeforeDate(date).map { it.toDomain() }
     }
 
+
+    override suspend fun findVisitsByLocationUuid(locationUuid: String): List<Visit> {
+        return visitDao.findVisitsByLocationUuid(locationUuid).map { it.toDomain() }
+    }
+
     override suspend fun deleteByVisitUuid(visitUuid: String): Boolean {
         return visitDao.delete(RoomDeleteVisitModel(visitUuid)).let { countDeleted ->
             logDebug("deleteByVisitUuid: $visitUuid $countDeleted")

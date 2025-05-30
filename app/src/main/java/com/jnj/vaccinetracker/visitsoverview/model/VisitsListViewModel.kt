@@ -84,10 +84,10 @@ class VisitsListViewModel @Inject constructor(
                     visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
                         .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
                         .filter { visit -> isParticipantFromLocation(visit, currentLocationUuid) }
-//
-//                val historicalVisitsByLocation = visitRepository.findVisitsByLocationUuid(currentLocationUuid)
-//                    .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
-//
+
+                val historicalVisitsByLocation = visitRepository.findVisitsByLocationUuid(currentLocationUuid)
+
+
 
 
 

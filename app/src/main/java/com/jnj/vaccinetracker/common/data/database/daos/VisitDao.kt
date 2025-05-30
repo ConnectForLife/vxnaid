@@ -36,9 +36,13 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
     @Transaction
     override suspend fun findVisitsAfterDate(date: DateEntity): List<RoomVisitModel>
 
-    @Query("SELECT * FROM visit WHERE startDatetime <= :date ORDER BY startDatetime DESC")
+
+
+    @Query("""SELECT v.*     FROM visit v    INNER JOIN participant p ON v.participantUuid = p.participantUuid WHERE p.locationUuid = :locationUuid    ORDER BY v.startDatetime DESC""")
     @Transaction
-    override suspend fun findVisitsBeforeDate(date: DateEntity): List<RoomVisitModel>
+    override suspend fun findVisitsByLocationUuid(locationUuid: String): List<RoomVisitModel>
+
+
 
     @Query("select * from visit where visitUuid=:visitUuid")
     @Transaction
@@ -58,8 +62,6 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
 
     @Query("delete from visit")
     override suspend fun deleteAll()
-
-
 
 }
 
