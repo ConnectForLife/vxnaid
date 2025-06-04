@@ -34,8 +34,4 @@ class UpdateParticipantSuccessfulDialog : BaseDialogFragment() {
         }
         return binding.root
     }
-
-
-
-
 }
