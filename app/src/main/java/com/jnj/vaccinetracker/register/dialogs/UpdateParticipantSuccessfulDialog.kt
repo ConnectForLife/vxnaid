@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogUpdateParticipantSuccessfulBinding
+import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 
 /**
  * @author maartenvangiel
@@ -25,9 +26,16 @@ class UpdateParticipantSuccessfulDialog : BaseDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_update_participant_successful, container, false)
         binding.btnOk.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-            dismissAllowingStateLoss()
+            dismiss()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, VisitsOverviewFragment())
+                .addToBackStack(null)
+                .commit()
         }
         return binding.root
     }
+
+
+
+
 }
