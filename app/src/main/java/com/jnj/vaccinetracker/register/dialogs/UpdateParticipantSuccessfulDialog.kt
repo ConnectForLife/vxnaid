@@ -14,7 +14,10 @@ import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
  * @author maartenvangiel
  * @version 1
  */
-class UpdateParticipantSuccessfulDialog : BaseDialogFragment() {
+class UpdateParticipantSuccessfulDialog(
+    private val listener: OnParticipantUpdateConfirmedListener
+) : BaseDialogFragment() {
+
     private lateinit var binding: DialogUpdateParticipantSuccessfulBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,11 +30,12 @@ class UpdateParticipantSuccessfulDialog : BaseDialogFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_update_participant_successful, container, false)
         binding.btnOk.setOnClickListener {
             dismiss()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, VisitsOverviewFragment())
-                .addToBackStack(null)
-                .commit()
+            listener.onParticipantUpdateConfirmed()
         }
         return binding.root
+    }
+
+    interface OnParticipantUpdateConfirmedListener {
+        fun onParticipantUpdateConfirmed()
     }
 }
