@@ -1,9 +1,14 @@
 package com.jnj.vaccinetracker.visitsoverview.model
 
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
@@ -48,18 +53,24 @@ class VisitsListViewModel @Inject constructor(
             val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
 
-            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-            val draftVisitParticipantIds = draftScheduledVisitsEncounter.map { it.participantUuid }.toSet()
-            // Remove scheduled visits with the same participant ID as in draftVisitEncounter
-            val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit ->
-                !draftVisitParticipantIds.contains(scheduledVisit.participantUuid)
-            }
-            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(getTodayMidnight())
+            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
+            val convertedDraftVisitsEncounter = draftScheduledVisitsEncounter.map { draftVisit ->
+                convertDraftVisitEncounterToVisitOffline(draftVisit) }
+
+            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
             val convertedDraftVisits = draftScheduledVisits.map { draftVisit ->
-                convertDraftVisitToVisitOffline(draftVisit)
-            }
-            val filteredDraftScheduledVisits = convertedDraftVisits + filteredScheduledVisits
-            visitDTOs.value = createVisitDTOList(filteredDraftScheduledVisits)
+                convertDraftVisitToVisitOffline(draftVisit) }
+
+            val filteredScheduleDraftVisitsEncounter = convertedDraftVisitsEncounter.filter { draftVisitEncounter ->
+                draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid } }
+
+            // Remove scheduled visits with the same participant ID as in draftVisitEncounter
+            val draftVisitParticipantIds = draftScheduledVisitsEncounter.map { it.participantUuid }.toSet()
+            val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit ->
+                !draftVisitParticipantIds.contains(scheduledVisit.participantUuid) }
+
+            val combinedScheduledVisits = convertedDraftVisits + filteredScheduleDraftVisitsEncounter + filteredScheduledVisits
+            visitDTOs.value = createVisitDTOList(combinedScheduledVisits)
             isLoading.value = false
         }
     }
@@ -168,6 +179,13 @@ class VisitsListViewModel @Inject constructor(
             isLoading.value = false
         }
     }
+
+//    fun isInternetAvailable(context: Context): Boolean {
+//        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//        val network = connectivityManager.activeNetwork ?: return false
+//        val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+//        return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//    }
 
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
         val visitDataDTOList: MutableList<VisitDataDTO> = mutableListOf()
