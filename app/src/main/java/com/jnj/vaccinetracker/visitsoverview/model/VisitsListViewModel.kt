@@ -1,5 +1,4 @@
 package com.jnj.vaccinetracker.visitsoverview.model
-
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -22,11 +21,9 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -48,18 +45,24 @@ class VisitsListViewModel @Inject constructor(
             val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
 
-            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-            val draftVisitParticipantIds = draftScheduledVisitsEncounter.map { it.participantUuid }.toSet()
-            // Remove scheduled visits with the same participant ID as in draftVisitEncounter
-            val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit ->
-                !draftVisitParticipantIds.contains(scheduledVisit.participantUuid)
-            }
-            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(getTodayMidnight())
+            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
+            val convertedDraftVisitsEncounter = draftScheduledVisitsEncounter.map { draftVisit ->
+                convertDraftVisitEncounterToVisitOffline(draftVisit) }
+
+            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
             val convertedDraftVisits = draftScheduledVisits.map { draftVisit ->
-                convertDraftVisitToVisitOffline(draftVisit)
-            }
-            val filteredDraftScheduledVisits = convertedDraftVisits + filteredScheduledVisits
-            visitDTOs.value = createVisitDTOList(filteredDraftScheduledVisits)
+                convertDraftVisitToVisitOffline(draftVisit) }
+
+            val filteredScheduleDraftVisitsEncounter = convertedDraftVisitsEncounter.filter { draftVisitEncounter ->
+                draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid } }
+
+            // Remove scheduled visits with the same participant ID as in draftVisitEncounter
+            val draftVisitParticipantIds = draftScheduledVisitsEncounter.map { it.participantUuid }.toSet()
+            val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit ->
+                !draftVisitParticipantIds.contains(scheduledVisit.participantUuid) }
+
+            val combinedScheduledVisits = convertedDraftVisits + filteredScheduleDraftVisitsEncounter + filteredScheduledVisits
+            visitDTOs.value = createVisitDTOList(combinedScheduledVisits)
             isLoading.value = false
         }
     }
