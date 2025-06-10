@@ -1,14 +1,8 @@
 package com.jnj.vaccinetracker.visitsoverview.model
-
-import android.app.Application
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
@@ -27,11 +21,9 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -179,13 +171,6 @@ class VisitsListViewModel @Inject constructor(
             isLoading.value = false
         }
     }
-
-//    fun isInternetAvailable(context: Context): Boolean {
-//        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//        val network = connectivityManager.activeNetwork ?: return false
-//        val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-//        return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-//    }
 
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
         val visitDataDTOList: MutableList<VisitDataDTO> = mutableListOf()
