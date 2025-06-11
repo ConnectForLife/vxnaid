@@ -101,6 +101,34 @@ class VisitsListViewModel @Inject constructor(
         }
     }
 
+    fun getMissedVisitsData() {
+        isLoading.value = true
+        viewModelScope.launch {
+            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
+                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
+
+            val draftVisits = draftVisitRepository.findVisitsBeforeDate(getTodayMidnight())
+            val convertedDraftVisits = draftVisits.map { draftVisit ->
+                convertDraftVisitToVisitOffline(draftVisit)
+            }
+
+            val draftVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(getTodayMidnight())
+            val convertedDraftVisitsEncounter = draftVisitsEncounter.map { draftVisitEncounter ->
+                convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)
+            }
+
+            val combinedMissedVisits = convertedDraftVisits + convertedDraftVisitsEncounter + missedVisits
+
+            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(getTodayMidnight())
+            val filteredMissedVisits = combinedMissedVisits.filter { missedVisit ->
+                missedVisit.participantUuid !in draftScheduledVisits.map { it.participantUuid }
+            }
+
+            visitDTOs.value = createVisitDTOList(filteredMissedVisits)
+            isLoading.value = false
+        }
+    }
+
     // Registration date filter function
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun filterVisitsByRegistrationDate(visits: List<Visit>): List<Visit> {
@@ -154,16 +182,6 @@ class VisitsListViewModel @Inject constructor(
                 ObservationValue(entry.value, draftVisitEncounter.startDatetime)
             },
             dateModified = Date(System.currentTimeMillis()))
-    }
-
-    fun getMissedVisitsData() {
-        isLoading.value = true
-        viewModelScope.launch {
-            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
-                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
-            visitDTOs.value = createVisitDTOList(missedVisits)
-            isLoading.value = false
-        }
     }
 
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
