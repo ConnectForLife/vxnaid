@@ -76,39 +76,39 @@ class VisitsListViewModel @Inject constructor(
                 .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
             Log.d("VisitsListViewModel", "Total visits retrieved: ${historicalVisits.size}")
 
-            val filteredVisits = historicalVisits.mapNotNull { visit ->
-                val draftParticipant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
-
-                if (draftParticipant != null) {
-                    val registrationDate = draftParticipant.registrationDate
-                    val visitDate = visit.startDatetime
-
-                    // remove time from date
-                    val removedVisitTime = removeTimeFromDateTime(visitDate)
-                    val removedRegistrationTime = removeTimeFromDateTime(registrationDate)
-
-                    val visitDateWithoutTime: LocalDate = LocalDate.parse(removedVisitTime)
-                    val registrationDateWithoutTime: LocalDate = LocalDate.parse(removedRegistrationTime)
-
-                    if (visitDateWithoutTime >= registrationDateWithoutTime) {
-                        Log.d(
-                            "VisitsListViewModel",
-                            "Included visit: participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime"
-                        )
-                        visit
-                    } else {
-                        Log.d(
-                            "VisitsListViewModel",
-                            "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime"
-                        )
-                        null
-                    }
-                } else {
-                    Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
-                    null
-                }
-            }
-               Log.w("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
+//            val filteredVisits = historicalVisits.mapNotNull { visit ->
+//                val draftParticipant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
+//
+//                if (draftParticipant != null) {
+//                    val registrationDate = draftParticipant.registrationDate
+//                    val visitDate = visit.startDatetime
+//
+//                    // remove time from date
+//                    val removedVisitTime = removeTimeFromDateTime(visitDate)
+//                    val removedRegistrationTime = removeTimeFromDateTime(registrationDate)
+//
+//                    val visitDateWithoutTime: LocalDate = LocalDate.parse(removedVisitTime)
+//                    val registrationDateWithoutTime: LocalDate = LocalDate.parse(removedRegistrationTime)
+//
+//                    if (visitDateWithoutTime >= registrationDateWithoutTime) {
+//                        Log.d(
+//                            "VisitsListViewModel",
+//                            "Included visit: participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime"
+//                        )
+//                        visit
+//                    } else {
+//                        Log.d(
+//                            "VisitsListViewModel",
+//                            "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime"
+//                        )
+//                        null
+//                    }
+//                } else {
+//                    Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+//                    null
+//                }
+//            }
+//               Log.w("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
 
             // Keep this section as-is
             val draftHistoricalVisits = draftVisitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
@@ -125,7 +125,7 @@ class VisitsListViewModel @Inject constructor(
                 draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid }
             }
 
-            val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + filteredVisits
+            val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + historicalVisits
 
             logInfo("Combined ${combinedVisits.size} visits into VisitDTOs")
 
