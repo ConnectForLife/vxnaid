@@ -152,9 +152,15 @@ class VisitsListViewModel @Inject constructor(
             val convertedDraftVisitsEncounter = draftVisitsEncounter.map { draftVisitEncounter ->
                 convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)
             }
-            
 
-            visitDTOs.value = createVisitDTOList(missedVisits)
+            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(getTodayMidnight())
+            val filteredMissedVisits = missedVisits.filter { missedVisit ->
+                missedVisit.participantUuid !in draftScheduledVisits.map { it.participantUuid }
+            }
+
+            val combinedMissedVisits = convertedDraftVisits + convertedDraftVisitsEncounter + filteredMissedVisits
+
+            visitDTOs.value = createVisitDTOList(combinedMissedVisits)
             isLoading.value = false
         }
     }
