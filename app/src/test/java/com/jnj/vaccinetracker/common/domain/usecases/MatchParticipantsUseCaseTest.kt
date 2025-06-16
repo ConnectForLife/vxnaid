@@ -80,7 +80,6 @@ class MatchParticipantsUseCaseTest : FunSpec({
             null,
             "childFirstName",
             "childLastName",
-            registrationDate = DateEntity(),
         )
 
     fun draftParticipant(uuid: String = uuid(), participantId: String = "", childNumber: String = "", nin: String = "", phone: String? = null, gender: Gender = Gender.FEMALE, withTemplate: Boolean = true) =
