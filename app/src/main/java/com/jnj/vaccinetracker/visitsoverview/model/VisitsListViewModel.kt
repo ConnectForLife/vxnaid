@@ -73,10 +73,13 @@ class VisitsListViewModel @Inject constructor(
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
+            if (currentLocationUuid.isNullOrEmpty()) {
+                Log.e("VisitsListViewModel", "Logged-in user's site UUID is null or empty. Aborting visit fetch.")
+                isLoading.value = false
+                return@launch
+            }
             val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
-            Log.d("VisitsListViewModel", "Total visits retrieved: ${historicalVisits.size}")
-
+                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED && participantFromCurrentLocation(it, currentLocationUuid) }
 //            Filter historical visits by registration date
 //            val filteredVisits = filterVisitsByRegistrationDate(historicalVisits)
 //            Log.d("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
