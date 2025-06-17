@@ -189,6 +189,7 @@ class VisitsListViewModel @Inject constructor(
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
         val visitDataDTOList: MutableList<VisitDataDTO> = mutableListOf()
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
+        val uniqueParticipantUuids = mutableSetOf<String>()
 
         visits.forEach { visit ->
             if (!participantsMap.containsKey(visit.participantUuid)) {
@@ -198,7 +199,7 @@ class VisitsListViewModel @Inject constructor(
         }
 
         visits.forEach { visit ->
-            val participant  = participantsMap[visit.participantUuid]
+            val participant = participantsMap[visit.participantUuid]
             if (participant != null) {
                 val visitDataDTO = VisitDataDTO(
                     visitUuid = visit.visitUuid,
@@ -209,8 +210,10 @@ class VisitsListViewModel @Inject constructor(
                     participant = participant
                 )
                 visitDataDTOList.add(visitDataDTO)
+                uniqueParticipantUuids.add(participant.participantUuid)
             }
         }
+        Log.d("VisitsListViewModel", "Visit count: ${visitDataDTOList.size}, Unique participant count: ${uniqueParticipantUuids.size}")
         return visitDataDTOList
     }
 
