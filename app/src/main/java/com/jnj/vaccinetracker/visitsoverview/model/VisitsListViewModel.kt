@@ -106,20 +106,21 @@ class VisitsListViewModel @Inject constructor(
     fun getMissedVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
+            if (currentLocationUuid.isNullOrEmpty()) {
+                Log.e("VisitsListViewModel", "Logged-in user's site UUID is null or empty. Aborting visit fetch.")
+                isLoading.value = false
+                return@launch
+            }
+
             val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
-                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
+                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
 
             val draftVisits = draftVisitRepository.findVisitsBeforeDate(getTodayMidnight())
             val convertedDraftVisits = draftVisits.map { draftVisit ->
                 convertDraftVisitToVisitOffline(draftVisit)
             }
 
-            val draftVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(getTodayMidnight())
-            val convertedDraftVisitsEncounter = draftVisitsEncounter.map { draftVisitEncounter ->
-                convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)
-            }
-
-            val combinedMissedVisits = convertedDraftVisits + convertedDraftVisitsEncounter + missedVisits
+            val combinedMissedVisits =  missedVisits + convertedDraftVisits
 
             val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(getTodayMidnight())
             val filteredMissedVisits = combinedMissedVisits.filter { missedVisit ->
