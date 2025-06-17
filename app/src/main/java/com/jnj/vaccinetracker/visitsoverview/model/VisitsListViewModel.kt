@@ -11,6 +11,7 @@ import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
@@ -18,7 +19,6 @@ import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
-import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.launch
@@ -29,6 +29,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class VisitsListViewModel @Inject constructor(
+    userRepository: UserRepository,
     private val visitRepository: VisitRepository,
     private val draftVisitRepository: DraftVisitRepository,
     private  val draftParticipantRepository: DraftParticipantRepository,
@@ -38,6 +39,7 @@ class VisitsListViewModel @Inject constructor(
 ) : ViewModelWithState() {
     val visitDTOs = mutableLiveData<List<VisitDataDTO>>()
     val isLoading = mutableLiveData<Boolean>()
+    private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
     fun getScheduledVisitsData() {
         isLoading.value = true
@@ -220,5 +222,16 @@ class VisitsListViewModel @Inject constructor(
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dateStr = sdf.format(date)
         return dateStr
+    }
+
+    private suspend fun participantFromCurrentLocation(visit: Visit, locationUuid: String): Boolean {
+        val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+        return if (participant == null) {
+            Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+            false
+        } else {
+            Log.d("VisitsListViewModel", "Participant found: ${participant.participantUuid}, Location UUID: ${participant.locationUuid} vs Current Location UUID: $locationUuid")
+            participant.locationUuid == locationUuid
+        }
     }
 }
