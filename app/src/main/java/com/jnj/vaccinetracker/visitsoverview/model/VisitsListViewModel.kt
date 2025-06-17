@@ -44,8 +44,14 @@ class VisitsListViewModel @Inject constructor(
     fun getScheduledVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
+            if (currentLocationUuid.isNullOrEmpty()) {
+                Log.e("VisitsListViewModel", "Logged-in user's site UUID is null or empty. Aborting visit fetch.")
+                isLoading.value = false
+                return@launch
+            }
+
             val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
-                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
+                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
 
             val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
             val convertedDraftVisitsEncounter = draftScheduledVisitsEncounter.map { draftVisit ->
@@ -78,6 +84,7 @@ class VisitsListViewModel @Inject constructor(
                 isLoading.value = false
                 return@launch
             }
+            
             val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
                 .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED && participantFromCurrentLocation(it, currentLocationUuid) }
 //            Filter historical visits by registration date
