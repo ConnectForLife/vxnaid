@@ -1,5 +1,4 @@
 package com.jnj.vaccinetracker.visitsoverview.model
-
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +11,7 @@ import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
@@ -19,19 +19,17 @@ import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
-import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
 class VisitsListViewModel @Inject constructor(
+    userRepository: UserRepository,
     private val visitRepository: VisitRepository,
     private val draftVisitRepository: DraftVisitRepository,
     private  val draftParticipantRepository: DraftParticipantRepository,
@@ -41,25 +39,38 @@ class VisitsListViewModel @Inject constructor(
 ) : ViewModelWithState() {
     val visitDTOs = mutableLiveData<List<VisitDataDTO>>()
     val isLoading = mutableLiveData<Boolean>()
+    private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
     fun getScheduledVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-            val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
-                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
+            if (currentLocationUuid.isNullOrEmpty()) {
+                Log.e("VisitsListViewModel", "Logged-in user's site UUID is null or empty. Aborting visit fetch.")
+                isLoading.value = false
+                return@launch
+            }
 
-            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-            val draftVisitParticipantIds = draftScheduledVisitsEncounter.map { it.participantUuid }.toSet()
-            // Remove scheduled visits with the same participant ID as in draftVisitEncounter
-            val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit ->
-                !draftVisitParticipantIds.contains(scheduledVisit.participantUuid)
-            }
-            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(getTodayMidnight())
+            val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
+                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
+
+            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
+            val convertedDraftVisitsEncounter = draftScheduledVisitsEncounter.map { draftVisit ->
+                convertDraftVisitEncounterToVisitOffline(draftVisit) }
+
+            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
             val convertedDraftVisits = draftScheduledVisits.map { draftVisit ->
-                convertDraftVisitToVisitOffline(draftVisit)
-            }
-            val filteredDraftScheduledVisits = convertedDraftVisits + filteredScheduledVisits
-            visitDTOs.value = createVisitDTOList(filteredDraftScheduledVisits)
+                convertDraftVisitToVisitOffline(draftVisit) }
+
+            val filteredScheduleDraftVisitsEncounter = convertedDraftVisitsEncounter.filter { draftVisitEncounter ->
+                draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid } }
+
+            // Remove scheduled visits with the same participant ID as in draftVisitEncounter
+            val draftVisitParticipantIds = draftScheduledVisitsEncounter.map { it.participantUuid }.toSet()
+            val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit ->
+                !draftVisitParticipantIds.contains(scheduledVisit.participantUuid) }
+
+            val combinedScheduledVisits = convertedDraftVisits + filteredScheduleDraftVisitsEncounter + filteredScheduledVisits
+            visitDTOs.value = createVisitDTOList(combinedScheduledVisits)
             isLoading.value = false
         }
     }
@@ -68,46 +79,18 @@ class VisitsListViewModel @Inject constructor(
     fun getHistoricalVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
-
+            if (currentLocationUuid.isNullOrEmpty()) {
+                Log.e("VisitsListViewModel", "Logged-in user's site UUID is null or empty. Aborting visit fetch.")
+                isLoading.value = false
+                return@launch
+            }
+            
             val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
-            Log.d("VisitsListViewModel", "Total visits retrieved: ${historicalVisits.size}")
+                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED && participantFromCurrentLocation(it, currentLocationUuid) }
+//            Filter historical visits by registration date
+//            val filteredVisits = filterVisitsByRegistrationDate(historicalVisits)
+//            Log.d("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
 
-//            val filteredVisits = historicalVisits.mapNotNull { visit ->
-//                val draftParticipant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
-//
-//                if (draftParticipant != null) {
-//                    val registrationDate = draftParticipant.registrationDate
-//                    val visitDate = visit.startDatetime
-//
-//                    // remove time from date
-//                    val removedVisitTime = removeTimeFromDateTime(visitDate)
-//                    val removedRegistrationTime = removeTimeFromDateTime(registrationDate)
-//
-//                    val visitDateWithoutTime: LocalDate = LocalDate.parse(removedVisitTime)
-//                    val registrationDateWithoutTime: LocalDate = LocalDate.parse(removedRegistrationTime)
-//
-//                    if (visitDateWithoutTime >= registrationDateWithoutTime) {
-//                        Log.d(
-//                            "VisitsListViewModel",
-//                            "Included visit: participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime"
-//                        )
-//                        visit
-//                    } else {
-//                        Log.d(
-//                            "VisitsListViewModel",
-//                            "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime"
-//                        )
-//                        null
-//                    }
-//                } else {
-//                    Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
-//                    null
-//                }
-//            }
-//               Log.w("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
-
-            // Keep this section as-is
             val draftHistoricalVisits = draftVisitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
             val convertedDraftVisits = draftHistoricalVisits.map { draftVisit ->
                 convertDraftVisitToVisitOffline(draftVisit)
@@ -123,14 +106,69 @@ class VisitsListViewModel @Inject constructor(
             }
 
             val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + historicalVisits
-
-            logInfo("Combined ${combinedVisits.size} visits into VisitDTOs")
+            Log.d("VisitsListViewModel", "Draft visit ${convertedDraftVisits.size}, Draft visits encounter ${filteredDraftVisitsEncounter.size}, Historical visits ${historicalVisits.size}, Combined visits: ${combinedVisits.size}")
 
             visitDTOs.value = createVisitDTOList(combinedVisits)
-            Log.w("VisitsListViewModel", "Filtered visits: ${combinedVisits.size}")
-
             isLoading.value = false
+        }
+    }
 
+    fun getMissedVisitsData() {
+        isLoading.value = true
+        viewModelScope.launch {
+            if (currentLocationUuid.isNullOrEmpty()) {
+                Log.e("VisitsListViewModel", "Logged-in user's site UUID is null or empty. Aborting visit fetch.")
+                isLoading.value = false
+                return@launch
+            }
+
+            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
+                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
+
+            val draftVisits = draftVisitRepository.findVisitsBeforeDate(getTodayMidnight())
+            val convertedDraftVisits = draftVisits.map { draftVisit ->
+                convertDraftVisitToVisitOffline(draftVisit)
+            }
+
+            val combinedMissedVisits =  missedVisits + convertedDraftVisits
+
+            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(getTodayMidnight())
+            val filteredMissedVisits = combinedMissedVisits.filter { missedVisit ->
+                missedVisit.participantUuid !in draftScheduledVisits.map { it.participantUuid }
+            }
+
+            visitDTOs.value = createVisitDTOList(filteredMissedVisits)
+            isLoading.value = false
+        }
+    }
+
+    // Registration date filter function
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun filterVisitsByRegistrationDate(visits: List<Visit>): List<Visit> {
+        return visits.mapNotNull { visit ->
+            val draftParticipant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
+            if (draftParticipant != null) {
+                val registrationDate = draftParticipant.registrationDate
+                val visitDate = visit.startDatetime
+
+                // remove time from date
+                val removedVisitTime = removeTimeFromDateTime(visitDate)
+                val removedRegistrationTime = removeTimeFromDateTime(registrationDate)
+
+                val visitDateWithoutTime: LocalDate = LocalDate.parse(removedVisitTime)
+                val registrationDateWithoutTime: LocalDate = LocalDate.parse(removedRegistrationTime)
+
+                if (visitDateWithoutTime >= registrationDateWithoutTime) {
+                    Log.d("VisitsListViewModel", "Included visit: participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime")
+                    visit
+                } else {
+                    Log.d("VisitsListViewModel", "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime")
+                    null
+                }
+            } else {
+                Log.d("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+                null
+            }
         }
     }
 
@@ -159,19 +197,10 @@ class VisitsListViewModel @Inject constructor(
             dateModified = Date(System.currentTimeMillis()))
     }
 
-    fun getMissedVisitsData() {
-        isLoading.value = true
-        viewModelScope.launch {
-            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
-                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED }
-            visitDTOs.value = createVisitDTOList(missedVisits)
-            isLoading.value = false
-        }
-    }
-
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
         val visitDataDTOList: MutableList<VisitDataDTO> = mutableListOf()
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
+        val uniqueParticipantUuids = mutableSetOf<String>()
 
         visits.forEach { visit ->
             if (!participantsMap.containsKey(visit.participantUuid)) {
@@ -181,7 +210,7 @@ class VisitsListViewModel @Inject constructor(
         }
 
         visits.forEach { visit ->
-            val participant  = participantsMap[visit.participantUuid]
+            val participant = participantsMap[visit.participantUuid]
             if (participant != null) {
                 val visitDataDTO = VisitDataDTO(
                     visitUuid = visit.visitUuid,
@@ -192,8 +221,10 @@ class VisitsListViewModel @Inject constructor(
                     participant = participant
                 )
                 visitDataDTOList.add(visitDataDTO)
+                uniqueParticipantUuids.add(participant.participantUuid)
             }
         }
+        Log.d("VisitsListViewModel", "Visit count: ${visitDataDTOList.size}, Unique participant count: ${uniqueParticipantUuids.size}")
         return visitDataDTOList
     }
 
@@ -205,5 +236,16 @@ class VisitsListViewModel @Inject constructor(
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dateStr = sdf.format(date)
         return dateStr
+    }
+
+    private suspend fun participantFromCurrentLocation(visit: Visit, locationUuid: String): Boolean {
+        val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+        return if (participant == null) {
+            Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
+            false
+        } else {
+            Log.d("VisitsListViewModel", "Participant found: ${participant.participantUuid}, Location UUID: ${participant.locationUuid} vs Current Location UUID: $locationUuid")
+            participant.locationUuid == locationUuid
+        }
     }
 }

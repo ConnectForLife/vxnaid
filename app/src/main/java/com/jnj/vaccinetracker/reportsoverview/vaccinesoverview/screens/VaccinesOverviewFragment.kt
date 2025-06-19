@@ -429,15 +429,14 @@ class VaccinesOverviewFragment : BaseFragment(),
 
         FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
             val workbook = HSSFWorkbook()
-            val sheet =
-                workbook.createSheet(getString(R.string.vaccines_overview_title).replace(" ", "_"))
+            val sheet = workbook.createSheet(getString(R.string.vaccines_overview_title).replace(" ", "_"))
 
             val dateRangeRow = sheet.createRow(0)
             val dateRangeText = if (startDate != null && endDate != null) {
                 getString(
-                    R.string.vaccines_excel_report_date_range_label_set, startDate.toString(
-                        DateFormat.FORMAT_DATE.toString()
-                    ), endDate.toString(DateFormat.FORMAT_DATE.toString())
+                    R.string.vaccines_excel_report_date_range_label_set,
+                    startDate.toString(DateFormat.FORMAT_DATE.toString()),
+                    endDate.toString(DateFormat.FORMAT_DATE.toString())
                 )
             } else {
                 getString(R.string.vaccines_excel_report_date_range_label_not_set)
@@ -451,8 +450,7 @@ class VaccinesOverviewFragment : BaseFragment(),
             titleRow.createCell(0).setCellValue(getString(R.string.vaccine_name_label))
             sheet.addMergedRegion(CellRangeAddress(2, 3, 0, 0))
 
-            val ageGroups =
-                listOf(Constants.GROUP_AGE_FIRST, Constants.GROUP_AGE_SECOND, Constants.GROUP_AGE_THIRD)
+            val ageGroups = listOf(Constants.GROUP_AGE_FIRST, Constants.GROUP_AGE_SECOND, Constants.GROUP_AGE_THIRD)
             val locations = listOf(
                 Constants.VISIT_PLACE_STATIC,
                 Constants.VISIT_PLACE_OUTREACH,
@@ -466,7 +464,6 @@ class VaccinesOverviewFragment : BaseFragment(),
             ageGroups.forEach { ageGroup ->
                 sheet.addMergedRegion(CellRangeAddress(2, 2, currentColumn, currentColumn + 2))
                 ageGroupRow.createCell(currentColumn).setCellValue(ageGroup)
-
                 locations.forEachIndexed { index, location ->
                     locationsRow.createCell(currentColumn + index).setCellValue(location)
                 }
@@ -478,22 +475,43 @@ class VaccinesOverviewFragment : BaseFragment(),
 
             val columnSums = MutableList(currentColumn + 1) { 0 }
 
-            val filteredAndGroupedData = vaccinesData
-                .filter { observation ->
-                    val administerDate = DateUtil.convertStringToDate(
+            val isStatic = { loc: String? -> loc.equals(Constants.VISIT_PLACE_STATIC, ignoreCase = true) }
+            val isOutreach = { loc: String? -> loc?.equals(Constants.VISIT_PLACE_OUTREACH, ignoreCase = true) ?: false }
+            val isSchool = { loc: String? -> loc.equals(Constants.VISIT_PLACE_SCHOOL, ignoreCase = true) }
+
+            val validLocationData = vaccinesData.filter { it.visitLocation.isNotEmpty() }
+
+            val filteredData = validLocationData.filter { observation ->
+                val dateMatches = if (observation.administerDate.isNotEmpty()) {
+                    val observationDate = DateUtil.convertStringToDate(
                         observation.administerDate,
                         DateFormat.FORMAT_DATE.toString()
-                    )
-                    val isAdministerDateInRange =
-                        (startDate == null || administerDate!! >= startDate.toDate()) &&
-                                (endDate == null || administerDate!! <= endDate.toDate())
-                    val isVaccineSelected =
-                        selectedVaccineConceptNames.isEmpty() || selectedVaccineConceptNames.contains(
-                            observation.vaccineName
-                        )
-                    isAdministerDateInRange && isVaccineSelected
+                    ) ?: return@filter false
+
+                    (startDate == null || observationDate >= startDate.toDate()) &&
+                            (endDate == null || observationDate <= endDate.toDate())
+                } else false
+
+                val vaccineMatches = when {
+                    selectedVaccineConceptNames.isEmpty() -> true
+                    selectedVaccineConceptNames.contains(Constants.ALL_STRING) -> true
+                    else -> selectedVaccineConceptNames.contains(observation.vaccineName)
                 }
-                .groupBy { it.vaccineName }
+
+                val locationMatches = when (selectedLocation) {
+                    Constants.ALL_STRING -> true
+                    Constants.VISIT_PLACE_STATIC -> isStatic(observation.visitLocation)
+                    Constants.VISIT_PLACE_OUTREACH -> isOutreach(observation.visitLocation)
+                    Constants.VISIT_PLACE_SCHOOL -> isSchool(observation.visitLocation)
+                    else -> false
+                }
+
+                val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
+                        observation.ageGroup == selectedAgeGroup
+                dateMatches && vaccineMatches && locationMatches && ageGroupMatches
+            }.distinctBy { it.vaccineName + it.administerDate + it.visitLocation }
+
+            val filteredAndGroupedData = filteredData.groupBy { it.vaccineName }
 
             var currentRow = 4
             filteredAndGroupedData.forEach { (vaccineName, observations) ->
@@ -501,7 +519,6 @@ class VaccinesOverviewFragment : BaseFragment(),
                 row.createCell(0).setCellValue(findVaccineLabel(vaccineName))
 
                 val ageLocationCounts = mutableMapOf<String, Int>()
-
                 ageGroups.forEach { ageGroup ->
                     locations.forEach { location ->
                         ageLocationCounts["$ageGroup-$location"] = 0
@@ -527,13 +544,11 @@ class VaccinesOverviewFragment : BaseFragment(),
                     locations.forEach { location ->
                         val count = ageLocationCounts["$ageGroup-$location"]?.toDouble() ?: 0.0
                         row.createCell(cellIndex).setCellValue(count)
-
                         columnSums[cellIndex] += count.toInt()
                         rowTotal += count.toInt()
                         cellIndex++
                     }
                 }
-
                 row.createCell(cellIndex).setCellValue(rowTotal.toDouble())
                 columnSums[cellIndex] += rowTotal
             }
