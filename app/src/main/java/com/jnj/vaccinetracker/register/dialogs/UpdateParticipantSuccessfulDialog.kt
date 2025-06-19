@@ -8,7 +8,6 @@ import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogUpdateParticipantSuccessfulBinding
-import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 
 /**
  * @author maartenvangiel
