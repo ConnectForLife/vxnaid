@@ -72,6 +72,5 @@ class VisitsOverviewFlowActivity : BaseActivity() {
         intent.putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
         intent.putExtra(Constants.PARTICIPANT_MATCH_ID, childID)
         startActivity(intent)
-        finish()
     }
 }

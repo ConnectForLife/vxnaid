@@ -45,6 +45,7 @@ import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.visit.model.OtherSubstanceDataModel
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
+import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
@@ -474,7 +475,14 @@ class HistoricalDataForVisitTypeFragment :
    }
 
    private fun showSuccessDialog() {
-      UpdateParticipantSuccessfulDialog().show(
+      UpdateParticipantSuccessfulDialog(object : UpdateParticipantSuccessfulDialog.OnParticipantUpdateConfirmedListener {
+         override fun onParticipantUpdateConfirmed() {
+            parentFragmentManager.beginTransaction()
+               .replace(R.id.fragment_container, VisitsOverviewFragment())
+               .addToBackStack(null)
+               .commit()
+         }
+      }).show(
          childFragmentManager,
          RegisterParticipantParticipantDetailsFragment.TAG_UPDATE_SUCCESS_DIALOG
       )
