@@ -361,7 +361,7 @@ class VaccinesOverviewFragment : BaseFragment(),
             val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                     observation.ageGroup == selectedAgeGroup
             dateMatches && vaccineMatches && locationMatches && ageGroupMatches
-        }.distinctBy { it.vaccineName + it.administerDate + it.visitLocation } // Remove duplicates
+        }
 
         // Count entries for each location type
         val staticCount = filteredData.count { isStatic(it.visitLocation) }
