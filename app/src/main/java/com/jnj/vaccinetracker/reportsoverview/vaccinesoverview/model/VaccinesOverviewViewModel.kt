@@ -4,11 +4,16 @@ import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
+import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
+import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.domain.entities.BirthDate
+import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
+import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
 import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.SubstancesConfig
 import com.jnj.vaccinetracker.common.domain.entities.Visit
@@ -18,11 +23,13 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto.VaccineObservationDTO
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 class VaccinesOverviewViewModel @Inject constructor(
     private val configurationManager: ConfigurationManager,
     private val visitRepository: VisitRepository,
+    private val draftVisitEncounterRepository: DraftVisitEncounterRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
@@ -45,10 +52,28 @@ class VaccinesOverviewViewModel @Inject constructor(
         isLoading.value = true
         viewModelScope.launch {
             val occurredVisits = visitRepository.findAllVisitsByAttributeTypeAndValue(Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED)
-            vaccineDTOs.value = createVaccineObservationDTOList(occurredVisits)
+
+            val draftVisitEncounters = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+            val draftVisitEncountersAsVisits = draftVisitEncounters.map { convertDraftVisitEncounterToVisit(it) }
+
+            val allVisits = occurredVisits + draftVisitEncountersAsVisits
+            vaccineDTOs.value = createVaccineObservationDTOList(allVisits)
             isLoading.value = false
         }
+    }
 
+    private fun convertDraftVisitEncounterToVisit(draftVisitEncounter: DraftVisitEncounter): Visit {
+        return Visit(
+            visitUuid = draftVisitEncounter.visitUuid,
+            startDatetime = draftVisitEncounter.startDatetime,
+            visitType = draftVisitEncounter.visitType,
+            participantUuid = draftVisitEncounter.participantUuid,
+            attributes = draftVisitEncounter.attributes,
+            observations = draftVisitEncounter.observations.mapValues { entry ->
+                ObservationValue(entry.value, draftVisitEncounter.startDatetime)
+            },
+            dateModified = Date(System.currentTimeMillis())
+        )
     }
 
     private suspend fun createVaccineObservationDTOList(visits: List<Visit>): List<VaccineObservationDTO> {
