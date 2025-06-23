@@ -108,6 +108,7 @@ class ParticipantRepository @Inject constructor(
     }
 
     override suspend fun findByParticipantUuid(participantUuid: String): Participant? = participantDao.findByParticipantUuid(participantUuid)?.toDomain()
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<Participant> = participantDao.findByParticipantUuids(participantUuids).map { it.toDomain() }
 
     override suspend fun insert(model: Participant, orReplace: Boolean) = transactionRunner.withTransaction {
         try {

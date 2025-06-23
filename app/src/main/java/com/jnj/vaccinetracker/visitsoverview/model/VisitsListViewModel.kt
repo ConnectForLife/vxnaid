@@ -84,12 +84,12 @@ class VisitsListViewModel @Inject constructor(
                 isLoading.value = false
                 return@launch
             }
-            
-            val historicalVisits = visitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED && participantFromCurrentLocation(it, currentLocationUuid) }
-//            Filter historical visits by registration date
-//            val filteredVisits = filterVisitsByRegistrationDate(historicalVisits)
-//            Log.d("VisitsListViewModel", "Filtered visits: ${filteredVisits.size}")
+
+            val historicalVisits = visitRepository.getVisitHistory(
+                addDaysToDate(getTodayMidnight(), 1),
+                Constants.VISIT_STATUS_OCCURRED,
+                currentLocationUuid
+            )
 
             val draftHistoricalVisits = draftVisitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
             val convertedDraftVisits = draftHistoricalVisits.map { draftVisit ->
@@ -199,18 +199,12 @@ class VisitsListViewModel @Inject constructor(
 
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
         val visitDataDTOList: MutableList<VisitDataDTO> = mutableListOf()
-        val participantsMap = mutableMapOf<String, ParticipantBase?>()
-        val uniqueParticipantUuids = mutableSetOf<String>()
+        val participantsMap =
+            findParticipantByParticipantUuidUseCase.findByParticipantUuids(visits.map { it.participantUuid }
+                .toSet()).groupBy { it.participantUuid }
 
         visits.forEach { visit ->
-            if (!participantsMap.containsKey(visit.participantUuid)) {
-                val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-                participantsMap[visit.participantUuid] = participant
-            }
-        }
-
-        visits.forEach { visit ->
-            val participant = participantsMap[visit.participantUuid]
+            val participant = participantsMap[visit.participantUuid]?.getOrNull(0)
             if (participant != null) {
                 val visitDataDTO = VisitDataDTO(
                     visitUuid = visit.visitUuid,
@@ -221,10 +215,9 @@ class VisitsListViewModel @Inject constructor(
                     participant = participant
                 )
                 visitDataDTOList.add(visitDataDTO)
-                uniqueParticipantUuids.add(participant.participantUuid)
             }
         }
-        Log.d("VisitsListViewModel", "Visit count: ${visitDataDTOList.size}, Unique participant count: ${uniqueParticipantUuids.size}")
+        Log.d("VisitsListViewModel", "Visit count: ${visitDataDTOList.size}, Unique participant count: ${participantsMap.size}")
         return visitDataDTOList
     }
 

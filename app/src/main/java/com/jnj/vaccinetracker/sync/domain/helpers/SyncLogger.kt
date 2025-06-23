@@ -136,7 +136,7 @@ class SyncLogger @Inject constructor(
 
     fun clearSyncError(metadata: SyncErrorMetadata) {
         scope.launch {
-            logInfo("clearSyncError: {}", metadata)
+            logVerbose("clearSyncError: {}", metadata)
             try {
                 clearSyncErrorUseCase.clearSyncError(metadata)
             } catch (ex: Exception) {

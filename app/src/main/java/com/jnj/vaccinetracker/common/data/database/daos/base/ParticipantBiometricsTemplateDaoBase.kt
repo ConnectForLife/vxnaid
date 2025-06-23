@@ -2,12 +2,14 @@ package com.jnj.vaccinetracker.common.data.database.daos.base
 
 import com.jnj.vaccinetracker.common.data.database.helpers.pagingQuery
 import com.jnj.vaccinetracker.common.data.database.helpers.pagingQueryList
+import com.jnj.vaccinetracker.common.data.database.models.RoomParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.delete.RoomDeleteParticipantModel
 
 interface ParticipantBiometricsTemplateDaoBase<E> : DaoBase<E> {
     suspend fun findAllByPhone(phone: String): List<@JvmSuppressWildcards E>
     suspend fun findAllByPhoneIsNull(offset: Int, limit: Int): List<@JvmSuppressWildcards E>
     suspend fun findByParticipantUuid(participantUuid: String): E?
+    suspend fun findByParticipantUuids(participantUuids: Set<String>): List<@JvmSuppressWildcards E>
     suspend fun findByParticipantId(participantId: String): E?
     suspend fun findByParticipantNin(participantNin: String): E?
     suspend fun delete(deleteParticipantModel: RoomDeleteParticipantModel): Int

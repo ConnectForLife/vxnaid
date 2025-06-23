@@ -40,6 +40,22 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
     @Transaction
     override suspend fun findVisitsBeforeDate(date: DateEntity): List<RoomVisitModel>
 
+    @Query("SELECT v.* " +
+            "FROM visit v " +
+            "INNER JOIN visit_attribute va ON v.visitUuid = va.visitUuid AND va.type = 'Visit Status' " +
+            "WHERE v.startDatetime <= :date AND va.value = :visitStatus ORDER BY v.startDatetime DESC")
+    @Transaction
+    override suspend fun findVisitsBeforeDate(date: DateEntity, visitStatus: String): List<RoomVisitModel>
+
+    @Query("SELECT v.* " +
+            "FROM visit v " +
+            "INNER JOIN visit_attribute va ON v.visitUuid = va.visitUuid AND va.type = 'Visit Status' " +
+            "INNER JOIN participant p ON v.participantUuid = p.participantUuid " +
+            "WHERE v.startDatetime <= :date AND va.value = :visitStatus AND p.locationUuid = :locationUuid " +
+            "ORDER BY v.startDatetime DESC")
+    @Transaction
+    suspend fun getVisitHistory(date: DateEntity, visitStatus: String, locationUuid: String): List<RoomVisitModel>
+
     @Query("select * from visit where visitUuid=:visitUuid")
     @Transaction
     override suspend fun findByVisitUuid(visitUuid: String): RoomVisitModel?

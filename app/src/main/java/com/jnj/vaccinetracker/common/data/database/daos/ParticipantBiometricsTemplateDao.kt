@@ -3,10 +3,12 @@ package com.jnj.vaccinetracker.common.data.database.daos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Transaction
 import com.jnj.vaccinetracker.common.data.database.daos.base.ObservableDao
 import com.jnj.vaccinetracker.common.data.database.daos.base.ParticipantBiometricsTemplateDaoBase
 import com.jnj.vaccinetracker.common.data.database.daos.base.SyncDao
 import com.jnj.vaccinetracker.common.data.database.entities.ParticipantBiometricsEntity
+import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipantBiometricsEntity
 import com.jnj.vaccinetracker.common.data.database.models.RoomDateModifiedOccurrenceModel
 import com.jnj.vaccinetracker.common.data.database.models.delete.RoomDeleteParticipantModel
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +37,10 @@ interface ParticipantBiometricsTemplateDao : ParticipantBiometricsTemplateDaoBas
 
     @Query("select * from participant_biometrics_template where participantUuid=:participantUuid")
     override suspend fun findByParticipantUuid(participantUuid: String): ParticipantBiometricsEntity?
+
+    @Query("select * from participant_biometrics_template where participantUuid IN (:participantUuids)")
+    @Transaction
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<ParticipantBiometricsEntity>
 
     @Query("select participantUuid as uuid, dateModified from participant_biometrics_template where dateModified = (select max(dateModified) from participant_biometrics_template)")
     override suspend fun findMostRecentDateModifiedOccurrence(): List<RoomDateModifiedOccurrenceModel>

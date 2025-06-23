@@ -3,12 +3,14 @@ package com.jnj.vaccinetracker.common.data.database.daos.draft
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.jnj.vaccinetracker.common.data.database.daos.base.DraftParticipantDataFileDaoBase
 import com.jnj.vaccinetracker.common.data.database.daos.base.DraftParticipantSyncDao
 import com.jnj.vaccinetracker.common.data.database.daos.base.ObservableDao
 import com.jnj.vaccinetracker.common.data.database.daos.base.ParticipantBiometricsTemplateDaoBase
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipantBiometricsEntity
+import com.jnj.vaccinetracker.common.data.database.models.RoomParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.delete.RoomDeleteParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.update.RoomUpdateParticipantDraftStateModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.update.RoomUpdateParticipantDraftStateWithDateModel
@@ -30,6 +32,10 @@ interface DraftParticipantBiometricsTemplateDao : ParticipantBiometricsTemplateD
 
     @Query("select * from draft_participant_biometrics_template where participantUuid=:participantUuid")
     override suspend fun findByParticipantUuid(participantUuid: String): DraftParticipantBiometricsEntity?
+
+    @Query("select * from draft_participant_biometrics_template where participantUuid IN (:participantUuids)")
+    @Transaction
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<DraftParticipantBiometricsEntity>
 
     @Query("""select draft_participant_biometrics_template.* from draft_participant_biometrics_template left join draft_participant 
         as dp USING (participantUuid) left join participant as p USING (participantUuid) where coalesce(dp.phone, p.phone) = :phone""")

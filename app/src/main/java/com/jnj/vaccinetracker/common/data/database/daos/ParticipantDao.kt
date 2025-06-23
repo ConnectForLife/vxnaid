@@ -23,6 +23,10 @@ interface ParticipantDao : ParticipantDaoBase<ParticipantEntity, RoomParticipant
     @Transaction
     override suspend fun findByParticipantUuid(participantUuid: String): RoomParticipantModel?
 
+    @Query("select * from participant left join participant_address using (participantUuid) where participantUuid in (:participantUuids)")
+    @Transaction
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<RoomParticipantModel>
+
     @Query("select * from participant left join participant_address using (participantUuid) where participantId=:participantId")
     @Transaction
     override suspend fun findByParticipantId(participantId: String): RoomParticipantModel?

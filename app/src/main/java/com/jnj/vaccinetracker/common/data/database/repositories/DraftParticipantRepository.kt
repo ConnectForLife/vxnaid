@@ -165,6 +165,10 @@ class DraftParticipantRepository @Inject constructor(
         return draftParticipantDao.findByParticipantUuid(participantUuid)?.toDomain()
     }
 
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<DraftParticipant> {
+        return draftParticipantDao.findByParticipantUuids(participantUuids).map { it.toDomain() }
+    }
+
     override suspend fun insert(model: DraftParticipant, orReplace: Boolean) = transactionRunner.withTransaction {
         model.image?.let {
             draftParticipantImageRepository.insert(it, orReplace = orReplace)

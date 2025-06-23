@@ -76,4 +76,31 @@ class FindParticipantByParticipantUuidUseCase @Inject constructor(
             null
         }
     }
+
+    suspend fun findByParticipantUuids(participantUuids: Set<String>): List<ParticipantBase> {
+        return try {
+            val draftParticipants =
+                draftParticipantRepository.findByParticipantUuids(participantUuids)
+
+            val notIncludedInDraft =
+                participantUuids.filter { participantUuid -> draftParticipants.find { it.participantUuid == participantUuid } == null }
+                    .toSet()
+            val localParticipants = participantRepository.findByParticipantUuids(notIncludedInDraft)
+
+            val notIncludedInLocal =
+                notIncludedInDraft.filter { participantUuid -> localParticipants.find { it.participantUuid == participantUuid } == null }
+                    .toSet()
+
+            val remoteParticipants = notIncludedInLocal
+                .chunked(256)
+                .flatMap { chunk -> api.getParticipantsByUuids(GetParticipantsByUuidsRequest(chunk.toList())) }
+                .filterIsInstance<ParticipantSyncRecord.Update>()
+                .map { it.toDomain() }
+
+            return draftParticipants + localParticipants + remoteParticipants
+        } catch (e: Exception) {
+            println("Error occurred while finding participant by UUID: ${e.message}")
+            emptyList()
+        }
+    }
 }

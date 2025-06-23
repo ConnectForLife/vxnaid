@@ -67,6 +67,10 @@ class DraftParticipantBiometricsTemplateRepository @Inject constructor(
         return draftParticipantBiometricsTemplateDao.findByParticipantUuid(participantUuid)?.toDomain()
     }
 
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<DraftParticipantBiometricsTemplateFile> {
+        return draftParticipantBiometricsTemplateDao.findByParticipantUuids(participantUuids).map { it.toDomain() }
+    }
+
     override suspend fun updateDraftState(draft: DraftParticipantBiometricsTemplateFile) {
         draftParticipantBiometricsTemplateDao.updateDraftStateWithDate(
             RoomUpdateParticipantDraftStateWithDateModel(participantUuid = draft.participantUuid,

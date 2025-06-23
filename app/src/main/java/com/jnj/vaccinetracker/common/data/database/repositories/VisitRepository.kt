@@ -21,7 +21,7 @@ import com.jnj.vaccinetracker.common.domain.entities.DateModifiedOccurrence
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.exceptions.InsertEntityException
 import com.jnj.vaccinetracker.common.helpers.logDebug
-import com.jnj.vaccinetracker.common.helpers.logInfo
+import com.jnj.vaccinetracker.common.helpers.logVerbose
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.yield
@@ -73,6 +73,14 @@ class VisitRepository @Inject constructor(
         return visitDao.findVisitsBeforeDate(date).map { it.toDomain() }
     }
 
+    override suspend fun findVisitsBeforeDate(date: DateEntity, visitStatus: String): List<Visit> {
+        return visitDao.findVisitsBeforeDate(date, visitStatus).map { it.toDomain() }
+    }
+
+    suspend fun getVisitHistory(date: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
+        return visitDao.getVisitHistory(date, visitStatus, locationUuid).map { it.toDomain() }
+    }
+
     override suspend fun deleteByVisitUuid(visitUuid: String): Boolean {
         return visitDao.delete(RoomDeleteVisitModel(visitUuid)).let { countDeleted ->
             logDebug("deleteByVisitUuid: $visitUuid $countDeleted")
@@ -88,7 +96,7 @@ class VisitRepository @Inject constructor(
                 //we assume due to foreign keys, the related child rows will be deleted as well
                 val isDeleted = visitDao.deleteByVisitUuid(model.visitUuid) > 0
                 if (isDeleted) {
-                    logInfo("deleted visit for replace ${model.visitUuid}")
+                    logVerbose("deleted visit for replace ${model.visitUuid}")
                 }
             }
 
