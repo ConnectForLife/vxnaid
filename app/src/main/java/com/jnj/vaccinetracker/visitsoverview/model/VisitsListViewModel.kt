@@ -91,24 +91,15 @@ class VisitsListViewModel @Inject constructor(
                 currentLocationUuid
             )
 
-            val draftHistoricalVisits = draftVisitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-            val convertedDraftVisits = draftHistoricalVisits.map { draftVisit ->
-                convertDraftVisitToVisitOffline(draftVisit)
-            }
-
             val draftHistoricalVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
             val convertedDraftVisitsEncounter = draftHistoricalVisitsEncounter.map { draftVisitEncounter ->
-                convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)
-            }
+                convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)}
 
-            val filteredDraftVisitsEncounter = convertedDraftVisitsEncounter.filter { draftVisitEncounter ->
-                draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid }
-            }
+            val combinedHistoricalVisits = convertedDraftVisitsEncounter + historicalVisits
+            val filteredHistoricalVisits = combinedHistoricalVisits.filter { it.visitLocation != Constants.EMPTY_STRING_VALUE }
+            Log.d("VisitsListViewModel", "Draft visits encounter ${convertedDraftVisitsEncounter.size}, Historical visits ${historicalVisits.size}, Combined visits: ${combinedHistoricalVisits.size} with filtered visits: ${filteredHistoricalVisits.size}")
 
-            val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + historicalVisits
-            Log.d("VisitsListViewModel", "Draft visit ${convertedDraftVisits.size}, Draft visits encounter ${filteredDraftVisitsEncounter.size}, Historical visits ${historicalVisits.size}, Combined visits: ${combinedVisits.size}")
-
-            visitDTOs.value = createVisitDTOList(combinedVisits)
+            visitDTOs.value = createVisitDTOList(filteredHistoricalVisits)
             isLoading.value = false
         }
     }
