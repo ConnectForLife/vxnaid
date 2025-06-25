@@ -91,24 +91,15 @@ class VisitsListViewModel @Inject constructor(
                 currentLocationUuid
             )
 
-            val draftHistoricalVisits = draftVisitRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-            val convertedDraftVisits = draftHistoricalVisits.map { draftVisit ->
-                convertDraftVisitToVisitOffline(draftVisit)
-            }
-
             val draftHistoricalVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
             val convertedDraftVisitsEncounter = draftHistoricalVisitsEncounter.map { draftVisitEncounter ->
-                convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)
-            }
+                convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)}
 
-            val filteredDraftVisitsEncounter = convertedDraftVisitsEncounter.filter { draftVisitEncounter ->
-                draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid }
-            }
+            val combinedHistoricalVisits = convertedDraftVisitsEncounter + historicalVisits
+            val filteredHistoricalVisits = combinedHistoricalVisits.filter { it.visitLocation != Constants.EMPTY_STRING_VALUE }
+            Log.d("VisitsListViewModel", "Draft visits encounter ${convertedDraftVisitsEncounter.size}, Historical visits ${historicalVisits.size}, Combined visits: ${combinedHistoricalVisits.size} with filtered visits: ${filteredHistoricalVisits.size}")
 
-            val combinedVisits = convertedDraftVisits + filteredDraftVisitsEncounter + historicalVisits
-            Log.d("VisitsListViewModel", "Draft visit ${convertedDraftVisits.size}, Draft visits encounter ${filteredDraftVisitsEncounter.size}, Historical visits ${historicalVisits.size}, Combined visits: ${combinedVisits.size}")
-
-            visitDTOs.value = createVisitDTOList(combinedVisits)
+            visitDTOs.value = createVisitDTOList(filteredHistoricalVisits)
             isLoading.value = false
         }
     }
@@ -141,37 +132,7 @@ class VisitsListViewModel @Inject constructor(
             isLoading.value = false
         }
     }
-
-    // Registration date filter function
-    @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun filterVisitsByRegistrationDate(visits: List<Visit>): List<Visit> {
-        return visits.mapNotNull { visit ->
-            val draftParticipant = draftParticipantRepository.findByParticipantUuid(visit.participantUuid)
-            if (draftParticipant != null) {
-                val registrationDate = draftParticipant.registrationDate
-                val visitDate = visit.startDatetime
-
-                // remove time from date
-                val removedVisitTime = removeTimeFromDateTime(visitDate)
-                val removedRegistrationTime = removeTimeFromDateTime(registrationDate)
-
-                val visitDateWithoutTime: LocalDate = LocalDate.parse(removedVisitTime)
-                val registrationDateWithoutTime: LocalDate = LocalDate.parse(removedRegistrationTime)
-
-                if (visitDateWithoutTime >= registrationDateWithoutTime) {
-                    Log.d("VisitsListViewModel", "Included visit: participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime")
-                    visit
-                } else {
-                    Log.d("VisitsListViewModel", "Excluded visit (visitDate < registrationDate): participantUuid=${visit.participantUuid}, visitDate=$visitDateWithoutTime, registrationDate=$registrationDateWithoutTime")
-                    null
-                }
-            } else {
-                Log.d("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
-                null
-            }
-        }
-    }
-
+    
     private fun convertDraftVisitToVisitOffline(draftVisit: DraftVisit): Visit {
         return Visit(
             visitUuid = draftVisit.visitUuid,
