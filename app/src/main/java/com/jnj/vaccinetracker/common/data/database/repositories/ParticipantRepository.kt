@@ -162,4 +162,8 @@ class ParticipantRepository @Inject constructor(
     suspend fun findPatients(): List<RoomParticipantModel> {
         return participantDao.findAllPatients()
     }
+
+    suspend fun findAllParticipants(locationUuid: String?): List<RoomParticipantModel> {
+        return participantDao.findAllParticipants(locationUuid)
+    }
 }

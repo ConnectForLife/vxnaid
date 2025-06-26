@@ -65,6 +65,10 @@ interface ParticipantDao : ParticipantDaoBase<ParticipantEntity, RoomParticipant
     @Query("select * from participant")
     @Transaction
     suspend fun findAllPatients(): List<RoomParticipantModel>
+
+    @Query("select * from participant where locationUuid=:locationUuid")
+    @Transaction
+    suspend fun findAllParticipants(locationUuid: String?): List<RoomParticipantModel>
 }
 
 @Dao
