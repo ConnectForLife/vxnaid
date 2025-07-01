@@ -8,6 +8,7 @@ import com.jnj.vaccinetracker.common.data.database.models.RoomParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantModel
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.ParticipantRepository
+import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
@@ -17,30 +18,25 @@ import javax.inject.Inject
 class RegisteredParticipantsViewModel@Inject constructor(
     private val participantRepository: ParticipantRepository,
     private val draftParticipantRepository: DraftParticipantRepository,
-    override val dispatchers: AppCoroutineDispatchers
+    override val dispatchers: AppCoroutineDispatchers,
+    userRepository: UserRepository,
 ) : ViewModelWithState() {
     val patientDTOs = MutableLiveData<List<ParticipantDataDTO>>()
     val isLoading = mutableLiveData<Boolean>()
+    private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
     fun fetchAllPatients() {
         isLoading.value = true
         viewModelScope.launch {
-            val patients = participantRepository.findPatients()
-
-            // Fetch draft participants
+            val participant = participantRepository.findAllParticipants(currentLocationUuid)
             val draftParticipant = draftParticipantRepository.findDraftParticipants()
 
-            val participantDTOs = createParticipantDTOList(patients)
+            val participantDTOs = createParticipantDTOList(participant)
             val draftParticipantDTOs = createDraftParticipantDTOList(draftParticipant)
+            val totalParticipants = participantDTOs + draftParticipantDTOs
+            Log.d("RegisteredChildren", "Fetched ${participantDTOs.size} regular participants and ${draftParticipantDTOs.size} draft participants. Total: ${patientDTOs.value?.size ?: 0}")
 
-            // Merge, sort by registration date, and update LiveData
-            patientDTOs.value = (participantDTOs + draftParticipantDTOs)
-                .sortedByDescending { it.registrationDate }
-
-            Log.d(
-                "RegisteredChildren",
-                "Fetched ${participantDTOs.size} regular participants and ${draftParticipantDTOs.size} draft participants. Total: ${patientDTOs.value?.size ?: 0}"
-            )
+            patientDTOs.value = (totalParticipants).sortedByDescending { it.registrationDate }
             isLoading.value = false
         }
     }
