@@ -149,10 +149,10 @@ class VaccinesOverviewViewModel @Inject constructor(
     private suspend fun participantFromCurrentLocation(visit: Visit, locationUuid: String?): Boolean {
         val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
         return if (participant == null) {
-            Log.w("VaccinesiewModel", "Participant not found for UUID: ${visit.participantUuid}")
+            Log.w("VaccinesiewModel", "Participant not found")
             false
         } else {
-            Log.d("VaccinesViewModel", "Participant found: ${participant.participantUuid}, Location UUID: ${participant.locationUuid} vs Current Location UUID: $locationUuid")
+            Log.d("VaccinesViewModel", "Participant found")
             participant.locationUuid == locationUuid
         }
     }
