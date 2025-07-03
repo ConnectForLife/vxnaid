@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.common.data.database.repositories
 
 
+import android.util.Log
 import com.jnj.vaccinetracker.common.data.database.daos.VisitAttributeDao
 import com.jnj.vaccinetracker.common.data.database.daos.VisitDao
 import com.jnj.vaccinetracker.common.data.database.daos.VisitObservationDao
@@ -79,6 +80,18 @@ class VisitRepository @Inject constructor(
 
     suspend fun getVisitHistory(date: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
         return visitDao.getVisitHistory(date, visitStatus, locationUuid).map { it.toDomain() }
+    }
+
+    suspend fun getVisitHistoryData(startDate: DateEntity, endDate: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
+        return visitDao.getVisitHistoryData(startDate, endDate, visitStatus, locationUuid ).map { it.toDomain() }
+    }
+
+    suspend fun findVisitsAfterDateData(date: DateEntity): List<Visit> {
+        return visitDao.findVisitsAfterDateData(date).map { it.toDomain() }
+    }
+
+    suspend fun findVisitsBetweenDates(startDate: DateEntity, endDate: DateEntity): List<Visit> {
+        return visitDao.findVisitsBetweenDates(startDate, endDate).map { it.toDomain() }
     }
 
     override suspend fun deleteByVisitUuid(visitUuid: String): Boolean {
