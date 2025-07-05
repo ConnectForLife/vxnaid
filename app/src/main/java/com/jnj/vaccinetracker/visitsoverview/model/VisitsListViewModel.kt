@@ -50,8 +50,10 @@ class VisitsListViewModel @Inject constructor(
                 isLoading.value = false
                 return@launch
             }
+            val startDate = dateNow()
+            val endDate = addDaysToDate(dateNow(), +30)
 
-            val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
+            val scheduledVisits = visitRepository.findVisitsBetweenDates(startDate, endDate)
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
 
             val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
@@ -86,38 +88,10 @@ class VisitsListViewModel @Inject constructor(
                 return@launch
             }
 
-            val historicalVisits = visitRepository.getVisitHistory(
-                addDaysToDate(getTodayMidnight(), 1),
-                Constants.VISIT_STATUS_OCCURRED,
-                currentLocationUuid
-            )
-
-            val draftHistoricalVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-            val convertedDraftVisitsEncounter = draftHistoricalVisitsEncounter.map { draftVisitEncounter ->
-                convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)}
-
-            val combinedHistoricalVisits = convertedDraftVisitsEncounter + historicalVisits
-            val filteredHistoricalVisits = combinedHistoricalVisits.filter { it.visitLocation != Constants.EMPTY_STRING_VALUE }
-            Log.d("VisitsListViewModel", "Draft visits encounter ${convertedDraftVisitsEncounter.size}, Historical visits ${historicalVisits.size}, Combined visits: ${combinedHistoricalVisits.size} with filtered visits: ${filteredHistoricalVisits.size}")
-
-            visitDTOs.value = createVisitDTOList(filteredHistoricalVisits)
-            isLoading.value = false
-        }
-    }
-
-    fun getThirtyDayHistoricalVisitsData() {
-        isLoading.value = true
-        viewModelScope.launch {
-            if (currentLocationUuid.isNullOrEmpty()) {
-                Log.e("VisitsListViewModel", "Logged-in user's site UUID is null or empty. Aborting visit fetch.")
-                isLoading.value = false
-                return@launch
-            }
-
             val startDate = addDaysToDate(dateNow(), -30)
             val endDate = dateNow()
 
-            val historicalVisits = visitRepository.getVisitHistoryData(
+            val historicalVisits = visitRepository.getThirtyDayVisitHistoryData(
                 startDate,
                 endDate,
                 Constants.VISIT_STATUS_OCCURRED,
@@ -137,19 +111,6 @@ class VisitsListViewModel @Inject constructor(
         }
     }
 
-    fun getThirtyDayScheduleVisitsData() {
-        val startDate = addDaysToDate(dateNow(), -30)
-        val endDate = dateNow()
-
-        isLoading.value = true
-        viewModelScope.launch {
-            val thirtyDayVisitsSchedule = visitRepository.findVisitsBetweenDates(startDate, endDate)
-                .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
-            visitDTOs.value = createVisitDTOList(thirtyDayVisitsSchedule)
-            isLoading.value = false
-        }
-    }
-
     fun getMissedVisitsData() {
         isLoading.value = true
         viewModelScope.launch {
@@ -159,7 +120,10 @@ class VisitsListViewModel @Inject constructor(
                 return@launch
             }
 
-            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
+            val startDate = addDaysToDate(dateNow(), -30)
+            val endDate = dateNow()
+
+            val missedVisits = visitRepository.findVisitsBetweenDates(startDate, endDate)
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
 
             val draftVisits = draftVisitRepository.findVisitsBeforeDate(getTodayMidnight())

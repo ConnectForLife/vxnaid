@@ -71,7 +71,7 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
             "WHERE startDatetime BETWEEN :startDate AND :endDate AND va.value = :visitStatus AND p.locationUuid = :locationUuid " +
             "ORDER BY v.startDatetime DESC")
     @Transaction
-    suspend fun getVisitHistoryData(startDate: DateEntity, endDate: DateEntity, visitStatus: String, locationUuid: String): List<RoomVisitModel>
+    suspend fun getThirtyDayVisitHistoryData(startDate: DateEntity, endDate: DateEntity, visitStatus: String, locationUuid: String): List<RoomVisitModel>
 
     @Query("select * from visit where visitUuid=:visitUuid")
     @Transaction
