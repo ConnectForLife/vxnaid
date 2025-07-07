@@ -16,7 +16,6 @@ import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
-import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
@@ -24,7 +23,6 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -53,7 +51,7 @@ class VisitsListViewModel @Inject constructor(
             val startDate = getTodayMidnight()
             val endDate = addDaysToDate(dateNow(), +30)
 
-            val scheduledVisits = visitRepository.findVisitsBetweenDates(startDate, endDate)
+            val scheduledVisits = visitRepository.findVisitsInPeriod(startDate, endDate)
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
 
             val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
@@ -91,7 +89,7 @@ class VisitsListViewModel @Inject constructor(
             val startDate = addDaysToDate(dateNow(), -30)
             val endDate = addDaysToDate(getTodayMidnight(), 1)
 
-            val historicalVisits = visitRepository.getThirtyDayVisitHistoryData(
+            val historicalVisits = visitRepository.getVisitsInDateRange(
                 startDate,
                 endDate,
                 Constants.VISIT_STATUS_OCCURRED,
@@ -123,7 +121,7 @@ class VisitsListViewModel @Inject constructor(
             val startDate = addDaysToDate(dateNow(), -30)
             val endDate = getTodayMidnight()
 
-            val missedVisits = visitRepository.findVisitsBetweenDates(startDate, endDate)
+            val missedVisits = visitRepository.findVisitsInPeriod(startDate, endDate)
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
 
             val draftVisits = draftVisitRepository.findVisitsBeforeDate(getTodayMidnight())

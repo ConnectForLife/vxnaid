@@ -36,13 +36,9 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
     @Transaction
     override suspend fun findVisitsAfterDate(date: DateEntity): List<RoomVisitModel>
 
-    @Query("SELECT * FROM visit WHERE startDatetime >= :date ORDER BY startDatetime ASC")
-    @Transaction
-    suspend fun findVisitsAfterDateData(date: DateEntity): List<RoomVisitModel>
-
     @Query("SELECT * FROM visit WHERE startDatetime BETWEEN :startDate AND :endDate ORDER BY startDatetime DESC")
     @Transaction
-    suspend fun findVisitsBetweenDates(startDate: DateEntity, endDate: DateEntity): List<RoomVisitModel>
+    suspend fun findVisitsInPeriod(startDate: DateEntity, endDate: DateEntity): List<RoomVisitModel>
 
     @Query("SELECT * FROM visit WHERE startDatetime <= :date ORDER BY startDatetime DESC")
     @Transaction
@@ -71,7 +67,7 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
             "WHERE startDatetime BETWEEN :startDate AND :endDate AND va.value = :visitStatus AND p.locationUuid = :locationUuid " +
             "ORDER BY v.startDatetime DESC")
     @Transaction
-    suspend fun getThirtyDayVisitHistoryData(startDate: DateEntity, endDate: DateEntity, visitStatus: String, locationUuid: String): List<RoomVisitModel>
+    suspend fun getVisitsInDateRange(startDate: DateEntity, endDate: DateEntity, visitStatus: String, locationUuid: String): List<RoomVisitModel>
 
     @Query("select * from visit where visitUuid=:visitUuid")
     @Transaction
