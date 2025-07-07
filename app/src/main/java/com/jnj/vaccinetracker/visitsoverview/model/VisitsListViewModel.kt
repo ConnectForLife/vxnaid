@@ -50,7 +50,7 @@ class VisitsListViewModel @Inject constructor(
                 isLoading.value = false
                 return@launch
             }
-            val startDate = dateNow()
+            val startDate = getTodayMidnight()
             val endDate = addDaysToDate(dateNow(), +30)
 
             val scheduledVisits = visitRepository.findVisitsBetweenDates(startDate, endDate)
@@ -89,7 +89,7 @@ class VisitsListViewModel @Inject constructor(
             }
 
             val startDate = addDaysToDate(dateNow(), -30)
-            val endDate = dateNow()
+            val endDate = addDaysToDate(getTodayMidnight(), 1)
 
             val historicalVisits = visitRepository.getThirtyDayVisitHistoryData(
                 startDate,
@@ -121,7 +121,7 @@ class VisitsListViewModel @Inject constructor(
             }
 
             val startDate = addDaysToDate(dateNow(), -30)
-            val endDate = dateNow()
+            val endDate = getTodayMidnight()
 
             val missedVisits = visitRepository.findVisitsBetweenDates(startDate, endDate)
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
