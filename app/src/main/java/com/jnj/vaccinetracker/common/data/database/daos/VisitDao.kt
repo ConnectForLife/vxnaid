@@ -64,7 +64,7 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
             "FROM visit v " +
             "INNER JOIN visit_attribute va ON v.visitUuid = va.visitUuid AND va.type = 'Visit Status' " +
             "INNER JOIN participant p ON v.participantUuid = p.participantUuid " +
-            "WHERE startDatetime BETWEEN :startDate AND :endDate AND va.value = :visitStatus AND p.locationUuid = :locationUuid " +
+            "WHERE v.startDatetime BETWEEN :startDate AND :endDate AND va.value = :visitStatus AND p.locationUuid = :locationUuid " +
             "ORDER BY v.startDatetime DESC")
     @Transaction
     suspend fun getVisitsInDateRange(startDate: DateEntity, endDate: DateEntity, visitStatus: String, locationUuid: String): List<RoomVisitModel>
