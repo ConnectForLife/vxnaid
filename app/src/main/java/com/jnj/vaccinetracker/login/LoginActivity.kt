@@ -2,12 +2,17 @@ package com.jnj.vaccinetracker.login
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.textfield.TextInputEditText
@@ -46,6 +51,7 @@ class LoginActivity : BaseActivity() {
 
     private lateinit var binding: ActivityLoginBinding
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
@@ -63,8 +69,23 @@ class LoginActivity : BaseActivity() {
             }
         }
 
+        /* Added reference to location layout and edit text */
+//        val textInputLocationName = findViewById<TextInputLayout>(R.id.textInputLocationName)
+//        val editTextLocationName = findViewById<TextInputEditText>(R.id.location_name)
+//        val locationName = editTextLocationName.text.toString().trim()
+//        if (locationName.isEmpty()) {
+//            textInputLocationName.error = "Location name is required"
+//        } else {
+//            textInputLocationName.error = null
+//            login()
+//        }
+
         val textInputPasswordLayout = findViewById<TextInputLayout>(R.id.textInputPassword)
         val editPassword = findViewById<TextInputEditText>(R.id.edit_password)
+        val textInputLocationName = findViewById<TextInputLayout>(R.id.textInputLocationName)
+        val visitPlaceIcon = findViewById<ImageView>(R.id.img_location_name)
+        textInputLocationName.visibility = View.GONE
+        visitPlaceIcon.visibility = View.GONE
 
         textInputPasswordLayout.setEndIconOnClickListener {
             if (editPassword.inputType == (android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
@@ -87,6 +108,17 @@ class LoginActivity : BaseActivity() {
             visitPlaces
         )
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
+        binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
+            val selectedVisitPlace = visitPlaces[position]
+            Log.e("Selected Visit Place", "Selected Visit Place: $selectedVisitPlace")
+            if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
+                textInputLocationName.visibility = View.VISIBLE
+                visitPlaceIcon.visibility = View.VISIBLE
+            } else {
+                textInputLocationName.visibility = View.GONE
+                visitPlaceIcon.visibility = View.GONE
+            }
+        }
 
         binding.root.setOnClickListener { hideKeyboard() }
         binding.btnUpdate.setOnClickListener { showUpdateDialog() }
@@ -99,6 +131,7 @@ class LoginActivity : BaseActivity() {
     override val isAuthenticatedOperatorScreen: Boolean
         get() = false
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun observeViewModel(lifecycleOwner: LifecycleOwner) {
         viewModel.loginCompleted
             .asFlow()
@@ -148,6 +181,7 @@ class LoginActivity : BaseActivity() {
         viewModel.login(username, password, visitPlace)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onLoginCompleted() {
         startActivity(ParticipantFlowActivity.create(this))
         finish()
