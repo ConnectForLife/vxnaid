@@ -9,13 +9,13 @@ import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncoun
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
-import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
@@ -23,7 +23,6 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -49,8 +48,10 @@ class VisitsListViewModel @Inject constructor(
                 isLoading.value = false
                 return@launch
             }
+            val startDate = getTodayMidnight()
+            val endDate = addDaysToDate(dateNow(), +30)
 
-            val scheduledVisits = visitRepository.findVisitsAfterDate(getTodayMidnight())
+            val scheduledVisits = visitRepository.findVisitsInPeriod(startDate, endDate)
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
 
             val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
@@ -85,8 +86,12 @@ class VisitsListViewModel @Inject constructor(
                 return@launch
             }
 
-            val historicalVisits = visitRepository.getVisitHistory(
-                addDaysToDate(getTodayMidnight(), 1),
+            val startDate = addDaysToDate(dateNow(), -30)
+            val endDate = addDaysToDate(getTodayMidnight(), 1)
+
+            val historicalVisits = visitRepository.getVisitsInDateRange(
+                startDate,
+                endDate,
                 Constants.VISIT_STATUS_OCCURRED,
                 currentLocationUuid
             )
@@ -113,7 +118,10 @@ class VisitsListViewModel @Inject constructor(
                 return@launch
             }
 
-            val missedVisits = visitRepository.findVisitsBeforeDate(getTodayMidnight())
+            val startDate = addDaysToDate(dateNow(), -30)
+            val endDate = getTodayMidnight()
+
+            val missedVisits = visitRepository.findVisitsInPeriod(startDate, endDate)
                 .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
 
             val draftVisits = draftVisitRepository.findVisitsBeforeDate(getTodayMidnight())
