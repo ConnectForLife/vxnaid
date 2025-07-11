@@ -35,6 +35,7 @@ object Constants {
     const val ATTRIBUTE_VISIT_DOSE_NUMBER = "Dose number"
     const val ATTRIBUTE_VISIT_TYPE_VXNAID = "Visit type Vxnaid"
     const val ATTRIBUTE_VISIT_LOCATION = "Visit Location"
+    const val ATTRIBUTE_VISIT_LOCATION_NAME = "Visit Location Name"
     const val VISIT_TYPE_DOSING = "Dosing"
     const val VISIT_TYPE_OTHER = "Other"
     const val VISIT_TYPE_ADVERSE_EFFECTS = "Adverse Effects"
@@ -99,6 +100,7 @@ object Constants {
 
     const val USER_PREFERENCES_FILE_NAME = "user_preferences"
     const val VISIT_PLACE_FILE_KEY = "visit_place"
+    const val VISIT_PLACE_NAME = "visit_place_name"
 
     const val CHILD_CATEGORY_NATIONAL = "National"
     const val CHILD_CATEGORY_FOREIGNER = "Foreigner"

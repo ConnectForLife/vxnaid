@@ -69,17 +69,6 @@ class LoginActivity : BaseActivity() {
             }
         }
 
-        /* Added reference to location layout and edit text */
-//        val textInputLocationName = findViewById<TextInputLayout>(R.id.textInputLocationName)
-//        val editTextLocationName = findViewById<TextInputEditText>(R.id.location_name)
-//        val locationName = editTextLocationName.text.toString().trim()
-//        if (locationName.isEmpty()) {
-//            textInputLocationName.error = "Location name is required"
-//        } else {
-//            textInputLocationName.error = null
-//            login()
-//        }
-
         val textInputPasswordLayout = findViewById<TextInputLayout>(R.id.textInputPassword)
         val editPassword = findViewById<TextInputEditText>(R.id.edit_password)
         val textInputLocationName = findViewById<TextInputLayout>(R.id.textInputLocationName)
@@ -177,8 +166,9 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
-        saveVisitPlaceToMemory(visitPlace)
-        viewModel.login(username, password, visitPlace)
+        val visitPlaceName = binding.editLocationName.text.toString()
+        saveVisitPlaceToMemory(visitPlace, visitPlaceName)
+        viewModel.login(username, password, visitPlace, visitPlaceName)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -187,10 +177,11 @@ class LoginActivity : BaseActivity() {
         finish()
     }
 
-    private fun saveVisitPlaceToMemory(visitPlace: String) {
+    private fun saveVisitPlaceToMemory(visitPlace: String, visitPlaceName: String) {
         val sharedPreferences = getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString(Constants.VISIT_PLACE_FILE_KEY, visitPlace)
+        editor.putString(Constants.VISIT_PLACE_NAME, visitPlaceName)
         editor.apply()
     }
 }

@@ -23,6 +23,7 @@ data class Visit(
 ) : VisitBase() {
     val visitLocation: String get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION] ?: Constants.EMPTY_STRING_VALUE
     val visitStatus: String get() = attributes[Constants.ATTRIBUTE_VISIT_STATUS] ?: Constants.EMPTY_STRING_VALUE
+    val visitLocationName: String get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION_NAME] ?: Constants.EMPTY_STRING_VALUE
 }
 
 data class DraftVisit(

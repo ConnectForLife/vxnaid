@@ -213,7 +213,7 @@
                     app:endIconMode="clear_text">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/location_name"
+                        android:id="@+id/edit_location_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autofillHints="@string/login_label_visit_location_name"
