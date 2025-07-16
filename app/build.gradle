@@ -34,8 +34,10 @@ android {
             correctErrorTypes = true
             useBuildCache = true
         }
-        versionCode generateVersionCode()
-        versionName generateVersionName()
+        versionCode 8
+        versionName "2.1.5"
+        //versionCode generateVersionCode()
+        //versionName generateVersionName()
         setProperty("archivesBaseName", "VMP-$versionName")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
