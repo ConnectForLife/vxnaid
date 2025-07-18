@@ -175,11 +175,6 @@ class LoginViewModel @Inject constructor(
             visitPlaceValidationMessage.set(resourcesWrapper.getString(R.string.login_label_validation_no_visit_place))
         }
 
-        if (visitPlaceName.isEmpty()) {
-            validated = false
-            visitPlaceValidationMessage.set(resourcesWrapper.getString(R.string.login_label_validation_no_visit_place_name))
-        }
-
         return validated
     }
 }
