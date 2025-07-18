@@ -15,7 +15,7 @@ ext.versionPatch = 0
 def productRootDir = "./"
 def productBinDir = new File(productRootDir, "bin")
 def productLibAndroidDir = new File(productRootDir, "libs")
-def archUsed = "armeabi-v7a,x86"
+def archUsed = "armeabi-v7a,x86,arm64-v8a,x86_64"
 def usedNdfList = ["Irises.ndf"]
 
 android {
@@ -34,8 +34,8 @@ android {
             correctErrorTypes = true
             useBuildCache = true
         }
-        versionCode 8
-        versionName "2.1.5"
+        versionCode 9
+        versionName "2.1.6"
         //versionCode generateVersionCode()
         //versionName generateVersionName()
         setProperty("archivesBaseName", "VMP-$versionName")
@@ -66,14 +66,14 @@ android {
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
             ndk {
-                abiFilters 'armeabi-v7a'
-               // abiFilters "armeabi-v7a","arm64-v8a","x86","x86_64"
+               // abiFilters 'armeabi-v7a'
+               abiFilters "armeabi-v7a","arm64-v8a","x86","x86_64"
             }
         }
         debug {
             ndk {
-               abiFilters 'x86', 'armeabi-v7a'
-               // abiFilters "armeabi-v7a","arm64-v8a","x86","x86_64"
+              // abiFilters 'x86', 'armeabi-v7a'
+               abiFilters "armeabi-v7a","arm64-v8a","x86","x86_64"
             }
             versionNameSuffix "-debug"
             debuggable true
