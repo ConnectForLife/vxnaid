@@ -109,7 +109,7 @@ class LoginViewModel @Inject constructor(
         visitPlace: String,
         visitPlaceName: String,
     ) {
-        if (!validateInput(username, password, visitPlace, visitPlaceName)) return
+        if (!validateInput(username, password, visitPlace)) return
         scope.launch {
             doLogin(username, password)
         }
@@ -154,7 +154,6 @@ class LoginViewModel @Inject constructor(
         username: String,
         password: String,
         visitPlace: String,
-        visitPlaceName: String,
     ): Boolean {
         var validated = true
         usernameValidationMessage.set(null)
