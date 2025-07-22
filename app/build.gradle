@@ -34,8 +34,8 @@ android {
             correctErrorTypes = true
             useBuildCache = true
         }
-        versionCode 9
-        versionName "2.1.6"
+        versionCode 13
+        versionName "3.9"
         //versionCode generateVersionCode()
         //versionName generateVersionName()
         setProperty("archivesBaseName", "VMP-$versionName")
