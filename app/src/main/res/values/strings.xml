@@ -53,6 +53,7 @@
     <string name="update_error_downloading">Error while downloading application file</string>
     <string name="login_label_more_information">Note: You need login credentials provided by your administration. It is not possible to register an account or reset a password through this app.</string>
     <string name="login_label_error">Login failed. Please try again.</string>
+    <string name="visit_dosing_title_history">Dosing history:</string>
     <string name="login_label_error_offline">Login failed. Operator username not present in offline database, credentials may have expired. Network connection required to log in again with this username.</string>
     <string name="login_label_error_sync_admin_role_not_allowed">You\’re not allowed to login here as a Sync Admin. Please login via the setup wizard.</string>
     <string name="login_label_error_opertor_role_not_allowed">You\’re not allowed to login here as an Operator. Please login via the operator login screen.</string>

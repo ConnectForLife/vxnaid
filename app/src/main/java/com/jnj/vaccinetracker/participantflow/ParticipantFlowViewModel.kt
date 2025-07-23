@@ -61,7 +61,7 @@ class ParticipantFlowViewModel @Inject constructor(
     val currentScreen = mutableLiveData<Screen>()
     val loading = mutableLiveBoolean()
     val site = mutableLiveData<SiteUiModel>()
-    val operator = mutableLiveData<String>()
+    val operator = mutableLiveData<String?>()
     val errorMessage = mutableLiveData<String>()
 
     //id variables

@@ -2,8 +2,10 @@ package com.jnj.vaccinetracker.splash
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.login.LoginActivity
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
@@ -23,6 +25,7 @@ class SplashActivity : BaseActivity() {
 
     private val viewModel: SplashViewModel by viewModels { viewModelFactory }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

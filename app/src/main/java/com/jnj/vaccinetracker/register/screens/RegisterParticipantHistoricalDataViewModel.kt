@@ -54,7 +54,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    private val participantSummaryArg = stateFlow<ParticipantSummaryUiModel?>(null)
    val registerParticipant = mutableLiveData<RegisterParticipant>()
    val participant = mutableLiveData<ParticipantSummaryUiModel>()
-   private val dosingVisit = mutableLiveData<VisitDetail>()
+   private val dosingVisit = mutableLiveData<VisitDetail?>()
    val isEdit = mutableLiveData<Boolean>(false)
    val groupedVisitsByType = mutableLiveData<Map<String, List<VisitDetail>>>()
    val visitTypesData = mutableLiveData<MutableMap<String, HistoricalData>>(mutableMapOf())
