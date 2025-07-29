@@ -132,7 +132,8 @@ class ContraindicationsFragment : BaseFragment() {
    }
 
     private fun showFarFromWindowDialog() {
-       Log.d("OutOfWindow", "showFarFromWindowDialog called")
+        val dialog = DosingOutOfWindowDialog.newInstance(false)
+        dialog.show(requireActivity().supportFragmentManager, "TAG_DOSING_OUT_OF_WINDOW")
     }
 }
 
