@@ -204,7 +204,7 @@
                     app:srcCompat="@drawable/location_name" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLocationName"
+                    android:id="@+id/textInputOutreachName"
                     android:layout_width="@dimen/login_input_field_width"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -213,11 +213,11 @@
                     app:endIconMode="clear_text">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_location_name"
+                        android:id="@+id/edit_outreach_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:autofillHints="@string/login_label_visit_location_name"
-                        android:hint="@string/login_label_visit_location_name"
+                        android:autofillHints="@string/login_label_visit_outreach_hint"
+                        android:hint="@string/login_label_visit_outreach_hint"
                         android:imeActionLabel="@string/login_label_sign_in"
                         android:imeOptions="actionDone"
                         android:inputType="text"

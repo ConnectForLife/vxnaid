@@ -26,7 +26,7 @@
     <string name="login_label_username">Username</string>
     <string name="login_label_password">Password</string>
     <string name="login_label_visit_location_hint">Select visit place</string>
-    <string name="login_label_visit_location_name" translatable="false">Type visit place name</string>
+    <string name="login_label_visit_outreach_hint" translatable="false">Type Outreach name</string>
     <string name="settings_label_backend_url">Backend URL</string>
     <string name="settings_label_licenses">Biometric Licenses</string>
     <string name="settings_label_deviceId">Device ID</string>
@@ -63,7 +63,6 @@
     <string name="login_label_validation_no_username">Please enter your username</string>
     <string name="login_label_validation_no_password">Please enter your password</string>
     <string name="login_label_validation_no_visit_place">Please select visit place</string>
-    <string name="login_label_validation_no_visit_place_name" translatable="false">Please select visit place name</string>
     <string name="login_label_validation_no_backend_url">Please enter a valid backend URL</string>
     <string name="dialog_login_title">Session expired</string>
     <string name="dialog_login_description">Your session has expired. Please provide operator password to logon again or terminate current session.</string>

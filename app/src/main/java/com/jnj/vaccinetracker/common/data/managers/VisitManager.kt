@@ -44,7 +44,7 @@ class VisitManager @Inject constructor(
         substanceObservations: Map<String, Map<String, String>>? = null,
         otherSubstanceObservations: Map<String, String>? = null,
         visitLocation: String? = null,
-        visitLocationName: String? = null,
+        visitOutreachName: String? = null,
         visitTypeVxnaid: String? = null,
         referralObservations: Map<String, String> = emptyMap()
     ) {
@@ -54,7 +54,7 @@ class VisitManager @Inject constructor(
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Trying to register dosing visit without stored operator UUID")
 
-        val attributes = buildVisitAttributes(operatorUuid, dosingNumber, visitLocation, visitLocationName, visitTypeVxnaid)
+        val attributes = buildVisitAttributes(operatorUuid, dosingNumber, visitLocation, visitOutreachName, visitTypeVxnaid)
 
         var observations = buildObservations(
             substanceObservations = substanceObservations,
@@ -78,14 +78,14 @@ class VisitManager @Inject constructor(
         updateVisitUseCase.updateVisit(request)
     }
 
-    private fun buildVisitAttributes(operatorUuid: String, dosingNumber: Int, visitLocation: String?, visitLocationName: String?,visitTypeVxnaid: String?): Map<String, String> {
+    private fun buildVisitAttributes(operatorUuid: String, dosingNumber: Int, visitLocation: String?, visitOutreachName: String?,visitTypeVxnaid: String?): Map<String, String> {
         return mapOf(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
             Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to dosingNumber.toString(),
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitTypeVxnaid.toString(),
             *listOfNotNull(visitLocation?.let { Constants.ATTRIBUTE_VISIT_LOCATION to visitLocation }).toTypedArray(),
-            *listOfNotNull(visitLocationName?.let { Constants.ATTRIBUTE_VISIT_LOCATION_NAME to visitLocationName }).toTypedArray()
+            *listOfNotNull(visitOutreachName?.let { Constants.ATTRIBUTE_VISIT_OUTREACH_NAME to visitOutreachName }).toTypedArray()
         )
     }
 

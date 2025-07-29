@@ -325,7 +325,12 @@ class VisitActivity :
                 Constants.VISIT_PLACE_FILE_KEY,
                 Constants.VISIT_PLACE_STATIC
             )
-        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations)
+        val outreachName =
+            getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE).getString(
+                Constants.OUTREACH_NAME,
+                Constants.VISIT_PLACE_OUTREACH
+            )
+        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations, outreachName)
     }
 
     override fun onReferralAfterContraindicationsPageFinish(finish: Boolean, referralObservations: Map<String, String>) {

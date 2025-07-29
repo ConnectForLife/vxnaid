@@ -107,7 +107,7 @@ class LoginViewModel @Inject constructor(
         username: String,
         password: String,
         visitPlace: String,
-        visitPlaceName: String,
+        outreachName: String,
     ) {
         if (!validateInput(username, password, visitPlace)) return
         scope.launch {

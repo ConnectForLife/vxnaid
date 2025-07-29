@@ -238,7 +238,7 @@ class VisitViewModel @Inject constructor(
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun submitDosingVisit(newVisitDate: Date? = null, visitPlace: String? = null,
-                          referralObservations: Map<String, String> = emptyMap()) {
+                          referralObservations: Map<String, String> = emptyMap(), outreachName: String? = null) {
         val participant = participant.get()
         val dosingVisit = dosingVisit.get()
         val visitsCounter = visitsCounter.value
@@ -265,7 +265,8 @@ class VisitViewModel @Inject constructor(
                     otherSubstanceObservations = otherSubstancesObservations.toMap(),
                     visitLocation = visitPlace,
                     visitTypeVxnaid = selectedVisitType,
-                    referralObservations = referralObservations
+                    referralObservations = referralObservations,
+                    visitOutreachName = outreachName
                 )
 
                 if (newVisitDate != null) {
