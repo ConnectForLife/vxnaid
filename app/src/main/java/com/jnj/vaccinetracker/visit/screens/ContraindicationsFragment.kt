@@ -2,7 +2,6 @@ package com.jnj.vaccinetracker.visit.screens
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,10 +52,6 @@ class ContraindicationsFragment : BaseFragment() {
       }
    }
 
-   // ===================================================
-// ===================================================
-
-   // ===================================================
     private fun setupClickListeners() {
         binding.btnYes.setOnClickListener {
             showRescheduleVisitDialog()
@@ -88,9 +83,6 @@ class ContraindicationsFragment : BaseFragment() {
             }
         }
     }
-   // ===================================================
-// ===================================================
-// ===================================================
 
    private fun showRescheduleVisitDialog() {
       RescheduleVisitDialog.create(participant = viewModel.participant.value, isAfterContraIndications = true)
