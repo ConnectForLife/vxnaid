@@ -19,19 +19,14 @@ class DosingOutOfWindowDialog : BaseDialogFragment() {
     private lateinit var binding: DialogDosingOutOfWindowBinding
 
     companion object {
-        fun newInstance(showConfirmButton: Boolean): DosingOutOfWindowDialog {
+        fun newInstance(showConfirmButton: Boolean, descriptionResId: Int): DosingOutOfWindowDialog {
             val args = Bundle()
             args.putBoolean("showConfirmButton", showConfirmButton)
+            args.putInt("descriptionResId", descriptionResId)
             val dialog = DosingOutOfWindowDialog()
             dialog.arguments = args
             return dialog
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, 0)
-        isCancelable = false
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -39,11 +34,12 @@ class DosingOutOfWindowDialog : BaseDialogFragment() {
         binding.executePendingBindings()
 
         val showConfirm = arguments?.getBoolean("showConfirmButton") ?: true
-        binding.btnConfirm.visibility = if (showConfirm) View.VISIBLE else View.GONE
+        val descriptionResId = arguments?.getInt("descriptionResId") ?: R.string.visit_dosing_warning_out_of_time_window_description
 
-        binding.btnConfirm.setOnClickListener {
-            dismissAllowingStateLoss()
-        }
+        binding.btnConfirm.visibility = if (showConfirm) View.VISIBLE else View.GONE
+        binding.textViewDescription.setText(descriptionResId)
+
+        binding.btnConfirm.setOnClickListener { dismissAllowingStateLoss() }
         binding.btnCancel.setOnClickListener {
             dismissAllowingStateLoss()
             findParent<DosingOutOfWindowDialogListener>()?.onOutOfWindowDosingCanceled()

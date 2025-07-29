@@ -118,14 +118,20 @@ class ContraindicationsFragment : BaseFragment() {
          .commit()
    }
 
-   private fun showOutsideTimeWindowConfirmationDialog() {
-       val dialog = DosingOutOfWindowDialog.newInstance(true)
-       dialog.show(requireActivity().supportFragmentManager, VisitActivity.TAG_DIALOG_DOSING_OUT_OF_WINDOW)
-   }
-
-    private fun showFarFromWindowDialog() {
-        val dialog = DosingOutOfWindowDialog.newInstance(false)
-        dialog.show(requireActivity().supportFragmentManager, "TAG_DOSING_OUT_OF_WINDOW")
+    private fun showOutsideTimeWindowConfirmationDialog() {
+        val dialog = DosingOutOfWindowDialog.newInstance(
+            true,
+            R.string.visit_dosing_warning_out_of_time_window_description
+        )
+        dialog.show(requireActivity().supportFragmentManager, VisitActivity.TAG_DIALOG_DOSING_OUT_OF_WINDOW)
     }
+
+   private fun showFarFromWindowDialog() {
+       val dialog = DosingOutOfWindowDialog.newInstance(
+           false,
+           R.string.visit_dosing_warning_far_from_time_window_description
+       )
+       dialog.show(requireActivity().supportFragmentManager, "TAG_DOSING_OUT_OF_WINDOW")
+   }
 }
 
