@@ -18,6 +18,16 @@ class DosingOutOfWindowDialog : BaseDialogFragment() {
 
     private lateinit var binding: DialogDosingOutOfWindowBinding
 
+    companion object {
+        fun newInstance(showConfirmButton: Boolean): DosingOutOfWindowDialog {
+            val args = Bundle()
+            args.putBoolean("showConfirmButton", showConfirmButton)
+            val dialog = DosingOutOfWindowDialog()
+            dialog.arguments = args
+            return dialog
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, 0)
@@ -27,6 +37,10 @@ class DosingOutOfWindowDialog : BaseDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_dosing_out_of_window, container, false)
         binding.executePendingBindings()
+
+        val showConfirm = arguments?.getBoolean("showConfirmButton") ?: true
+        binding.btnConfirm.visibility = if (showConfirm) View.VISIBLE else View.GONE
+
         binding.btnConfirm.setOnClickListener {
             dismissAllowingStateLoss()
         }
@@ -40,5 +54,4 @@ class DosingOutOfWindowDialog : BaseDialogFragment() {
     interface DosingOutOfWindowDialogListener {
         fun onOutOfWindowDosingCanceled()
     }
-
 }
