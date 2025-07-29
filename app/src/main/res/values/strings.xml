@@ -229,7 +229,7 @@
     <string name="visit_schedule_visit_saved_successfully_label">Next visit successfully registered on: </string>
     <string name="visit_schedule_visit_failed">Saving visit failed</string>
     <string name="visit_dosing_warning_out_of_time_window_description">Please confirm that this child is receiving a dosage before the scheduled date.</string>
-    <string name="visit_dosing_warning_far_from_time_window_description">Please note that this child is not due the for the next visit.</string>
+    <string name="visit_dosing_warning_far_from_time_window_description">Please note that this child is not due for the next visit.</string>
     <string name="visit_dosing_warning_out_of_time_window_title">Dosing outside of window</string>
     <string name="visit_dosing_error_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen and should not be administered.</string>
     <string name="visit_dosing_warning_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen. Please confirm you will administer a different vaccine.</string>
