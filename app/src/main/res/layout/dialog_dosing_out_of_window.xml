@@ -5,22 +5,21 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/img_header"
             android:layout_width="0dp"
             android:layout_height="120dp"
-            android:background="@color/alertLight"
-            android:gravity="center"
-            android:paddingTop="30dp"
-            android:paddingBottom="30dp"
             android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="@color/alertLight"
             android:src="@drawable/ic_checkmark_alert"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:tint="@color/colorTextOnPrimary"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/colorTextOnPrimary" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/textView_title"
