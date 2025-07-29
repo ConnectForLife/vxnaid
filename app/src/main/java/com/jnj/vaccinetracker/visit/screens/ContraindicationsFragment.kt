@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.visit.screens
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,8 @@ import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.visit.VisitViewModel
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
 import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
+import java.util.Calendar
+import kotlin.math.ceil
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ContraindicationsFragment : BaseFragment() {
@@ -50,18 +53,45 @@ class ContraindicationsFragment : BaseFragment() {
       }
    }
 
-   private fun setupClickListeners() {
-      binding.btnYes.setOnClickListener {
-         showRescheduleVisitDialog()
-      }
+   // ===================================================
+// ===================================================
 
-      binding.btnNo.setOnClickListener {
-         closeFragment()
-         if (!viewModel.dosingVisitIsInsideTimeWindow.value) {
-            showOutsideTimeWindowConfirmationDialog()
-         }
-      }
-   }
+   // ===================================================
+    private fun setupClickListeners() {
+        binding.btnYes.setOnClickListener {
+            showRescheduleVisitDialog()
+        }
+
+        binding.btnNo.setOnClickListener {
+            closeFragment()
+            val visitDate = viewModel.dosingVisit.value?.visitDate
+            if (visitDate != null) {
+                val todayCal = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                val visitCal = Calendar.getInstance().apply {
+                    time = visitDate
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                val diffMillis = visitCal.timeInMillis - todayCal.timeInMillis
+                val daysToVisitDate = ceil(diffMillis / (1000.0 * 60 * 60 * 24)).toInt()
+                when {
+                    daysToVisitDate in 1..5 -> showOutsideTimeWindowConfirmationDialog()
+                    daysToVisitDate > 5 -> showFarFromWindowDialog()
+                }
+            }
+        }
+    }
+   // ===================================================
+// ===================================================
+// ===================================================
+
    private fun showRescheduleVisitDialog() {
       RescheduleVisitDialog.create(participant = viewModel.participant.value, isAfterContraIndications = true)
          .show(parentFragmentManager, RescheduleVisitDialog.TAG_DIALOG_RESCHEDULE_VISIT)
@@ -101,5 +131,9 @@ class ContraindicationsFragment : BaseFragment() {
          VisitActivity.TAG_DIALOG_DOSING_OUT_OF_WINDOW
       )
    }
+
+    private fun showFarFromWindowDialog() {
+       Log.d("OutOfWindow", "showFarFromWindowDialog called")
+    }
 }
 
