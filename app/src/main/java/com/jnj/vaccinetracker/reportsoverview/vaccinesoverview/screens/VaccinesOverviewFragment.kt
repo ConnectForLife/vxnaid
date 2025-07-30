@@ -509,7 +509,7 @@ class VaccinesOverviewFragment : BaseFragment(),
                 val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                         observation.ageGroup == selectedAgeGroup
                 dateMatches && vaccineMatches && locationMatches && ageGroupMatches
-            }.distinctBy { it.vaccineName + it.administerDate + it.visitLocation }
+            }
 
             val filteredAndGroupedData = filteredData.groupBy { it.vaccineName }
 
