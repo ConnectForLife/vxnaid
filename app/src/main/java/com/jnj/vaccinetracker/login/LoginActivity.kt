@@ -50,6 +50,7 @@ class LoginActivity : BaseActivity() {
     private val viewModel: LoginViewModel by viewModels { viewModelFactory }
 
     private lateinit var binding: ActivityLoginBinding
+    private var selectedVisitPlace: String? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,7 +99,7 @@ class LoginActivity : BaseActivity() {
         )
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
         binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
-            val selectedVisitPlace = visitPlaces[position]
+            selectedVisitPlace = visitPlaces[position]
             Log.e("Selected Visit Place", "Selected Visit Place: $selectedVisitPlace")
             if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
                 textInputOutreachName.visibility = View.VISIBLE
@@ -166,9 +167,14 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
-        val outreachName = binding.editOutreachName.text.toString()
-        saveVisitPlaceToMemory(visitPlace, outreachName)
-        viewModel.login(username, password, visitPlace, outreachName)
+        val outreachName = binding.editOutreachName.text.toString().uppercase()
+        if((selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isEmpty())){
+            binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
+        } else {
+            val defaultOutreachName = outreachName.ifEmpty { "No Outreach" }
+            saveVisitPlaceToMemory(visitPlace, defaultOutreachName)
+            viewModel.login(username, password, visitPlace)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
