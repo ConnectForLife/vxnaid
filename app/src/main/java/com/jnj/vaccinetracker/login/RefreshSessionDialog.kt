@@ -72,6 +72,7 @@ class RefreshSessionDialog : BaseDialogFragment() {
         val username = binding.editTextUsername.text.toString()
         val password = binding.editTextPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
+
         viewModel.login(username, password, visitPlace)
     }
 
