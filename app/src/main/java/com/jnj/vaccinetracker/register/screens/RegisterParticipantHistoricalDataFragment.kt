@@ -57,27 +57,37 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    }
 
    override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
+       inflater: LayoutInflater,
+       container: ViewGroup?,
+       savedInstanceState: Bundle?
    ): View {
-      binding = DataBindingUtil.inflate(
-         inflater,
-         R.layout.fragment_register_historical_visits,
-         container,
-         false
-      )
-      binding.apply {
-         viewModel = this@RegisterParticipantHistoricalDataFragment.viewModel
-         lifecycleOwner = viewLifecycleOwner
-         flowViewModel = this@RegisterParticipantHistoricalDataFragment.flowViewModel
-      }
-      viewModel.setArguments(flowViewModel.registerParticipant.value, flowViewModel.participant.value)
-      binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
+       binding = DataBindingUtil.inflate(
+           inflater,
+           R.layout.fragment_register_historical_visits,
+           container,
+           false
+       )
+       binding.apply {
+           viewModel = this@RegisterParticipantHistoricalDataFragment.viewModel
+           lifecycleOwner = viewLifecycleOwner
+           flowViewModel = this@RegisterParticipantHistoricalDataFragment.flowViewModel
+       }
+       viewModel.setArguments(flowViewModel.registerParticipant.value, flowViewModel.participant.value)
+       binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
 
-      setupClickListeners()
+       setupClickListeners()
 
-      return binding.root
+       viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+           if (!message.isNullOrEmpty()) {
+               androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                   .setTitle("Invalid Date")
+                   .setMessage(message)
+                   .setPositiveButton("OK", null)
+                   .show()
+           }
+       }
+
+       return binding.root
    }
 
    override fun observeViewModel(lifecycleOwner: LifecycleOwner) {

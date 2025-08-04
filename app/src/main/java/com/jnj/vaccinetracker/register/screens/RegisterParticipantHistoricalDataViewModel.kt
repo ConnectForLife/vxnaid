@@ -277,6 +277,11 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       otherSubstancesAndValues: MutableMap<String, String>,
       visitDate: DateTime?
    ) {
+      if (visitDate != null) {
+         if (!isHistoricalVisitDateValid(visitDate)) return
+         if (!isVisitDateNotBeforePrevious(visitDate)) return
+      }
+
       val currentData = visitTypesData.value ?: mutableMapOf()
       val visitTypeEntry = currentData.getOrPut(visitTypeName) { HistoricalData(null, emptyMap()) }
       val substances = SubstancesData(substancesAndDates?.toMap() ?: emptyMap())
@@ -289,8 +294,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
          )
       )
       currentData[visitTypeName] = updatedVisitTypeEntry
-
-
       visitTypesData.postValue(currentData)
    }
 
@@ -318,4 +321,60 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
         Log.d("HistoricalVisit", "Set historical visit date: $date")
 
    }
+
+   // Kotlin
+    fun isHistoricalVisitDateValid(newVisitDate: DateTime): Boolean {
+       val birthDateString = getParticipantBirthDate()
+       val birthDate = DateUtil.convertStringToDate(birthDateString, "yyyy-MM-dd")
+       val newDateJava = newVisitDate.toDate()
+       val today = Date()
+
+       // Not before birth date
+       if (birthDate != null && newDateJava.before(birthDate)) {
+           errorMessage.postValue("Visit date cannot be before birth date.")
+           return false
+       }
+
+       // Not in the future
+       if (newDateJava.after(today)) {
+           errorMessage.postValue("Visit date cannot be in the future.")
+           return false
+       }
+
+       // Not overlapping with other visits
+       val allVisits = groupedVisitsByType.value?.values?.flatten() ?: emptyList()
+       val newDateMidnight = newDateJava.time.toMidnight()
+       val overlap = allVisits.any { visit ->
+           visit.visitDate.time.toMidnight() == newDateMidnight
+       }
+       if (overlap) {
+           errorMessage.postValue("Visit date overlaps with an existing visit.")
+           return false
+       }
+
+       // Chronological order: must be after all previous visits
+       val previousVisitDates = allVisits.map { it.visitDate.time }
+       if (previousVisitDates.any { newDateJava.time <= it }) {
+           errorMessage.postValue("Visit date must be after all previous visits.")
+           return false
+       }
+
+       return true
+   }
+
+   fun isVisitDateNotBeforePrevious(newVisitDate: DateTime): Boolean {
+       val previousVisitDates = visitTypesData.value?.values
+           ?.mapNotNull { it.visitDate }
+           ?.map { it.time } // it is Date, so use .time
+           ?: emptyList()
+       val newDateMillis = newVisitDate.toDate().time
+   
+       // Ensure new visit date is not before any previous visit
+       if (previousVisitDates.any { newDateMillis < it }) {
+           errorMessage.postValue("Visit date cannot be before a previously entered visit.")
+           return false
+       }
+       return true
+   }
+
 }
