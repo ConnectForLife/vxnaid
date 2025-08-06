@@ -31,6 +31,7 @@ import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.HistoricalVisitDateDialog
 import com.jnj.vaccinetracker.register.dialogs.MultipleVisitsDialog
+import com.jnj.vaccinetracker.register.dialogs.PastVisitDateAlertDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantSuccessfulDialog
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.Job
@@ -77,16 +78,18 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
 
        setupClickListeners()
 
-       viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-           if (!message.isNullOrEmpty()) {
-               androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                   .setTitle("Invalid Date")
-                   .setMessage(message)
-                   .setPositiveButton("OK", null)
-                   .show()
-               viewModel.clearErrorMessage()
-           }
-       }
+      viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+     if (!message.isNullOrEmpty()) {
+         val dialog = PastVisitDateAlertDialog.newInstance(
+             title = getString(R.string.past_visit_date_error_title), // Or your custom title
+             message = message,
+             buttonLabel = getString(R.string.past_visit_date_ok) // Or your custom button label
+         ) {
+             viewModel.clearErrorMessage()
+         }
+         dialog.show(parentFragmentManager, "PastVisitDateAlertDialog")
+     }
+ }
 
        return binding.root
    }
