@@ -67,10 +67,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       return selectedDate >= birthDate
    }
 
-   fun setAtBirthVisitDate(date: DateTime) {
-      atBirthVisitDate.value = date
-   }
-
    private val disabledDatesByVisitType: MutableMap<String, Set<Long>> = mutableMapOf()
 
    fun getDisabledDatesForVisitType(visitType: String): Set<Long> {
@@ -261,7 +257,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    ) {
       if (visitDate != null) {
          if (!isHistoricalVisitDateValid(visitDate)) return
-         if (!isVisitDateNotBeforePrevious(visitDate)) return
       }
 
       val currentData = visitTypesData.value ?: mutableMapOf()
@@ -335,20 +330,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
            return false
        }
 
-       return true
-   }
-
-   private fun isVisitDateNotBeforePrevious(newVisitDate: DateTime): Boolean {
-       val previousVisitDates = visitTypesData.value?.values
-           ?.mapNotNull { it.visitDate }
-           ?.map { it.time }
-           ?: emptyList()
-       val newDateMillis = newVisitDate.toDate().time
-
-       if (previousVisitDates.any { newDateMillis < it }) {
-           errorMessage.postValue("Visit date cannot be before a previously entered visit.")
-           return false
-       }
        return true
    }
 
