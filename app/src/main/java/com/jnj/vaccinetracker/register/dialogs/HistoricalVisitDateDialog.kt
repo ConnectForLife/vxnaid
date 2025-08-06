@@ -145,10 +145,25 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
 
          val visitType = arguments?.getString(VISIT_TYPE) ?: ""
 
-         if (visitType != "At Birth" && disabledDates.contains(selectedDateMillis)) {
+           val selectedDate = DateTime(year, month + 1, day)
+           viewModel.setHistoricalVisitDate(selectedDate)
+           val error = viewModel.errorMessage.value
+
+           if (!error.isNullOrEmpty()) {
+               Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+               Log.d("DatePicker", "Selected date is invalid: $error")
+               lastValidDate?.let {
+                   val resetCalendar = Calendar.getInstance()
+                   resetCalendar.timeInMillis = it
+                   datePicker.updateDate(
+                       resetCalendar.get(Calendar.YEAR),
+                       resetCalendar.get(Calendar.MONTH),
+                       resetCalendar.get(Calendar.DAY_OF_MONTH)
+                   )
+               }
+           } else if (visitType != "At Birth" && disabledDates.contains(selectedDateMillis)) {
             Toast.makeText(requireContext(), "This date is already used. Please select another.", Toast.LENGTH_SHORT).show()
             Log.d("DatePicker", "Selected date is disabled")
-
             lastValidDate?.let {
                val resetCalendar = Calendar.getInstance()
                resetCalendar.timeInMillis = it

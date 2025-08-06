@@ -340,21 +340,21 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
            return false
        }
 
-       // Not overlapping with other visits
-       val allVisits = groupedVisitsByType.value?.values?.flatten() ?: emptyList()
+       // Collect all visit dates: registered + current session
+       val allVisits = (groupedVisitsByType.value?.values?.flatten() ?: emptyList())
+       val sessionDates = visitTypesData.value?.values?.mapNotNull { it.visitDate } ?: emptyList()
+       val allVisitDates = allVisits.map { it.visitDate.time } + sessionDates.map { it.time }
+
        val newDateMidnight = newDateJava.time.toMidnight()
-       val overlap = allVisits.any { visit ->
-           visit.visitDate.time.toMidnight() == newDateMidnight
-       }
+       val overlap = allVisitDates.any { it.toMidnight() == newDateMidnight }
        if (overlap) {
            errorMessage.postValue("Visit date overlaps with an existing visit.")
            return false
        }
 
        // Chronological order: must be after all previous visits
-       val previousVisitDates = allVisits.map { it.visitDate.time }
-       if (previousVisitDates.any { newDateJava.time <= it }) {
-           errorMessage.postValue("Visit date must be after all previous visits.")
+       if (allVisitDates.any { newDateJava.time <= it }) {
+           errorMessage.postValue("The selected date is before or the same as a previous visit. Please select a later date.")
            return false
        }
 
@@ -364,10 +364,10 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    private fun isVisitDateNotBeforePrevious(newVisitDate: DateTime): Boolean {
        val previousVisitDates = visitTypesData.value?.values
            ?.mapNotNull { it.visitDate }
-           ?.map { it.time } // it is Date, so use .time
+           ?.map { it.time }
            ?: emptyList()
        val newDateMillis = newVisitDate.toDate().time
-   
+
        // Ensure new visit date is not before any previous visit
        if (previousVisitDates.any { newDateMillis < it }) {
            errorMessage.postValue("Visit date cannot be before a previously entered visit.")
