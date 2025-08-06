@@ -3,7 +3,6 @@ package com.jnj.vaccinetracker.register.screens
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
@@ -33,7 +32,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
-import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -59,16 +57,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    val groupedVisitsByType = mutableLiveData<Map<String, List<VisitDetail>>>()
    val visitTypesData = mutableLiveData<MutableMap<String, HistoricalData>>(mutableMapOf())
    private val _historicalVisitDates = MutableLiveData<List<DateTime>>(emptyList())
-   val historicalVisitDates: LiveData<List<DateTime>> get() = _historicalVisitDates
-   private val _disabledDates = MutableLiveData<MutableSet<Long>>().apply {
-      value = mutableSetOf()
-   }
-   private val disabledDates: LiveData<MutableSet<Long>> = _disabledDates
    private val allDisabledDates = mutableSetOf<Long>()
    fun getAllDisabledDates(): Set<Long> = allDisabledDates
-   private val _actionLiveData = MutableLiveData<String>()
-   val actionLiveData: LiveData<String> = _actionLiveData
-
    private val atBirthVisitDate = mutableLiveData<DateTime?>()
 
    fun isDateValidForVisitType(visitType: String, selectedDate: DateTime): Boolean {
@@ -91,7 +81,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       }
    }
 
-
    fun setDisabledDatesForVisitType(visitType: String, dates: Set<Long>) {
       if (visitType != "At Birth") {
          disabledDatesByVisitType[visitType] = dates
@@ -101,12 +90,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    fun addDisabledDate(date: Long) {
       allDisabledDates.add(date)
    }
-
-   fun setAllDisabledDates(dates: Set<Long>) {
-      allDisabledDates.clear()
-      allDisabledDates.addAll(dates)
-   }
-
 
    init {
       participantSummaryArg
@@ -161,7 +144,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       cal.set(java.util.Calendar.MILLISECOND, 0)
       return cal.timeInMillis
    }
-
 
    private fun buildHistoricalVisitObject(
       participant: ParticipantSummaryUiModel,
@@ -319,7 +301,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    fun setHistoricalVisitDate(date: DateTime) {
         _historicalVisitDates.value = _historicalVisitDates.value?.plus(date) ?: listOf(date)
         Log.d("HistoricalVisit", "Set historical visit date: $date")
-
    }
 
    fun isHistoricalVisitDateValid(newVisitDate: DateTime): Boolean {
@@ -328,19 +309,16 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
        val newDateJava = newVisitDate.toDate()
        val today = Date()
 
-       // Not before birth date
        if (birthDate != null && newDateJava.before(birthDate)) {
            errorMessage.postValue("Visit date cannot be before birth date.")
            return false
        }
 
-       // Not in the future
        if (newDateJava.after(today)) {
            errorMessage.postValue("Visit date cannot be in the future.")
            return false
        }
 
-       // Collect all visit dates: registered + current session
        val allVisits = (groupedVisitsByType.value?.values?.flatten() ?: emptyList())
        val sessionDates = visitTypesData.value?.values?.mapNotNull { it.visitDate } ?: emptyList()
        val allVisitDates = allVisits.map { it.visitDate.time } + sessionDates.map { it.time }
@@ -352,7 +330,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
            return false
        }
 
-       // Chronological order: must be after all previous visits
        if (allVisitDates.any { newDateJava.time <= it }) {
            errorMessage.postValue("The selected date is before or the same as a previous visit. Please select a later date.")
            return false
@@ -368,7 +345,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
            ?: emptyList()
        val newDateMillis = newVisitDate.toDate().time
 
-       // Ensure new visit date is not before any previous visit
        if (previousVisitDates.any { newDateMillis < it }) {
            errorMessage.postValue("Visit date cannot be before a previously entered visit.")
            return false
