@@ -330,8 +330,8 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
            return false
        }
 
-       if (allVisitDates.any { newDateJava.time <= it }) {
-           errorMessage.postValue("The selected date is before or the same as a previous visit. Please select a later date.")
+       if (allVisitDates.any { newDateJava.time < it }) {
+           errorMessage.postValue("The selected date is before a previous visit. Please select a later date.")
            return false
        }
 
