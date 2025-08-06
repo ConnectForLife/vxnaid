@@ -322,8 +322,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
 
    }
 
-   // Kotlin
-    fun isHistoricalVisitDateValid(newVisitDate: DateTime): Boolean {
+   private fun isHistoricalVisitDateValid(newVisitDate: DateTime): Boolean {
        val birthDateString = getParticipantBirthDate()
        val birthDate = DateUtil.convertStringToDate(birthDateString, "yyyy-MM-dd")
        val newDateJava = newVisitDate.toDate()
@@ -362,7 +361,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
        return true
    }
 
-   fun isVisitDateNotBeforePrevious(newVisitDate: DateTime): Boolean {
+   private fun isVisitDateNotBeforePrevious(newVisitDate: DateTime): Boolean {
        val previousVisitDates = visitTypesData.value?.values
            ?.mapNotNull { it.visitDate }
            ?.map { it.time } // it is Date, so use .time

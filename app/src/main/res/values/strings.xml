@@ -232,7 +232,7 @@
     <string name="visit_schedule_visit_failed">Saving visit failed</string>
     <string name="continue_button_label">Continue</string>
     <string name="medical_worker_follow_dates_title">Past Visit Dates</string>
-    <string name="medical_worker_follow_dates_message">Please follow the dates on child card as you enter the past visits.</string>
+    <string name="medical_worker_follow_dates_message">Please follow the dates on child card while entering the past visits details.</string>
     <string name="visit_dosing_warning_out_of_time_window_description">Please confirm that this child is receiving a dosage before the scheduled date.</string>
     <string name="visit_dosing_warning_far_from_time_window_description">Please note that this child is not due for the next visit.</string>
     <string name="visit_dosing_warning_out_of_time_window_title">Dosing outside of window</string>
