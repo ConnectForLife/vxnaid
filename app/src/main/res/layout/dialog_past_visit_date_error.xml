@@ -23,7 +23,7 @@
                 android:layout_marginBottom="30dp"
                 android:gravity="center"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_checkmark_alert"
+                android:src="@drawable/ic_x_circle"
                 app:tint="@color/colorTextOnPrimary" />
         </FrameLayout>
 
