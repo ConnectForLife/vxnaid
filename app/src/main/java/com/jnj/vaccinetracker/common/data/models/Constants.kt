@@ -23,7 +23,7 @@ object Constants {
     const val ATTRIBUTE_VISIT_DAYS_AFTER = "Up Window"
     const val ATTRIBUTE_VISIT_DAYS_BEFORE = "Low Window"
     const val ATTRIBUTE_VISIT_VACCINE_MANUFACTURER = "Vaccine Manufacturer"
-    const val ATTRIBUTE_VISIT_DOSE_NUMBER = "Dose number"
+    const val ATTRIBUTE_VISIT_DOSE_NUMBER = "Dose Number"
     const val VISIT_TYPE_DOSING = "Dosing"
     const val VISIT_TYPE_OTHER = "Other"
     const val VISIT_STATUS_OCCURRED = "OCCURRED"
