@@ -322,7 +322,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
 
    }
 
-   private fun isHistoricalVisitDateValid(newVisitDate: DateTime): Boolean {
+   fun isHistoricalVisitDateValid(newVisitDate: DateTime): Boolean {
        val birthDateString = getParticipantBirthDate()
        val birthDate = DateUtil.convertStringToDate(birthDateString, "yyyy-MM-dd")
        val newDateJava = newVisitDate.toDate()
@@ -376,4 +376,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
        return true
    }
 
+   fun clearErrorMessage() {
+       errorMessage.value = null
+   }
 }

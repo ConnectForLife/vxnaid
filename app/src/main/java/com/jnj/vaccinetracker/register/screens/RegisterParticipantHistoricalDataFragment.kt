@@ -84,6 +84,7 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
                    .setMessage(message)
                    .setPositiveButton("OK", null)
                    .show()
+               viewModel.clearErrorMessage()
            }
        }
 
