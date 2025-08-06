@@ -35,7 +35,6 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
 
    private val viewModel: RegisterParticipantHistoricalDataViewModel by activityViewModels()
 
-
    companion object {
       private const val BIRTH_DATE_STR = "birthDateStr"
       private const val VISIT_TYPE = "visitType"
@@ -57,7 +56,6 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       arguments?.getString(BIRTH_DATE_STR)?.let { birthDate = it }
-
       arguments?.getString(DISABLED_DATES_KEY)?.split(",")?.mapNotNull { it.toLongOrNull() }?.let {
          disabledDates.addAll(viewModel.getAllDisabledDates())
       }
@@ -101,7 +99,6 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
 
          // Always notify listener
          findParent<HistoricalVisitDateListener>()?.onDatePicked(selectedDate)
-
          dismissAllowingStateLoss()
       }
 
@@ -138,11 +135,11 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
       logDisabledDates()
 
       datePicker.setOnDateChangedListener { _, year, month, day ->
-          val selectedCalendar = Calendar.getInstance()
-          selectedCalendar.set(year, month, day, 0, 0, 0)
-          selectedCalendar.set(Calendar.MILLISECOND, 0)
-          val selectedDateMillis = selectedCalendar.timeInMillis
-          val visitType = arguments?.getString(VISIT_TYPE) ?: ""
+         val selectedCalendar = Calendar.getInstance()
+         selectedCalendar.set(year, month, day, 0, 0, 0)
+         selectedCalendar.set(Calendar.MILLISECOND, 0)
+         val selectedDateMillis = selectedCalendar.timeInMillis
+         val visitType = arguments?.getString(VISIT_TYPE) ?: ""
           val selectedDate = DateTime(year, month + 1, day)
 
           // Chronological order validation
@@ -163,21 +160,21 @@ class HistoricalVisitDateDialog : BaseDialogFragment() {
                   )
               }
           } else if (visitType != "At Birth" && disabledDates.contains(selectedDateMillis)) {
-              Toast.makeText(requireContext(), "This date is already used. Please select another.", Toast.LENGTH_SHORT).show()
-              Log.d("DatePicker", "Selected date is disabled")
-              lastValidDate?.let {
-                  val resetCalendar = Calendar.getInstance()
-                  resetCalendar.timeInMillis = it
-                  datePicker.updateDate(
-                      resetCalendar.get(Calendar.YEAR),
-                      resetCalendar.get(Calendar.MONTH),
-                      resetCalendar.get(Calendar.DAY_OF_MONTH)
-                  )
-              }
-          } else {
-              Log.d("DatePicker", "Selected date is valid")
-              lastValidDate = selectedDateMillis
-              viewModel.setHistoricalVisitDate(selectedDate)
+           Toast.makeText(requireContext(), "This date is already used. Please select another.", Toast.LENGTH_SHORT).show()
+           Log.d("DatePicker", "Selected date is disabled")
+           lastValidDate?.let {
+               val resetCalendar = Calendar.getInstance()
+               resetCalendar.timeInMillis = it
+               datePicker.updateDate(
+                   resetCalendar.get(Calendar.YEAR),
+                   resetCalendar.get(Calendar.MONTH),
+                   resetCalendar.get(Calendar.DAY_OF_MONTH)
+              )
+          }
+         } else {
+            Log.d("DatePicker", "Selected date is valid")
+            lastValidDate = selectedDateMillis
+            viewModel.setHistoricalVisitDate(selectedDate)
           }
       }
    }
