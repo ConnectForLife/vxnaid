@@ -179,8 +179,8 @@ class OtherSubstanceItemAdapter(
         //Validate Weight for any other visits
         } else {
             if (weightInKilograms < 1.5 || weightInKilograms > 30.0) {
-                holder?.inputEditText?.error = "Value cannot be less than 2 and greater than 30"
-                errorList.add("Value of $label cannot be less than 2 and greater than 30")
+                holder?.inputEditText?.error = "Value cannot be less than 1.5 and greater than 30"
+                errorList.add("Value of $label cannot be less than 1.5 and greater than 30")
             } else {
                 holder?.inputEditText?.error = null
             }
