@@ -335,7 +335,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             override fun afterTextChanged(s: Editable?) {
                 val input = s?.toString().orEmpty().replace(',', '.')
 
-                val decimalPattern = Regex("^\\d{1,2}(\\.\\d?)?$")
+                val decimalPattern = Regex("^\\d{0,2}(\\.\\d{0,1})?$")
+                val completeDecimalPattern = Regex("^\\d{1,2}\\.\\d$")
 
                 if (input.isBlank()) {
                     viewModel.setBirthWeight("")
@@ -345,39 +346,44 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                     return
                 }
 
-                val birthWeight = input.toDoubleOrNull()
-
                 if (!decimalPattern.matches(input)) {
                     Toast.makeText(
                         binding.root.context,
                         "Please enter a number with only one decimal place (e.g., 2.8)",
                         Toast.LENGTH_SHORT
                     ).show()
-                    binding.editBirthWeight.removeTextChangedListener(this)
-                    binding.editBirthWeight.setText("")
-                    binding.editBirthWeight.addTextChangedListener(this)
+                    resetBirthWeightInput()
                     return
                 }
 
-                if (birthWeight != null && birthWeight in 2.0..8.0) {
-                    viewModel.setBirthWeight(input)
-                    flowViewModel.registerDetails.value?.let {
-                        flowViewModel.registerDetails.set(it.copy(birthWeight = input))
+                val birthWeight = input.toDoubleOrNull()
+
+                // Only check range when input is a complete decimal number like "1.5"
+                if (birthWeight != null && completeDecimalPattern.matches(input)) {
+                    if (birthWeight in 1.5..8.0) {
+                        viewModel.setBirthWeight(input)
+                        flowViewModel.registerDetails.value?.let {
+                            flowViewModel.registerDetails.set(it.copy(birthWeight = input))
+                        }
+                    } else {
+                        Toast.makeText(
+                            binding.root.context,
+                            "Please enter a number between 1.5 and 8.0",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        resetBirthWeightInput()
                     }
-                } else if (birthWeight != null) {
-                    Toast.makeText(
-                        binding.root.context,
-                        "Please enter a number between 2.0 and 8.0",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    binding.editBirthWeight.removeTextChangedListener(this)
-                    binding.editBirthWeight.setText("")
-                    binding.editBirthWeight.addTextChangedListener(this)
                 }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            private fun resetBirthWeightInput() {
+                binding.editBirthWeight.removeTextChangedListener(this)
+                binding.editBirthWeight.setText("")
+                binding.editBirthWeight.addTextChangedListener(this)
+            }
         }
 
         binding.editBirthWeight.addTextChangedListener(birthWeightWatcher)
