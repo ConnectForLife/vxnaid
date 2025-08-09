@@ -358,7 +358,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
                 val birthWeight = input.toDoubleOrNull()
 
-                // Only check range when input is a complete decimal number like "0.1"
+                // Only check range when input is a complete decimal number like "2.5"
                 if (birthWeight != null && completeDecimalPattern.matches(input)) {
                     if (birthWeight in 0.1..8.0) {
                         viewModel.setBirthWeight(input)
