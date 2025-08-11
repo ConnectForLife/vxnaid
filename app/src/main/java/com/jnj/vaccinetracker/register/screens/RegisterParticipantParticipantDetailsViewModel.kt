@@ -92,6 +92,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     private val homeLocation = mutableLiveData<Address>()
     val vaccine = mutableLiveData<DisplayValue>()
     val language = mutableLiveData<DisplayValue>()
+    val isPatientBelongToProgram = mutableLiveBoolean(true)
 
     val participantIdValidationMessage = mutableLiveData<String>()
     val confirmParticipantIdValidationMessage = mutableLiveData<String>()
@@ -197,8 +198,17 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val gender = gender.get()
         val yearOfBirth = yearOfBirth.get()
         val fullPhoneNumber = createFullPhone()
+        val isPatientBelongToProgram = isPatientBelongToProgram.get()
 
-        val isValidInput = validateInput(participantId, gender, yearOfBirth, homeLocation, vaccine?.value, language?.value)
+        val isValidInput = validateInput(
+            participantId,
+            gender,
+            yearOfBirth,
+            homeLocation,
+            vaccine?.value,
+            language?.value,
+            isPatientBelongToProgram
+        )
 
         var phoneNumberToSubmit: String? = null
 
@@ -237,6 +247,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 siteUuid = siteUuid,
                 language = language?.value!!,
                 vaccine = vaccine?.value!!,
+                isPatientBelongToProgram = isPatientBelongToProgram,
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,
@@ -282,6 +293,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         homeLocation: Address?,
         vaccine: String?,
         language: String?,
+        isPatientBelongToProgram: Boolean?
     ): Boolean {
         var isValid = true
         resetValidationMessages()
@@ -452,6 +464,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         this.homeLocation.set(homeLocation)
         this.homeLocationLabel.set(stringRepresentation)
         homeLocationValidationMessage.set(null)
+    }
+
+    fun setIsPatientBelongToProgram(isPatientBelongToProgram: Boolean) {
+        if (this.isPatientBelongToProgram.get() == isPatientBelongToProgram) return
+        this.isPatientBelongToProgram.set(isPatientBelongToProgram)
     }
 
     private fun validateYearOfBirth(yearOfBirth: String?, isInlineValidation: Boolean): Boolean {

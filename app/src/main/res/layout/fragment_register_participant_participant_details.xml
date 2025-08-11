@@ -302,7 +302,8 @@
                         android:id="@+id/country_code_picker_phone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:ccp_countryPreference="us,in" />
+                        app:ccp_countryPreference="cd"
+                        app:ccp_rememberLastSelection="true" />
 
                     <EditText
                         android:id="@+id/edit_telephone"
@@ -385,6 +386,48 @@
                             android:inputType="none"
                             android:text="@{viewModel.vaccine.display}" />
                     </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/input_group_patient_program"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
+
+                    <TextView
+                        android:id="@+id/label_patient_program"
+                        android:layout_width="155dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/participant_registration_details_belongs_to_program_title"
+                        android:textAppearance="@style/LabelText" />
+
+                    <RadioGroup
+                        android:id="@+id/radiogroup_patient_program"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb_patient_program_yes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/general_label_yes"
+                            android:checked="@{viewModel.isPatientBelongToProgram == true}"
+                            android:textSize="18sp" />
+
+                        <RadioButton
+                            android:id="@+id/rb_patient_program_no"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/general_label_no"
+                            android:checked="@{viewModel.isPatientBelongToProgram == false}"
+                            android:textSize="18sp" />
+                    </RadioGroup>
                 </LinearLayout>
 
                 <LinearLayout

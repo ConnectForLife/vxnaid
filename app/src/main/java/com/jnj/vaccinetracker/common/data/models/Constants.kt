@@ -17,6 +17,7 @@ object Constants {
     const val ATTRIBUTE_TELEPHONE = "Telephone Number"
     const val ATTRIBUTE_VACCINE = "Vaccination program"
     const val ATTRIBUTE_ORIGINAL_PARTICIPANT_ID = "originalParticipantId"
+    const val IS_PATIENT_BELONG_TO_PROGRAM = "Is patient belong to program"
 
     // Visit
     const val ATTRIBUTE_VISIT_STATUS = "Visit Status"

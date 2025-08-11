@@ -132,6 +132,7 @@
     <string name="participant_registration_details_label_select_vaccine">Selectionner le schéma de vaccination</string>
     <string name="participant_registration_details_label_language">Langue</string>
     <string name="participant_registration_details_label_select_language">Sélectionner la langue</string>
+    <string name="participant_registration_details_belongs_to_program_title">Le patient appartient au programme</string>
     <string name="participant_registration_details_error_no_participant_id">Veuillez entrer le NIP du participant</string>
     <string name="participant_registration_details_error_invalid_participant_id">Veuillez saisir un identifiant NIP de participant valide</string>
     <string name="participant_registration_details_error_no_gender">Veuillez sélectionner un genre</string>

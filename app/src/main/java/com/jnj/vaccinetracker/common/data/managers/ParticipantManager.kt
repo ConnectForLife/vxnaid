@@ -80,6 +80,7 @@ class ParticipantManager @Inject constructor(
         siteUuid: String,
         language: String,
         vaccine: String,
+        isPatientBelongToProgram: Boolean,
         address: Address,
         picture: ImageBytes?,
         biometricsTemplateBytes: BiometricsTemplateBytes?,
@@ -91,10 +92,12 @@ class ParticipantManager @Inject constructor(
             Constants.ATTRIBUTE_LANGUAGE to language,
             Constants.ATTRIBUTE_VACCINE to vaccine,
             Constants.ATTRIBUTE_OPERATOR to operatorUUid,
+            Constants.IS_PATIENT_BELONG_TO_PROGRAM to isPatientBelongToProgram.toString()
         )
         if (telephone != null) {
             personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
         }
+
         val request = RegisterParticipant(
             participantId = participantId,
             gender = gender,

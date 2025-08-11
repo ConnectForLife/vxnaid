@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.register.screens
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -178,6 +179,12 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         binding.btnScanParticipantId.setOnClickListener {
             startActivityForResult(ScanBarcodeActivity.create(requireContext(),ScanBarcodeActivity.PARTICIPANT), REQ_BARCODE)
         }
+        binding.rbPatientProgramNo.setOnClickListener {
+            updateIsPatientBelongToProgram()
+        }
+        binding.rbPatientProgramYes.setOnClickListener {
+            updateIsPatientBelongToProgram()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -224,6 +231,15 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             else -> return
         }
         viewModel.setGender(gender)
+    }
+
+    private fun updateIsPatientBelongToProgram() {
+        val isPatientBelongToProgram = when {
+            binding.rbPatientProgramNo.isChecked -> false
+            binding.rbPatientProgramYes.isChecked -> true
+            else -> return
+        }
+        viewModel.setIsPatientBelongToProgram(isPatientBelongToProgram)
     }
 
     override fun onHomeLocationPicked(address: HomeLocationPickerViewModel.AddressUiModel) {
