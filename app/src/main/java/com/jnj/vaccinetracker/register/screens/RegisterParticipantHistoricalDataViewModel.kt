@@ -3,7 +3,6 @@ package com.jnj.vaccinetracker.register.screens
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
@@ -33,7 +32,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
-import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -59,26 +57,14 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    val groupedVisitsByType = mutableLiveData<Map<String, List<VisitDetail>>>()
    val visitTypesData = mutableLiveData<MutableMap<String, HistoricalData>>(mutableMapOf())
    private val _historicalVisitDates = MutableLiveData<List<DateTime>>(emptyList())
-   val historicalVisitDates: LiveData<List<DateTime>> get() = _historicalVisitDates
-   private val _disabledDates = MutableLiveData<MutableSet<Long>>().apply {
-      value = mutableSetOf()
-   }
-   private val disabledDates: LiveData<MutableSet<Long>> = _disabledDates
    private val allDisabledDates = mutableSetOf<Long>()
    fun getAllDisabledDates(): Set<Long> = allDisabledDates
-   private val _actionLiveData = MutableLiveData<String>()
-   val actionLiveData: LiveData<String> = _actionLiveData
-
    private val atBirthVisitDate = mutableLiveData<DateTime?>()
 
    fun isDateValidForVisitType(visitType: String, selectedDate: DateTime): Boolean {
       if (visitType == "At Birth") return true
       val birthDate = atBirthVisitDate.value ?: return true
       return selectedDate >= birthDate
-   }
-
-   fun setAtBirthVisitDate(date: DateTime) {
-      atBirthVisitDate.value = date
    }
 
    private val disabledDatesByVisitType: MutableMap<String, Set<Long>> = mutableMapOf()
@@ -91,7 +77,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       }
    }
 
-
    fun setDisabledDatesForVisitType(visitType: String, dates: Set<Long>) {
       if (visitType != "At Birth") {
          disabledDatesByVisitType[visitType] = dates
@@ -101,12 +86,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    fun addDisabledDate(date: Long) {
       allDisabledDates.add(date)
    }
-
-   fun setAllDisabledDates(dates: Set<Long>) {
-      allDisabledDates.clear()
-      allDisabledDates.addAll(dates)
-   }
-
 
    init {
       participantSummaryArg
@@ -161,7 +140,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       cal.set(java.util.Calendar.MILLISECOND, 0)
       return cal.timeInMillis
    }
-
 
    private fun buildHistoricalVisitObject(
       participant: ParticipantSummaryUiModel,
@@ -277,6 +255,10 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
       otherSubstancesAndValues: MutableMap<String, String>,
       visitDate: DateTime?
    ) {
+      if (visitDate != null) {
+         if (!isHistoricalVisitDateValid(visitDate)) return
+      }
+
       val currentData = visitTypesData.value ?: mutableMapOf()
       val visitTypeEntry = currentData.getOrPut(visitTypeName) { HistoricalData(null, emptyMap()) }
       val substances = SubstancesData(substancesAndDates?.toMap() ?: emptyMap())
@@ -289,8 +271,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
          )
       )
       currentData[visitTypeName] = updatedVisitTypeEntry
-
-
       visitTypesData.postValue(currentData)
    }
 
@@ -316,6 +296,44 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
    fun setHistoricalVisitDate(date: DateTime) {
         _historicalVisitDates.value = _historicalVisitDates.value?.plus(date) ?: listOf(date)
         Log.d("HistoricalVisit", "Set historical visit date: $date")
+   }
 
+   fun isHistoricalVisitDateValid(newVisitDate: DateTime): Boolean {
+       val birthDateString = getParticipantBirthDate()
+       val birthDate = DateUtil.convertStringToDate(birthDateString, "yyyy-MM-dd")
+       val newDateJava = newVisitDate.toDate()
+       val today = Date()
+
+       if (birthDate != null && newDateJava.before(birthDate)) {
+           errorMessage.postValue("Visit date cannot be before birth date.")
+           return false
+       }
+
+       if (newDateJava.after(today)) {
+           errorMessage.postValue("Visit date cannot be in the future.")
+           return false
+       }
+
+       val allVisits = (groupedVisitsByType.value?.values?.flatten() ?: emptyList())
+       val sessionDates = visitTypesData.value?.values?.mapNotNull { it.visitDate } ?: emptyList()
+       val allVisitDates = allVisits.map { it.visitDate.time } + sessionDates.map { it.time }
+
+       val newDateMidnight = newDateJava.time.toMidnight()
+       val overlap = allVisitDates.any { it.toMidnight() == newDateMidnight }
+       if (overlap) {
+           errorMessage.postValue("Visit date overlaps with an existing visit.")
+           return false
+       }
+
+       if (allVisitDates.any { newDateJava.time < it }) {
+           errorMessage.postValue("The selected date is before a previous visit. Please select a later date.")
+           return false
+       }
+
+       return true
+   }
+
+   fun clearErrorMessage() {
+       errorMessage.value = null
    }
 }
