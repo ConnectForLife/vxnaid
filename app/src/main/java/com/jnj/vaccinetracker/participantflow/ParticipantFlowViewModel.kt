@@ -63,6 +63,7 @@ class ParticipantFlowViewModel @Inject constructor(
     val site = mutableLiveData<SiteUiModel>()
     val operator = mutableLiveData<String>()
     val errorMessage = mutableLiveData<String>()
+    val outreachName = mutableLiveData<String>("") // or get from SharedPreferences
 
     //id variables
     val participantId = mutableLiveData<String>()
@@ -398,6 +399,14 @@ class ParticipantFlowViewModel @Inject constructor(
         irisIndexes.clear()
         irisScans.clear()
         tempTemplateFile.delete()
+    }
+
+    fun setOutreachName(visitPlace: String, outreachName: String?) {
+        if (visitPlace == Constants.VISIT_PLACE_OUTREACH && !outreachName.isNullOrBlank()) {
+            this.outreachName.value = outreachName
+        } else {
+            this.outreachName.value = ""
+        }
     }
 
     enum class WorkflowItem(val type: String, var mandatory: Boolean) {

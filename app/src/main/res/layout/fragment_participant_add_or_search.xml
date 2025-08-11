@@ -23,13 +23,13 @@
             android:layout_height="@dimen/welcome_height"
             android:layout_marginHorizontal="@dimen/margin_16_32"
             android:layout_marginVertical="@dimen/margin_16_32"
-            android:text="@{@string/match_or_register_patient_welcome(viewModel.operator, viewModel.site.displayName)}"
+            android:text='@{String.format(@string/match_or_register_patient_welcome, viewModel.operator, viewModel.site.displayName, viewModel.outreachName != null &amp;&amp; !viewModel.outreachName.isEmpty() ? " (Outreah: " + viewModel.outreachName + ")" : "")}'
             android:textAppearance="@style/ScreenTitle"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/match_or_register_patient_welcome" />
+            tools:text="Welcome Operator to Site (OutreachName)" />
 
 
         <LinearLayout
