@@ -63,7 +63,7 @@ class ParticipantFlowViewModel @Inject constructor(
     val site = mutableLiveData<SiteUiModel>()
     val operator = mutableLiveData<String>()
     val errorMessage = mutableLiveData<String>()
-    val outreachName = mutableLiveData<String>("") // or get from SharedPreferences
+    val outreachName = mutableLiveData<String>("")
 
     //id variables
     val participantId = mutableLiveData<String>()
