@@ -356,9 +356,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
                 val birthWeight = input.toDoubleOrNull()
 
-                // Only check range when input is a complete decimal number like "1.5"
+                // Only check range when input is a complete decimal number like "2.5"
                 if (birthWeight != null && completeDecimalPattern.matches(input)) {
-                    if (birthWeight in 1.5..8.0) {
+                    if (birthWeight in 0.1..8.0) {
                         viewModel.setBirthWeight(input)
                         flowViewModel.registerDetails.value?.let {
                             flowViewModel.registerDetails.set(it.copy(birthWeight = input))
@@ -366,7 +366,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                     } else {
                         Toast.makeText(
                             binding.root.context,
-                            "Please enter a number between 1.5 and 8.0",
+                            "Please enter a number between 0.1 and 8.0",
                             Toast.LENGTH_SHORT
                         ).show()
                         resetBirthWeightInput()
