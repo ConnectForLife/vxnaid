@@ -45,6 +45,11 @@ class ParticipantFlowActivity : BaseActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
+        val sharedPreferences = getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE)
+        val outreachName = sharedPreferences.getString(Constants.OUTREACH_NAME, "") ?: ""
+        val visitPlace = sharedPreferences.getString(Constants.VISIT_PLACE_FILE_KEY, "") ?: ""
+        viewModel.setOutreachName(visitPlace, outreachName)
+
         viewModel.currentScreen.observe(this) { screen ->
             navigateToScreen(screen, viewModel.navigationDirection)
         }
