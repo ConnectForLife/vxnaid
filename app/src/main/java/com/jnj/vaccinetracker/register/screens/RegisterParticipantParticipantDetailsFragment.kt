@@ -201,8 +201,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
     private fun setupEditableFields() {
         if (viewModel.participantUuid.value != null) {
-            binding.rbGenderMale.isEnabled = false
-            binding.rbGenderFemale.isEnabled = false
             if (flowViewModel.duplicateError.value != ParticipantAlreadyExistsException.toStringExceptionName()) {
                 binding.btnScanParticipantId.visibility = View.INVISIBLE
             }
