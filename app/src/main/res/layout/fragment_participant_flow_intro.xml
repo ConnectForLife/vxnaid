@@ -4,11 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,23 +17,23 @@
             android:id="@+id/label_welcome"
             style="@style/CustomAutoSizeText"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
+            android:minHeight="70dp"
             android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
             android:text="@{@string/match_or_register_patient_welcome(viewModel.operator, viewModel.site.displayName)}"
+            android:textAppearance="@style/ScreenTitle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/match_or_register_patient_welcome"
-            android:textAppearance="@style/ScreenTitle"/>
+            tools:text="@string/match_or_register_patient_welcome" />
 
         <TextView
             android:id="@+id/label_introduction"
             style="@style/CustomAutoSizeText"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/match_or_register_patient_intro"
             android:textAppearance="@style/DescriptionText"
@@ -43,33 +41,35 @@
             app:layout_constraintStart_toStartOf="@+id/label_welcome"
             app:layout_constraintTop_toBottomOf="@+id/label_welcome" />
 
-
-        <LinearLayout
-            android:id="@+id/auth_steps_container"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/btn_continue"
-            app:layout_constraintEnd_toEndOf="@+id/label_welcome"
-            app:layout_constraintStart_toStartOf="@+id/label_welcome"
+            android:fillViewport="true"
             app:layout_constraintTop_toBottomOf="@+id/label_introduction"
-            tools:ignore="NestedWeights" />
+            app:layout_constraintBottom_toTopOf="@+id/btn_continue"
+            app:layout_constraintStart_toStartOf="@+id/label_welcome"
+            app:layout_constraintEnd_toEndOf="@+id/label_welcome">
 
+            <LinearLayout
+                android:id="@+id/auth_steps_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                tools:ignore="NestedWeights" />
+
+        </androidx.core.widget.NestedScrollView>
 
         <Button
             android:id="@+id/btn_continue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/colorPrimary"
-            android:textAppearance="@style/ButtonTextStyling"
             android:text="@string/match_or_register_patient_btn_continue"
+            android:textAppearance="@style/ButtonTextStyling"
             android:textColor="@color/colorTextOnSecondary"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
