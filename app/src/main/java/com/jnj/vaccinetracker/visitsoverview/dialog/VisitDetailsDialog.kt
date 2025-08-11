@@ -39,8 +39,10 @@ class VisitDetailsDialog : BaseDialogFragment() {
         binding.closeButton.setOnClickListener { dismissAllowingStateLoss() }
         binding.childDetailsButton.setOnClickListener {
             val childId = visitDetails.clientID
-            (activity as? VisitsOverviewFlowActivity)?. goToRegisteredParticipant(childId)
-            dismissAllowingStateLoss()
+            if (!childId.isNullOrBlank()) {
+                (activity as? VisitsOverviewFlowActivity)?.goToRegisteredParticipant(childId)
+                dismissAllowingStateLoss()
+            }
         }
         return binding.root
     }
