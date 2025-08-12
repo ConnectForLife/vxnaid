@@ -49,8 +49,8 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     private lateinit var binding: FragmentVisitsListBinding
     private lateinit var visitsAdapter: VisitsAdapter
     private val visitsListViewModel: VisitsListViewModel by viewModels { viewModelFactory }
-    private var selectedStartDate: DateTime? = null
-    private var selectedEndDate: DateTime? = null
+    private var selectedStartDate: DateTime? = DateTime.now()
+    private var selectedEndDate: DateTime? = DateTime.now()
 
     @Inject lateinit var configurationManager: ConfigurationManager
     @Inject lateinit var visitManager: VisitManager
@@ -62,6 +62,9 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     ): View {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_list, container, false)
+
+        binding.labelStartDate.text = formatDate(selectedStartDate)
+        binding.labelEndDate.text = formatDate(selectedEndDate)
 
         setupRecyclerView()
         loadVisitsData()
