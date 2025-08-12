@@ -65,7 +65,7 @@ interface VisitDao : VisitDaoBase<VisitEntity, RoomVisitModel>, ObservableDao, S
             "INNER JOIN visit_attribute va ON v.visitUuid = va.visitUuid AND va.type = 'Visit Status' " +
             "INNER JOIN participant p ON v.participantUuid = p.participantUuid " +
             "WHERE v.startDatetime >=:date AND va.value = :visitStatus AND p.locationUuid = :locationUuid " +
-            "ORDER BY v.startDatetime DESC")
+            "ORDER BY v.startDatetime ASC")
     @Transaction
     suspend fun getScheduledVisits(date: DateEntity, visitStatus: String, locationUuid: String): List<RoomVisitModel>
 
