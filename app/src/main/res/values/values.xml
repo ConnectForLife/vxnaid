@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="default_base_url" translatable="false">http://10.0.2.2:80</string>
+    <string name="default_base_url" translatable="false">http://ec2-13-223-48-109.compute-1.amazonaws.com</string>
 </resources>
