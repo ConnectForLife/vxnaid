@@ -113,10 +113,14 @@ class ParticipantRepository @Inject constructor(
     override suspend fun insert(model: Participant, orReplace: Boolean) = transactionRunner.withTransaction {
         try {
             if (orReplace) {
-                //we assume due to foreign keys, the related child rows will be deleted as well
-                val isDeleted = participantDao.deleteByParticipantUuid(model.participantUuid) > 0
-                if (isDeleted) {
-                    logInfo("deleted participant for replace ${model.participantUuid}")
+                // Delete by UUID
+                val isDeletedByUuid = participantDao.deleteByParticipantUuid(model.participantUuid) > 0
+                // Also delete by participantId to avoid UNIQUE constraint violation
+                val isDeletedById = participantDao.findByParticipantId(model.participantId)?.let {
+                    participantDao.deleteByParticipantUuid(it.participantUuid) > 0
+                } ?: false
+                if (isDeletedByUuid || isDeletedById) {
+                    logInfo("deleted participant for replace ${model.participantUuid} or participantId ${model.participantId}")
                 }
             }
 
