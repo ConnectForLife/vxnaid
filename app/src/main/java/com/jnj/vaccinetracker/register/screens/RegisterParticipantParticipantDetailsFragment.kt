@@ -39,11 +39,9 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.*
-import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
-import java.util.Locale
 
 /**
  * @author maartenvangiel
@@ -186,16 +184,9 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             }.launchIn(lifecycleOwner)
         updateParticipantSuccessDialogEvents
             .asFlow()
-            .onEach {
+            .onEach { participant ->
                 setupEditableFields()
-                UpdateParticipantSuccessfulDialog(object : UpdateParticipantSuccessfulDialog.OnParticipantUpdateConfirmedListener {
-                    override fun onParticipantUpdateConfirmed() {
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.fragment_container, VisitsOverviewFragment())
-                            .addToBackStack(null)
-                            .commit()
-                    }
-                }).show(childFragmentManager, TAG_UPDATE_SUCCESS_DIALOG)
+                UpdateParticipantSuccessfulDialog().show(childFragmentManager, TAG_UPDATE_SUCCESS_DIALOG)
             }.launchIn(lifecycleOwner)
     }
 

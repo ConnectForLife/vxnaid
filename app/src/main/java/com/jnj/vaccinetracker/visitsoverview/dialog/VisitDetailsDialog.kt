@@ -1,6 +1,5 @@
 package com.jnj.vaccinetracker.visitsoverview.dialog
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,10 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
-import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogVisitDetailsBinding
-import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
+import com.jnj.vaccinetracker.visitsoverview.activity.VisitsOverviewFlowActivity
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDetailsDTO
 
 class VisitDetailsDialog : BaseDialogFragment() {
@@ -41,18 +39,10 @@ class VisitDetailsDialog : BaseDialogFragment() {
         binding.closeButton.setOnClickListener { dismissAllowingStateLoss() }
         binding.childDetailsButton.setOnClickListener {
             val childId = visitDetails.clientID
-            if (childId.isEmpty()) {
-                logInfo("Child ID is null or empty, cannot navigate to child matching page.")
-                return@setOnClickListener
+            if (!childId.isNullOrBlank()) {
+                (activity as? VisitsOverviewFlowActivity)?.goToRegisteredParticipant(childId)
+                dismissAllowingStateLoss()
             }
-            activity?.let { currentActivity ->
-                val intent = Intent(currentActivity, ParticipantFlowActivity::class.java).apply {
-                    putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
-                    putExtra(Constants.PARTICIPANT_MATCH_ID, childId)
-                }
-                currentActivity.startActivity(intent)
-            } ?: logInfo("Activity reference is null.")
-            dismissAllowingStateLoss()
         }
         return binding.root
     }

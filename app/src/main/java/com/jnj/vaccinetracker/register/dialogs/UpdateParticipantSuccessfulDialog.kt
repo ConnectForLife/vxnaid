@@ -13,10 +13,7 @@ import com.jnj.vaccinetracker.databinding.DialogUpdateParticipantSuccessfulBindi
  * @author maartenvangiel
  * @version 1
  */
-class UpdateParticipantSuccessfulDialog(
-    private val listener: OnParticipantUpdateConfirmedListener
-) : BaseDialogFragment() {
-
+class UpdateParticipantSuccessfulDialog : BaseDialogFragment() {
     private lateinit var binding: DialogUpdateParticipantSuccessfulBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,13 +25,9 @@ class UpdateParticipantSuccessfulDialog(
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_update_participant_successful, container, false)
         binding.btnOk.setOnClickListener {
-            dismiss()
-            listener.onParticipantUpdateConfirmed()
+            dismissAllowingStateLoss()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
         return binding.root
-    }
-
-    interface OnParticipantUpdateConfirmedListener {
-        fun onParticipantUpdateConfirmed()
     }
 }
