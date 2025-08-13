@@ -49,7 +49,7 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     private lateinit var binding: FragmentVisitsListBinding
     private lateinit var visitsAdapter: VisitsAdapter
     private val visitsListViewModel: VisitsListViewModel by viewModels { viewModelFactory }
-    private var selectedStartDate: DateTime? =null
+    private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
 
     @Inject lateinit var configurationManager: ConfigurationManager
