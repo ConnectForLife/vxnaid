@@ -113,9 +113,7 @@ class ParticipantRepository @Inject constructor(
     override suspend fun insert(model: Participant, orReplace: Boolean) = transactionRunner.withTransaction {
         try {
             if (orReplace) {
-                // Delete by UUID
                 val isDeletedByUuid = participantDao.deleteByParticipantUuid(model.participantUuid) > 0
-                // Also delete by participantId to avoid UNIQUE constraint violation
                 val isDeletedById = participantDao.findByParticipantId(model.participantId)?.let {
                     if (it.participantUuid != model.participantUuid) {
                         participantDao.deleteByParticipantUuid(it.participantUuid) > 0
