@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.viewModelScope
-import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
@@ -22,16 +21,13 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 class VisitsListViewModel @Inject constructor(
     userRepository: UserRepository,
     private val visitRepository: VisitRepository,
     private val draftVisitRepository: DraftVisitRepository,
-    private  val draftParticipantRepository: DraftParticipantRepository,
     private val draftVisitEncounterRepository: DraftVisitEncounterRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
     override val dispatchers: AppCoroutineDispatchers
@@ -48,17 +44,16 @@ class VisitsListViewModel @Inject constructor(
                 isLoading.value = false
                 return@launch
             }
-            val startDate = getTodayMidnight()
-            val endDate = addDaysToDate(dateNow(), +30)
+            val todayMidnight = getTodayMidnight()
+            val tomorrowMidnight = addDaysToDate(todayMidnight, 1)
 
-            val scheduledVisits = visitRepository.findVisitsInPeriod(startDate, endDate)
-                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
+            val scheduledVisits = visitRepository.getScheduledVisits(todayMidnight, Constants.VISIT_STATUS_SCHEDULED, currentLocationUuid)
 
-            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
+            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(tomorrowMidnight)
             val convertedDraftVisitsEncounter = draftScheduledVisitsEncounter.map { draftVisit ->
                 convertDraftVisitEncounterToVisitOffline(draftVisit) }
 
-            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(addDaysToDate(getTodayMidnight(), 1))
+            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(tomorrowMidnight)
             val convertedDraftVisits = draftScheduledVisits.map { draftVisit ->
                 convertDraftVisitToVisitOffline(draftVisit) }
 
@@ -140,7 +135,7 @@ class VisitsListViewModel @Inject constructor(
             isLoading.value = false
         }
     }
-    
+
     private fun convertDraftVisitToVisitOffline(draftVisit: DraftVisit): Visit {
         return Visit(
             visitUuid = draftVisit.visitUuid,
@@ -193,12 +188,6 @@ class VisitsListViewModel @Inject constructor(
     override fun saveInstanceState(outState: Bundle) {}
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {}
-
-    private fun removeTimeFromDateTime(date: Date): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val dateStr = sdf.format(date)
-        return dateStr
-    }
 
     private suspend fun participantFromCurrentLocation(visit: Visit, locationUuid: String): Boolean {
         val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)

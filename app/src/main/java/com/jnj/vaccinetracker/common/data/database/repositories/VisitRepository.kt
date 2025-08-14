@@ -80,6 +80,10 @@ class VisitRepository @Inject constructor(
         return visitDao.getVisitHistory(date, visitStatus, locationUuid).map { it.toDomain() }
     }
 
+    suspend fun getScheduledVisits(date: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
+        return visitDao.getScheduledVisits(date, visitStatus, locationUuid).map { it.toDomain() }
+    }
+
     suspend fun getVisitsInDateRange(startDate: DateEntity, endDate: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
         return visitDao.getVisitsInDateRange(startDate, endDate, visitStatus, locationUuid ).map { it.toDomain() }
     }

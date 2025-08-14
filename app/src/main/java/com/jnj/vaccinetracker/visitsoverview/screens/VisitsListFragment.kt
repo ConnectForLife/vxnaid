@@ -62,7 +62,6 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     ): View {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_list, container, false)
-
         setupRecyclerView()
         loadVisitsData()
         setupObservers()
@@ -101,7 +100,13 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
 
     private fun loadVisitsData() {
         when (visitsKey) {
-            Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> visitsListViewModel.getScheduledVisitsData()
+            Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> {
+                selectedStartDate = DateTime.now()
+                selectedEndDate = DateTime.now()
+                binding.labelStartDate.text = formatDate(selectedStartDate)
+                binding.labelEndDate.text = formatDate(selectedEndDate)
+                visitsListViewModel.getScheduledVisitsData()
+            }
             Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> visitsListViewModel.getHistoricalVisitsData()
             Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> visitsListViewModel.getMissedVisitsData()
         }
