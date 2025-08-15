@@ -112,21 +112,15 @@ class VisitsListViewModel @Inject constructor(
                 isLoading.value = false
                 return@launch
             }
+            val todayMidnight = getTodayMidnight()
 
-            val startDate = addDaysToDate(dateNow(), -30)
-            val endDate = getTodayMidnight()
-
-            val missedVisits = visitRepository.findVisitsInPeriod(startDate, endDate)
-                .filter { it.visitStatus == Constants.VISIT_STATUS_SCHEDULED && participantFromCurrentLocation(it, currentLocationUuid)}
-
-            val draftVisits = draftVisitRepository.findVisitsBeforeDate(getTodayMidnight())
-            val convertedDraftVisits = draftVisits.map { draftVisit ->
-                convertDraftVisitToVisitOffline(draftVisit)
-            }
+            val missedVisits = visitRepository.getMissedVisits(todayMidnight, Constants.VISIT_STATUS_SCHEDULED, currentLocationUuid )
+            val draftVisits = draftVisitRepository.findVisitsBeforeDate(todayMidnight)
+            val convertedDraftVisits = draftVisits.map { draftVisit -> convertDraftVisitToVisitOffline(draftVisit) }
 
             val combinedMissedVisits =  missedVisits + convertedDraftVisits
 
-            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(getTodayMidnight())
+            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(todayMidnight)
             val filteredMissedVisits = combinedMissedVisits.filter { missedVisit ->
                 missedVisit.participantUuid !in draftScheduledVisits.map { it.participantUuid }
             }

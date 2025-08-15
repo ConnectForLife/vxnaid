@@ -76,6 +76,10 @@ class VisitRepository @Inject constructor(
         return visitDao.findVisitsBeforeDate(date, visitStatus).map { it.toDomain() }
     }
 
+    suspend fun getMissedVisits(date: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
+        return visitDao.getMissedVisits(date, visitStatus, locationUuid).map { it.toDomain() }
+    }
+
     suspend fun getVisitHistory(date: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
         return visitDao.getVisitHistory(date, visitStatus, locationUuid).map { it.toDomain() }
     }
