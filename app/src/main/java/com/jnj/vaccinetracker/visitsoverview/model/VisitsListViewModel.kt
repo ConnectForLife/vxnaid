@@ -81,17 +81,12 @@ class VisitsListViewModel @Inject constructor(
                 return@launch
             }
 
-            val startDate = addDaysToDate(dateNow(), -30)
-            val endDate = addDaysToDate(getTodayMidnight(), 1)
+            val todayMidnight = getTodayMidnight()
+            val tomorrowMidnight = addDaysToDate(todayMidnight, 1)
 
-            val historicalVisits = visitRepository.getVisitsInDateRange(
-                startDate,
-                endDate,
-                Constants.VISIT_STATUS_OCCURRED,
-                currentLocationUuid
-            )
+            val historicalVisits = visitRepository.getVisitHistory(tomorrowMidnight, Constants.VISIT_STATUS_OCCURRED, currentLocationUuid)
 
-            val draftHistoricalVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+            val draftHistoricalVisitsEncounter = draftVisitEncounterRepository.findVisitsBeforeDate(tomorrowMidnight)
             val convertedDraftVisitsEncounter = draftHistoricalVisitsEncounter.map { draftVisitEncounter ->
                 convertDraftVisitEncounterToVisitOffline(draftVisitEncounter)}
 
