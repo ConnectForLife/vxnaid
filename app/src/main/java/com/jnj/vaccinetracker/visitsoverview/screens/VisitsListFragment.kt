@@ -107,8 +107,13 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
             Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> {
                 setDateLabelsAndLoadData { visitsListViewModel.getHistoricalVisitsData() }
             }
-            Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> visitsListViewModel.getMissedVisitsData()
-
+            Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> {
+                selectedStartDate = DateTime.now() - 1.days
+                selectedEndDate = DateTime.now() - 1.days
+                binding.labelStartDate.text = formatDate(selectedStartDate)
+                binding.labelEndDate.text = formatDate(selectedEndDate)
+                visitsListViewModel.getMissedVisitsData()
+            }
         }
     }
 
