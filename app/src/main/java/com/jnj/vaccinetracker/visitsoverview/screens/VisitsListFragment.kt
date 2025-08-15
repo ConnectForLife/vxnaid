@@ -102,20 +102,13 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     private fun loadVisitsData() {
         when (visitsKey) {
             Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> {
-                selectedStartDate = DateTime.now()
-                selectedEndDate = DateTime.now()
-                binding.labelStartDate.text = formatDate(selectedStartDate)
-                binding.labelEndDate.text = formatDate(selectedEndDate)
-                visitsListViewModel.getScheduledVisitsData()
+                setDateLabelsAndLoadData { visitsListViewModel.getScheduledVisitsData() }
             }
-            Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> visitsListViewModel.getHistoricalVisitsData()
-            Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> {
-                selectedStartDate = DateTime.now() - 1.days
-                selectedEndDate = DateTime.now() - 1.days
-                binding.labelStartDate.text = formatDate(selectedStartDate)
-                binding.labelEndDate.text = formatDate(selectedEndDate)
-                visitsListViewModel.getMissedVisitsData()
+            Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> {
+                setDateLabelsAndLoadData { visitsListViewModel.getHistoricalVisitsData() }
             }
+            Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> visitsListViewModel.getMissedVisitsData()
+
         }
     }
 
@@ -129,6 +122,14 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         visitsListViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading == true) View.VISIBLE else View.GONE
         }
+    }
+
+    private fun setDateLabelsAndLoadData(loadData: () -> Unit) {
+        selectedStartDate = DateTime.now()
+        selectedEndDate = DateTime.now()
+        binding.labelStartDate.text = formatDate(selectedStartDate)
+        binding.labelEndDate.text = formatDate(selectedEndDate)
+        loadData()
     }
 
     private fun setupFilterButtons() {
