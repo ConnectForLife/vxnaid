@@ -40,5 +40,4 @@ class DosingOutOfWindowDialog : BaseDialogFragment() {
     interface DosingOutOfWindowDialogListener {
         fun onOutOfWindowDosingConfirmed()
     }
-
 }

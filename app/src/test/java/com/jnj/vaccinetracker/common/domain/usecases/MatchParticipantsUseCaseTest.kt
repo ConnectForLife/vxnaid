@@ -65,7 +65,7 @@ class MatchParticipantsUseCaseTest : FunSpec({
     }
 
     fun participant(uuid: String = uuid(), participantId: String = "", phone: String? = null, gender: Gender = Gender.MALE, withTemplate: Boolean = true) =
-        Participant(uuid, DateEntity(), null, if (withTemplate) ParticipantBiometricsTemplateFile.newFile(uuid) else null, participantId, gender, BirthDate.yearOfBirth(2000),
+        Participant(uuid, DateEntity(), null, if (withTemplate) ParticipantBiometricsTemplateFile.newFile(uuid) else null, participantId, gender, BirthDate.yearOfBirth(2000), false,
             mapOf<String, String>().withPhone(phone), null)
 
     fun draftParticipant(uuid: String = uuid(), participantId: String = "", phone: String? = null, gender: Gender = Gender.FEMALE, withTemplate: Boolean = true) =
@@ -76,6 +76,7 @@ class MatchParticipantsUseCaseTest : FunSpec({
             participantId,
             gender,
             BirthDate.yearOfBirth(2000),
+            false,
             mapOf<String, String>().withPhone(phone),
             null,
             DraftState.initialState())

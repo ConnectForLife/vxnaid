@@ -92,8 +92,8 @@ class VisitDosingFragment : BaseFragment(),
             val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, manufacturers?.distinct().orEmpty())
             binding.dropdownManufacturer.setAdapter(adapter)
 
-            SharedPreference(context!!).saveManufracterList(viewModel.getManufactuerList())
-            SharedPreference(context!!).saveManufracterList(scanviewModel.getManufactuerList())
+            SharedPreference(requireContext()).saveManufracterList(viewModel.getManufactuerList())
+            SharedPreference(requireContext()).saveManufracterList(scanviewModel.getManufactuerList())
         }
 
         viewModel.healthZoneList.observe(lifecycleOwner) { zones ->

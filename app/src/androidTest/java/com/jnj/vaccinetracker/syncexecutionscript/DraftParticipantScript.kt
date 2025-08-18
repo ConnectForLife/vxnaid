@@ -99,6 +99,7 @@ class DraftParticipantScript {
                 participantId = participantId,
                 gender = gender,
                 birthDate = yearOfBirth,
+                isBirthDateEstimated = false,
                 telephone = telephone,
                 siteUuid = siteUuid,
                 language = lang,
@@ -124,7 +125,9 @@ class DraftParticipantScript {
                 visitUuid = firstScheduledDosingVisit.uuid,
                 manufacturer = manufacturer,
                 vialCode = vialCode,
-                dosingNumber = firstScheduledDosingVisit.dosingNumber!!
+                dosingNumber = firstScheduledDosingVisit.dosingNumber!!,
+                healthZone = "HZ",
+                vaccinationSite = "VAC_SITE"
             )
         }
     }

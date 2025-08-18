@@ -67,6 +67,7 @@ class RegisterParticipantUseCaseTest : FunSpec({
         participantId = participantUuid,
         gender = Gender.OTHER,
         birthdate = BirthDate.yearOfBirth(1994),
+        isBirthDateEstimated = false,
         address = Address(
             address1 = "Koekoekstraat",
             address2 = "40",
@@ -88,6 +89,7 @@ class RegisterParticipantUseCaseTest : FunSpec({
         participantId = registerParticipant.participantId,
         gender = registerParticipant.gender,
         birthDate = registerParticipant.birthdate,
+        isBirthDateEstimated = false,
         attributes = registerParticipant.attributes,
         address = registerParticipant.address,
         draftState = DraftState.UPLOADED
@@ -101,6 +103,7 @@ class RegisterParticipantUseCaseTest : FunSpec({
         participantId = registerParticipant.participantId,
         gender = registerParticipant.gender,
         birthDate = registerParticipant.birthdate,
+        isBirthDateEstimated = false,
         attributes = registerParticipant.attributes,
         address = registerParticipant.address,
         draftState = DraftState.UPLOADED
