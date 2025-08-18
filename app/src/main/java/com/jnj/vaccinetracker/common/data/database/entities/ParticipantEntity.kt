@@ -15,6 +15,7 @@ data class ParticipantEntity(
     override val phone: String?,
     override val gender: GenderEntity,
     override val birthDate: BirthDateEntity,
+    override val isBirthDateEstimated: Boolean?,
     @ColumnInfo(index = true)
     override val dateModified: DateEntity,
     @ColumnInfo(index = true)

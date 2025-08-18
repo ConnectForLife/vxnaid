@@ -2,7 +2,10 @@ package com.jnj.vaccinetracker.register
 
 import androidx.annotation.StringRes
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
+import com.jnj.vaccinetracker.common.domain.entities.Address
+import com.jnj.vaccinetracker.common.domain.entities.Gender
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
@@ -22,6 +25,20 @@ class RegisterParticipantFlowViewModel @Inject constructor(override val dispatch
     val isManualEnteredId = mutableLiveBoolean()
     val countryCode = mutableLiveData<String>()
     val phoneNumber = mutableLiveData<String>()
+    val registerDetails = mutableLiveData<ParticipantManager.RegisterDetails>().apply {
+        value = ParticipantManager.RegisterDetails(
+            participantId = "",
+            gender = Gender.OTHER,
+            birthDate = null,
+            isBirthDateEstimated = false,
+            telephone = "",
+            siteUuid = "",
+            language = "",
+            address = Address("", "", "", "", "", "", ""),
+            picture = null,
+            biometricsTemplateBytes = null,
+        )
+    }
 
     fun setArguments(
         participantId: String?,

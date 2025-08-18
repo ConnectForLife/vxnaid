@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.register.screens
 
+import android.util.Log
 import androidx.collection.ArrayMap
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.yearNow
@@ -23,6 +24,8 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toDomain
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.soywiz.klock.DateFormat
+import com.soywiz.klock.DateTime
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -113,6 +116,14 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     private var validatePhoneJob: Job? = null
     private var validateParticipantIdJob: Job? = null
 
+    val birthDate = mutableLiveData<DateTime>()
+    val birthDateText = mutableLiveData<String>()
+    val birthDateValidationMessage = mutableLiveData<String>()
+
+    val estimatedAgeText = mutableLiveData<String>()
+    val estimatedAgeValidationMessage = mutableLiveData<String>()
+    val isBirthDateEstimated = mutableLiveData<Boolean>(false)
+
     init {
         initState()
     }
@@ -196,18 +207,21 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val language: DisplayValue? = language.get()
         val participantId = participantId.get()
         val gender = gender.get()
-        val yearOfBirth = yearOfBirth.get()
+//        val yearOfBirth = yearOfBirth.get()
+        val birthDate = birthDate.get()
+        val isBirthDateEstimated = isBirthDateEstimated.get()
+        Log.d("IS BIRTH DATE ESTIMATED", "Is birth date estimated: $isBirthDateEstimated")
         val fullPhoneNumber = createFullPhone()
         val isPatientBelongToProgram = isPatientBelongToProgram.get()
 
         val isValidInput = validateInput(
             participantId,
             gender,
-            yearOfBirth,
+            birthDate,
+//            yearOfBirth,
             homeLocation,
             vaccine?.value,
-            language?.value,
-            isPatientBelongToProgram
+            language?.value
         )
 
         var phoneNumberToSubmit: String? = null
@@ -242,7 +256,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val result = participantManager.registerParticipant(
                 participantId = participantId!!,
                 gender = gender!!,
-                yearOfBirth = yearOfBirth!!,
+                birthDate = birthDate!!,
+                isBirthDateEstimated = isBirthDateEstimated!!,
+//                yearOfBirth = yearOfBirth!!,
                 telephone = phoneNumberToSubmit,
                 siteUuid = siteUuid,
                 language = language?.value!!,
@@ -258,7 +274,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                     result.participantUuid,
                     participantId,
                     gender,
-                    yearOfBirth,
+                    birthDate.format(DateFormat.FORMAT_DATE),
                     vaccine.value.let { DisplayValue(it, loc[it]) },
                     compressedImage?.let { ParticipantImageUiModel(it.bytes) }
                 )
@@ -289,11 +305,10 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     private suspend fun validateInput(
         participantId: String?,
         gender: Gender?,
-        yearOfBirth: String?,
+        birthDate: DateTime?,
         homeLocation: Address?,
         vaccine: String?,
-        language: String?,
-        isPatientBelongToProgram: Boolean?
+        language: String?
     ): Boolean {
         var isValid = true
         resetValidationMessages()
@@ -306,15 +321,19 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantIdValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_invalid_participant_id))
         }
 
-
         if (gender == null) {
             isValid = false
             genderValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_no_gender))
         }
 
-        if (!validateYearOfBirth(yearOfBirth, false)) {
+        if (birthDate == null) {
             isValid = false
+            birthDateValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_birth_date_cannot_be_empty))
         }
+
+//        if (!validateYearOfBirth(yearOfBirth, false)) {
+//            isValid = false
+//        }
 
         if (homeLocation?.isEmpty() != false) {
             isValid = false
@@ -409,11 +428,47 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         }
     }
 
-    fun setYearOfBirth(yearOfBirth: String) {
-        if (this.yearOfBirth.get() == yearOfBirth) return
-        this.yearOfBirth.set(yearOfBirth)
-        yearOfBirthValidationMessage.set(null)
-        validateYearOfBirth(this.yearOfBirth.value, true)
+//    private fun setBirthDateOrEstimatedAge(birthDate: DateTime?, isBirthDateEstimated: Boolean) {
+//        if (isBirthDateEstimated && birthDate != null) {
+//            val currentDate = DateTime.now()
+//            val daysDifference = (currentDate - birthDate).days.toInt()
+//
+//            val years = daysDifference / 365
+//            val remainingDaysAfterYears = daysDifference % 365
+//            val months = remainingDaysAfterYears / 30
+//            val remainingDaysAfterMonths = remainingDaysAfterYears % 30
+//            val weeks = remainingDaysAfterMonths / 7
+//
+//            setEstimatedAgeText(years, months, weeks)
+//            setBirthDateBasedOnEstimatedBirthdate(birthDate)
+//        } else {
+//            setBirthDate(birthDate)
+//        }
+//    }
+
+    fun setBirthDate(birthDate: DateTime?) {
+        this.birthDate.set(birthDate)
+        val formattedDate = birthDate?.format(DateFormat.FORMAT_DATE)
+        this.birthDateText.set(formattedDate)
+        birthDateValidationMessage.set(null)
+        isBirthDateEstimated.set(false)
+        this.estimatedAgeText.set(null)
+    }
+
+    fun setBirthDateBasedOnEstimatedBirthdate(birthDate: DateTime?) {
+        this.birthDate.set(birthDate)
+        isBirthDateEstimated.set(true)
+        this.birthDateText.set(null)
+    }
+
+    fun setEstimatedAgeText(yearsEstimated: Int?, monthsEstimated: Int?, weeksEstimated: Int?) {
+        val ageString = listOfNotNull(
+            yearsEstimated?.let {"${it}y"},
+            monthsEstimated.let { "${it}m" },
+            weeksEstimated.let { "${it}w" }
+        ).joinToString(" ")
+        this.estimatedAgeText.set(ageString)
+        birthDateValidationMessage.set(null)
     }
 
     private fun createFullPhone(): String {

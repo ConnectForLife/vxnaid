@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 11,
-    "identityHash": "fc1af51bcbf15a337673dda77e5e745d",
+    "identityHash": "0cc85c6cf26fded8fdba7d35ff933542",
     "entities": [
       {
         "tableName": "participant",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`participantUuid` TEXT NOT NULL, `participantId` TEXT NOT NULL COLLATE NOCASE, `phone` TEXT, `gender` TEXT NOT NULL, `birthDate` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `locationUuid` TEXT, PRIMARY KEY(`participantUuid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`participantUuid` TEXT NOT NULL, `participantId` TEXT NOT NULL COLLATE NOCASE, `phone` TEXT, `gender` TEXT NOT NULL, `birthDate` INTEGER NOT NULL, `isBirthDateEstimated` INTEGER, `dateModified` INTEGER NOT NULL, `locationUuid` TEXT, PRIMARY KEY(`participantUuid`))",
         "fields": [
           {
             "fieldPath": "participantUuid",
@@ -39,6 +39,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "isBirthDateEstimated",
+            "columnName": "isBirthDateEstimated",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
             "fieldPath": "dateModified",
             "columnName": "dateModified",
             "affinity": "INTEGER",
@@ -52,10 +58,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -121,10 +127,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -163,10 +169,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -235,10 +241,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -279,11 +285,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid",
             "type"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -336,10 +342,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -387,11 +393,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid",
             "type"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -438,11 +444,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid",
             "name"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -489,10 +495,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -549,10 +555,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -600,10 +606,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -651,10 +657,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -702,10 +708,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -745,10 +751,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -781,10 +787,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -817,10 +823,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -837,7 +843,7 @@
       },
       {
         "tableName": "draft_participant",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`participantUuid` TEXT NOT NULL, `phone` TEXT, `participantId` TEXT NOT NULL COLLATE NOCASE, `gender` TEXT NOT NULL, `birthDate` INTEGER NOT NULL, `registrationDate` INTEGER NOT NULL, `draftState` TEXT NOT NULL, `locationUuid` TEXT, PRIMARY KEY(`participantUuid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`participantUuid` TEXT NOT NULL, `phone` TEXT, `participantId` TEXT NOT NULL COLLATE NOCASE, `gender` TEXT NOT NULL, `birthDate` INTEGER NOT NULL, `registrationDate` INTEGER NOT NULL, `isBirthDateEstimated` INTEGER, `draftState` TEXT NOT NULL, `locationUuid` TEXT, PRIMARY KEY(`participantUuid`))",
         "fields": [
           {
             "fieldPath": "participantUuid",
@@ -876,6 +882,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "isBirthDateEstimated",
+            "columnName": "isBirthDateEstimated",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
             "fieldPath": "draftState",
             "columnName": "draftState",
             "affinity": "TEXT",
@@ -889,10 +901,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -988,10 +1000,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -1032,11 +1044,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid",
             "type"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -1083,10 +1095,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -1115,10 +1127,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "participantUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -1165,10 +1177,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -1216,11 +1228,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid",
             "type"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -1273,10 +1285,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -1324,11 +1336,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid",
             "name"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -1369,11 +1381,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "visitUuid",
             "type"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -1432,10 +1444,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -1476,10 +1488,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "uuid"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -1536,10 +1548,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -1567,7 +1579,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fc1af51bcbf15a337673dda77e5e745d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0cc85c6cf26fded8fdba7d35ff933542')"
     ]
   }
 }

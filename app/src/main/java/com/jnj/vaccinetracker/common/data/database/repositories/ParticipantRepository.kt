@@ -40,6 +40,7 @@ class ParticipantRepository @Inject constructor(
         participantId = participantId,
         gender = gender,
         birthDate = birthDate,
+        isBirthDateEstimated = isBirthDateEstimated,
         address = address?.toDomain(),
         dateModified = dateModified,
         attributes = attributes.toMap()
@@ -55,6 +56,7 @@ class ParticipantRepository @Inject constructor(
         participantId = participantId,
         gender = gender,
         birthDate = birthDate,
+        isBirthDateEstimated = isBirthDateEstimated,
         dateModified = dateModified,
         locationUuid = locationUuid
     )

@@ -11,6 +11,7 @@ import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.NetworkConnectivity
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.soywiz.klock.DateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -75,7 +76,9 @@ class ParticipantManager @Inject constructor(
     suspend fun registerParticipant(
         participantId: String,
         gender: Gender,
-        yearOfBirth: String,
+        birthDate: DateTime,
+        isBirthDateEstimated: Boolean,
+//        yearOfBirth: String,
         telephone: String?,
         siteUuid: String,
         language: String,
@@ -101,7 +104,9 @@ class ParticipantManager @Inject constructor(
         val request = RegisterParticipant(
             participantId = participantId,
             gender = gender,
-            birthdate = BirthDate.yearOfBirth(yearOfBirth),
+//            birthdate = BirthDate.yearOfBirth(yearOfBirth),
+            birthdate = BirthDate(birthDate.unixMillisLong),
+            isBirthDateEstimated = isBirthDateEstimated,
             address = address,
             attributes = personAttributes,
             image = picture,
@@ -112,4 +117,16 @@ class ParticipantManager @Inject constructor(
         return registerParticipantUseCase.registerParticipant(request)
     }
 
+    data class RegisterDetails(
+        val participantId: String,
+        val gender: Gender,
+        val birthDate: DateTime?,
+        val isBirthDateEstimated: Boolean,
+        val telephone: String?,
+        val siteUuid: String,
+        val language: String,
+        val address: Address,
+        val picture: ImageBytes?,
+        val biometricsTemplateBytes: BiometricsTemplateBytes?,
+    )
 }

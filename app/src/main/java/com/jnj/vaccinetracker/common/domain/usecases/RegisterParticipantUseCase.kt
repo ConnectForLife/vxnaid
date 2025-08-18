@@ -48,6 +48,7 @@ class RegisterParticipantUseCase @Inject constructor(
         participantId = participantId,
         gender = gender,
         birthDate = birthdate,
+        isBirthDateEstimated = isBirthDateEstimated,
         attributes = attributes,
         address = address,
         draftState = DraftState.initialState()
@@ -88,9 +89,9 @@ class RegisterParticipantUseCase @Inject constructor(
         if (existingParticipant != null ) {
             throw ParticipantAlreadyExistsException()
         }
-        else{
+        else {
             val deletedParticipant =  findParticipantByParticipantIdUseCase.findDeletedParticipantbyId(participantId = registerParticipant.participantId)
-            if(deletedParticipant !=null)
+            if (deletedParticipant != null)
                 throw ParticipantAlreadyExistsException()
         }
         val registrationDate = dateNow()

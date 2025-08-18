@@ -12,6 +12,7 @@ sealed class ParticipantBase {
     abstract val participantId: String
     abstract val gender: Gender
     abstract val birthDate: BirthDate
+    abstract val isBirthDateEstimated: Boolean?
     abstract val attributes: Map<String, String>
     abstract val address: Address?
 
@@ -29,6 +30,7 @@ data class Participant(
     override val participantId: String,
     override val gender: Gender,
     override val birthDate: BirthDate,
+    override val isBirthDateEstimated: Boolean?,
     override val attributes: Map<String, String>,
     override val address: Address?,
 ) : ParticipantBase(), SyncBase
@@ -41,6 +43,7 @@ data class DraftParticipant(
     override val participantId: String,
     override val gender: Gender,
     override val birthDate: BirthDate,
+    override val isBirthDateEstimated: Boolean?,
     override val attributes: Map<String, String>,
     override val address: Address?,
     override val draftState: DraftState,
@@ -71,6 +74,7 @@ fun DraftParticipant.toParticipantWithoutAssets(): Participant = Participant(
     participantId = participantId,
     gender = gender,
     birthDate = birthDate,
+    isBirthDateEstimated = isBirthDateEstimated,
     attributes = attributes,
     address = address
 )

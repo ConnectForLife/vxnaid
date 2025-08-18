@@ -26,6 +26,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.*
+import com.soywiz.klock.DateTime
 import kotlinx.coroutines.flow.onEach
 
 /**
@@ -35,6 +36,8 @@ import kotlinx.coroutines.flow.onEach
 @SuppressWarnings("TooManyFunctions")
 class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     HomeLocationPickerDialog.HomeLocationPickerListener,
+    BirthDatePickerDialog.BirthDatePickerListener,
+    EstimatedAgeDialog.EstimatedAgePickerListener,
     RegisterParticipantSuccessfulDialog.RegisterParticipationCompletionListener,
     RegisterParticipantConfirmNoTelephoneDialog.RegisterParticipationNoTelephoneConfirmationListener {
 
@@ -44,11 +47,20 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         private const val TAG_NO_PHONE_DIALOG = "confirmNoPhoneDialog"
         private const val TAG_NO_MATCHING_ID = "noMatchingIdDialog"
         private const val REQ_BARCODE = 213
+        private const val TAG_DATE_PICKER = "datePicker"
+        private const val TAG_ESTIMATED_AGE_PICKER = "estimatedAgePicker"
     }
 
     private val flowViewModel: RegisterParticipantFlowViewModel by activityViewModels { viewModelFactory }
     private val viewModel: RegisterParticipantParticipantDetailsViewModel by viewModels { viewModelFactory }
     private lateinit var binding: FragmentRegisterParticipantParticipantDetailsBinding
+
+    private var birthDatePicked: DateTime? = null
+    private var isBirthDateEstimated: Boolean = false
+    private var yearsEstimated: Int? = null
+    private var monthsEstimated: Int? = null
+    private var weeksEstimated: Int? = null
+    private var estimatedBirthDatePicked: DateTime? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_register_participant_participant_details, container, false)
@@ -92,7 +104,35 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             binding.genderError.requestFocus()
             binding.genderError.error = genderValidationMessage
         }
+
         observeViewModelEvents(lifecycleOwner)
+    }
+
+    override fun onBirthDatePicked(birthDate: DateTime?, isEstimated: Boolean) {
+        birthDatePicked = birthDate
+        isBirthDateEstimated = isEstimated
+        viewModel.setBirthDate(birthDate)
+        val currentDetails = flowViewModel.registerDetails.value
+        val updatedDetails = currentDetails?.copy(birthDate = birthDate!!, isBirthDateEstimated = false)
+        flowViewModel.registerDetails.set(updatedDetails)
+    }
+
+    override fun onEstimatedAgePicked(
+        estimatedBirthDate: DateTime?,
+        yearsEstimated: Int?,
+        monthsEstimated: Int?,
+        weeksEstimated: Int?
+    ) {
+        estimatedBirthDatePicked = estimatedBirthDate
+        this.yearsEstimated = yearsEstimated
+        this.monthsEstimated = monthsEstimated
+        this.weeksEstimated = weeksEstimated
+
+        viewModel.setBirthDateBasedOnEstimatedBirthdate(estimatedBirthDate)
+        viewModel.setEstimatedAgeText(yearsEstimated, monthsEstimated, weeksEstimated)
+        val currentDetails = flowViewModel.registerDetails.value
+        val updatedDetails = currentDetails?.copy(birthDate = estimatedBirthDate!!, isBirthDateEstimated = true)
+        flowViewModel.registerDetails.set(updatedDetails)
     }
 
     private fun observeViewModelEvents(lifecycleOwner: LifecycleOwner) = viewModel.apply {
@@ -143,8 +183,14 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.setPhone(it?.toString().orEmpty())
         }
 
-        binding.editYearOfBirth.doAfterTextChanged {
-            viewModel.setYearOfBirth(it?.toString().orEmpty())
+        binding.btnPickDate.setOnClickListener {
+            BirthDatePickerDialog(birthDatePicked).show(childFragmentManager, TAG_DATE_PICKER)
+        }
+
+        binding.btnEstimatedDate.setOnClickListener {
+            EstimatedAgeDialog(
+                birthDatePicked, yearsEstimated, monthsEstimated, weeksEstimated
+            ).show(childFragmentManager, TAG_ESTIMATED_AGE_PICKER)
         }
     }
 
@@ -264,5 +310,4 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         viewModel.canSkipPhone = true
         submitRegistration()
     }
-
 }

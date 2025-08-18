@@ -16,6 +16,7 @@ data class RegisterParticipantRequest(
     val participantUuid: String,
     val participantId: String?,
     val registrationDate: Date,
+    val isBirthDateEstimated: Boolean?,
     val gender: Gender,
     val birthdate: BirthDateDto,
     val addresses: List<AddressDto>,

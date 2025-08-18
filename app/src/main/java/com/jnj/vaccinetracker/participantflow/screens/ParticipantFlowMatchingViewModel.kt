@@ -271,7 +271,7 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                 participantUuid = it.participantUUID ?: return null,
                 participantId = it.participantId ?: return null,
                 gender = it.gender ?: return null,
-                yearOfBirth = it.yearOfBirth?.toString() ?: return null,
+                birthDate = it.yearOfBirth?.toString() ?: return null,
                 vaccine = it.vaccine ?: return null,
                 participantPicture = selectedParticipantImage.get()
             )

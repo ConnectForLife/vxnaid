@@ -17,6 +17,7 @@ import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.di.DaggerTestDaggerComponent
 import com.jnj.vaccinetracker.readResource
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.soywiz.klock.DateTime
 import de.codecentric.androidtestktx.common.appContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -86,7 +87,7 @@ class DraftParticipantScript {
         val pictureResourceName: String? = "test_script_image.jpeg"
         val image = pictureResourceName?.let { readPicture(it) }
         val telephone: String? = null
-        val yearOfBirth = 1994
+        val yearOfBirth = DateTime(1999, 6, 6)
         val lang = "en"
         val gender = Gender.MALE
         val template: BiometricsTemplateBytes? = readAssetsTemplate()
@@ -97,7 +98,7 @@ class DraftParticipantScript {
             val draftParticipant = participantManager.registerParticipant(
                 participantId = participantId,
                 gender = gender,
-                yearOfBirth = yearOfBirth.toString(),
+                birthDate = yearOfBirth,
                 telephone = telephone,
                 siteUuid = siteUuid,
                 language = lang,

@@ -8,6 +8,7 @@ interface ParticipantEntityBase : ParticipantUuidContainer {
     val participantId: String
     val gender: GenderEntity
     val birthDate: BirthDateEntity
+    val isBirthDateEstimated: Boolean?
     val locationUuid: String?
 
     companion object {

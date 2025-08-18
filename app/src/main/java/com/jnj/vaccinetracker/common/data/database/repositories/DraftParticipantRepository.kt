@@ -41,6 +41,7 @@ class DraftParticipantRepository @Inject constructor(
         participantId = participantId,
         gender = gender,
         birthDate = birthDate,
+        isBirthDateEstimated = isBirthDateEstimated,
         address = address?.toDomain(),
         registrationDate = registrationDate,
         attributes = attributes.toMap()
@@ -55,6 +56,7 @@ class DraftParticipantRepository @Inject constructor(
         participantId = participantId,
         gender = gender,
         birthDate = birthDate,
+        isBirthDateEstimated = isBirthDateEstimated,
         draftState = DraftState.initialState(),
         registrationDate = dateModified,
         locationUuid = locationUuid

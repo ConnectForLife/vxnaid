@@ -18,6 +18,7 @@ data class RoomParticipantModel(
     override val participantId: String,
     override val gender: GenderEntity,
     override val birthDate: BirthDateEntity,
+    override val isBirthDateEstimated: Boolean?,
     @Relation(parentColumn = ParticipantEntity.ID, entityColumn = ParticipantEntity.ID)
     val attributes: List<ParticipantAttributeEntity>,
     @Embedded
