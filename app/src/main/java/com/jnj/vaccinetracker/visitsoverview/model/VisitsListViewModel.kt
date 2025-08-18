@@ -8,7 +8,6 @@ import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncoun
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
-import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
@@ -48,29 +47,25 @@ class VisitsListViewModel @Inject constructor(
             val tomorrowMidnight = addDaysToDate(todayMidnight, 1)
 
             val scheduledVisits = visitRepository.getScheduledVisits(todayMidnight, Constants.VISIT_STATUS_SCHEDULED, currentLocationUuid)
+            val uniqueScheduledVisits = scheduledVisits
+                .groupBy { it.participantUuid }
+                .map { (_, visits) ->
+                    visits
+                        .sortedWith(compareByDescending<Visit> { it.startDatetime.time }.thenByDescending { it.visitType != null })
+                        .first()
+                }
 
-            val draftScheduledVisitsEncounter = draftVisitEncounterRepository.findVisitsAfterDate(tomorrowMidnight)
-            val convertedDraftVisitsEncounter = draftScheduledVisitsEncounter.map { draftVisit ->
-                convertDraftVisitEncounterToVisitOffline(draftVisit) }
+            val draftVisits = draftVisitRepository.findVisitsAfterDate(tomorrowMidnight)
+            val convertedDraftVisits = draftVisits.map { convertDraftVisitToVisitOffline(it) }
 
-            val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(tomorrowMidnight)
-            val convertedDraftVisits = draftScheduledVisits.map { draftVisit ->
-                convertDraftVisitToVisitOffline(draftVisit) }
+            val draftVisitParticipantIds = convertedDraftVisits.map { it.participantUuid }.toSet()
+            val filteredScheduledVisits = uniqueScheduledVisits.filter { scheduledVisit -> !draftVisitParticipantIds.contains(scheduledVisit.participantUuid)}
 
-            val filteredScheduleDraftVisitsEncounter = convertedDraftVisitsEncounter.filter { draftVisitEncounter ->
-                draftVisitEncounter.participantUuid !in convertedDraftVisits.map { it.participantUuid } }
-
-            // Remove scheduled visits with the same participant ID as in draftVisitEncounter
-            val draftVisitParticipantIds = draftScheduledVisitsEncounter.map { it.participantUuid }.toSet()
-            val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit ->
-                !draftVisitParticipantIds.contains(scheduledVisit.participantUuid) }
-
-            val combinedScheduledVisits = convertedDraftVisits + filteredScheduleDraftVisitsEncounter + filteredScheduledVisits
+            val combinedScheduledVisits = convertedDraftVisits + filteredScheduledVisits
             visitDTOs.value = createVisitDTOList(combinedScheduledVisits)
             isLoading.value = false
         }
     }
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun getHistoricalVisitsData() {
         isLoading.value = true
@@ -177,15 +172,4 @@ class VisitsListViewModel @Inject constructor(
     override fun saveInstanceState(outState: Bundle) {}
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {}
-
-    private suspend fun participantFromCurrentLocation(visit: Visit, locationUuid: String): Boolean {
-        val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-        return if (participant == null) {
-            Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
-            false
-        } else {
-            Log.d("VisitsListViewModel", "Participant found: ${participant.participantUuid}, Location UUID: ${participant.locationUuid} vs Current Location UUID: $locationUuid")
-            participant.locationUuid == locationUuid
-        }
-    }
 }
