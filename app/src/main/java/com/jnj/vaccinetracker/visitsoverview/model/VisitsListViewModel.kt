@@ -8,7 +8,6 @@ import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncoun
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
-import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
@@ -166,15 +165,4 @@ class VisitsListViewModel @Inject constructor(
     override fun saveInstanceState(outState: Bundle) {}
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {}
-
-    private suspend fun participantFromCurrentLocation(visit: Visit, locationUuid: String): Boolean {
-        val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-        return if (participant == null) {
-            Log.w("VisitsListViewModel", "Participant not found for UUID: ${visit.participantUuid}")
-            false
-        } else {
-            Log.d("VisitsListViewModel", "Participant found: ${participant.participantUuid}, Location UUID: ${participant.locationUuid} vs Current Location UUID: $locationUuid")
-            participant.locationUuid == locationUuid
-        }
-    }
 }
