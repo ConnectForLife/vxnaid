@@ -141,6 +141,13 @@
     <string name="participant_registration_details_error_no_home_location">Veuillez sélectionner le lieu du domicile</string>
     <string name="participant_registration_details_error_no_vaccine">Veuillez sélectionner un schéma de vaccination</string>
     <string name="participant_registration_details_error_no_language">Veuillez sélectionner une langue</string>
+    <string name="participant_registration_details_label_date_of_birth">Date de naissance</string>
+    <string name="participant_registration_details_birth_date_hint">Entrez la date de naissance de l\'enfant</string>
+    <string name="participant_registration_add_asterisk" translatable="false">*</string>
+    <string name="participant_registration_details_action_set_birth_date">Définir la date de naissance</string>
+    <string name="participant_registration_details_label_estimated_age">Âge estimé</string>
+    <string name="participant_registration_details_action_set_estimated_age">Définir l\'âge estimé</string>
+    <string name="participant_registration_details_error_birth_date_cannot_be_empty">Remplissez la date de naissance OU l\'âge estimé</string>
     <string name="participant_registration_details_error_participant_already_exists">Ce NIP a déjà été attribué a un autre participant</string>
     <string name="participant_registration_label_success">Participant enrigistré avec succès</string>
     <string name="participant_registration_label_telephone_number_title">Le numéro de téléphone portable est manquant</string>
@@ -250,6 +257,7 @@
     <string name="setup_main_menu_title">Menu de configuration</string>
     <string name="setup_main_menu_error_no_site_selected">Veuillez sélectionner un site avant le transfert P2P</string>
     <string name="setup_p2p_device_role_title">Rôle de périphérique P2P</string>
+    <string name="setup_p2p_select_role">Sélectionnez un rôle d\'appareil</string>
     <string name="setup_p2p_description">Transférez des données entre un appareil à proximité. Les deux appareils doivent être sur le même réseau WIFI.\nSélectionnez un appareil entièrement synchronisé en tant qu\'expéditeur et un appareil non configuré en tant que destinataire.</string>
     <string name="setup_p2p_device_role_sender">Expéditeur</string>
     <string name="setup_p2p_device_role_receiver">Receveur</string>
@@ -279,4 +287,12 @@
     <string name="p2p_client_this_device_out_of_space_error">Cet appareil n\'a plus d\'espace disque</string>
     <string name="p2p_wifi_not_available_error">Non connecté au WIFI. Veuillez vous connecter au WIFI et réessayer.</string>
     <string name="p2p_could_not_send_message_error">Impossible d\'envoyer le message. Veuillez réessayer.</string>
+    <string name="visit_dosing_label_health_zone">Zone de santé</string>
+    <string name="visit_dosing_hint_select_health_zone">Sélectionnez la zone de santé</string>
+    <string name="visit_dosing_hint_other_health_zone">Entrez dans la zone de santé</string>
+    <string name="visit_dosing_label_vaccination_site">Site de vaccination</string>
+    <string name="visit_dosing_hint_select_vaccination_site">Sélectionnez le site de vaccination</string>
+    <string name="visit_dosing_hint_other_vaccination_site">Entrez dans le site de vaccination</string>
+    <string name="visit_dosing_error_no_health_zone">Veuillez sélectionner ou saisir une zone de santé</string>
+    <string name="visit_dosing_error_no_vaccination_site">Veuillez sélectionner ou saisir un site de vaccination</string>
 </resources>

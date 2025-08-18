@@ -74,7 +74,15 @@ class VisitDosingFragment : BaseFragment(),
                 }
         }
 
+        binding.dropdownHealthZone.setOnItemClickListener { _, _, position, _ ->
+            val zone = viewModel.healthZoneList.get()?.get(position) ?: return@setOnItemClickListener
+            viewModel.setSelectedHealthZone(zone)
+        }
 
+        binding.dropdownVaccinationSite.setOnItemClickListener { _, _, position, _ ->
+            val site = viewModel.vaccinationSiteList.get()?.get(position) ?: return@setOnItemClickListener
+            viewModel.setSelectedVaccinationSite(site)
+        }
 
         return binding.root
     }
@@ -86,6 +94,16 @@ class VisitDosingFragment : BaseFragment(),
 
             SharedPreference(context!!).saveManufracterList(viewModel.getManufactuerList())
             SharedPreference(context!!).saveManufracterList(scanviewModel.getManufactuerList())
+        }
+
+        viewModel.healthZoneList.observe(lifecycleOwner) { zones ->
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, zones.orEmpty())
+            binding.dropdownHealthZone.setAdapter(adapter)
+        }
+
+        viewModel.vaccinationSiteList.observe(lifecycleOwner) { sites ->
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, sites.orEmpty())
+            binding.dropdownVaccinationSite.setAdapter(adapter)
         }
 
         viewModel.visitEvents
@@ -100,7 +118,6 @@ class VisitDosingFragment : BaseFragment(),
         viewModel.previousDosingVisits.observe(lifecycleOwner) { visits ->
             binding.linearLayoutVisitHistory.removeAllViews()
             if (visits != null && visits.isNotEmpty()) {
-
                 val v = DataBindingUtil.inflate<ItemVisitHistoryTitleBinding>(layoutInflater, R.layout.item_visit_history_title, binding.linearLayoutVisitHistory, true)
                 v.title = resourcesWrapper.getString(R.string.visit_dosing_title_history)
 

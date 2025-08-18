@@ -32,6 +32,8 @@ object Constants {
     const val VISIT_STATUS_SCHEDULED = "SCHEDULED"
     const val OBSERVATION_TYPE_BARCODE = "Barcode"
     const val OBSERVATION_TYPE_MANUFACTURER = "Vaccine Manufacturer"
+    const val OBSERVATION_HEALTH_ZONE = "INRB_Health Zone"
+    const val OBSERVATION_VACCINATION_SITE = "INRB_Vaccination Site"
 
     // common attributes
     const val ATTRIBUTE_OPERATOR = "operatorUuid"

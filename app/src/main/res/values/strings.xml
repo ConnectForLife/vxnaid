@@ -143,7 +143,7 @@
     <string name="participant_registration_details_label_select_vaccine">Select regimen</string>
     <string name="participant_registration_details_label_language">Language</string>
     <string name="participant_registration_details_label_select_language">Select language</string>
-    <string name="participant_registration_details_belongs_to_program_title">Patient belongs to program</string>
+    <string name="participant_registration_details_belongs_to_program_title">Patient belongs to cohort program</string>
     <string name="participant_registration_details_error_no_participant_id">Please enter a participant ID</string>
     <string name="participant_registration_details_error_invalid_participant_id">Please enter a valid participant ID</string>
     <string name="participant_registration_details_error_not_same_participant_id">Participant ID\'s do not match</string>
@@ -153,7 +153,6 @@
     <string name="participant_registration_details_error_no_home_location">Please select a home location</string>
     <string name="participant_registration_details_error_no_vaccine">Please select a regimen</string>
     <string name="participant_registration_details_error_no_language">Please select a language</string>
-
     <string name="participant_registration_details_label_date_of_birth">Date of birth</string>
     <string name="participant_registration_details_birth_date_hint">Enter the child\'s date of birth</string>
     <string name="participant_registration_add_asterisk" translatable="false">*</string>
@@ -161,7 +160,6 @@
     <string name="participant_registration_details_label_estimated_age">Estimated Age</string>
     <string name="participant_registration_details_action_set_estimated_age">Set estimated age</string>
     <string name="participant_registration_details_error_birth_date_cannot_be_empty">Fill in Date of Birth OR Estimated Age</string>
-
     <string name="participant_registration_details_error_participant_already_exists">A participant with this ID already exists</string>
     <string name="participant_registration_label_success">Participant successfully registered</string>
     <string name="participant_registration_label_telephone_number_title">Missing Mobile Phone Number</string>
@@ -331,4 +329,12 @@
     <string name="p2p_client_this_device_out_of_space_error">This device is out of disk space</string>
     <string name="p2p_wifi_not_available_error">Not connected to WIFI. Please connect to WIFI and try again.</string>
     <string name="p2p_could_not_send_message_error">Could not send message. Please try again.</string>
+    <string name="visit_dosing_label_health_zone">Health Zone</string>
+    <string name="visit_dosing_hint_select_health_zone">Select Health Zone</string>
+    <string name="visit_dosing_hint_other_health_zone">Enter Health Zone</string>
+    <string name="visit_dosing_label_vaccination_site">Vaccination Site</string>
+    <string name="visit_dosing_hint_select_vaccination_site">Select Vaccination Site</string>
+    <string name="visit_dosing_hint_other_vaccination_site">Enter Vaccination Site</string>
+    <string name="visit_dosing_error_no_health_zone">Please select or enter a health zone</string>
+    <string name="visit_dosing_error_no_vaccination_site">Please select or enter a vaccination site</string>
 </resources>

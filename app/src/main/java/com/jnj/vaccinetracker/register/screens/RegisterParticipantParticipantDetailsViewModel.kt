@@ -207,7 +207,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val language: DisplayValue? = language.get()
         val participantId = participantId.get()
         val gender = gender.get()
-//        val yearOfBirth = yearOfBirth.get()
         val birthDate = birthDate.get()
         val isBirthDateEstimated = isBirthDateEstimated.get()
         Log.d("IS BIRTH DATE ESTIMATED", "Is birth date estimated: $isBirthDateEstimated")
@@ -218,7 +217,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantId,
             gender,
             birthDate,
-//            yearOfBirth,
             homeLocation,
             vaccine?.value,
             language?.value
@@ -331,9 +329,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             birthDateValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_birth_date_cannot_be_empty))
         }
 
-//        if (!validateYearOfBirth(yearOfBirth, false)) {
-//            isValid = false
-//        }
 
         if (homeLocation?.isEmpty() != false) {
             isValid = false
@@ -427,24 +422,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             }
         }
     }
-
-//    private fun setBirthDateOrEstimatedAge(birthDate: DateTime?, isBirthDateEstimated: Boolean) {
-//        if (isBirthDateEstimated && birthDate != null) {
-//            val currentDate = DateTime.now()
-//            val daysDifference = (currentDate - birthDate).days.toInt()
-//
-//            val years = daysDifference / 365
-//            val remainingDaysAfterYears = daysDifference % 365
-//            val months = remainingDaysAfterYears / 30
-//            val remainingDaysAfterMonths = remainingDaysAfterYears % 30
-//            val weeks = remainingDaysAfterMonths / 7
-//
-//            setEstimatedAgeText(years, months, weeks)
-//            setBirthDateBasedOnEstimatedBirthdate(birthDate)
-//        } else {
-//            setBirthDate(birthDate)
-//        }
-//    }
 
     fun setBirthDate(birthDate: DateTime?) {
         this.birthDate.set(birthDate)

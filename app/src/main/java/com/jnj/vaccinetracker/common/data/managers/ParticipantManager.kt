@@ -78,7 +78,6 @@ class ParticipantManager @Inject constructor(
         gender: Gender,
         birthDate: DateTime,
         isBirthDateEstimated: Boolean,
-//        yearOfBirth: String,
         telephone: String?,
         siteUuid: String,
         language: String,
@@ -104,7 +103,6 @@ class ParticipantManager @Inject constructor(
         val request = RegisterParticipant(
             participantId = participantId,
             gender = gender,
-//            birthdate = BirthDate.yearOfBirth(yearOfBirth),
             birthdate = BirthDate(birthDate.unixMillisLong),
             isBirthDateEstimated = isBirthDateEstimated,
             address = address,
