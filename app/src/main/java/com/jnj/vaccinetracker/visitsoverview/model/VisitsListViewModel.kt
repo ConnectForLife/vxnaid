@@ -47,18 +47,25 @@ class VisitsListViewModel @Inject constructor(
             val tomorrowMidnight = addDaysToDate(todayMidnight, 1)
 
             val scheduledVisits = visitRepository.getScheduledVisits(todayMidnight, Constants.VISIT_STATUS_SCHEDULED, currentLocationUuid)
+            val uniqueScheduledVisits = scheduledVisits
+                .groupBy { it.participantUuid }
+                .map { (_, visits) ->
+                    visits
+                        .sortedWith(compareByDescending<Visit> { it.startDatetime.time }.thenByDescending { it.visitType != null })
+                        .first()
+                }
+
             val draftVisits = draftVisitRepository.findVisitsAfterDate(tomorrowMidnight)
-            val convertedDraftVisits = draftVisits.map { draftVisit -> convertDraftVisitToVisitOffline(draftVisit) }
+            val convertedDraftVisits = draftVisits.map { convertDraftVisitToVisitOffline(it) }
 
             val draftVisitParticipantIds = convertedDraftVisits.map { it.participantUuid }.toSet()
-            val filteredScheduledVisits = scheduledVisits.filter { scheduledVisit -> !draftVisitParticipantIds.contains(scheduledVisit.participantUuid) }
+            val filteredScheduledVisits = uniqueScheduledVisits.filter { scheduledVisit -> !draftVisitParticipantIds.contains(scheduledVisit.participantUuid)}
 
             val combinedScheduledVisits = convertedDraftVisits + filteredScheduledVisits
             visitDTOs.value = createVisitDTOList(combinedScheduledVisits)
             isLoading.value = false
         }
     }
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun getHistoricalVisitsData() {
         isLoading.value = true
