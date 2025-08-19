@@ -380,7 +380,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
         val areInputsValid = validateInputs(participantId, gender, birthDate, homeLocation,
             motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName,
-            childLastName, childNumber)
+            childLastName, childNumber, birthWeight)
         val isNinValid = isNinValueValid(nin)
 
         var phoneNumberToSubmit: String? = null
@@ -581,7 +581,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         fatherLastName: String?,
         childFirstName: String?,
         childLastName: String?,
-        childNumber: String?
+        childNumber: String?,
+        birthWeight: String?
     ): Boolean {
         var isValid = true
         val validationErrors: MutableList<String> = mutableListOf()
@@ -616,6 +617,22 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             }
         }
 
+        addValidationError(
+            !birthWeight.isNullOrEmpty(),
+            R.string.participant_registration_details_error_invalid_birth_weight,
+            birthWeightValidationMessage
+        )
+
+        if (!birthWeight.isNullOrEmpty()) {
+            val weight = birthWeight.toDoubleOrNull()
+            if (weight == null || weight < 0.1 || weight > 8.0) {
+                addValidationError(
+                    false,
+                    R.string.participant_registration_details_error_invalid_birth_weight,
+                    birthWeightValidationMessage
+                )
+            }
+        }
 
         addValidationError(!childNumber.isNullOrEmpty(), R.string.participant_registration_details_error_no_child_number, childNumberValidationMessage)
 
