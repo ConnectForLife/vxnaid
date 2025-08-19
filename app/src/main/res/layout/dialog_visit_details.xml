@@ -161,11 +161,27 @@
 
         </TableLayout>
 
-        <Button
-            android:id="@+id/close_button"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/visits_overview_details_close_button_label" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/close_button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/visits_overview_details_close_button_label" />
+
+            <Button
+                android:id="@+id/child_details_button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/visits_overview_details_edit_button_label" />
+        </LinearLayout>
     </LinearLayout>
 </layout>

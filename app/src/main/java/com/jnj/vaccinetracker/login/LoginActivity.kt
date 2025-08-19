@@ -2,12 +2,17 @@ package com.jnj.vaccinetracker.login
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.textfield.TextInputEditText
@@ -45,7 +50,9 @@ class LoginActivity : BaseActivity() {
     private val viewModel: LoginViewModel by viewModels { viewModelFactory }
 
     private lateinit var binding: ActivityLoginBinding
+    private var selectedVisitPlace: String? = null
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
@@ -65,6 +72,10 @@ class LoginActivity : BaseActivity() {
 
         val textInputPasswordLayout = findViewById<TextInputLayout>(R.id.textInputPassword)
         val editPassword = findViewById<TextInputEditText>(R.id.edit_password)
+        val textInputOutreachName = findViewById<TextInputLayout>(R.id.textInputOutreachName)
+        val visitPlaceIcon = findViewById<ImageView>(R.id.img_location_name)
+        textInputOutreachName.visibility = View.GONE
+        visitPlaceIcon.visibility = View.GONE
 
         textInputPasswordLayout.setEndIconOnClickListener {
             if (editPassword.inputType == (android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
@@ -87,6 +98,17 @@ class LoginActivity : BaseActivity() {
             visitPlaces
         )
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
+        binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
+            selectedVisitPlace = visitPlaces[position]
+            Log.e("Selected Visit Place", "Selected Visit Place: $selectedVisitPlace")
+            if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
+                textInputOutreachName.visibility = View.VISIBLE
+                visitPlaceIcon.visibility = View.VISIBLE
+            } else {
+                textInputOutreachName.visibility = View.GONE
+                visitPlaceIcon.visibility = View.GONE
+            }
+        }
 
         binding.root.setOnClickListener { hideKeyboard() }
         binding.btnUpdate.setOnClickListener { showUpdateDialog() }
@@ -99,6 +121,7 @@ class LoginActivity : BaseActivity() {
     override val isAuthenticatedOperatorScreen: Boolean
         get() = false
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun observeViewModel(lifecycleOwner: LifecycleOwner) {
         viewModel.loginCompleted
             .asFlow()
@@ -144,19 +167,27 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
-        saveVisitPlaceToMemory(visitPlace)
-        viewModel.login(username, password, visitPlace)
+        val outreachName = binding.editOutreachName.text.toString().uppercase()
+        if((selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isEmpty())){
+            binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
+        } else {
+            val defaultOutreachName = outreachName.ifEmpty { "No Outreach" }
+            saveVisitPlaceToMemory(visitPlace, defaultOutreachName)
+            viewModel.login(username, password, visitPlace)
+        }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onLoginCompleted() {
         startActivity(ParticipantFlowActivity.create(this))
         finish()
     }
 
-    private fun saveVisitPlaceToMemory(visitPlace: String) {
+    private fun saveVisitPlaceToMemory(visitPlace: String, outreachName: String) {
         val sharedPreferences = getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString(Constants.VISIT_PLACE_FILE_KEY, visitPlace)
+        editor.putString(Constants.OUTREACH_NAME, outreachName)
         editor.apply()
     }
 }

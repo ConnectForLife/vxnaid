@@ -5,6 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.collection.ArrayMap
+import androidx.lifecycle.MutableLiveData
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.helpers.AndroidFiles
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -63,6 +64,7 @@ class ParticipantFlowViewModel @Inject constructor(
     val site = mutableLiveData<SiteUiModel>()
     val operator = mutableLiveData<String>()
     val errorMessage = mutableLiveData<String>()
+    val outreachName = MutableLiveData<String>("")
 
     //id variables
     val participantId = mutableLiveData<String>()
@@ -398,6 +400,14 @@ class ParticipantFlowViewModel @Inject constructor(
         irisIndexes.clear()
         irisScans.clear()
         tempTemplateFile.delete()
+    }
+
+    fun setOutreachName(visitPlace: String, outreachName: String?) {
+        if (visitPlace == Constants.VISIT_PLACE_OUTREACH && !outreachName.isNullOrBlank()) {
+            this.outreachName.value = outreachName
+        } else {
+            this.outreachName.value = ""
+        }
     }
 
     enum class WorkflowItem(val type: String, var mandatory: Boolean) {

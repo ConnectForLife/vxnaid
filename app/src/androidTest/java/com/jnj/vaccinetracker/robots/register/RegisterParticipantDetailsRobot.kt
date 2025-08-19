@@ -21,6 +21,7 @@ class RegisterParticipantDetailsRobot : BaseRobot() {
         val resId = when (gender) {
             Gender.MALE -> R.id.rb_gender_male
             Gender.FEMALE -> R.id.rb_gender_female
+            else -> throw IllegalArgumentException("Unsupported gender: $gender")
         }
         click on withId(resId)
     }

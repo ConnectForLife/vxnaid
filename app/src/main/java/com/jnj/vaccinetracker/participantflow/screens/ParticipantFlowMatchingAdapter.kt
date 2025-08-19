@@ -13,7 +13,7 @@ import com.jnj.vaccinetracker.databinding.ItemParticipantMatchingSubtitleBinding
  * @author maartenvangiel
  * @version 1
  */
-class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (ParticipantFlowMatchingViewModel.MatchingListItem) -> Unit) :
+class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (ParticipantFlowMatchingViewModel.MatchingListItem?) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private companion object {
@@ -27,6 +27,7 @@ class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (Particip
 
     fun updateItems(items: List<ParticipantFlowMatchingViewModel.MatchingListItem>) {
         this.items = items
+        selectedPosition = null
         notifyDataSetChanged()
     }
 
@@ -62,10 +63,18 @@ class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (Particip
 
     private fun onParticipantItemClicked(adapterPosition: Int) {
         val previousSelection = selectedPosition
-        selectedPosition = adapterPosition
-        previousSelection?.let { notifyItemChanged(it) }
-        notifyItemChanged(adapterPosition)
-        itemSelectedListener(items[adapterPosition])
+        if (selectedPosition == adapterPosition) {
+            // Deselect the currently selected item
+            selectedPosition = null
+            previousSelection?.let { notifyItemChanged(it) }
+            itemSelectedListener(null)
+        } else {
+            // Select the new item
+            selectedPosition = adapterPosition
+            previousSelection?.let { notifyItemChanged(it) }
+            notifyItemChanged(adapterPosition)
+            itemSelectedListener(items[adapterPosition])
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -114,5 +123,4 @@ class ParticipantFlowMatchingAdapter(private val itemSelectedListener: (Particip
             binding.executePendingBindings()
         }
     }
-
 }

@@ -53,7 +53,6 @@ class ParticipantRepository @Inject constructor(
             .withBirthWeight(birthWeight),
         biometricsTemplate = templateFile,
         image = imageFile,
-        registrationDate = dateModified,
     )
 
     private fun Participant.toPersistence() = ParticipantEntity(
@@ -109,14 +108,21 @@ class ParticipantRepository @Inject constructor(
     }
 
     override suspend fun findByParticipantUuid(participantUuid: String): Participant? = participantDao.findByParticipantUuid(participantUuid)?.toDomain()
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<Participant> = participantDao.findByParticipantUuids(participantUuids).map { it.toDomain() }
 
     override suspend fun insert(model: Participant, orReplace: Boolean) = transactionRunner.withTransaction {
         try {
             if (orReplace) {
-                //we assume due to foreign keys, the related child rows will be deleted as well
-                val isDeleted = participantDao.deleteByParticipantUuid(model.participantUuid) > 0
-                if (isDeleted) {
-                    logInfo("deleted participant for replace ${model.participantUuid}")
+                val isDeletedByUuid = participantDao.deleteByParticipantUuid(model.participantUuid) > 0
+                val isDeletedById = participantDao.findByParticipantId(model.participantId)?.let {
+                    if (it.participantUuid != model.participantUuid) {
+                        participantDao.deleteByParticipantUuid(it.participantUuid) > 0
+                    } else {
+                        false
+                    }
+                } ?: false
+                if (isDeletedByUuid || isDeletedById) {
+                    logInfo("deleted participant for replace ${model.participantUuid} or participantId ${model.participantId}")
                 }
             }
 
@@ -161,5 +167,9 @@ class ParticipantRepository @Inject constructor(
 
     suspend fun findPatients(): List<RoomParticipantModel> {
         return participantDao.findAllPatients()
+    }
+
+    suspend fun findAllParticipants(locationUuid: String?): List<RoomParticipantModel> {
+        return participantDao.findAllParticipants(locationUuid)
     }
 }

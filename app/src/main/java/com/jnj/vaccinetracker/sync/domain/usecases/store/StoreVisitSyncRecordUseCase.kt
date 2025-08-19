@@ -7,7 +7,7 @@ import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.transaction.ParticipantDbTransactionRunner
 import com.jnj.vaccinetracker.common.domain.entities.DraftState
 import com.jnj.vaccinetracker.common.domain.entities.Visit
-import com.jnj.vaccinetracker.common.helpers.logInfo
+import com.jnj.vaccinetracker.common.helpers.logVerbose
 import com.jnj.vaccinetracker.sync.data.models.VisitSyncRecord
 import com.jnj.vaccinetracker.sync.data.models.VisitSyncRecord.Delete.Companion.toDomain
 import com.jnj.vaccinetracker.sync.data.models.VisitSyncRecord.Update.Companion.toDomain
@@ -37,7 +37,7 @@ class StoreVisitSyncRecordUseCase @Inject constructor(
 
     private suspend fun onInsertSuccess(visit: Visit) {
         val visitUuid = visit.visitUuid
-        logInfo("onInsertSuccess: $visitUuid")
+        logVerbose("onInsertSuccess: $visitUuid")
 
         deleteUploadedDraftVisit(visit)
         deleteUploadedDraftVisitEncounter(visit)
@@ -64,18 +64,18 @@ class StoreVisitSyncRecordUseCase @Inject constructor(
         val draftState = draftVisitRepository.findDraftStateByVisitUuid(visitUuid = visitUuid)
         suspend fun deleteVisit() {
             val isRecordDeleted = draftVisitRepository.deleteByVisitUuid(visitUuid)
-            logInfo("delete draft visit [draftState:$draftState, isRecordDeleted:$isRecordDeleted]")
+            logVerbose("delete draft visit [draftState:$draftState, isRecordDeleted:$isRecordDeleted]")
         }
         when (draftState) {
             DraftState.UPLOADED -> {
                 deleteVisit()
             }
             DraftState.UPLOAD_PENDING -> {
-                logInfo("Matching visit with local draft visit")
+                logVerbose("Matching visit with local draft visit")
                 val draftVisit = draftVisitRepository.findByVisitUuid(visitUuid)
                 if (draftVisit != null) {
                     if (draftVisit.participantUuid == visit.participantUuid) {
-                        logInfo("Remote visit is matched to local visit")
+                        logVerbose("Remote visit is matched to local visit")
                         deleteVisit()
                         val syncError = SyncErrorMetadata.UploadParticipantPendingCall(
                             ParticipantPendingCall.Type.CREATE_VISIT,
@@ -86,13 +86,13 @@ class StoreVisitSyncRecordUseCase @Inject constructor(
                         )
                         syncLogger.clearSyncError(syncError)
                     } else {
-                        logInfo("Remote visit not matching")
+                        logVerbose("Remote visit not matching")
                     }
                 } else {
-                    logInfo("draft visit is null $visitUuid")
+                    logVerbose("draft visit is null $visitUuid")
                 }
             }
-            null -> logInfo("nothing deleted for visit $visitUuid [$draftState]")
+            null -> logVerbose("nothing deleted for visit $visitUuid [$draftState]")
         }.let { }
     }
 
@@ -101,14 +101,14 @@ class StoreVisitSyncRecordUseCase @Inject constructor(
         val draftState = draftVisitEncounterRepository.findDraftStateByVisitUuid(visitUuid = visitUuid)
         suspend fun deleteEncounter() {
             val isRecordDeleted = draftVisitEncounterRepository.deleteByVisitUuid(visitUuid)
-            logInfo("delete draft encounter [draftState:$draftState, isRecordDeleted:$isRecordDeleted]")
+            logVerbose("delete draft encounter [draftState:$draftState, isRecordDeleted:$isRecordDeleted]")
         }
         when (draftState) {
             DraftState.UPLOADED -> {
                 deleteEncounter()
             }
             DraftState.UPLOAD_PENDING -> {
-                logInfo("Matching encounter with local draft encounter")
+                logVerbose("Matching encounter with local draft encounter")
                 val draftVisitEncounter = draftVisitEncounterRepository.findByVisitUuid(visitUuid)
 
                 if (draftVisitEncounter != null) {
@@ -119,7 +119,7 @@ class StoreVisitSyncRecordUseCase @Inject constructor(
                     val listDifference = visitEncounters - draftEncounters.toSet()
 
                     if (listDifference.isEmpty() && isSameParticipantUuid) {
-                        logInfo("Remote encounter is matched to local encounter")
+                        logVerbose("Remote encounter is matched to local encounter")
                         deleteEncounter()
                         val syncError = SyncErrorMetadata.UploadParticipantPendingCall(
                             ParticipantPendingCall.Type.UPDATE_VISIT,
@@ -130,13 +130,13 @@ class StoreVisitSyncRecordUseCase @Inject constructor(
                         )
                         syncLogger.clearSyncError(syncError)
                     } else {
-                        logInfo("Remote encounter not matching")
+                        logVerbose("Remote encounter not matching")
                     }
                 } else {
-                    logInfo("draftVisitEncounter is null $visitUuid")
+                    logVerbose("draftVisitEncounter is null $visitUuid")
                 }
             }
-            null -> logInfo("nothing deleted for encounter $visitUuid [$draftState]")
+            null -> logVerbose("nothing deleted for encounter $visitUuid [$draftState]")
         }.let { }
     }
 

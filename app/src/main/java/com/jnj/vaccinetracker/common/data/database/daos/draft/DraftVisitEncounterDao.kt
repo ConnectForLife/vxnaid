@@ -51,6 +51,16 @@ interface DraftVisitEncounterDao : DraftVisitDaoBase<DraftVisitEncounterEntity, 
     @Transaction
     override suspend fun findVisitsBeforeDate(date: DateEntity): List<RoomDraftVisitEncounterModel>
 
+    @Query("SELECT v.* " +
+            "FROM draft_visit_encounter v " +
+            "INNER JOIN draft_visit_encounter_attribute va ON v.visitUuid = va.visitUuid AND va.type = 'Visit Status' " +
+            "WHERE v.startDatetime <= :date AND va.value = :visitStatus ORDER BY v.startDatetime DESC")
+    @Transaction
+    override suspend fun findVisitsBeforeDate(
+        date: DateEntity,
+        visitStatus: String
+    ): List<RoomDraftVisitEncounterModel>
+
     @Query("select * from draft_visit_encounter where draftState=:draftState LIMIT 1")
     @Transaction
     suspend fun findFirstByDraftState(draftState: DraftState): RoomDraftVisitEncounterModel?

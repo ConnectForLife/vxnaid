@@ -8,11 +8,13 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.helpers.logWarn
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.ActivityVisitOverviewFlowBinding
+import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
 import com.jnj.vaccinetracker.visitsoverview.screens.VisitsOverviewFragment
 
@@ -60,12 +62,16 @@ class VisitsOverviewFlowActivity : BaseActivity() {
             }
 
             val transaction = supportFragmentManager.beginTransaction()
-
             transaction.animateNavigationDirection(navigationDirection)
-
-            transaction
-                .replace(R.id.fragment_container, newFragment)
-                .commit()
+            transaction.replace(R.id.fragment_container, newFragment).commit()
         }
+    }
+
+    fun goToRegisteredParticipant(childID: String) {
+        val intent = Intent(this, ParticipantFlowActivity::class.java)
+        intent.putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
+        intent.putExtra(Constants.PARTICIPANT_MATCH_ID, childID)
+        startActivity(intent)
+        finish()
     }
 }

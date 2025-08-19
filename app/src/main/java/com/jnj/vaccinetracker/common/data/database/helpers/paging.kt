@@ -21,7 +21,6 @@ suspend fun <T> pagingQuery(
     onPageResult: suspend (pageResults: List<T>) -> Unit,
 ) {
     val page = if (offset > 0) offset / pageSize + 1 else 1
-    Unit.logInfo("pagingQuery $page")
     val results = queryFunction(offset, pageSize)
     if (results.isEmpty())
         return

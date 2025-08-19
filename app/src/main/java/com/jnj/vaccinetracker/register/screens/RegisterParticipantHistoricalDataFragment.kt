@@ -30,6 +30,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowViewModel
 import com.jnj.vaccinetracker.register.dialogs.MultipleVisitsDialog
+import com.jnj.vaccinetracker.register.dialogs.PastVisitDateAlertDialog
 import com.jnj.vaccinetracker.register.dialogs.RegisterParticipantSuccessfulDialog
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -55,27 +56,40 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
    }
 
    override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
+       inflater: LayoutInflater,
+       container: ViewGroup?,
+       savedInstanceState: Bundle?
    ): View {
-      binding = DataBindingUtil.inflate(
-         inflater,
-         R.layout.fragment_register_historical_visits,
-         container,
-         false
-      )
-      binding.apply {
-         viewModel = this@RegisterParticipantHistoricalDataFragment.viewModel
-         lifecycleOwner = viewLifecycleOwner
-         flowViewModel = this@RegisterParticipantHistoricalDataFragment.flowViewModel
-      }
-      viewModel.setArguments(flowViewModel.registerParticipant.value, flowViewModel.participant.value)
-      binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
+       binding = DataBindingUtil.inflate(
+           inflater,
+           R.layout.fragment_register_historical_visits,
+           container,
+           false
+       )
+       binding.apply {
+           viewModel = this@RegisterParticipantHistoricalDataFragment.viewModel
+           lifecycleOwner = viewLifecycleOwner
+           flowViewModel = this@RegisterParticipantHistoricalDataFragment.flowViewModel
+       }
+       viewModel.setArguments(flowViewModel.registerParticipant.value, flowViewModel.participant.value)
+       binding.root.setOnClickListener { activity?.currentFocus?.hideKeyboard() }
 
-      setupClickListeners()
+       setupClickListeners()
 
-      return binding.root
+       viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+           if (!message.isNullOrEmpty()) {
+             val dialog = PastVisitDateAlertDialog.newInstance(
+                 title = getString(R.string.past_visit_date_error_title),
+                 message = message,
+                 buttonLabel = getString(R.string.past_visit_date_ok)
+             ) {
+               viewModel.clearErrorMessage()
+             }
+             dialog.show(parentFragmentManager, "PastVisitDateAlertDialog")
+         }
+       }
+
+       return binding.root
    }
 
    override fun observeViewModel(lifecycleOwner: LifecycleOwner) {

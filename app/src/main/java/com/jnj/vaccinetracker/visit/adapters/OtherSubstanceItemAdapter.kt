@@ -159,17 +159,17 @@ class OtherSubstanceItemAdapter(
 
         //Validate Weight for At Birth visit
         if (otherSubstance.visitType == Constants.AT_BIRTH_VISIT_TYPE) {
-            if (weightInKilograms < 2.0 || weightInKilograms > 8.0) {
-                holder?.inputEditText?.error = "Value cannot be less than 2 and greater than 8"
-                errorList.add("Value of $label cannot be less than 2 and greater than 8")
+            if (weightInKilograms < 0.1 || weightInKilograms > 8.0) {
+                holder?.inputEditText?.error = "Value cannot be less than 0.1 and greater than 8"
+                errorList.add("Value of $label cannot be less than 0.1 and greater than 8")
             } else {
                 holder?.inputEditText?.error = null
             }
         //Validate Weight for Six Weeks visit
         } else if (otherSubstance.visitType == Constants.SIX_WEEKS_VISIT_TYPE) {
-            if (weightInKilograms < 2.0) {
-                holder?.inputEditText?.error = "Value cannot be less than 2"
-                errorList.add("Value of $label cannot be less than 2")
+            if (weightInKilograms < 1.5) {
+                holder?.inputEditText?.error = "Value cannot be less than 1.5"
+                errorList.add("Value of $label cannot be less than 1.5")
             } else if (weightInKilograms > 30.0) {
                 holder?.inputEditText?.error = "Value cannot be greater than 30"
                 errorList.add("Value of $label cannot be greater than 30")
@@ -178,9 +178,9 @@ class OtherSubstanceItemAdapter(
             }
         //Validate Weight for any other visits
         } else {
-            if (weightInKilograms < 2.0 || weightInKilograms > 30.0) {
-                holder?.inputEditText?.error = "Value cannot be less than 2 and greater than 30"
-                errorList.add("Value of $label cannot be less than 2 and greater than 30")
+            if (weightInKilograms < 1.5 || weightInKilograms > 30.0) {
+                holder?.inputEditText?.error = "Value cannot be less than 1.5 and greater than 30"
+                errorList.add("Value of $label cannot be less than 1.5 and greater than 30")
             } else {
                 holder?.inputEditText?.error = null
             }

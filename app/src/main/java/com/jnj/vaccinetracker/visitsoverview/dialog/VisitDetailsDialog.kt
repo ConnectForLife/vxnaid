@@ -1,15 +1,18 @@
 package com.jnj.vaccinetracker.visitsoverview.dialog
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogVisitDetailsBinding
+import com.jnj.vaccinetracker.visitsoverview.activity.VisitsOverviewFlowActivity
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDetailsDTO
 
 class VisitDetailsDialog : BaseDialogFragment() {
@@ -18,6 +21,7 @@ class VisitDetailsDialog : BaseDialogFragment() {
     private lateinit var visitDetails: VisitDetailsDTO
     private lateinit var visitKey: String
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,7 +37,13 @@ class VisitDetailsDialog : BaseDialogFragment() {
         setupLabels()
         binding.visitDetails = visitDetails
         binding.closeButton.setOnClickListener { dismissAllowingStateLoss() }
-
+        binding.childDetailsButton.setOnClickListener {
+            val childId = visitDetails.clientID
+            if (!childId.isNullOrBlank()) {
+                (activity as? VisitsOverviewFlowActivity)?.goToRegisteredParticipant(childId)
+                dismissAllowingStateLoss()
+            }
+        }
         return binding.root
     }
 

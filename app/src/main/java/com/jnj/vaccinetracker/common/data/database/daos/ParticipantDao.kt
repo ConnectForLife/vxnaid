@@ -23,12 +23,18 @@ interface ParticipantDao : ParticipantDaoBase<ParticipantEntity, RoomParticipant
     @Transaction
     override suspend fun findByParticipantUuid(participantUuid: String): RoomParticipantModel?
 
+    @Query("select * from participant left join participant_address using (participantUuid) where participantUuid in (:participantUuids)")
+    @Transaction
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<RoomParticipantModel>
+
     @Query("select * from participant left join participant_address using (participantUuid) where participantId=:participantId")
     @Transaction
     override suspend fun findByParticipantId(participantId: String): RoomParticipantModel?
 
-    @Query("select * from participant left join participant_address using (participantUuid) " +
-            "where motherFirstName like '%' || :motherName || '%' OR motherLastName like '%' || :motherName || '%' OR (motherFirstName || ' ' || motherLastName) like '%' || :motherName || '%'")
+    @Query("""select * from participant left join participant_address using (participantUuid) where lower(motherFirstName) like '%' || lower(:motherName) || '%' 
+            or lower(motherLastName) like '%' || lower(:motherName) || '%' 
+            or lower(motherFirstName || ' ' || motherLastName) like '%' || lower(:motherName) || '%'
+            or lower(motherLastName || ' ' || motherFirstName) like '%' || lower(:motherName) || '%'""")
     @Transaction
     override suspend fun findAllByMotherName(motherName: String?): List<RoomParticipantModel>
 
@@ -59,6 +65,10 @@ interface ParticipantDao : ParticipantDaoBase<ParticipantEntity, RoomParticipant
     @Query("select * from participant")
     @Transaction
     suspend fun findAllPatients(): List<RoomParticipantModel>
+
+    @Query("select * from participant where locationUuid=:locationUuid")
+    @Transaction
+    suspend fun findAllParticipants(locationUuid: String?): List<RoomParticipantModel>
 }
 
 @Dao

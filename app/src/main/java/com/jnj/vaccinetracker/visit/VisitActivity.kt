@@ -26,6 +26,8 @@ import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.ActivityVisitBinding
+import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
+import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.dialogs.VaccineDialog
 import com.jnj.vaccinetracker.visit.dialog.DialogScheduleMissingSubstances
@@ -75,6 +77,7 @@ class VisitActivity :
     private val participantArg: ParticipantSummaryUiModel by lazy { intent.getParcelableExtra(EXTRA_PARTICIPANT)!! }
     private val newRegisteredParticipantArg: Boolean by lazy { intent.getBooleanExtra(EXTRA_TYPE, false) }
     private val viewModel: VisitViewModel by viewModels { viewModelFactory }
+    private val participantViewModel: ParticipantFlowViewModel by viewModels { viewModelFactory }
     private val scanModel:ScanBarcodeViewModel by viewModels{ viewModelFactory }
     private lateinit var binding: ActivityVisitBinding
     private var isFirstTab = true
@@ -111,16 +114,16 @@ class VisitActivity :
             onSubmit()
         }
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-          override fun onTabSelected(tab: TabLayout.Tab) {
-            makeSubmitBtnVisible()
-            isFirstTab = (tab.position == 0)
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                makeSubmitBtnVisible()
+                isFirstTab = (tab.position == 0)
 
-            if (isFirstTab) {
-                makeAddVaccineButtonInvisible()
-            } else {
-                makeAddVaccineButtonVisible()
+                if (isFirstTab) {
+                    makeAddVaccineButtonInvisible()
+                } else {
+                    makeAddVaccineButtonVisible()
+                }
             }
-        }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
                 // Optional: Handle tab unselected logic here
@@ -322,7 +325,12 @@ class VisitActivity :
                 Constants.VISIT_PLACE_FILE_KEY,
                 Constants.VISIT_PLACE_STATIC
             )
-        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations)
+        val outreachName =
+            getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE).getString(
+                Constants.OUTREACH_NAME,
+                Constants.VISIT_PLACE_OUTREACH
+            )
+        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations, outreachName)
     }
 
     override fun onReferralAfterContraindicationsPageFinish(finish: Boolean, referralObservations: Map<String, String>) {
@@ -363,7 +371,7 @@ class VisitActivity :
         when {
             currentFragment is ContraindicationsFragment && currentFragment.isVisible -> {
                 // When in ContraindicationsFragment, launch ParticipantFlowActivity
-                goToMatchParticipantFragment()
+                goToRegisteredParticipant()
             }
             currentFragment is ReferralFragment && currentFragment.isVisible -> {
                 handleReferralFragmentBackPress(currentFragment)
@@ -376,6 +384,15 @@ class VisitActivity :
     }
 
     private fun goToMatchParticipantFragment() {
+        finish()
+    }
+
+    private fun goToRegisteredParticipant() {
+        val intent = Intent(this, ParticipantFlowActivity::class.java)
+        val participantId = viewModel.participant.value?.participantId
+        intent.putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
+        intent.putExtra(Constants.PARTICIPANT_MATCH_ID, participantId)
+        startActivity(intent)
         finish()
     }
 

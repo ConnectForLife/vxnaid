@@ -3,35 +3,43 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/img_header"
+        <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
+            android:layout_height="wrap_content"
             android:background="@color/alertLight"
-            android:src="@drawable/ic_checkmark_alert"
-            app:tint="@color/colorTextOnPrimary"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imageView_info"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                android:gravity="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_checkmark_alert"
+                app:tint="@color/colorTextOnPrimary" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/textView_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:gravity="center_horizontal"
-            android:text="@string/visit_dosing_warning_out_of_time_window_title"
+            android:text="@string/medical_worker_follow_dates_title"
             android:textAppearance="@style/PopupTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/img_header" />
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
 
         <TextView
             android:id="@+id/textView_description"
@@ -40,45 +48,27 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="@string/visit_dosing_warning_out_of_time_window_description"
-            android:textAppearance="@style/GeneralText"
+            android:text="@string/medical_worker_follow_dates_message"
             android:textAlignment="center"
-            android:textColor="@color/colorTextOnLight"
+            android:textAppearance="@style/GeneralText"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView_title" />
 
         <Button
-            android:id="@+id/btn_confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/alertLight"
-            android:textAppearance="@style/ButtonTextStyling"
-            android:text="@string/general_label_confirm"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_cancel"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_cancel"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <Button
-            android:id="@+id/btn_cancel"
+            android:id="@+id/btn_continue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/colorPrimary"
             android:textAppearance="@style/ButtonTextStyling"
-            android:text="@string/general_label_cancel"
+            android:text="@string/continue_button_label"
             android:textColor="@color/colorTextOnSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_confirm"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView_description" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

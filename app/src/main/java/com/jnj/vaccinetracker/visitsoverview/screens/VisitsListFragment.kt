@@ -33,6 +33,7 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import com.soywiz.klock.days
 import java.time.ZoneId
 import java.util.Locale
 import javax.inject.Inject
@@ -62,7 +63,6 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     ): View {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_list, container, false)
-
         setupRecyclerView()
         loadVisitsData()
         setupObservers()
@@ -101,9 +101,19 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
 
     private fun loadVisitsData() {
         when (visitsKey) {
-            Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> visitsListViewModel.getScheduledVisitsData()
-            Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> visitsListViewModel.getHistoricalVisitsData()
-            Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> visitsListViewModel.getMissedVisitsData()
+            Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY -> {
+                setDateLabelsAndLoadData { visitsListViewModel.getScheduledVisitsData() }
+            }
+            Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY -> {
+                setDateLabelsAndLoadData { visitsListViewModel.getHistoricalVisitsData() }
+            }
+            Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> {
+                selectedStartDate = DateTime.now() - 1.days
+                selectedEndDate = DateTime.now() - 1.days
+                binding.labelStartDate.text = formatDate(selectedStartDate)
+                binding.labelEndDate.text = formatDate(selectedEndDate)
+                visitsListViewModel.getMissedVisitsData()
+            }
         }
     }
 
@@ -117,6 +127,14 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
         visitsListViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading == true) View.VISIBLE else View.GONE
         }
+    }
+
+    private fun setDateLabelsAndLoadData(loadData: () -> Unit) {
+        selectedStartDate = DateTime.now()
+        selectedEndDate = DateTime.now()
+        binding.labelStartDate.text = formatDate(selectedStartDate)
+        binding.labelEndDate.text = formatDate(selectedEndDate)
+        loadData()
     }
 
     private fun setupFilterButtons() {

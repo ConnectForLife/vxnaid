@@ -12,6 +12,7 @@ interface VisitDaoCommon<E, M> : DaoBase<E> {
     suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String): List<@JvmSuppressWildcards M>
     suspend fun findVisitsAfterDate(date: DateEntity): List<@JvmSuppressWildcards M>
     suspend fun findVisitsBeforeDate(date: DateEntity): List<@JvmSuppressWildcards M>
+    suspend fun findVisitsBeforeDate(date: DateEntity, visitStatus: String): List<@JvmSuppressWildcards M>
     suspend fun delete(deleteVisitModel: RoomDeleteVisitModel): Int
 }
 

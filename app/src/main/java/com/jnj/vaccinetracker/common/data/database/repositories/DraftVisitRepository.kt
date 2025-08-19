@@ -80,6 +80,12 @@ class DraftVisitRepository @Inject constructor(
 
     override suspend fun findVisitsBeforeDate(date: DateEntity): List<DraftVisit> = draftVisitDao.findVisitsBeforeDate(date).map { it.toDomain() }
 
+    override suspend fun findVisitsBeforeDate(
+        date: DateEntity,
+        visitStatus: String
+    ): List<DraftVisit> =
+        draftVisitDao.findVisitsBeforeDate(date, visitStatus).map { it.toDomain() }
+
     override suspend fun insert(model: DraftVisit, orReplace: Boolean) = transactionRunner.withTransaction {
         try {
             if (orReplace) {

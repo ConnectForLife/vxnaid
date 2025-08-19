@@ -1,6 +1,5 @@
 package com.jnj.vaccinetracker.common.data.database.repositories
 
-
 import com.jnj.vaccinetracker.common.data.database.daos.VisitAttributeDao
 import com.jnj.vaccinetracker.common.data.database.daos.VisitDao
 import com.jnj.vaccinetracker.common.data.database.daos.VisitObservationDao
@@ -21,7 +20,7 @@ import com.jnj.vaccinetracker.common.domain.entities.DateModifiedOccurrence
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.exceptions.InsertEntityException
 import com.jnj.vaccinetracker.common.helpers.logDebug
-import com.jnj.vaccinetracker.common.helpers.logInfo
+import com.jnj.vaccinetracker.common.helpers.logVerbose
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.yield
@@ -73,6 +72,30 @@ class VisitRepository @Inject constructor(
         return visitDao.findVisitsBeforeDate(date).map { it.toDomain() }
     }
 
+    override suspend fun findVisitsBeforeDate(date: DateEntity, visitStatus: String): List<Visit> {
+        return visitDao.findVisitsBeforeDate(date, visitStatus).map { it.toDomain() }
+    }
+
+    suspend fun getMissedVisits(date: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
+        return visitDao.getMissedVisits(date, visitStatus, locationUuid).map { it.toDomain() }
+    }
+
+    suspend fun getVisitHistory(date: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
+        return visitDao.getVisitHistory(date, visitStatus, locationUuid).map { it.toDomain() }
+    }
+
+    suspend fun getScheduledVisits(date: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
+        return visitDao.getScheduledVisits(date, visitStatus, locationUuid).map { it.toDomain() }
+    }
+
+    suspend fun getVisitsInDateRange(startDate: DateEntity, endDate: DateEntity, visitStatus: String, locationUuid: String): List<Visit> {
+        return visitDao.getVisitsInDateRange(startDate, endDate, visitStatus, locationUuid ).map { it.toDomain() }
+    }
+
+    suspend fun findVisitsInPeriod(startDate: DateEntity, endDate: DateEntity): List<Visit> {
+        return visitDao.findVisitsInPeriod(startDate, endDate).map { it.toDomain() }
+    }
+
     override suspend fun deleteByVisitUuid(visitUuid: String): Boolean {
         return visitDao.delete(RoomDeleteVisitModel(visitUuid)).let { countDeleted ->
             logDebug("deleteByVisitUuid: $visitUuid $countDeleted")
@@ -88,7 +111,7 @@ class VisitRepository @Inject constructor(
                 //we assume due to foreign keys, the related child rows will be deleted as well
                 val isDeleted = visitDao.deleteByVisitUuid(model.visitUuid) > 0
                 if (isDeleted) {
-                    logInfo("deleted visit for replace ${model.visitUuid}")
+                    logVerbose("deleted visit for replace ${model.visitUuid}")
                 }
             }
 

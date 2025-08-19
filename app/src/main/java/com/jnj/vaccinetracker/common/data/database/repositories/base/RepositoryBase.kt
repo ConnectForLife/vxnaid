@@ -43,6 +43,7 @@ interface UploadableDraftRepository<T> : UpdatableDraftRepository<T> {
 
 interface ParticipantRepositoryBase<T> : RepositoryBase<T> {
     suspend fun findByParticipantUuid(participantUuid: String): T?
+    suspend fun findByParticipantUuids(participantUuids: Set<String>): List<T>
     suspend fun findByParticipantId(participantId: String): T?
     suspend fun findByParticipantNin(participantNin: String): T?
     suspend fun findAllByPhone(phone: String?): List<T>
@@ -76,6 +77,7 @@ interface VisitRepositoryBase<T> : RepositoryBase<T> {
     suspend fun findAllVisitsByAttributeTypeAndValue(type: String, value: String): List<T>
     suspend fun findVisitsAfterDate(date: DateEntity): List<T>
     suspend fun findVisitsBeforeDate(date: DateEntity): List<T>
+    suspend fun findVisitsBeforeDate(date: DateEntity, visitStatus: String): List<T>
     suspend fun findAllByParticipantUuid(participantUuid: String): List<T>
     suspend fun deleteByVisitUuid(visitUuid: String): Boolean
 }

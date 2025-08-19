@@ -8,6 +8,7 @@ import com.jnj.vaccinetracker.common.data.database.daos.base.ObservableDao
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipantAddressEntity
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipantAttributeEntity
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipantEntity
+import com.jnj.vaccinetracker.common.data.database.models.RoomParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.delete.RoomDeleteParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantDataToUploadModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantModel
@@ -34,6 +35,10 @@ interface DraftParticipantDao : DraftParticipantDaoBase<DraftParticipantEntity, 
     @Query("select * from draft_participant left join draft_participant_address using (participantUuid) where participantUuid=:participantUuid")
     @Transaction
     override suspend fun findByParticipantUuid(participantUuid: String): RoomDraftParticipantModel?
+
+    @Query("select * from draft_participant left join draft_participant_address using (participantUuid) where participantUuid in (:participantUuids)")
+    @Transaction
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<RoomDraftParticipantModel>
 
     @Query("select * from draft_participant left join draft_participant_address using (participantUuid) where participantUuid=:participantUuid AND  draftState=:draftState")
     @Transaction
@@ -75,6 +80,10 @@ interface DraftParticipantDao : DraftParticipantDaoBase<DraftParticipantEntity, 
 
     @Delete(entity = DraftParticipantEntity::class)
     override suspend fun delete(deleteParticipantModel: RoomDeleteParticipantModel): Int
+
+    @Query("select * from draft_participant")
+    @Transaction
+    suspend fun findAllDraftParticipants(): List<RoomDraftParticipantModel>
 }
 
 @Dao

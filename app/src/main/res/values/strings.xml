@@ -26,6 +26,7 @@
     <string name="login_label_username">Username</string>
     <string name="login_label_password">Password</string>
     <string name="login_label_visit_location_hint">Select visit place</string>
+    <string name="login_label_visit_outreach_hint" translatable="false">Type Outreach name</string>
     <string name="settings_label_backend_url">Backend URL</string>
     <string name="settings_label_licenses">Biometric Licenses</string>
     <string name="settings_label_deviceId">Device ID</string>
@@ -62,6 +63,7 @@
     <string name="login_label_validation_no_username">Please enter your username</string>
     <string name="login_label_validation_no_password">Please enter your password</string>
     <string name="login_label_validation_no_visit_place">Please select visit place</string>
+    <string name="login_label_validation_no_outreach_name" translatable="false">Please enter an outreach name</string>
     <string name="login_label_validation_no_backend_url">Please enter a valid backend URL</string>
     <string name="dialog_login_title">Session expired</string>
     <string name="dialog_login_description">Your session has expired. Please provide operator password to logon again or terminate current session.</string>
@@ -72,7 +74,7 @@
     <string name="site_selection_input_hint">Select site location</string>
     <string name="site_selection_btn_submit">Submit</string>
     <string name="site_selection_error_no_site_selected">Please select a site</string>
-    <string name="match_or_register_patient_welcome">Welcome operator %s, you are currently at site %s</string>
+    <string name="match_or_register_patient_welcome">Welcome %1$s to %2$s%3$s</string>
     <string name="match_or_register_patient_step_id_card">Child ID or QR-Code</string>
     <string name="match_or_register_patient_step_phone">Phone number</string>
     <string name="match_or_register_patient_step_iris_scan">Iris scan the Child\'s eye(s)</string>
@@ -136,8 +138,8 @@
     <string name="participant_registration_details_action_register_participant">Register a Child</string>
     <string name="participant_registration_details_description">Please Enter New Child\'s Details</string>
     <string name="participant_update_details_description" translatable="false">Update Child Details</string>
-    <string name="participant_registration_details_action_update_participant" translatable="false">Update Child Details</string>
     <string name="participant_registration_details_action_update_participant_mobile_version" translatable="false">Update Child</string>
+    <string name="participant_registration_details_action_update_participant" translatable="false">Save</string>
     <string name="participant_registration_details_label_participant_id">Child Number</string>
     <string name="participant_registration_details_label_confirm_participant_id">Confirm Child Number</string>
     <string name="participant_registration_load_camera">Load a Camera</string>
@@ -229,7 +231,14 @@
     <string name="visit_schedule_next_visit_save_visit_button_label">Save Visit</string>
     <string name="visit_schedule_visit_saved_successfully_label">Next visit successfully registered on: </string>
     <string name="visit_schedule_visit_failed">Saving visit failed</string>
-    <string name="visit_dosing_warning_out_of_time_window_description">Please confirm that this Child is receiving a dosage outside of the indicated time window.</string>
+    <string name="past_visit_date_ok">Okay</string>
+    <string name="past_visit_date_error_title">Visit Not Saved Due To Invalid Date</string>
+    <string name="past_visit_date_error_message">The selected date is before or the same as a previous visit. Please select a later date. Please follow the dates on the child card.</string>
+    <string name="continue_button_label">Continue</string>
+    <string name="medical_worker_follow_dates_title">Past Visit Dates</string>
+    <string name="medical_worker_follow_dates_message">Please follow the visit dates on child card while entering the past visits details.</string>
+    <string name="visit_dosing_warning_out_of_time_window_description">Please confirm that this child is receiving a dosage before the scheduled date.</string>
+    <string name="visit_dosing_warning_far_from_time_window_description">Please note that this child is not due for the next visit.</string>
     <string name="visit_dosing_warning_out_of_time_window_title">Dosing outside of window</string>
     <string name="visit_dosing_error_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen and should not be administered.</string>
     <string name="visit_dosing_warning_different_manufacturer_description">The manufacturer selected is different from the one indicated in the regimen. Please confirm you will administer a different vaccine.</string>
@@ -487,6 +496,7 @@
     <string name="patient_details_dialog_header"> Child Details:</string>
     <string name="visits_overview_details_client_name_label">Child Name:</string>
     <string name="visits_overview_details_close_button_label">Close</string>
+    <string name="visits_overview_details_edit_button_label">Child Details</string>
     <string name="visits_overview_total_visit_count_label">Total Visit Count: %1$d</string>
     <string name="visits_overview_view_details_label">View Details</string>
     <string name="visits_overview_download_excel_button_label">Download Excel</string>

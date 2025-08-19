@@ -1,5 +1,7 @@
 package com.jnj.vaccinetracker.participantflow.screens
 
+import android.graphics.Typeface
+import android.os.Build
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.mappers.toDomain
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -28,6 +30,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import javax.inject.Inject
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
+import androidx.annotation.RequiresApi
 
 class ParticipantFlowMatchingViewModel @Inject constructor(
     private val syncSettingsRepository: SyncSettingsRepository,
@@ -149,6 +155,7 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
         return throwable is MatchNotFoundException || throwable.cause is MatchNotFoundException
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private suspend fun handleSuccessfulMatchResponse(
         responseParticipants: List<ParticipantMatch>,
         sites: List<Site>,
@@ -170,17 +177,23 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
         logInfo("siteParticipants, nonSiteParticipants: ${siteParticipants.size}, ${nonSiteParticipants.size}")
         // If no results for this site, show message
         if (siteParticipants.isEmpty()) {
-            itemsList.add(SubtitleItem(text = resourcesWrapper.getString(R.string.participant_matching_label_no_results_this_site)))
+            val styledText = SpannableString(resourcesWrapper.getString(R.string.participant_matching_label_no_results_this_site)).apply {
+                setSpan(StyleSpan(Typeface.BOLD), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            itemsList.add(SubtitleItem(text = styledText))
         }
         itemsList.addAll(siteParticipants)
 
         // If results for other sites, show message
         if (nonSiteParticipants.isNotEmpty()) {
             // Create a subtitle for the others
-            itemsList.add(SubtitleItem(text = resourcesWrapper.getString(R.string.participant_matching_label_other_results)))
+            val styledText = SpannableString(resourcesWrapper.getString(R.string.participant_matching_label_other_results)).apply {
+                setSpan(StyleSpan(Typeface.BOLD), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+
+            itemsList.add(SubtitleItem(text = styledText))
             itemsList.addAll(nonSiteParticipants)
         }
-
         items.set(itemsList)
 
         // Load photo only for the participants from this site
@@ -358,7 +371,7 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
 
     data class SubtitleItem(
         override val type: ItemType = ItemType.SUBTITLE,
-        val text: String,
+        val text:  CharSequence,
     ) : MatchingListItem()
 
     enum class ItemType(val value: Int) {

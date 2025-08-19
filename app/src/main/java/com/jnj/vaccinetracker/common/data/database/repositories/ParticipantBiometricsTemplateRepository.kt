@@ -57,6 +57,10 @@ class ParticipantBiometricsTemplateRepository @Inject constructor(
         return participantBiometricsTemplateDao.findByParticipantUuid(participantUuid)?.toDomain()
     }
 
+    override suspend fun findByParticipantUuids(participantUuids: Set<String>): List<ParticipantBiometricsTemplateFile> {
+        return participantBiometricsTemplateDao.findByParticipantUuids(participantUuids).map { it.toDomain() }
+    }
+
     override suspend fun findMostRecentDateModifiedOccurrence(): DateModifiedOccurrence? = participantBiometricsTemplateDao.findMostRecentDateModifiedOccurrence().toDomain()
 
     override suspend fun deleteAll() {

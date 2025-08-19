@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.common.data.database.daos.base
 
 import com.jnj.vaccinetracker.common.data.database.models.delete.RoomDeleteParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantDataToUploadModel
+import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantModel
 import com.jnj.vaccinetracker.common.domain.entities.DraftState
 
 interface ParticipantDaoCommon<E, M> : DaoBase<E> {
@@ -10,6 +11,7 @@ interface ParticipantDaoCommon<E, M> : DaoBase<E> {
     suspend fun findByParticipantId(participantId: String): M?
     suspend fun findByParticipantNin(participantNin: String): M?
     suspend fun findByParticipantUuid(participantUuid: String): M?
+    suspend fun findByParticipantUuids(participantUuids: Set<String>): List<@JvmSuppressWildcards M>
     suspend fun delete(deleteParticipantModel: RoomDeleteParticipantModel): Int
     suspend fun findAllByMotherName(motherName: String?): List<@JvmSuppressWildcards M>
 }
