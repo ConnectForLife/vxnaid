@@ -168,13 +168,28 @@ class LoginActivity : BaseActivity() {
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
         val outreachName = binding.editOutreachName.text.toString().uppercase()
-        if((selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isEmpty())){
+
+        if ((selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isEmpty())) {
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
-        } else {
-            val defaultOutreachName = outreachName.ifEmpty { "No Outreach" }
-            saveVisitPlaceToMemory(visitPlace, defaultOutreachName)
-            viewModel.login(username, password, visitPlace)
+            return
         }
+
+        val message = if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
+            getString(R.string.confirm_visit_place_message_with_outreach, visitPlace, outreachName)
+        } else {
+            getString(R.string.confirm_visit_place_message, visitPlace)
+        }
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(R.string.confirm_visit_place_title)
+            .setMessage(message)
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                val defaultOutreachName = outreachName.ifEmpty { "No Outreach" }
+                saveVisitPlaceToMemory(visitPlace, defaultOutreachName)
+                viewModel.login(username, password, visitPlace)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
