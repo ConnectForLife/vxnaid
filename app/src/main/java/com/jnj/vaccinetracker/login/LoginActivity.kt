@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.textfield.TextInputEditText
@@ -172,7 +173,6 @@ class LoginActivity : BaseActivity() {
         if ((selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isEmpty())) {
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
             return
-        }
         } else {
             showConfirmVisitPlaceDialog(username, password, visitPlace, outreachName)
         }
