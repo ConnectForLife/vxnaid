@@ -185,7 +185,7 @@ class LoginActivity : BaseActivity() {
             getString(R.string.confirm_visit_place_message, visitPlace)
         }
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
             .setTitle(R.string.confirm_visit_place_title)
             .setMessage(message)
             .setPositiveButton(R.string.confirm) { _, _ ->
