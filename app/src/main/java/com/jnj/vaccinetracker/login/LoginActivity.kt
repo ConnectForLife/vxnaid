@@ -173,7 +173,12 @@ class LoginActivity : BaseActivity() {
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
             return
         }
+        } else {
+            showConfirmVisitPlaceDialog(username, password, visitPlace, outreachName)
+        }
+    }
 
+    private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, outreachName: String) {
         val message = if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
             getString(R.string.confirm_visit_place_message_with_outreach, visitPlace, outreachName)
         } else {
