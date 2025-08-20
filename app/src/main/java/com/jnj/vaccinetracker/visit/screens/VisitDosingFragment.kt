@@ -74,16 +74,6 @@ class VisitDosingFragment : BaseFragment(),
                 }
         }
 
-        binding.dropdownHealthZone.setOnItemClickListener { _, _, position, _ ->
-            val zone = viewModel.healthZoneList.get()?.get(position) ?: return@setOnItemClickListener
-            viewModel.setSelectedHealthZone(zone)
-        }
-
-        binding.dropdownVaccinationSite.setOnItemClickListener { _, _, position, _ ->
-            val site = viewModel.vaccinationSiteList.get()?.get(position) ?: return@setOnItemClickListener
-            viewModel.setSelectedVaccinationSite(site)
-        }
-
         return binding.root
     }
 
@@ -94,16 +84,6 @@ class VisitDosingFragment : BaseFragment(),
 
             SharedPreference(requireContext()).saveManufracterList(viewModel.getManufactuerList())
             SharedPreference(requireContext()).saveManufracterList(scanviewModel.getManufactuerList())
-        }
-
-        viewModel.healthZoneList.observe(lifecycleOwner) { zones ->
-            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, zones.orEmpty())
-            binding.dropdownHealthZone.setAdapter(adapter)
-        }
-
-        viewModel.vaccinationSiteList.observe(lifecycleOwner) { sites ->
-            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, sites.orEmpty())
-            binding.dropdownVaccinationSite.setAdapter(adapter)
         }
 
         viewModel.visitEvents

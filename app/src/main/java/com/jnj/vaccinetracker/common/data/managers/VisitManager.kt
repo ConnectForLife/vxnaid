@@ -40,9 +40,7 @@ class VisitManager @Inject constructor(
         visitUuid: String,
         vialCode: String,
         manufacturer: String,
-        dosingNumber: Int,
-        healthZone: String,
-        vaccinationSite: String
+        dosingNumber: Int
     ) {
         val locationUuid = syncSettingsRepository.getSiteUuid() ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register dosing visit without stored operator uuid")
@@ -54,9 +52,7 @@ class VisitManager @Inject constructor(
 
         val obs = mapOf(
             Constants.OBSERVATION_TYPE_BARCODE to vialCode,
-            Constants.OBSERVATION_TYPE_MANUFACTURER to manufacturer,
-            Constants.OBSERVATION_HEALTH_ZONE to healthZone,
-            Constants.OBSERVATION_VACCINATION_SITE to vaccinationSite
+            Constants.OBSERVATION_TYPE_MANUFACTURER to manufacturer
         )
 
         val request = UpdateVisit(

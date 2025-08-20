@@ -190,118 +190,6 @@
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/input_group_health_zone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="32dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="@{viewModel.dosingVisit == null ? View.INVISIBLE : View.VISIBLE}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/input_group_manufacturer">
-
-                    <TextView
-                        android:id="@+id/label_health_zone"
-                        android:layout_width="155dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/visit_dosing_label_health_zone"
-                        android:textAppearance="@style/LabelText" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:error="@{viewModel.healthZoneValidationMessage}">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/dropdown_health_zone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/visit_dosing_hint_select_health_zone"
-                            android:inputType="none"
-                            android:text="@{viewModel.selectedHealthZone}" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:visibility="@{viewModel.isOtherHealthZoneVisible ? View.VISIBLE : View.GONE}">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edit_other_health_zone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/visit_dosing_hint_other_health_zone"
-                            android:imeOptions="actionNext"
-                            android:inputType="text"
-                            android:text="@={viewModel.otherHealthZone}" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/input_group_vaccination_site"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="32dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="@{viewModel.dosingVisit == null ? View.INVISIBLE : View.VISIBLE}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/input_group_health_zone">
-
-                    <TextView
-                        android:id="@+id/label_vaccination_site"
-                        android:layout_width="155dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/visit_dosing_label_vaccination_site"
-                        android:textAppearance="@style/LabelText" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:error="@{viewModel.vaccinationSiteValidationMessage}">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/dropdown_vaccination_site"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/visit_dosing_hint_select_vaccination_site"
-                            android:inputType="none"
-                            android:text="@{viewModel.selectedVaccinationSite}" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:visibility="@{viewModel.isOtherVaccinationSiteVisible ? View.VISIBLE : View.GONE}">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edit_other_vaccination_site"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/visit_dosing_hint_other_vaccination_site"
-                            android:imeOptions="actionDone"
-                            android:inputType="text"
-                            android:text="@={viewModel.otherVaccinationSite}" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-
                 <Button
                     android:id="@+id/btn_submit"
                     android:layout_width="wrap_content"
@@ -316,7 +204,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/input_group_vaccination_site"
+                    app:layout_constraintTop_toBottomOf="@+id/input_group_manufacturer"
                     app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

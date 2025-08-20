@@ -62,42 +62,8 @@ class VisitViewModel @Inject constructor(
 
     private var manufacturersList: MutableList<Manufacturer> = mutableListOf<Manufacturer>()
 
-    val healthZoneList = mutableLiveData<List<String>>()
-    val selectedHealthZone = mutableLiveData<String?>()
-    val otherHealthZone = mutableLiveData<String?>()
-    val isOtherHealthZoneVisible = mutableLiveBoolean(false)
-    val healthZoneValidationMessage = mutableLiveData<String?>()
-
-    val vaccinationSiteList = mutableLiveData<List<String>>()
-    val selectedVaccinationSite = mutableLiveData<String?>()
-    val otherVaccinationSite = mutableLiveData<String?>()
-    val isOtherVaccinationSiteVisible = mutableLiveBoolean(false)
-    val vaccinationSiteValidationMessage = mutableLiveData<String?>()
-
     init {
         initState()
-        initNewDropdowns()
-    }
-
-    // hard-coded so far
-    // TODO: move this values to global property
-    private fun initNewDropdowns() {
-        healthZoneList.value = listOf(
-            "Mbandaka",
-            "Bolenge",
-            "Wangata",
-            "Other"
-        )
-
-        vaccinationSiteList.value = listOf(
-            "Mama wa Elikya",
-            "Ipéko",
-            "Wendji Secli",
-            "Mama Balako",
-            "Wangata General Reference Hospital",
-            "Papa Kisolokele",
-            "Other"
-        )
     }
 
     private suspend fun loadImage(participantSummary: ParticipantSummaryUiModel) {
@@ -301,32 +267,6 @@ class VisitViewModel @Inject constructor(
         return visit.visitStatus != Constants.VISIT_STATUS_MISSED && visit.visitStatus != Constants.VISIT_STATUS_OCCURRED
     }
 
-    fun setSelectedHealthZone(zone: String) {
-        if (selectedHealthZone.get() != zone) {
-            selectedHealthZone.set(zone)
-            healthZoneValidationMessage.set(null)
-            if (zone == "Other") {
-                isOtherHealthZoneVisible.set(true)
-            } else {
-                isOtherHealthZoneVisible.set(false)
-                otherHealthZone.set(null)
-            }
-        }
-    }
-
-    fun setSelectedVaccinationSite(site: String) {
-        if (selectedVaccinationSite.get() != site) {
-            selectedVaccinationSite.set(site)
-            vaccinationSiteValidationMessage.set(null)
-            if (site == "Other") {
-                isOtherVaccinationSiteVisible.set(true)
-            } else {
-                isOtherVaccinationSiteVisible.set(false)
-                otherVaccinationSite.set(null)
-            }
-        }
-    }
-
     /**
      * Submit a dosing visit encounter
      *
@@ -351,28 +291,11 @@ class VisitViewModel @Inject constructor(
 
         vialValidationMessage.set(null)
         manufacturerValidationMessage.set(null)
-        healthZoneValidationMessage.set(null)
-        vaccinationSiteValidationMessage.set(null)
 
         if (manufacturer.isNullOrEmpty()) {
             manufacturerValidationMessage.set(resourcesWrapper.getString(R.string.visit_dosing_error_no_manufacturer))
             return
         }
-
-        var isValid = true
-        val healthZoneValue = if (selectedHealthZone.get() == "Other") otherHealthZone.get() else selectedHealthZone.get()
-        if (healthZoneValue.isNullOrBlank()) {
-            healthZoneValidationMessage.set(resourcesWrapper.getString(R.string.visit_dosing_error_no_health_zone))
-            isValid = false
-        }
-
-        val vaccinationSiteValue = if (selectedVaccinationSite.get() == "Other") otherVaccinationSite.get() else selectedVaccinationSite.get()
-        if (vaccinationSiteValue.isNullOrBlank()) {
-            vaccinationSiteValidationMessage.set(resourcesWrapper.getString(R.string.visit_dosing_error_no_vaccination_site))
-            isValid = false
-        }
-
-        if (!isValid) return
 
         if (participant == null || dosingVisit == null) {
             logError("No participant or dosing visit in memory!")
@@ -385,10 +308,10 @@ class VisitViewModel @Inject constructor(
             return
         }
 
-        if (!overrideManufacturerCheck && !isExpectedManufacturer(dosingVisit.dosingNumber, manufacturer)) {
-            incorrectManufacturerListener()
-            return
-        }
+//        if (!overrideManufacturerCheck && !isExpectedManufacturer(dosingVisit.dosingNumber, manufacturer)) {
+//            incorrectManufacturerListener()
+//            return
+//        }
 
         loading.set(true)
 
@@ -400,9 +323,7 @@ class VisitViewModel @Inject constructor(
                     vialCode = vialBarcode,
                     manufacturer = manufacturer,
                     participantUuid = participant.participantUuid,
-                    dosingNumber = requireNotNull(dosingVisit.dosingNumber) { "dosing visit must have a dosing number" },
-                    healthZone = healthZoneValue!!,
-                    vaccinationSite = vaccinationSiteValue!!
+                    dosingNumber = requireNotNull(dosingVisit.dosingNumber) { "dosing visit must have a dosing number" }
                 )
                 onVisitLogged()
                 loading.set(false)

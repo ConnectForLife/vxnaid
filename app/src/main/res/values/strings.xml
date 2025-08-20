@@ -143,7 +143,7 @@
     <string name="participant_registration_details_label_select_vaccine">Select regimen</string>
     <string name="participant_registration_details_label_language">Language</string>
     <string name="participant_registration_details_label_select_language">Select language</string>
-    <string name="participant_registration_details_belongs_to_program_title">Patient belongs to cohort program</string>
+    <string name="participant_registration_details_belongs_to_program_title">Is the participant enrolled in the cohort program?</string>
     <string name="participant_registration_details_error_no_participant_id">Please enter a participant ID</string>
     <string name="participant_registration_details_error_invalid_participant_id">Please enter a valid participant ID</string>
     <string name="participant_registration_details_error_not_same_participant_id">Participant ID\'s do not match</string>

@@ -125,9 +125,7 @@ class DraftParticipantScript {
                 visitUuid = firstScheduledDosingVisit.uuid,
                 manufacturer = manufacturer,
                 vialCode = vialCode,
-                dosingNumber = firstScheduledDosingVisit.dosingNumber!!,
-                healthZone = "HZ",
-                vaccinationSite = "VAC_SITE"
+                dosingNumber = firstScheduledDosingVisit.dosingNumber!!
             )
         }
     }

@@ -46,5 +46,4 @@ class DifferentManufacturerExpectedDialog : BaseDialogFragment() {
     interface DifferentManufacturerExpectedListener {
         fun onDifferentManufacturerConfirmed()
     }
-
 }
