@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.textfield.TextInputEditText
@@ -168,13 +169,32 @@ class LoginActivity : BaseActivity() {
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
         val outreachName = binding.editOutreachName.text.toString().uppercase()
-        if((selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isEmpty())){
+
+        if ((selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isEmpty())) {
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
+            return
         } else {
-            val defaultOutreachName = outreachName.ifEmpty { "No Outreach" }
-            saveVisitPlaceToMemory(visitPlace, defaultOutreachName)
-            viewModel.login(username, password, visitPlace)
+            showConfirmVisitPlaceDialog(username, password, visitPlace, outreachName)
         }
+    }
+
+    private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, outreachName: String) {
+        val message = if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
+            getString(R.string.confirm_visit_place_message_with_outreach, visitPlace, outreachName)
+        } else {
+            getString(R.string.confirm_visit_place_message, visitPlace)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.confirm_visit_place_title)
+            .setMessage(message)
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                val defaultOutreachName = outreachName.ifEmpty { "No Outreach" }
+                saveVisitPlaceToMemory(visitPlace, defaultOutreachName)
+                viewModel.login(username, password, visitPlace)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
