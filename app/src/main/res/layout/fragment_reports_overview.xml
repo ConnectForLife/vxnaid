@@ -4,61 +4,48 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_margin="@dimen/margin_16_32">
 
         <LinearLayout
             android:id="@+id/report_overviews_container"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/margin_16_32"
             android:gravity="center_vertical"
             android:orientation="vertical"
-            android:padding="40dp"
+            android:padding="@dimen/padding_8_16"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/btn_vaccines_overview_report"
-            android:layout_width="500dp"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="70dp"
-            android:layout_marginBottom="70dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/alertLight"
-            android:paddingLeft="2dp"
-            android:paddingTop="2dp"
-            android:paddingRight="2dp"
-            android:paddingBottom="2dp"
-            android:text="@string/vaccines_overview_title"
-            android:textAppearance="@style/ButtonTextStyling"
-            android:textColor="@color/colorTextOnSecondary"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            app:cornerRadius="30dp" />
+            <Button
+                android:id="@+id/btn_vaccines_overview_report"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/return_visit_guide_btn_margin_54_40_20"
+                android:paddingVertical="@dimen/report_overview_btn_padding_70_100_70"
+                android:backgroundTint="@color/alertLight"
+                android:text="@string/vaccines_overview_title"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:textColor="@color/colorTextOnSecondary"
+                android:textSize="@dimen/btn_text_size_18_32"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/button_corner_radius" />
 
-        <Button
-            android:id="@+id/btn_registered_children_report"
-            android:layout_width="500dp"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="70dp"
-            android:layout_marginBottom="70dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/colorSecondaryDark"
-            android:paddingLeft="2dp"
-            android:paddingTop="2dp"
-            android:paddingRight="2dp"
-            android:paddingBottom="2dp"
-            android:text="@string/registered_children"
-            android:textAppearance="@style/ButtonTextStyling"
-            android:textColor="@color/colorTextOnSecondary"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            app:cornerRadius="30dp" />
+            <Button
+                android:id="@+id/btn_registered_children_report"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/return_visit_guide_btn_margin_54_40_20"
+                android:paddingVertical="@dimen/report_overview_btn_padding_70_100_70"
+                android:backgroundTint="@color/colorSecondaryDark"
+                android:text="@string/registered_children"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:textColor="@color/colorTextOnSecondary"
+                android:textSize="@dimen/btn_text_size_18_32"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/button_corner_radius" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
