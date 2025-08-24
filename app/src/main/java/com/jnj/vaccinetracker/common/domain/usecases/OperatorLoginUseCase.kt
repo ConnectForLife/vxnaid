@@ -92,7 +92,7 @@ class OperatorLoginUseCase @Inject constructor(
         throwIfCachedSyncAdmin(username, password)
         val response = try {
             api.login(username, password)
-        } catch (ex: NoNetworkException) {
+        } catch (ex: Exception) {
             return loginOffline(username, password).user
         }
         if (response.sessionId == null || !response.authenticated || response.user == null)
