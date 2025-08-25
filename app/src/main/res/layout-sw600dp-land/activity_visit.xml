@@ -150,7 +150,6 @@
                     app:srcCompat="@drawable/ic_avatar_operator" />
             </LinearLayout>
 
-            <!-- Visit type and switch column -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -159,7 +158,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
 
-                <!-- Top guideline (0%) -->
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/visit_col_top"
                     android:layout_width="wrap_content"
@@ -167,7 +165,6 @@
                     android:orientation="horizontal"
                     app:layout_constraintGuide_percent="0" />
 
-                <!-- Middle guideline (50%) -->
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/visit_col_middle"
                     android:layout_width="wrap_content"
@@ -175,7 +172,6 @@
                     android:orientation="horizontal"
                     app:layout_constraintGuide_percent="0.6" />
 
-                <!-- Bottom guideline (100%) -->
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/visit_col_bottom"
                     android:layout_width="wrap_content"
@@ -183,7 +179,6 @@
                     android:orientation="horizontal"
                     app:layout_constraintGuide_percent="1" />
 
-                <!-- First row: Visit type -->
                <LinearLayout
                     android:id="@+id/layout_visit_type"
                     android:layout_width="match_parent"
@@ -225,7 +220,6 @@
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
-                <!-- Second row: Switch -->
                 <LinearLayout
                     android:id="@+id/linearLayout_suggest_switch"
                     android:layout_width="match_parent"
