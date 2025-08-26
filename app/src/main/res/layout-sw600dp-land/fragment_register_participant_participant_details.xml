@@ -696,7 +696,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:backgroundTint="@color/colorTextOnLight"
+                        android:backgroundTint="@color/colorPrimary"
                         android:text="@string/go_to_historical_visits"
                         android:textAppearance="@style/ButtonTextStyling"
                         android:visibility="@{viewModel.participantUuid != null &amp;&amp; (flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty()) ? View.VISIBLE : View.INVISIBLE}"
