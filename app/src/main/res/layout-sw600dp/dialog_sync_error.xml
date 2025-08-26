@@ -49,9 +49,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_gravity="center"
                 android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:layout_gravity="center">
+                android:paddingEnd="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -72,10 +72,10 @@
                 android:id="@+id/recyclerView_sync_errors"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_marginStart="@dimen/margin_16_32"
-                android:layout_marginTop="@dimen/margin_8_16"
-                android:layout_marginEnd="@dimen/margin_16_32"
-                android:layout_marginBottom="@dimen/margin_8_16"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
                 android:layout_weight="1"
                 android:background="@drawable/white_with_stroke"
                 android:orientation="vertical"
@@ -91,31 +91,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_8_16"
-                android:layout_marginTop="@dimen/margin_16_32"
-                android:layout_marginEnd="@dimen/margin_8_16"
-                android:layout_marginBottom="@dimen/margin_8_16"
-                android:gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="top|end"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btn_delete_all"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_4"
+                    android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/alertLight"
                     android:textAppearance="@style/ButtonTextStyling"
                     android:enabled="@{viewModel.loading ? false : true }"
-                    android:text="@string/sync_error_btn_delete_all_mobile"
+                    android:text="@string/sync_error_btn_delete_all"
                     android:visibility="@{viewModel.showDeleteAllSyncErrorsButton ? View.VISIBLE : View.GONE }" />
 
                 <Button
                     android:id="@+id/btn_share"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_4"
+                    android:layout_marginEnd="16dp"
                     android:enabled="@{viewModel.loading ? false : true }"
                     android:text="@string/sync_error_btn_share"
                     android:backgroundTint="@color/colorPrimary"
@@ -124,8 +122,7 @@
 
                 <Button
                     android:id="@+id/btn_finish"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorPrimary"
                     android:textAppearance="@style/ButtonTextStyling"
@@ -133,5 +130,6 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>

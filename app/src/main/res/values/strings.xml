@@ -306,6 +306,7 @@
     <string name="setup_btn_enable">Enable</string>
     <string name="sync_error_btn_share">Share</string>
     <string name="sync_error_btn_delete_all">Delete All</string>
+    <string name="sync_error_btn_delete_all_mobile">Delete</string>
     <string name="sync_error_dialog_title">Sync Errors</string>
     <string name="sync_error_dialog_share_failure">Error building sync errors file to share</string>
     <string name="sync_error_dialog_last_sync_date_label">Last Sync Date: </string>
