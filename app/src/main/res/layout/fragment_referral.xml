@@ -5,60 +5,58 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:padding="@dimen/padding_32_64">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="16dp"
             android:orientation="vertical"
-            android:paddingHorizontal="32dp"
-            android:paddingVertical="16dp"
             tools:ignore="NestedWeights">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center">
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:id="@+id/textView_refer_within_clinic_switch_label"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginHorizontal="15dp"
                     android:text="@string/refer_within_clinic_switch_label"
                     android:textAppearance="@style/LabelText"
                     android:textColor="@color/colorPrimary" />
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switch_refer_within_clinic"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
+                    android:layout_marginHorizontal="16dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" />
 
                 <TextView
                     android:id="@+id/textView_refer_outside_clinic_switch_label"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginHorizontal="15dp"
                     android:text="@string/refer_outside_clinic_switch_label"
                     android:textAppearance="@style/LabelText" />
-
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout_clinic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/textView_clinicLabel"
-                    android:layout_width="155dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="@string/referral_page_clinic_title"
@@ -68,7 +66,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_weight="3">
 
                     <AutoCompleteTextView
                         android:id="@+id/referralPlaces"
@@ -85,14 +83,15 @@
                 android:id="@+id/linearLayout_referOtherPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:visibility="gone">
 
                 <TextView
                     android:id="@+id/textView_referOtherPlace"
-                    android:layout_width="155dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/referral_page_referral_other_place_title"
                     android:textAppearance="@style/LabelText" />
@@ -102,27 +101,28 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:hint="@string/referral_page_referral_other_place_hint"
                     android:inputType="textMultiLine"
                     android:maxHeight="70sp"
                     android:minLines="4"
                     android:text=""
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout_referOutsideFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:visibility="gone">
 
                 <TextView
                     android:id="@+id/textView_referOutsideFacility"
-                    android:layout_width="155dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/referral_page_clinic_title"
                     android:textAppearance="@style/LabelText" />
@@ -131,27 +131,27 @@
                     android:id="@+id/editText_referOutsideFacility"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:hint="@string/referral_page_referral_place_hint"
                     android:inputType="textMultiLine"
                     android:maxHeight="70sp"
                     android:minLines="4"
                     android:text=""
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout_additionalInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/textView_additionalInfo"
-                    android:layout_width="155dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/referral_page_additional_info_title"
                     android:textAppearance="@style/LabelText" />
@@ -160,14 +160,13 @@
                     android:id="@+id/editText_additionalInfo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:hint="@string/referral_page_additional_info_hint"
                     android:inputType="textMultiLine"
                     android:maxHeight="70sp"
                     android:minLines="4"
                     android:text=""
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -194,20 +193,21 @@
 
                 <Button
                     android:id="@+id/btn_cancelReferral"
-                    android:layout_width="170dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorPrimary"
                     android:text="@string/referral_page_cancel_button_title"
-                    android:textAppearance="@style/ButtonTextStyling" />
+                    android:textAppearance="@style/ButtonTextStyling"
+                    android:layout_marginEnd="32dp"/>
 
                 <Space
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content"/>
 
                 <Button
                     android:id="@+id/btn_closeReferral"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorPrimary"
                     android:text="@string/general_label_close"
@@ -216,7 +216,7 @@
 
                 <TextView
                     android:id="@+id/textView_save_visit"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="@string/refer_finish_visit_text"
@@ -224,12 +224,12 @@
 
                 <Space
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content"/>
 
                 <Button
                     android:id="@+id/btn_saveReferral"
-                    android:layout_width="170dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/errorDark"
                     android:text="@string/referral_page_refer_button_title"
