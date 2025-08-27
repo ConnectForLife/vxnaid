@@ -70,7 +70,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="@dimen/margin_8"
                         android:layout_gravity="center"
                         android:orientation="vertical">
 
@@ -113,14 +113,14 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="@dimen/margin_8"
                         android:orientation="horizontal">
 
                         <Button
                             android:id="@+id/btn_deactivate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
+                            android:layout_marginEnd="@dimen/margin_16"
                             android:backgroundTint="@color/colorPrimary"
 
                             android:text="@string/settings_label_deactivate"
