@@ -132,7 +132,7 @@ class LoginActivity : BaseActivity() {
             .launchIn(lifecycleOwner)
 
         viewModel.prefillUsername.observe(lifecycleOwner) { prefillUsername ->
-            if (binding.editUsername.text.isEmpty()) {
+            if (binding.editUsername.text?.isEmpty() == true) {
                 binding.editUsername.setText(prefillUsername)
             }
         }
