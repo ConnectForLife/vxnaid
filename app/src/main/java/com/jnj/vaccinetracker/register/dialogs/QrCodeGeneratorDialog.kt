@@ -21,6 +21,8 @@ class QrCodeGeneratorDialog(
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_qr_code_generator)
 
+        isCancelable = false
+
         initializeViews(dialog)
         generateQrCode()
 

@@ -123,6 +123,7 @@ class ContraindicationsFragment : BaseFragment() {
             true,
             R.string.visit_dosing_warning_out_of_time_window_description
         )
+        dialog.isCancelable = false
         dialog.show(requireActivity().supportFragmentManager, VisitActivity.TAG_DIALOG_DOSING_OUT_OF_WINDOW)
     }
 
@@ -131,6 +132,7 @@ class ContraindicationsFragment : BaseFragment() {
            false,
            R.string.visit_dosing_warning_far_from_time_window_description
        )
+       dialog.isCancelable = false
        dialog.show(requireActivity().supportFragmentManager, "TAG_DOSING_OUT_OF_WINDOW")
    }
 }
