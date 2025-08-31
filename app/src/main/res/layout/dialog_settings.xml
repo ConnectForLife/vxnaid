@@ -13,21 +13,23 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fillViewport="true">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="@dimen/margin_32_64"
             android:paddingVertical="24dp">
 
             <TextView
                 android:id="@+id/deviceId_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="@dimen/margin_8_16"
+                android:textAlignment="center"
+                android:textSize="@dimen/text_size_16_20"
                 android:text="@string/settings_label_deviceId"
                 android:textAppearance="@style/LabelText"/>
 
@@ -43,13 +45,14 @@
                     android:id="@+id/device_Id"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_weight="1"
+                    android:layout_weight="9"
+                    android:textSize="@dimen/text_size_12_16"
                     android:text="@{viewModel.deviceId}" />
 
                 <ImageView
                     android:id="@+id/btn_copy_deviceId"
-                    android:layout_width="32dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="32dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="4dp"
@@ -60,40 +63,44 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="@dimen/margin_8_16"
+                android:textAlignment="center"
                 android:text="@string/settings_label_setup"
                 android:textAppearance="@style/LabelText"/>
 
             <Button
                 android:id="@+id/btn_rerun_setup_wizard"
-                android:layout_width="wrap_content"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="@dimen/margin_8_16"
+                android:layout_gravity="center"
                 android:backgroundTint="@color/errorDark"
                 android:textAppearance="@style/ButtonTextStyling"
                 android:text="@string/settings_label_rerun_wizard" />
 
             <Button
                 android:id="@+id/btn_sync_now"
-                android:layout_width="wrap_content"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="@dimen/margin_8_16"
+                android:layout_gravity="center"
                 android:text="@string/settings_label_sync_now"
                 android:backgroundTint="@color/colorPrimary"
                 android:textAppearance="@style/ButtonTextStyling"
                 android:visibility="@{viewModel.showSyncNowButton ? View.VISIBLE : View.GONE}" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/margin_8_16">
 
                 <Button
                     android:id="@+id/btn_share_logs"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
                     android:text="@string/settings_label_share_logs"
                     android:backgroundTint="@color/colorPrimary"
                     android:textAppearance="@style/ButtonTextStyling"
@@ -101,9 +108,9 @@
 
                 <Button
                     android:id="@+id/btn_clear_logs"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:text="@string/settings_label_clear_logs"
                     android:backgroundTint="@color/colorPrimary"
                     android:textAppearance="@style/ButtonTextStyling"
@@ -115,13 +122,11 @@
                 android:id="@+id/btn_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginEnd="8dp"
+                android:layout_gravity="center"
                 android:text="@string/general_label_close"
                 android:backgroundTint="@color/colorPrimary"
                 android:textAppearance="@style/ButtonTextStyling" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 </layout>
