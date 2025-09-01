@@ -48,7 +48,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <TextView
             android:id="@+id/textView_match_count"
             android:layout_width="0dp"
@@ -128,8 +127,5 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_new_participant"
             app:layout_constraintStart_toEndOf="@+id/btn_match_participant" />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>
