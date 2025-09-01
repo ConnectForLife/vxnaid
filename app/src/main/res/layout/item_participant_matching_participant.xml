@@ -32,10 +32,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginStart="@dimen/margin_4"
-            android:layout_marginVertical="@dimen/margin_8"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView_participantPhoto"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_marginVertical="@dimen/margin_8">
 
             <TextView
                 android:id="@+id/textView_childNumber"
@@ -92,10 +89,6 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="4dp"
-            android:background="@color/colorPrimaryLight"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_container" />
+            android:background="@color/colorPrimaryLight" />
     </LinearLayout>
 </layout>

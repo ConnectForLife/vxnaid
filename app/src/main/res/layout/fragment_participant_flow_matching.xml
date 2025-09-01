@@ -114,8 +114,7 @@
                 android:text="@string/participant_matching_btn_report_adverse_effects"
                 android:textSize="@dimen/text_size_12_16"
                 android:textColor="@color/colorTextOnSecondary"
-                android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}" />
 
             <Button
                 android:id="@+id/btn_new_participant"
