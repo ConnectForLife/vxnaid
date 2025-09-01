@@ -16,58 +16,95 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <EditText
+            android:id="@+id/search_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_4_8"
+            android:textAlignment="center"
+            android:hint="@string/registered_children_search_hint"
+            android:paddingHorizontal="@dimen/padding_4_8"
+            android:layout_marginHorizontal="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:autofillHints="name"/>
+
         <LinearLayout
-            android:id="@+id/search_container"
+            android:id="@+id/date_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="8dp"
-            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/padding_8_16"
+            android:layout_marginBottom="8dp"
+            android:baselineAligned="false"
+            app:layout_constraintTop_toBottomOf="@+id/search_box"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <Button
-                android:id="@+id/btn_start_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/visits_overview_start_date_label" />
-
-            <TextView
-                android:id="@+id/label_start_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:text="@string/visits_overview_not_set_label"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:visibility="visible" />
-
-            <Button
-                android:id="@+id/btn_end_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/visits_overview_end_date_label"
-                android:layout_marginStart="16dp"/>
-
-            <TextView
-                android:id="@+id/label_end_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:text="@string/visits_overview_not_set_label"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:visibility="visible" />
-
-            <EditText
-                android:id="@+id/search_box"
+            <LinearLayout
+                android:id="@+id/search_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/visits_overview_search_hint"
-                android:layout_marginStart="16dp"/>
+                android:orientation="horizontal"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/search_box"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <Button
+                    android:id="@+id/btn_start_date"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:paddingHorizontal="@dimen/padding_8_16"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_12_16"
+                    android:text="@string/visits_overview_start_date_label"/>
+
+                <TextView
+                    android:id="@+id/label_start_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/visits_overview_not_set_label"
+                    android:textSize="@dimen/text_size_14_18"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/search_container_end_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/search_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <Button
+                    android:id="@+id/btn_end_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:textSize="@dimen/text_size_12_16"
+                    android:paddingHorizontal="@dimen/padding_8_16"
+                    android:text="@string/visits_overview_end_date_label"/>
+
+                <TextView
+                    android:id="@+id/label_end_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/not_set"
+                    android:textSize="@dimen/text_size_14_18"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
         </LinearLayout>
+
+
 
         <LinearLayout
             android:id="@+id/total_visit_count_container"
@@ -75,21 +112,19 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingBottom="16sp"
-            app:layout_constraintTop_toBottomOf="@id/search_container"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="16sp"
+            app:layout_constraintTop_toBottomOf="@id/date_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
                 android:id="@+id/total_visit_count"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:textSize="@dimen/text_24"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/search_container"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp" />
+                android:textAlignment="center"/>
         </LinearLayout>
 
         <LinearLayout
@@ -97,7 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="8dp"
+            android:padding="@dimen/padding_8"
             app:layout_constraintTop_toBottomOf="@id/total_visit_count_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -105,14 +140,14 @@
             <TextView
                 android:id="@+id/header_clientId"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_8"
+                android:textSize="@dimen/text_size_14_18"
                 android:text="@string/visits_overview_client_id_column_label"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
-                android:padding="8dp"
                 android:textColor="@android:color/white" />
 
             <TextView
@@ -120,41 +155,51 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="20sp"
+                android:padding="@dimen/padding_8"
+                android:textSize="@dimen/text_size_14_18"
                 android:text="@string/visits_overview_visit_date_column_label"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
-                android:padding="8dp"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"/>
 
             <TextView
                 android:id="@+id/header_clientName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="20sp"
+                android:padding="@dimen/padding_8"
+                android:textSize="@dimen/text_size_14_18"
                 android:text="@string/visits_overview_visit_type_label"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
-                android:padding="8dp"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"/>
 
             <TextView
                 android:id="@+id/header_motherFullName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="20sp"
-                android:paddingEnd="35dp"
-                android:text="@string/visits_overview_client_mothers_name_column_label"
+                android:textSize="@dimen/text_size_14_18"
+                android:text="@string/visits_overview_client_mothers_name_column_label_mobile"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@color/colorTextOnLight"
-                android:padding="8dp"
+                android:padding="@dimen/padding_8"
                 android:textColor="@android:color/white"
-                tools:ignore="RtlSymmetry" />
+                tools:ignore="RtlSymmetry"/>
+
+            <TextView
+                android:id="@+id/eye"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:background="@color/colorTextOnLight"
+                android:padding="@dimen/padding_8"
+                android:text="@string/eye_title"
+                android:textSize="@dimen/text_size_14_18"
+                android:textColor="@color/colorTextOnLight"
+                tools:ignore="RtlSymmetry"/>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -179,18 +224,22 @@
 
             <Button
                 android:id="@+id/btn_download_excel"
-                android:layout_width="400dp"
-                android:layout_height="60dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:text="@string/visits_overview_download_excel_button_label"
-                android:textSize="20sp"
-                android:layout_marginEnd="50dp" />
+                android:textSize="@dimen/text_size_12_16"
+                android:layout_marginEnd="8dp"
+                android:paddingVertical="@dimen/btn_padding_4_8"/>
 
             <Button
                 android:id="@+id/btn_download_csv"
-                android:layout_width="400dp"
-                android:layout_height="60dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:text="@string/visits_overview_download_csv_button_label"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/text_size_12_16"
+                android:paddingVertical="@dimen/btn_padding_4_8"/>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
