@@ -13,92 +13,78 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_8_16">
 
         <TextView
             android:id="@+id/label_introduction"
             style="@style/CustomAutoSizeText"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp"
+            android:layout_height="@dimen/welcome_height"
+            android:layout_marginVertical="@dimen/margin_16_32"
             android:text="@string/match_or_register_patient_intro"
-            android:textSize="22sp"
-            android:textAppearance="@style/DescriptionText"
+            android:textSize="@dimen/page_title_18_64"
+            android:textAlignment="center"
+            android:textAppearance="@style/ScreenTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints" />
 
-
         <LinearLayout
             android:id="@+id/auth_steps_container"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:gravity="center_vertical"
             android:orientation="vertical"
-            android:padding="40dp"
+            android:padding="@dimen/padding_8_16"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/label_introduction"
-            app:layout_constraintStart_toStartOf="@id/label_introduction"
-            app:layout_constraintTop_toBottomOf="@id/label_introduction">
+            app:layout_constraintTop_toBottomOf="@+id/label_introduction">
 
             <Button
                 android:id="@+id/btn_mother_name"
-                android:layout_width="500dp"
-                android:layout_height="0dp"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="70dp"
-                android:layout_marginBottom="70dp"
-                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/return_visit_guide_btn_margin_54_40_20"
+                android:paddingVertical="@dimen/return_visit_guide_btn_padding_32_70_32"
                 android:backgroundTint="@color/colorPrimary"
-                android:paddingLeft="2dp"
-                android:paddingTop="2dp"
-                android:paddingRight="2dp"
-                android:paddingBottom="2dp"
                 android:text="@string/participant_flow_mother_name_label"
                 android:textAppearance="@style/ButtonTextStyling"
                 android:textColor="@color/colorTextOnSecondary"
-                android:textSize="34sp"
+                android:textSize="@dimen/btn_text_size_18_32"
                 android:textStyle="bold"
-                app:cornerRadius="30dp" />
+                app:cornerRadius="@dimen/button_corner_radius" />
 
             <Button
                 android:id="@+id/btn_mobile_phone_number"
-                android:layout_width="500dp"
-                android:layout_height="0dp"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="50dp"
-                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/return_visit_guide_btn_margin_54_40_20"
+                android:paddingVertical="@dimen/return_visit_guide_btn_padding_32_70_32"
                 android:backgroundTint="@color/colorTextOnLight"
                 android:text="@string/match_or_register_patient_step_phone"
                 android:textAppearance="@style/ButtonTextStyling"
                 android:textColor="@color/colorTextOnSecondary"
-                android:textSize="34sp"
+                android:textSize="@dimen/btn_text_size_18_32"
                 android:textStyle="bold"
-                app:cornerRadius="30dp" />
+                app:cornerRadius="@dimen/button_corner_radius" />
 
             <Button
                 android:id="@+id/btn_child_id_number"
-                android:layout_width="500dp"
-                android:layout_height="0dp"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="50dp"
-                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/return_visit_guide_btn_margin_54_40_20"
+                android:paddingVertical="@dimen/return_visit_guide_btn_padding_32_70_32"
                 android:backgroundTint="@color/sync_offline"
                 android:text="@string/match_or_register_patient_step_id_card"
                 android:textAppearance="@style/ButtonTextStyling"
                 android:textColor="@color/colorTextOnSecondary"
-                android:textSize="34sp"
+                android:textSize="@dimen/btn_text_size_18_32"
                 android:textStyle="bold"
-                app:cornerRadius="30dp" />
-
+                app:cornerRadius="@dimen/button_corner_radius" />
 
         </LinearLayout>
 
