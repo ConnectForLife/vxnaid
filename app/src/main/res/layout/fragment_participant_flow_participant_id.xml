@@ -31,7 +31,6 @@
                 android:id="@+id/textView_manualIDSubtitle"
                 style="@style/CustomAutoSizeText"
                 android:layout_width="match_parent"
-                android:layout_height="51dp"
                 android:layout_weight="1"
                 android:text="@string/participant_flow_participant_id_label_manual_entry"
                 android:textAlignment="center"
