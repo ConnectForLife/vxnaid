@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="@dimen/margin_8_16">
+            android:layout_margin="@dimen/margin_8">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,19 +44,17 @@
                     android:id="@+id/textView_intro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32"
-                    android:layout_marginBottom="@dimen/margin_16_32"
+                    android:layout_marginVertical="@dimen/margin_16"
                     android:text="@{viewModel.participantUuid != null ? @string/participant_update_details_description : @string/participant_registration_details_description}"
                     android:textAlignment="center"
                     android:textAppearance="@style/ScreenTitle"
-                    android:textSize="@dimen/page_title_18_32" />
+                    android:textSize="@dimen/text_16" />
 
                 <LinearLayout
                     android:id="@+id/input_group_participant_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/margin_8_16"
                     android:orientation="horizontal">
 
                     <LinearLayout

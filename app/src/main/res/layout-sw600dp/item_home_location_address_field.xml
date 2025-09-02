@@ -19,17 +19,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:minHeight="40dp"
+        android:minHeight="45dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_8"
             android:text="@{addressField.displayName}"
             android:textAppearance="@style/LabelText"
-            tools:text="Country"
-            android:textSize="@dimen/text_14"/>
+            tools:text="Country" />
 
         <AutoCompleteTextView
             android:id="@+id/autoCompleteTextView"
@@ -41,8 +40,8 @@
             android:focusable="true"
             android:hint="@{addressField.displayName}"
             android:inputType="none"
-            android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}"
-            android:textSize="@dimen/text_12"/>
+            android:minHeight="60dp"
+            android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
 
 
         <!-- Fake TextView to use to set in an error state to allow an error to be shown for the TextView -->
@@ -53,22 +52,22 @@
             android:layout_marginTop="0dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:padding="@dimen/padding_4"
+            android:paddingTop="0dp"
+            android:paddingEnd="50dp"
             android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
         />
 
         <EditText
             android:id="@+id/editText"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_weight="1"
             android:hint="@{addressField.displayName}"
             android:inputType="text"
             android:longClickable="false"
             android:textIsSelectable="false"
             android:visibility="@{addressField.type == AddressInputFieldType.FREE_INPUT || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}"
-            app:error="@{addressField.errorMessage}"
-            android:textSize="@dimen/text_12"/>
+            app:error="@{addressField.errorMessage}" />
 
     </LinearLayout>
 </layout>
