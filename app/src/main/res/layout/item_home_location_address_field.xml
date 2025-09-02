@@ -55,7 +55,6 @@
             android:focusableInTouchMode="true"
             android:padding="@dimen/padding_4"
             android:visibility="@{addressField.type == AddressInputFieldType.DROPDOWN || addressField.type == AddressInputFieldType.NOT_IN_LIST ? View.VISIBLE : View.GONE}" />
-        />
 
         <EditText
             android:id="@+id/editText"

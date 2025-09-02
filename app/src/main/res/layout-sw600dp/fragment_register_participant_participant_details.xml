@@ -413,7 +413,6 @@
                             android:textColor="@android:color/holo_red_dark"
                             android:textSize="18sp" />
                     </LinearLayout>
-                    >
 
                     <TextView
                         android:id="@+id/textView_participantHomeLocation"
