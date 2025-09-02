@@ -749,6 +749,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/margin_16_32">
 
+                    <!-- Register: Single full-width button -->
+                    <Button
+                        android:id="@+id/btn_submit_single"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:paddingVertical="@dimen/padding_4"
+                        android:text="@string/participant_registration_details_action_register_participant"
+                        android:textAppearance="@style/ButtonTextStyling"
+                        android:textSize="@dimen/text_14"
+                        android:visibility="@{viewModel.participantUuid == null ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <!-- Update: Two half-width buttons -->
                     <LinearLayout
                         android:id="@+id/buttonContainer"
                         android:layout_width="match_parent"
@@ -756,6 +772,7 @@
                         android:layout_marginTop="@dimen/margin_16_32"
                         android:gravity="center"
                         android:orientation="horizontal"
+                        android:visibility="@{viewModel.participantUuid != null ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent">
@@ -768,7 +785,7 @@
                             android:layout_weight="1"
                             android:backgroundTint="@color/colorPrimary"
                             android:paddingVertical="@dimen/padding_4"
-                            android:text="@{viewModel.participantUuid != null ? @string/participant_registration_details_action_update_participant_mobile_version : @string/participant_registration_details_action_register_participant}"
+                            android:text="@string/participant_registration_details_action_update_participant_mobile_version"
                             android:textAppearance="@style/ButtonTextStyling"
                             android:textSize="@dimen/text_14" />
 
@@ -782,7 +799,7 @@
                             android:text="@string/go_to_historical_visits"
                             android:textAppearance="@style/ButtonTextStyling"
                             android:textSize="@dimen/text_14"
-                            android:visibility="@{viewModel.participantUuid != null &amp;&amp; (flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty()) ? View.VISIBLE : View.INVISIBLE}" />
+                            android:visibility="@{flowViewModel.duplicateError == null || flowViewModel.duplicateError.isEmpty() ? View.VISIBLE : View.INVISIBLE}" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
