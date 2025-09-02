@@ -85,6 +85,7 @@
                     android:text="@string/participant_registration_administered_vaccines_add_vaccine"
                     android:textAppearance="@style/ButtonTextStyling"
                     android:visibility="@{viewModel.isLocalEdit == true ? View.VISIBLE : View.INVISIBLE}"
+                    android:textSize="@dimen/text_size_12_18"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -140,6 +141,7 @@
             android:backgroundTint="@color/colorPrimary"
             android:text="@{viewModel.isLocalEdit == true ? @string/general_label_update : @string/participant_administered_vaccines_action_save}"
             android:textAppearance="@style/ButtonTextStyling"
+            android:textSize="@dimen/text_size_12_18"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
