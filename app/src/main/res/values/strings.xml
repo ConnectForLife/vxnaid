@@ -99,16 +99,16 @@
     <string name="participant_flow_participant_id_hint">Scan Child ID QR Code</string>
     <string name="participant_flow_participant_id_scanned">The format of the ID is not supported</string>
     <string name="participant_flow_participant_id_description">Please scan the Child vaccination card with a QR-Code or manually enter the Child ID number:</string>
-    <string name="participant_flow_participant_id_label_manual_entry">Please enter child\'s ID number</string>
-    <string name="participant_flow_participant_id_input_hint">44UBASDS</string>
+    <string name="participant_flow_participant_id_label_manual_entry">Child\'s ID OR QR-Code</string>
+    <string name="participant_flow_participant_id_input_hint">Please enter the child\'s ID</string>
     <string name="participant_flow_participant_id_label_or">- OR -</string>
     <string name="participant_flow_participant_id_label_scan_code">Scan QR-Code</string>
     <string name="participant_flow_phone_title">Mobile Phone Number</string>
-    <string name="participant_flow_phone_description">Please enter a mobile phone number</string>
+    <string name="participant_flow_phone_description">Please enter a phone number</string>
     <string name="participant_flow_no_phone_description">Please confirm that the Child has no mobile phone. This will significantly increase the matching time.</string>
     <string name="participant_flow_mother_name_page_title">Mother\'s name</string>
     <string name="participant_flow_mother_name_label" translatable="false">Mother\'s name</string>
-    <string name="participant_flow_mother_name_hint" translatable="false">You can search using either the mother\'s first or last name</string>
+    <string name="participant_flow_mother_name_hint" translatable="false">Please enter either the mother\'s first or last name or both names</string>
     <string name="iris_scan_icon_description">Icon of iris scan</string>
     <string name="iris_scan_intro_right">Please scan the Child\'s RIGHT eye</string>
     <string name="iris_scan_intro_left">Please scan the Child\'s LEFT eye</string>
@@ -528,7 +528,6 @@
     <string name="no_outreach_vaccines_in_system">No outreach vaccines in system</string>
     <string name="no_school_vaccines_in_system">No school vaccines in system</string>
     <string name="no_school_vaccines_match_filters">No school vaccines match current filters</string>
-
     <string name="no_outreach_vaccines_match_filters">No outreach vaccines match current filters</string>
     <string name="no_vaccines_match_filters">No vaccines match all filters</string>
     <string name="dialog_missing_substances_empty_text_validation_message">Provide a reason</string>
