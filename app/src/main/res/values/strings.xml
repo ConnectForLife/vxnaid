@@ -94,6 +94,8 @@
     <string name="iris_scan_right_title">Iris scan - Right eye</string>
     <string name="participant_matching_title">Child matching</string>
     <string name="visits_overview_client_mothers_name_column_label">Mother\'s Name</string>
+    <string name="eye_title" translatable="false">e</string>
+    <string name="visits_overview_client_mothers_name_column_label_mobile" translatable="false">Mother</string>
     <string name="participant_flow_child_number_title">Child Number</string>
     <string name="participant_flow_participant_id_title">Child ID</string>
     <string name="participant_flow_participant_id_hint">Scan Child ID QR Code</string>

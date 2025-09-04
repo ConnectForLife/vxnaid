@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:padding="@dimen/padding_4"
         android:background="@drawable/table_row_background">
 
         <TextView
@@ -18,9 +18,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="20dp"
+            android:textSize="@dimen/text_12"
+            android:layout_marginStart="@dimen/margin_4"
             android:text="@{visit.participant.participantId}"
-            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,9 +33,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="20dp"
+            android:textSize="@dimen/text_12"
+            android:layout_marginStart="@dimen/margin_4"
             android:text="@{visit.formattedStartDateTime}"
-            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
             app:layout_constraintStart_toEndOf="@id/tv_clientId"
@@ -48,11 +48,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="20dp"
-            android:text="@{visit.visitype}"
-            android:textSize="16sp"
-            android:textStyle="bold"
             android:gravity="center"
+            android:textSize="@dimen/text_12"
+            android:textStyle="bold"
+            android:layout_marginStart="@dimen/margin_4"
+            android:text="@{visit.visitype}"
             app:layout_constraintStart_toEndOf="@id/tv_visit_date"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_motherName"
@@ -63,11 +63,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="20dp"
-            android:text="@{visit.participant.motherName}"
-            android:textSize="16sp"
-            android:textStyle="bold"
             android:gravity="center"
+            android:text="@{visit.participant.motherName}"
+            android:textSize="@dimen/text_12"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/tv_visitType"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/icon_eye"
@@ -75,16 +74,16 @@
 
         <ImageView
             android:id="@+id/icon_eye"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-
+            android:layout_width="@dimen/eye_icon"
+            android:layout_height="@dimen/eye_icon"
             android:contentDescription="@string/visits_overview_view_details_label"
             android:src="@drawable/eye_icon"
             app:tint="@color/colorAccent"
             app:layout_constraintStart_toEndOf="@id/tv_motherName"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_percent="0.16" />
+            app:layout_constraintWidth_percent="0.16"
+            android:layout_marginEnd="@dimen/margin_4"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
