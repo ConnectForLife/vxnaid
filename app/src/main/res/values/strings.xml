@@ -507,6 +507,8 @@
     <string name="visits_overview_details_edit_button_label">Child Details</string>
     <string name="visits_overview_total_visit_count_label">Total Visit Count: %1$d</string>
     <string name="visits_overview_view_details_label">View Details</string>
+    <string name="children_overview_client_birthdate_column_label_mobile">Birth Date</string>
+    <string name="visits_overview_client_mothers_name_column_label_mobile" translatable="false">Mother</string>
     <string name="visits_overview_download_excel_button_label">Download Excel</string>
     <string name="visits_overview_download_csv_button_label">Download CSV</string>
     <string name="visits_overview_saving_file_success_message">File saved in Downloads directory</string>
