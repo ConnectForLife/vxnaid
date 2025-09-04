@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.yield
 import javax.inject.Inject
 
+
 class ParticipantRepository @Inject constructor(
     private val transactionRunner: ParticipantDbTransactionRunner,
     private val participantDao: ParticipantDao,
@@ -53,6 +54,7 @@ class ParticipantRepository @Inject constructor(
             .withBirthWeight(birthWeight),
         biometricsTemplate = templateFile,
         image = imageFile,
+        dateCreated = dateCreated,
     )
 
     private fun Participant.toPersistence() = ParticipantEntity(
@@ -70,7 +72,8 @@ class ParticipantRepository @Inject constructor(
         childFirstName = childFirstName,
         childLastName = childLastName,
         motherFirstName = motherFirstName,
-        motherLastName = motherLastName
+        motherLastName = motherLastName,
+        dateCreated = dateCreated,
     )
 
     override suspend fun findAllByPhone(phone: String?): List<Participant> {

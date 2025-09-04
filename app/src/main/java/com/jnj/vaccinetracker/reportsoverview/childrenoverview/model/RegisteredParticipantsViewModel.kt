@@ -48,7 +48,7 @@ class RegisteredParticipantsViewModel@Inject constructor(
                 fullName = "${patient.childFirstName} ${patient.childLastName}",
                 motherName = "${patient.motherFirstName} ${patient.motherLastName}",
                 birthDate = patient.birthDate.toDateTime(),
-                registrationDate = patient.dateModified
+                registrationDate = patient.dateCreated
             )
         }
     }

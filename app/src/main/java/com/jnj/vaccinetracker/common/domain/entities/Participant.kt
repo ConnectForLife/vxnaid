@@ -38,6 +38,7 @@ sealed class ParticipantBase {
 
 data class Participant(
     override val participantUuid: String,
+    val dateCreated: DateEntity,
     override val dateModified: DateEntity,
     override val image: ParticipantImageFile?,
     override val biometricsTemplate: ParticipantBiometricsTemplateFile?,
@@ -58,6 +59,7 @@ data class Participant(
 data class DraftParticipant(
     override val participantUuid: String,
     val registrationDate: DateEntity,
+    val dateCreated: DateEntity,
     override val image: DraftParticipantImageFile?,
     override val biometricsTemplate: DraftParticipantBiometricsTemplateFile?,
     override val participantId: String,
@@ -110,5 +112,6 @@ fun DraftParticipant.toParticipantWithoutAssets(): Participant = Participant(
     attributes = attributes,
     address = address,
     childFirstName = childFirstName,
-    childLastName = childLastName
+    childLastName = childLastName,
+    dateCreated = dateCreated
 )

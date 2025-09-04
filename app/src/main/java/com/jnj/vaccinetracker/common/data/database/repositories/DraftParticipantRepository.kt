@@ -56,6 +56,7 @@ class DraftParticipantRepository @Inject constructor(
             .withBirthWeight(birthWeight),
         draftState = draftState,
         isUpdate = isUpdate ?: false,
+        dateCreated = registrationDate,
     )
 
     private fun DraftParticipant.toPersistence() = DraftParticipantEntity(

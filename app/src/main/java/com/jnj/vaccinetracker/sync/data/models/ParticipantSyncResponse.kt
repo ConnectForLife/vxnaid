@@ -22,6 +22,7 @@ sealed class ParticipantSyncRecord : SyncRecordBase {
     data class Update(
         override val participantUuid: String,
         override val dateModified: SyncDate,
+        val dateCreated: SyncDate,
         val participantId: String,
         val nin: String?,
         val childNumber: String?,

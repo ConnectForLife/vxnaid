@@ -22,6 +22,8 @@ data class ParticipantEntity(
     override val isBirthDateEstimated: Boolean?,
     @ColumnInfo(index = true)
     override val dateModified: DateEntity,
+    @ColumnInfo(name = "dateCreated", defaultValue = "0")
+    val dateCreated: DateEntity,
     @ColumnInfo(index = true)
     override val locationUuid: String?,
     override val childFirstName: String?,

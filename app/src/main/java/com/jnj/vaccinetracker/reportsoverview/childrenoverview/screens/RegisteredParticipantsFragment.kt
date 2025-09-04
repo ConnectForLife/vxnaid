@@ -215,7 +215,7 @@ class RegisteredParticipantsFragment : BaseFragment(),
                 row.createCell(0).setCellValue(patient.participantId)
                 row.createCell(1).setCellValue(patient.fullName)
                 row.createCell(2).setCellValue(patient.motherName)
-                row.createCell(3).setCellValue(patient.formattedBirthDate)
+                row.createCell(3).setCellValue(patient.registrationDate)
             }
 
             sheet.setColumnWidth(0, 4000)

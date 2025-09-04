@@ -13,6 +13,7 @@ import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 
 data class RoomParticipantModel(
     override val dateModified: DateEntity,
+    val dateCreated: DateEntity,
     override val participantUuid: String,
     override val phone: String?,
     override val birthWeight: String?,
