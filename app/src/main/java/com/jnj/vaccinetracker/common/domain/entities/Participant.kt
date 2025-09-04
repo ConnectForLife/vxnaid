@@ -7,6 +7,7 @@ import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.models.Constants
 
 sealed class ParticipantBase {
+    abstract  val dateCreated: DateEntity
     abstract val participantUuid: String
     abstract val nin: String?
     abstract val image: ParticipantImageFileBase?
@@ -38,7 +39,7 @@ sealed class ParticipantBase {
 
 data class Participant(
     override val participantUuid: String,
-    val dateCreated: DateEntity,
+    override val dateCreated: DateEntity,
     override val dateModified: DateEntity,
     override val image: ParticipantImageFile?,
     override val biometricsTemplate: ParticipantBiometricsTemplateFile?,
@@ -59,7 +60,7 @@ data class Participant(
 data class DraftParticipant(
     override val participantUuid: String,
     val registrationDate: DateEntity,
-    val dateCreated: DateEntity,
+    override val dateCreated: DateEntity,
     override val image: DraftParticipantImageFile?,
     override val biometricsTemplate: DraftParticipantBiometricsTemplateFile?,
     override val participantId: String,
