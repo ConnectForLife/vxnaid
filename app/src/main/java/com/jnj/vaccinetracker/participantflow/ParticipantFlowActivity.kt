@@ -49,7 +49,7 @@ class ParticipantFlowActivity : BaseActivity() {
         val outreachName = sharedPreferences.getString(Constants.OUTREACH_NAME, "") ?: ""
         val visitPlace = sharedPreferences.getString(Constants.VISIT_PLACE_FILE_KEY, "") ?: ""
         viewModel.setOutreachName(visitPlace, outreachName)
-
+        
         viewModel.currentScreen.observe(this) { screen ->
             navigateToScreen(screen, viewModel.navigationDirection)
         }
@@ -78,13 +78,25 @@ class ParticipantFlowActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         viewModel.saveInstanceState(outState)
     }
 
-    private fun navigateToScreen(screen: ParticipantFlowViewModel.Screen?, navigationDirection: NavigationDirection) {
+   private fun navigateToScreen(screen: ParticipantFlowViewModel.Screen?, navigationDirection: NavigationDirection) {
+        if (screen == ParticipantFlowViewModel.Screen.ADD_OR_SEARCH_PARTICIPANT) {
+            val sharedPreferences = getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE)
+            val outreachName = sharedPreferences.getString(Constants.OUTREACH_NAME, "") ?: ""
+            val visitPlace = sharedPreferences.getString(Constants.VISIT_PLACE_FILE_KEY, "") ?: ""
+            if (visitPlace == Constants.VISIT_PLACE_OUTREACH && outreachName.isNotEmpty()) {
+                binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
+            } else {
+                binding.root.setBackgroundColor(getColor(R.color.white))
+            }
+        } else {
+            binding.root.setBackgroundColor(getColor(R.color.white))
+        }
+
         val fragment = when (screen) {
             ParticipantFlowViewModel.Screen.ADD_OR_SEARCH_PARTICIPANT -> ParticipantFlowAddOrSearchFragment()
             ParticipantFlowViewModel.Screen.INTRO -> ParticipantFlowIntroFragment()
@@ -105,9 +117,7 @@ class ParticipantFlowActivity : BaseActivity() {
             }
 
             val transaction = supportFragmentManager.beginTransaction()
-
             transaction.animateNavigationDirection(navigationDirection)
-
             transaction
                 .replace(R.id.fragment_container, newFragment)
                 .commit()
@@ -145,7 +155,6 @@ class ParticipantFlowActivity : BaseActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
     override val syncBanner: SyncBanner
         get() = binding.syncBanner

@@ -105,9 +105,11 @@ class LoginActivity : BaseActivity() {
             if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
                 textInputOutreachName.visibility = View.VISIBLE
                 visitPlaceIcon.visibility = View.VISIBLE
+                binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
             } else {
                 textInputOutreachName.visibility = View.GONE
                 visitPlaceIcon.visibility = View.GONE
+                binding.root.setBackgroundColor(getColor(R.color.white))
             }
         }
 
