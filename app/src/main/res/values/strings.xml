@@ -548,4 +548,5 @@
     <string name="children_overview_client_birthdate_column_label">Date of Birth</string>
     <string name="not_set">Not set</string>
     <string name="selected_vaccines">Selected Vaccines:</string>
+    <string name="participant_registration_details_action_update_participant_mobile_version" translatable="false">Update Child</string>
 </resources>

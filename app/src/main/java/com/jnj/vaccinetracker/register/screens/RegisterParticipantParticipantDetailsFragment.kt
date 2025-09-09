@@ -112,6 +112,14 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.scrollView?.post {
+            binding.scrollView!!.scrollTo(0, 0)
+        }
+    }
+
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
         viewModel.defaultPhoneCountryCode.observe(lifecycleOwner) { countryCode ->
             if (countryCode != null) {
