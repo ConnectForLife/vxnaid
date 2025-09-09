@@ -41,7 +41,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_16"
+                android:layout_marginTop="50dp"
                 android:text="@{viewModel.isEdit ? @string/participant_past_visits_title : @string/participant_registration_historic_visits_title}"
                 android:textAppearance="@style/ScreenTitle" />
 
@@ -56,8 +56,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:columnCount="2"
-                    android:padding="@dimen/padding_16"
+                    android:columnCount="4"
+                    android:padding="16dp"
                     android:rowCount="2"></GridLayout>
 
             </ScrollView>
@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/margin_16"
+                android:layout_marginBottom="32dp"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="@string/participant_administered_vaccines_action_save"
                 android:textAppearance="@style/ButtonTextStyling"

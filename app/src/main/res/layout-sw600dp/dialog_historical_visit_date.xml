@@ -19,8 +19,8 @@
             <ImageView
                 android:id="@+id/imageView_checkmark_alert"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginVertical="@dimen/margin_8"
+                android:layout_height="100dp"
+                android:layout_marginVertical="@dimen/margin_8_16"
                 android:gravity="center"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_checkmark_alert"
@@ -31,11 +31,10 @@
             android:id="@+id/dialog_historical_visit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_4"
+            android:layout_marginTop="@dimen/margin_4_8"
             android:gravity="center_horizontal"
             android:text="@string/dialog_historical_visit_text"
-            android:textAppearance="@style/PopupTitle"
-            android:textSize="@dimen/text_16"/>
+            android:textAppearance="@style/PopupTitle"/>
 
         <DatePicker
             android:id="@+id/datePicker"
