@@ -5,146 +5,154 @@
 
     <data>
 
-    <variable
-        name="participant"
-        type="com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel" />
+        <variable
+            name="participant"
+            type="com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel" />
     </data>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
         android:orientation="vertical"
-        android:paddingVertical="16dp"
         tools:ignore="NestedWeights">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:id="@+id/details_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="@dimen/margin_16_32"
+            app:layout_constraintTop_toBottomOf="parent" >
 
-            <TextView
-                android:id="@+id/textView_pre_participantID"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="32dp"
-                android:text="@string/participant_flow_participant_id_title"
-                android:textAppearance="@style/LabelText"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView_pre_gender"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:text="@string/visit_label_gender"
-                android:textAppearance="@style/LabelText"
-                app:layout_constraintEnd_toEndOf="@+id/textView_pre_participantID"
-                app:layout_constraintStart_toStartOf="@id/textView_pre_participantID"
-                app:layout_constraintTop_toBottomOf="@+id/textView_pre_participantID" />
-
-            <TextView
-                android:id="@+id/textView_pre_yearOfBirth"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:maxLines="1"
-                android:text="@string/participant_registration_details_label_date_of_birth"
-                android:textAppearance="@style/LabelText"
-                app:layout_constraintBottom_toTopOf="@+id/separator"
-                app:layout_constraintStart_toStartOf="@id/textView_pre_participantID"
-                app:layout_constraintTop_toBottomOf="@+id/textView_pre_gender" />
-
-            <TextView
-                android:id="@+id/textView_participantID"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:text="@{participant.participantId}"
-                android:textAppearance="@style/GeneralText"
-                app:layout_constraintBaseline_toBaselineOf="@+id/textView_pre_participantID"
-                app:layout_constraintEnd_toStartOf="@id/img_participant"
-                app:layout_constraintStart_toEndOf="@+id/textView_pre_participantID" />
+                android:layout_weight="2"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView_gender"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{participant.gender == null ? `` : context.getString(participant.gender.translation)}"
-                android:textAppearance="@style/GeneralText"
-                app:layout_constraintBaseline_toBaselineOf="@+id/textView_pre_gender"
-                app:layout_constraintEnd_toEndOf="@+id/textView_participantID"
-                app:layout_constraintStart_toStartOf="@+id/textView_participantID" />
+                <TextView
+                    android:id="@+id/textView_pre_participantID"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/participant_flow_participant_id_title"
+                    android:textAppearance="@style/LabelText" />
 
-            <TextView
-                android:id="@+id/textView_yearOfBirth"
+                <TextView
+                    android:id="@+id/textView_pre_gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/visit_label_gender"
+                    android:textAppearance="@style/LabelText"/>
+
+                <TextView
+                    android:id="@+id/textView_pre_yearOfBirth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/participant_registration_details_label_date_of_birth"
+                    android:textAppearance="@style/LabelText"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="0dp"
+                android:layout_weight="2"
                 android:layout_height="wrap_content"
-                android:text='@{participant.birthDateText}'
-                android:textAppearance="@style/GeneralText"
-                app:layout_constraintBaseline_toBaselineOf="@+id/textView_pre_yearOfBirth"
-                app:layout_constraintEnd_toEndOf="@+id/textView_gender"
-                app:layout_constraintStart_toStartOf="@+id/textView_participantID" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView_participantID"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{participant.participantId}"
+                    android:textAppearance="@style/GeneralText"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/textView_pre_participantID"
+                    app:layout_constraintEnd_toStartOf="@id/img_participant"
+                    app:layout_constraintStart_toEndOf="@+id/textView_pre_participantID" />
+
+                <TextView
+                    android:id="@+id/textView_gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{participant.gender == null ? `` : context.getString(participant.gender.translation)}"
+                    android:textAppearance="@style/GeneralText"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/textView_pre_gender"
+                    app:layout_constraintEnd_toEndOf="@+id/textView_participantID"
+                    app:layout_constraintStart_toStartOf="@+id/textView_participantID" />
+
+                <TextView
+                    android:id="@+id/textView_yearOfBirth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{participant.birthDateText}'
+                    android:textAppearance="@style/GeneralText"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/textView_pre_yearOfBirth"
+                    app:layout_constraintEnd_toEndOf="@+id/textView_gender"
+                    app:layout_constraintStart_toStartOf="@+id/textView_participantID" />
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/img_participant"
-                android:layout_width="140dp"
-                android:layout_height="0dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="70dp"
                 android:layout_marginEnd="32dp"
                 android:scaleType="fitStart"
                 app:imageUiModel="@{participant.participantPicture}"
-                app:layout_constraintBottom_toBottomOf="@id/textView_pre_yearOfBirth"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/textView_pre_participantID"
                 app:srcCompat="@drawable/ic_avatar_operator" />
 
-            <View
-                android:id="@+id/separator"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_marginStart="64dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="64dp"
-                android:background="@color/colorAccent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textView_pre_yearOfBirth" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+
+        <View
+            android:id="@+id/separator"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="@dimen/margin_8_16"
+            android:layout_marginHorizontal="@dimen/margin_16_32"
+            android:background="@color/colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/details_container" />
 
         <LinearLayout
             android:id="@+id/linearLayout_additionalInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
+            android:layout_marginBottom="@dimen/margin_4_8"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="32dp">
+            android:padding="@dimen/padding_16_32">
 
             <TextView
                 android:id="@+id/textView_additionalInfo"
-                android:layout_width="155dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="@string/adverse_effects_page_additional_info_title"
+                android:textSize="@dimen/text_size_14_18"
                 android:textAppearance="@style/LabelText" />
 
             <EditText
                 android:id="@+id/editText_additionalInfo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:hint="@string/adverse_effect_page_additional_info_hint"
                 android:inputType="textMultiLine"
                 android:maxHeight="70sp"
                 android:minLines="4"
                 android:text=""
-                android:textSize="18sp" />
+                android:textSize="@dimen/text_size_14_18" />
         </LinearLayout>
 
         <Button
             android:id="@+id/btn_saveAdverseEffect"
-            android:layout_width="170dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_8_16"
+            android:paddingHorizontal="@dimen/padding_16_32"
+            android:paddingVertical="@dimen/padding_4_8"
             android:layout_gravity="center"
             android:backgroundTint="@color/colorPrimary"
             android:text="@string/adverse_adverse_effect_page_save_button_title"
