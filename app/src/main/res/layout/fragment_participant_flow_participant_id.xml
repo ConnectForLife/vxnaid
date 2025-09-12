@@ -23,6 +23,7 @@
             android:layout_height="0dp"
             android:layout_margin="@dimen/margin_16_32"
             android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/btn_back"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -31,9 +32,10 @@
                 android:id="@+id/textView_manualIDSubtitle"
                 style="@style/CustomAutoSizeText"
                 android:layout_width="match_parent"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:gravity="center"
                 android:text="@string/participant_flow_participant_id_label_manual_entry"
-                android:textAlignment="center"
                 android:textAppearance="@style/ScreenTitle" />
 
             <EditText
@@ -46,7 +48,7 @@
                 android:inputType="textVisiblePassword"
                 android:longClickable="false"
                 android:textIsSelectable="false"
-                android:textSize="@dimen/complete_input_text_size_18_24"
+                android:textSize="@dimen/text_size_16_20"
                 android:textAlignment="center"
                 tools:ignore="TextFields" />
 
@@ -70,8 +72,8 @@
                 android:layout_marginTop="32dp"
                 android:layout_weight="0"
                 android:text="@string/participant_flow_participant_id_label_scan_code"
-                android:textAlignment="center"
-                android:textAppearance="@style/ScreenTitle" />
+                android:textAppearance="@style/ScreenTitle"
+                android:gravity="center" />
 
             <ImageButton
                 android:id="@+id/btn_scan_code"
