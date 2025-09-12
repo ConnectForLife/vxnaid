@@ -488,6 +488,11 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         binding.btnSubmit.setOnClickListener {
             submitRegistration()
         }
+
+        binding.btnSubmitSingle?.setOnClickListener {
+            submitRegistration()
+        }
+
         binding.rbGenderMale.setOnClickListener {
             updateGender()
         }
