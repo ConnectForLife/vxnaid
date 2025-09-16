@@ -187,7 +187,7 @@ class LoginActivity : BaseActivity() {
             getString(R.string.confirm_visit_place_message, visitPlace)
         }
 
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.confirm_visit_place_title)
             .setMessage(message)
             .setPositiveButton(R.string.confirm) { _, _ ->
@@ -196,7 +196,11 @@ class LoginActivity : BaseActivity() {
                 viewModel.login(username, password, visitPlace)
             }
             .setNegativeButton(R.string.cancel, null)
-            .show()
+            .setCancelable(false)
+            .create()
+
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
