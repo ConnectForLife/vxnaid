@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -134,13 +135,13 @@ class ParticipantFlowActivity : BaseActivity() {
             viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PARTICIPANT_ID ||
             viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PHONE ||
             viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.MOTHER_NAME) {
-            navigateToHomePage()
+            navigateToReturnVisitGuidePage()
         } else if (!viewModel.navigateBack()) {
             logOut()
         }
     }
 
-    private fun navigateToHomePage() {
+    private fun navigateToReturnVisitGuidePage() {
         viewModel.currentScreen.value = ParticipantFlowViewModel.Screen.INTRO
         viewModel.navigationDirection = NavigationDirection.BACKWARD
         navigateToScreen(viewModel.currentScreen.value, viewModel.navigationDirection)

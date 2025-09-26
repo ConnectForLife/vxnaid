@@ -3,17 +3,15 @@ package com.jnj.vaccinetracker.participantflow.screens
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.updateLayoutParams
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentParticipantFlowIntroBinding
-import com.jnj.vaccinetracker.databinding.ItemParticipantFlowItemBinding
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 
 
@@ -35,15 +33,13 @@ class ParticipantFlowIntroFragment : BaseFragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         binding.btnMotherName.setOnClickListener {
-            navigateToFragment(ParticipantFlowMotherNameFragment())
+            viewModel.currentScreen.value = ParticipantFlowViewModel.Screen.MOTHER_NAME
         }
-
         binding.btnMobilePhoneNumber.setOnClickListener {
-            navigateToFragment(ParticipantFlowPhoneNumberFragment())
+            viewModel.currentScreen.value = ParticipantFlowViewModel.Screen.PHONE
         }
-
         binding.btnChildIdNumber.setOnClickListener {
-            navigateToFragment(ParticipantFlowParticipantIdFragment())
+            viewModel.currentScreen.value = ParticipantFlowViewModel.Screen.PARTICIPANT_ID
         }
 
         setHasOptionsMenu(true)
@@ -52,11 +48,13 @@ class ParticipantFlowIntroFragment : BaseFragment() {
         return binding.root
     }
 
-    private fun navigateToFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            viewModel.currentScreen.value = ParticipantFlowViewModel.Screen.ADD_OR_SEARCH_PARTICIPANT
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
+
     private fun Int.toPx() = this * resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT
 }
