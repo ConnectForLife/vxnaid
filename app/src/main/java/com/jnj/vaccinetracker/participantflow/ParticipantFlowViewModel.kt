@@ -217,9 +217,6 @@ class ParticipantFlowViewModel @Inject constructor(
                 }
             }
         }
-//        workflowItems.add(WorkflowItem.MATCHING)
-//        workflowItems.add(WorkflowItem.VISIT)
-
         return workflowItems
     }
 
@@ -339,15 +336,11 @@ class ParticipantFlowViewModel @Inject constructor(
     }
 
     fun navigateBack(): Boolean {
-        val currentScreen = currentScreen.get() ?: return false
-        val previousScreenIndex = screens.indexOf(currentScreen) - 1
-
-        if (previousScreenIndex in screens.indices) {
+        if (screens.isNotEmpty()) {
             navigationDirection = NavigationDirection.BACKWARD
-            this.currentScreen.set(screens[previousScreenIndex])
+            currentScreen.set(Screen.INTRO)
             return true
         }
-
         return false
     }
 

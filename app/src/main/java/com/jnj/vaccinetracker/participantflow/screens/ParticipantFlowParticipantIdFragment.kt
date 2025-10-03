@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
@@ -55,13 +54,13 @@ class ParticipantFlowParticipantIdFragment : BaseFragment() {
             startActivityForResult(ScanBarcodeActivity.create(requireContext(),ScanBarcodeActivity.PARTICIPANT), REQ_BARCODE)
         }
         binding.btnBack.setOnClickListener {
-            navigateToFragment(ParticipantFlowIntroFragment())
+            flowViewModel.navigateBack()
         }
         binding.btnSubmit.setOnClickListener {
             val participantId = if (viewModel.canSubmit.get()) binding.editIdNumber.text.toString() else null
             flowViewModel.confirmParticipantId(participantId, manual = true)
         }
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         return binding.root
     }
 
@@ -83,12 +82,5 @@ class ParticipantFlowParticipantIdFragment : BaseFragment() {
             }
             flowViewModel.confirmParticipantId(participantIdBarcode, manual = false)
         }
-    }
-
-    private fun navigateToFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
     }
 }
