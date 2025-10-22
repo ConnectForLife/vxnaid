@@ -39,12 +39,21 @@ import java.util.Locale
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.Q)
-class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
+class VisitsListFragment : BaseFragment(),
     ReportOverviewDatePickerDialog.VisitsOverviewDatePickerListener {
 
     companion object {
         private const val START_DATE_PICKER_DIALOG_TAG = "startDatePicker"
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePicker"
+        private const val ARG_VISITS_KEY = "arg_visits_key"
+
+        fun newInstance(visitsKey: String): VisitsListFragment {
+            return VisitsListFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_VISITS_KEY, visitsKey)
+                }
+            }
+        }
     }
 
     private lateinit var binding: FragmentVisitsListBinding
@@ -52,9 +61,15 @@ class VisitsListFragment(private val visitsKey: String) : BaseFragment(),
     private val visitsListViewModel: VisitsListViewModel by viewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+    private var visitsKey: String = Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY
 
     @Inject lateinit var configurationManager: ConfigurationManager
     @Inject lateinit var visitManager: VisitManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.getString(ARG_VISITS_KEY)?.let { visitsKey = it }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
