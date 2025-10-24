@@ -25,8 +25,11 @@ class ReportsOverviewFlowActivity : BaseActivity() {
     private val reportsOverviewViewModel: ReportsOverviewViewModel by viewModels { viewModelFactory }
     private lateinit var binding: ActivityReportsOverviewFlowBinding
 
+    private var isRestored = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isRestored = savedInstanceState != null
         savedInstanceState?.let { reportsOverviewViewModel.restoreInstanceState(it) }
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_reports_overview_flow)
@@ -38,6 +41,8 @@ class ReportsOverviewFlowActivity : BaseActivity() {
     }
 
     private fun navigateToScreen(screen: ReportsOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
+        if (isRestored && supportFragmentManager.findFragmentById(R.id.fragment_container) != null) return
+
         val fragment = when (screen) {
             ReportsOverviewViewModel.Screen.REPORTS_OVERVIEW -> ReportsOverviewFragment()
             else -> null

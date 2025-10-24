@@ -27,9 +27,12 @@ class VaccinesOverviewFlowActivity : BaseActivity() {
     private val vaccinesOverviewViewModel: VaccinesOverviewViewModel by viewModels { viewModelFactory }
     private lateinit var binding: ActivityVaccinesOverviewFlowBinding
 
+    private var isRestored = false
+
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isRestored = savedInstanceState != null
         savedInstanceState?.let { vaccinesOverviewViewModel.restoreInstanceState(it) }
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_vaccines_overview_flow)
@@ -47,6 +50,8 @@ class VaccinesOverviewFlowActivity : BaseActivity() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun navigateToScreen(screen: VaccinesOverviewViewModel.Screen?, navigationDirection: NavigationDirection) {
+        if (isRestored && supportFragmentManager.findFragmentById(R.id.fragment_container) != null) return
+
         val fragment = when (screen) {
             VaccinesOverviewViewModel.Screen.VACCINES_OVERVIEW -> VaccinesOverviewFragment()
             else -> null
