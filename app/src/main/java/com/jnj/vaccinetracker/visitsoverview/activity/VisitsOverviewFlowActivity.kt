@@ -38,8 +38,14 @@ class VisitsOverviewFlowActivity : BaseActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_visit_overview_flow)
         binding.lifecycleOwner = this
 
-        visitsOverviewViewModel.currentScreen.observe(this) { screen ->
-            navigateToScreen(screen, visitsOverviewViewModel.navigationDirection)
+        if (savedInstanceState == null) {
+            visitsOverviewViewModel.currentScreen.observe(this) { screen ->
+                navigateToScreen(screen, visitsOverviewViewModel.navigationDirection)
+            }
+        } else {
+            visitsOverviewViewModel.currentScreen.observe(this) { screen ->
+                screen?.let { title = getString(it.title) }
+            }
         }
     }
 

@@ -47,7 +47,7 @@ class VisitsOverviewFragment : BaseFragment() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun navigateToVisitsList(visitsKey: String) {
-        val fragment = VisitsListFragment(visitsKey)
+        val fragment = VisitsListFragment.newInstance(visitsKey)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
