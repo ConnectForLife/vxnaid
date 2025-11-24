@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.dialogs.ReportOverviewDatePickerDialog
@@ -30,7 +30,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.util.Locale
 import java.time.ZoneId
 
-
 @RequiresApi(Build.VERSION_CODES.Q)
 class RegisteredParticipantsFragment : BaseFragment(),
     ReportOverviewDatePickerDialog.VisitsOverviewDatePickerListener {
@@ -38,13 +37,36 @@ class RegisteredParticipantsFragment : BaseFragment(),
     companion object {
         private const val START_DATE_PICKER_DIALOG_TAG = "startDatePicker"
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePicker"
+        private const val STATE_START_DATE_MILLIS = "state_start_date_millis"
+        private const val STATE_END_DATE_MILLIS = "state_end_date_millis"
     }
 
     private lateinit var patientAdapter: PatientAdapter
     private lateinit var binding: FragmentRegisteredChildrenBinding
-    private val registeredParticipantsViewModel: RegisteredParticipantsViewModel by viewModels { viewModelFactory }
+    private val registeredParticipantsViewModel: RegisteredParticipantsViewModel by activityViewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        savedInstanceState?.let { bundle ->
+            if (bundle.containsKey(STATE_START_DATE_MILLIS)) {
+                val startMillis = bundle.getLong(STATE_START_DATE_MILLIS)
+                selectedStartDate = DateTime(startMillis.toDouble())
+            }
+            if (bundle.containsKey(STATE_END_DATE_MILLIS)) {
+                val endMillis = bundle.getLong(STATE_END_DATE_MILLIS)
+                selectedEndDate = DateTime(endMillis.toDouble())
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        selectedStartDate?.let { outState.putLong(STATE_START_DATE_MILLIS, it.toDate().time) }
+        selectedEndDate?.let { outState.putLong(STATE_END_DATE_MILLIS, it.toDate().time) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,10 +78,18 @@ class RegisteredParticipantsFragment : BaseFragment(),
         binding.lifecycleOwner = viewLifecycleOwner
 
         setupRecyclerView()
-        loadPatients()
         setupObservers()
         setupFilterButtons()
         setupDownloadButtons()
+
+        if (selectedStartDate != null) binding.labelStartDate.text = formatDate(selectedStartDate)
+        if (selectedEndDate != null) binding.labelEndDate.text = formatDate(selectedEndDate)
+
+        if (savedInstanceState == null) {
+            loadPatients()
+        } else {
+            registeredParticipantsViewModel.patientDTOs.value?.let { applyFilters(it) }
+        }
 
         return binding.root
     }
