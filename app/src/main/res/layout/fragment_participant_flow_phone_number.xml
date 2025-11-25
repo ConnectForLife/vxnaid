@@ -44,9 +44,10 @@
 
         <LinearLayout
             android:id="@+id/linearLayout"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
+            android:gravity="center"
             android:layout_marginTop="@dimen/margin_16"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -56,19 +57,21 @@
                 android:id="@+id/country_code_picker_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_4"
                 app:ccp_countryPreference="UG"
                 app:ccp_defaultNameCode="UG"/>
 
             <EditText
                 android:id="@+id/edit_telephone"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:autofillHints="phone"
+                android:padding="@dimen/padding_16"
+                android:textAlignment="center"
                 android:hint="@string/participant_flow_phone_description"
                 android:inputType="phone"
                 android:text="@{viewModel.phone}"
-                android:textSize="@dimen/text_size_14_18"/>
+                android:textSize="@dimen/complete_input_text_size_18_24"/>
         </LinearLayout>
 
         <Button
