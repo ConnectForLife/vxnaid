@@ -46,6 +46,8 @@ class VisitsListFragment : BaseFragment(),
         private const val START_DATE_PICKER_DIALOG_TAG = "startDatePicker"
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePicker"
         private const val ARG_VISITS_KEY = "arg_visits_key"
+        private const val STATE_START_DATE_MILLIS = "state_start_date_millis"
+        private const val STATE_END_DATE_MILLIS = "state_end_date_millis"
 
         fun newInstance(visitsKey: String): VisitsListFragment {
             return VisitsListFragment().apply {
@@ -69,6 +71,23 @@ class VisitsListFragment : BaseFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.getString(ARG_VISITS_KEY)?.let { visitsKey = it }
+
+        savedInstanceState?.let { bundle ->
+            if (bundle.containsKey(STATE_START_DATE_MILLIS)) {
+                val startMillis = bundle.getLong(STATE_START_DATE_MILLIS)
+                selectedStartDate = DateTime(startMillis.toDouble())
+            }
+            if (bundle.containsKey(STATE_END_DATE_MILLIS)) {
+                val endMillis = bundle.getLong(STATE_END_DATE_MILLIS)
+                selectedEndDate = DateTime(endMillis.toDouble())
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        selectedStartDate?.let { outState.putLong(STATE_START_DATE_MILLIS, it.toDate().time) }
+        selectedEndDate?.let { outState.putLong(STATE_END_DATE_MILLIS, it.toDate().time) }
     }
 
     override fun onCreateView(
@@ -79,11 +98,22 @@ class VisitsListFragment : BaseFragment(),
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_visits_list, container, false)
         setupRecyclerView()
-        loadVisitsData()
         setupObservers()
         setupFilterButtons()
         setupDownloadButtons()
 
+        if (selectedStartDate != null) {
+            binding.labelStartDate.text = formatDate(selectedStartDate)
+        }
+        if (selectedEndDate != null) {
+            binding.labelEndDate.text = formatDate(selectedEndDate)
+        }
+
+        if (savedInstanceState == null) {
+            loadVisitsData()
+        } else {
+            visitsListViewModel.visitDTOs.value?.let { applyFilters(it) }
+        }
         return binding.root
     }
 
@@ -145,8 +175,8 @@ class VisitsListFragment : BaseFragment(),
     }
 
     private fun setDateLabelsAndLoadData(loadData: () -> Unit) {
-        selectedStartDate = DateTime.now()
-        selectedEndDate = DateTime.now()
+        if (selectedStartDate == null) selectedStartDate = DateTime.now()
+        if (selectedEndDate == null) selectedEndDate = DateTime.now()
         binding.labelStartDate.text = formatDate(selectedStartDate)
         binding.labelEndDate.text = formatDate(selectedEndDate)
         loadData()
