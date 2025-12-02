@@ -161,7 +161,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
     val birthWeight = mutableLiveData<String>()
     val birthWeightValidationMessage = mutableLiveData<String>()
-
+    val bestContactTime = mutableLiveData<String>()
+    val bestContactTimeValidationMessage = mutableLiveData<String>()
     val childCategory = mutableLiveData<DisplayValue>()
     val childCategoryValidationMessage = mutableLiveData<String>()
     val childCategoryNames = mutableLiveData<List<DisplayValue>>()
@@ -278,6 +279,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantBase?.childNumber?.let { setChildNumber(it) }
             participantBase?.nin?.let { setNin(it) }
             participantBase?.birthWeight?.let { setBirthWeight(it) }
+            participantBase?.bestContactTime?.let { setBestContactTime(it) }
             participantBase?.gender?.let { setGender(it) }
             setBirthDateOrEstimatedAge(participantBase?.birthDate?.toDateTime(), participantBase?.isBirthDateEstimated ?: false)
             participantBase?.phone?.let { setPhone(it, true) }
@@ -303,6 +305,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             args.registerDetails.childNumber?.let { setChildNumber(it) }
             args.registerDetails.nin?.let { setNin(it) }
             args.registerDetails.birthWeight?.let { setBirthWeight(it) }
+            args.registerDetails.bestContactTime?.let { setBestContactTime(it) }
             args.registerDetails.gender.let { setGender(it) }
             setBirthDateOrEstimatedAge(args.registerDetails.birthDate, args.registerDetails.isBirthDateEstimated)
             args.registerDetails.motherFirstName.let { setMotherFirstName(it) }
@@ -366,6 +369,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val childNumber = childNumber.get()
         logInfo("setting up birthweight")
         val birthWeight = birthWeight.get()
+        val bestContactTimeValue = bestContactTime.get()
         val gender = gender.get()
         val birthDate = birthDate.get()
         val isBirthDateEstimated = isBirthDateEstimated.get()
@@ -381,7 +385,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
         val areInputsValid = validateInputs(participantId, gender, birthDate, homeLocation,
             motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName,
-            childLastName, childNumber, birthWeight)
+            childLastName, childNumber, birthWeight, bestContactTimeValue)
         val isNinValid = isNinValueValid(nin)
 
         var phoneNumberToSubmit: String? = null
@@ -416,6 +420,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 nin = nin,
                 childNumber = childNumber,
                 birthWeight = birthWeight,
+                bestContactTime = bestContactTimeValue,
                 gender = gender!!,
                 birthDate = birthDate!!,
                 isBirthDateEstimated = isBirthDateEstimated!!,
@@ -584,7 +589,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         childFirstName: String?,
         childLastName: String?,
         childNumber: String?,
-        birthWeight: String?
+        birthWeight: String?,
+        bestContactTime: String?,
     ): Boolean {
         var isValid = true
         val validationErrors: MutableList<String> = mutableListOf()
@@ -714,6 +720,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         ninValidationMessage.set(null)
         genderValidationMessage.set(null)
         birthWeightValidationMessage.set(null)
+        bestContactTimeValidationMessage.set(null)
         birthDateValidationMessage.set(null)
         estimatedAgeValidationMessage.set(null)
         phoneValidationMessage.set(null)
@@ -810,6 +817,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     fun setBirthWeight(birthWeight: String) {
         if (this.birthWeight.get() == birthWeight) return
         this.birthWeight.set(birthWeight)
+    }
+
+    fun setBestContactTime(bestContactTime: String) {
+        if (this.bestContactTime.get() == bestContactTime) return
+        this.bestContactTime.set(bestContactTime)
     }
 
     private fun validateParticipantId() {

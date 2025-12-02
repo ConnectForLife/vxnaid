@@ -33,7 +33,7 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 object ParticipantRoomDatabaseConfig {
-    const val CURRENT_VERSION = 14
+    const val CURRENT_VERSION = 15
     const val FILE_NAME = "participants.db"
 }
 
@@ -82,6 +82,7 @@ object ParticipantRoomDatabaseConfig {
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13,spec = ParticipantAutoMigrationSpec12to13::class),
         AutoMigration(from = 13, to = 14),
+        AutoMigration(from = 14, to = 15),
 
 
     ]

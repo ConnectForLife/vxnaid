@@ -16,6 +16,7 @@ data class RoomParticipantModel(
     override val participantUuid: String,
     override val phone: String?,
     override val birthWeight: String?,
+    override val bestContactTime: String?,
     override val participantId: String,
     override val nin: String?,
     override val childNumber: String?,

@@ -19,6 +19,7 @@ object Constants {
     const val ATTRIBUTE_ORIGINAL_PARTICIPANT_ID = "originalParticipantId"
     const val ATTRIBUTE_IS_BIRTH_DATE_ESTIMATED = "Is Birth Date Estimated"
     const val ATTRIBUTE_BIRTH_WEIGHT= "Birth Weight"
+    const val ATTRIBUTE_BEST_CONTACT_TIME= "Best Contact Time"
     const val ATTRIBUTE_MOTHER_FIRST_NAME= "Mother's first name"
     const val ATTRIBUTE_MOTHER_LAST_NAME= "Mother's last name"
     const val ATTRIBUTE_FATHER_FIRST_NAME= "Father's first name"

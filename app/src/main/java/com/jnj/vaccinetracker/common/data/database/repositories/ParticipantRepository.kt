@@ -50,7 +50,8 @@ class ParticipantRepository @Inject constructor(
         attributes = attributes.toMap()
             .withPhone(phone)
             .withLocationUuid(locationUuid)
-            .withBirthWeight(birthWeight),
+            .withBirthWeight(birthWeight)
+            .withBestContactTime(bestContactTime),
         biometricsTemplate = templateFile,
         image = imageFile,
         dateCreated = dateCreated
@@ -66,6 +67,7 @@ class ParticipantRepository @Inject constructor(
         birthDate = birthDate,
         dateModified = dateModified,
         birthWeight = birthWeight,
+        bestContactTime = bestContactTime,
         locationUuid = locationUuid,
         isBirthDateEstimated = isBirthDateEstimated,
         childFirstName = childFirstName,

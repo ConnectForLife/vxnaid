@@ -78,6 +78,7 @@ class ParticipantManager @Inject constructor(
 
     private fun getParticipantAttributes(
         birthWeight: String?,
+        bestContactTime: String?,
         telephone: String?,
         siteUuid: String,
         language: String,
@@ -104,6 +105,10 @@ class ParticipantManager @Inject constructor(
             personAttributes[Constants.ATTRIBUTE_BIRTH_WEIGHT] = birthWeight
         }
 
+        if (bestContactTime != null) {
+            personAttributes[Constants.ATTRIBUTE_BEST_CONTACT_TIME] = bestContactTime
+        }
+
         if (fatherFirstName != null) {
             personAttributes[Constants.ATTRIBUTE_FATHER_FIRST_NAME] = fatherFirstName
         }
@@ -123,6 +128,7 @@ class ParticipantManager @Inject constructor(
         val nin: String?,
         val childNumber: String?,
         val birthWeight: String?,
+        val bestContactTime: String?,
         val gender: Gender,
         val birthDate: DateTime?,
         val isBirthDateEstimated: Boolean,
@@ -149,6 +155,7 @@ class ParticipantManager @Inject constructor(
 
         val personAttributes = getParticipantAttributes(
             birthWeight = registerDetails.birthWeight,
+            bestContactTime = registerDetails.bestContactTime,
             telephone = registerDetails.telephone,
             siteUuid = registerDetails.siteUuid,
             language = registerDetails.language,

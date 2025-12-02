@@ -18,6 +18,7 @@ data class RoomDraftParticipantModel(
     override val nin: String?,
     override val childNumber: String?,
     override val birthWeight: String?,
+    override val bestContactTime: String?,
     override val gender: GenderEntity,
     override val birthDate: BirthDateEntity,
     override val isBirthDateEstimated: Boolean? = false,
