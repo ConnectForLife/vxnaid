@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.snackbar.Snackbar
@@ -13,6 +14,7 @@ import com.jnj.vaccinetracker.common.helpers.createLogFileShareIntent
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogSettingsBinding
+import com.jnj.vaccinetracker.login.RerunSetupWarningDialog
 import com.jnj.vaccinetracker.setup.SetupFlowActivity
 import kotlinx.coroutines.flow.onEach
 
@@ -24,7 +26,7 @@ import kotlinx.coroutines.flow.onEach
  */
 class SettingsDialog : BaseDialogFragment() {
 
-    private val viewModel: SettingsViewModel by viewModels { viewModelFactory }
+    private val viewModel: SettingsViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: DialogSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +68,7 @@ class SettingsDialog : BaseDialogFragment() {
                 .also { it.show() }
         }
         binding.btnRerunSetupWizard.setOnClickListener {
-            viewModel.rerunSetupWizard()
+            RerunSetupWarningDialog().show(childFragmentManager, RerunSetupWarningDialog.TAG)
 
         }
         binding.btnSyncNow.setOnClickListener {

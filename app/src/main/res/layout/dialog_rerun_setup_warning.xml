@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp"
+        android:paddingTop="16dp"
+        android:minWidth="320dp">
+
+        <ImageView
+            android:id="@+id/icon_warning"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_checkmark_alert"
+            app:tint="@color/errorDark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/general_label_warning"
+            android:textAppearance="@style/ScreenTitle"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/icon_warning"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icon_warning"
+            app:layout_constraintTop_toTopOf="@id/icon_warning" />
+
+        <TextView
+            android:id="@+id/message_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/rerun_setup_dialog_msg_part1"
+            android:textAppearance="@style/LabelText"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/errorDark"
+            app:layout_constraintTop_toBottomOf="@id/icon_warning" />
+
+        <TextView
+            android:id="@+id/message_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/rerun_setup_dialog_msg_part2"
+            android:textAppearance="@style/LabelText"
+            android:textSize="24sp"
+            app:layout_constraintTop_toBottomOf="@id/message_header" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="end"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/message_body">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/general_label_cancel"
+                android:textColor="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/btn_continue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/setup_btn_continue"
+                android:backgroundTint="@color/errorDark"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

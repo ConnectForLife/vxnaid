@@ -551,4 +551,6 @@
     <string name="not_set">Not set</string>
     <string name="selected_vaccines">Selected Vaccines:</string>
     <string name="participant_registration_details_action_update_participant_mobile_version" translatable="false">Update Child</string>
-</resources>
+    <string name="general_label_warning">Warning</string>
+    <string name="rerun_setup_dialog_msg_part1">This action is strictly for System Administrators. It is NOT intended for operators.\n</string>
+    <string name="rerun_setup_dialog_msg_part2">Do you want to continue?</string></resources>
