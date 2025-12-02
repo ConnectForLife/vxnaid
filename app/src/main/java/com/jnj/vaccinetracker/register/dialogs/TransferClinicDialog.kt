@@ -87,7 +87,8 @@ class TransferClinicDialog(
                     null,
                     createScheduleFirstVisit(),
                     fetchedParticipant.childFirstName,
-                    fetchedParticipant.childLastName
+                    fetchedParticipant.childLastName,
+                    fetchedParticipant.dateCreated
                 )
 
                 binding.btnTransferAndContinueVisit.setOnClickListener {

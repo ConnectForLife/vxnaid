@@ -114,20 +114,20 @@
                 android:textColor="@android:color/white" />
 
             <TextView
-                android:id="@+id/header_clientName"
+                android:id="@+id/header_clientRegistrationDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:text="@string/children_overview_client_birthdate_column_label"
+                android:text="@string/children_overview_client_registration_date_column_label"
                 android:background="@color/colorTextOnLight"
                 android:padding="8dp"
                 android:textColor="@android:color/white" />
 
             <TextView
-                android:id="@+id/header_motherFullName"
+                android:id="@+id/header_clientName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -142,7 +142,7 @@
                 tools:ignore="RtlSymmetry" />
 
             <TextView
-                android:id="@+id/header_clientBirthdate"
+                android:id="@+id/header_motherFullName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

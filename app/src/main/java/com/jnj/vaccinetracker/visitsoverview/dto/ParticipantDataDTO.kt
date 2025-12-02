@@ -16,6 +16,6 @@ data class ParticipantDataDTO(
     val birthDate: DateTime,
     val registrationDate: Date
 ) : Parcelable {
-    val formattedBirthDate: String get() = DateUtil.convertDateToString(birthDate.toDate(),
+    val formattedRegistrationDate: String get() = DateUtil.convertDateToString(registrationDate,
         DateFormat.FORMAT_DATE.toString())
 }

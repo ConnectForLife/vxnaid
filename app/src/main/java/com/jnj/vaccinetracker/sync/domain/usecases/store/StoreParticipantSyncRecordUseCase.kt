@@ -4,6 +4,7 @@ import com.jnj.vaccinetracker.common.data.database.repositories.DeletedSyncRecor
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.ParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.transaction.ParticipantDbTransactionRunner
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.models.toDomain
 import com.jnj.vaccinetracker.common.domain.entities.DraftState
 import com.jnj.vaccinetracker.common.domain.entities.Participant
@@ -19,6 +20,7 @@ import com.jnj.vaccinetracker.sync.domain.entities.ParticipantPendingCall
 import com.jnj.vaccinetracker.sync.domain.entities.SyncErrorMetadata
 import com.jnj.vaccinetracker.sync.domain.helpers.SyncLogger
 import com.jnj.vaccinetracker.sync.domain.usecases.store.base.StoreSyncRecordUseCaseBase
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -54,6 +56,7 @@ class StoreParticipantSyncRecordUseCase @Inject constructor(
         address = address,
         childFirstName = childFirstName,
         childLastName = childLastName,
+        dateCreated = dateCreated
     )
 
     private suspend fun deleteUploadedDraftParticipant(participant: Participant) {

@@ -17,6 +17,7 @@ data class ParticipantEntity(
     override val phone: String?,
     override val birthWeight: String?, 
     override val gender: GenderEntity,
+    override val dateCreated: Long?,
     override val birthDate: BirthDateEntity,
     @ColumnInfo(index = true)
     override val isBirthDateEstimated: Boolean?,

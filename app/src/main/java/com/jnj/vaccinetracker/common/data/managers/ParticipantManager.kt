@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.common.data.managers
 
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
@@ -138,6 +139,7 @@ class ParticipantManager @Inject constructor(
         val childFirstName: String?,
         val childLastName: String?,
         val childCategory: String?,
+        val dateCreated: Long?
     )
 
     @SuppressWarnings("LongParameterList")
@@ -170,7 +172,8 @@ class ParticipantManager @Inject constructor(
             biometricsTemplate = registerDetails.biometricsTemplateBytes,
             scheduleFirstVisit = createScheduleFirstVisit(),
             childFirstName = registerDetails.childFirstName,
-            childLastName = registerDetails.childLastName
+            childLastName = registerDetails.childLastName,
+            dateCreated = registerDetails.dateCreated
         )
     }
 
@@ -188,7 +191,8 @@ class ParticipantManager @Inject constructor(
                 image = registerRequest.image,
                 scheduleFirstVisit = createScheduleFirstVisit(),
                 childFirstName = registerRequest.childFirstName,
-                childLastName = registerRequest.childLastName
+                childLastName = registerRequest.childLastName,
+                dateCreated = registerRequest.dateCreated
             )
     }
 

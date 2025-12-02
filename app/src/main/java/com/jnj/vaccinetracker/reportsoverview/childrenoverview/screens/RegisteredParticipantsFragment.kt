@@ -238,14 +238,14 @@ class RegisteredParticipantsFragment : BaseFragment(),
             headerRow.createCell(0).setCellValue(Constants.CLIENT_ID_FILE_COLUMN_HEADER)
             headerRow.createCell(1).setCellValue(Constants.CLIENT_NAME_FILE_COLUMN_HEADER)
             headerRow.createCell(2).setCellValue(Constants.CLIENT_MOTHER_NAME_FILE_HEADER)
-            headerRow.createCell(3).setCellValue(Constants.CLIENT_BIRTHDATE_FILE_HEADER)
+            headerRow.createCell(3).setCellValue(Constants.CLIENT_REGISTRATION_DATE_FILE_HEADER)
 
             patients.forEachIndexed { index, patient ->
                 val row = sheet.createRow(index + 1)
                 row.createCell(0).setCellValue(patient.participantId)
                 row.createCell(1).setCellValue(patient.fullName)
                 row.createCell(2).setCellValue(patient.motherName)
-                row.createCell(3).setCellValue(patient.formattedBirthDate)
+                row.createCell(3).setCellValue(patient.formattedRegistrationDate)
             }
 
             sheet.setColumnWidth(0, 4000)
@@ -261,13 +261,13 @@ class RegisteredParticipantsFragment : BaseFragment(),
     private fun exportToCSV(patients: List<ParticipantDataDTO>) {
         val fileName = "${buildFileName()}.csv"
         val mimeType = "text/csv"
-        val titleRowColumns = "${Constants.CLIENT_ID_FILE_COLUMN_HEADER}, ${Constants.CLIENT_NAME_FILE_COLUMN_HEADER}, ${Constants.CLIENT_MOTHER_NAME_FILE_HEADER}, ${Constants.CLIENT_BIRTHDATE_FILE_HEADER} \n"
+        val titleRowColumns = "${Constants.CLIENT_ID_FILE_COLUMN_HEADER}, ${Constants.CLIENT_NAME_FILE_COLUMN_HEADER}, ${Constants.CLIENT_MOTHER_NAME_FILE_HEADER}, ${Constants.CLIENT_REGISTRATION_DATE_FILE_HEADER} \n"
 
         FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
             outputStream.bufferedWriter().use { writer ->
                 writer.write(titleRowColumns)
                 patients.forEach { patient ->
-                    writer.write("${patient.participantId}, ${patient.fullName},${patient.motherName},${patient.formattedBirthDate} \n")
+                    writer.write("${patient.participantId}, ${patient.fullName},${patient.motherName},${patient.formattedRegistrationDate} \n")
                 }
             }
         }

@@ -13,6 +13,7 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 class RegisteredParticipantsViewModel@Inject constructor(
@@ -45,10 +46,10 @@ class RegisteredParticipantsViewModel@Inject constructor(
         return patients.map { patient ->
             ParticipantDataDTO(
                 participantId = patient.participantId,
-                fullName = "${patient.childFirstName} ${patient.childLastName}",
-                motherName = "${patient.motherFirstName} ${patient.motherLastName}",
+                fullName = "${patient.childFirstName ?: ""} ${patient.childLastName ?: ""}",
+                motherName = "${patient.motherFirstName ?: ""} ${patient.motherLastName ?: ""}",
                 birthDate = patient.birthDate.toDateTime(),
-                registrationDate = patient.dateModified
+                registrationDate = Date(patient.dateCreated ?: patient.birthDate.time)
             )
         }
     }
@@ -57,8 +58,8 @@ class RegisteredParticipantsViewModel@Inject constructor(
         return draftPatients.map { draftPatient ->
             ParticipantDataDTO(
                 participantId = draftPatient.participantId,
-                fullName = "${draftPatient.childFirstName} ${draftPatient.childLastName}",
-                motherName = "${draftPatient.motherFirstName} ${draftPatient.motherLastName}",
+                fullName = "${draftPatient.childFirstName ?: ""} ${draftPatient.childLastName ?: ""}",
+                motherName = "${draftPatient.motherFirstName ?: ""} ${draftPatient.motherLastName ?: ""}",
                 birthDate = draftPatient.birthDate.toDateTime(),
                 registrationDate = draftPatient.registrationDate
             )

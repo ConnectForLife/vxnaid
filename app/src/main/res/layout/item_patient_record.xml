@@ -31,7 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="@dimen/visit_list_item_text_12_16"
-            android:text="@{participant.formattedBirthDate}"
+            android:text="@{participant.formattedRegistrationDate}"
             android:textStyle="bold"
             android:gravity="center"
             app:layout_constraintStart_toEndOf="@id/tv_clientId"

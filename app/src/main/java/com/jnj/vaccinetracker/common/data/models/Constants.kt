@@ -116,7 +116,7 @@ object Constants {
     const val CLIENT_NAME_FILE_COLUMN_HEADER = "Client Name"
     const val PHONE_NUMBER_FILE_COLUMN_HEADER = "Phone Number"
     const val CLIENT_MOTHER_NAME_FILE_HEADER = "Mother Name"
-    const val CLIENT_BIRTHDATE_FILE_HEADER = "Birthdate"
+    const val CLIENT_REGISTRATION_DATE_FILE_HEADER = "Registration Date"
 
     const val VACCINES_CATEGORY_NAME = "Immunization"
     const val GROUP_AGE_FIRST = "0-11 months"

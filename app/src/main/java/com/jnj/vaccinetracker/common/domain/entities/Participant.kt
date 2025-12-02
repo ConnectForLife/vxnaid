@@ -20,6 +20,7 @@ sealed class ParticipantBase {
     abstract val address: Address?
     abstract val childFirstName: String?
     abstract val childLastName: String?
+    abstract val dateCreated: Long?
 
     val phone: String? get() = attributes[Constants.ATTRIBUTE_TELEPHONE]
     val locationUuid: String? get() = attributes[Constants.ATTRIBUTE_LOCATION]
@@ -50,7 +51,8 @@ data class Participant(
     override val attributes: Map<String, String>,
     override val address: Address?,
     override val childFirstName: String?,
-    override val childLastName: String?
+    override val childLastName: String?,
+    override val dateCreated: Long?
 ) : ParticipantBase(), SyncBase {
 
 }
@@ -72,8 +74,9 @@ data class DraftParticipant(
     override val childLastName: String?,
     override val draftState: DraftState,
     val isUpdate: Boolean = false,
+    override val dateCreated: Long?
 ) : ParticipantBase(), SyncBase, UploadableDraft {
-    override val dateModified: DateEntity get() = (if (isUpdate) dateNow() else registrationDate)
+    override val dateModified: DateEntity get() = dateNow()
 }
 
 fun Map<String, String>.withOriginalParticipantId(participantId: String?): Map<String, String> {
@@ -110,5 +113,6 @@ fun DraftParticipant.toParticipantWithoutAssets(): Participant = Participant(
     attributes = attributes,
     address = address,
     childFirstName = childFirstName,
-    childLastName = childLastName
+    childLastName = childLastName,
+    dateCreated = dateCreated,
 )

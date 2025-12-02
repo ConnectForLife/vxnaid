@@ -32,7 +32,8 @@ data class DraftParticipantEntity(
     override val childFirstName: String?,
     override val childLastName: String?,
     override val motherFirstName: String?,
-    override val motherLastName: String?
+    override val motherLastName: String?,
+    override val dateCreated: Long?
 
 ) : DraftParticipantEntityBase {
     companion object {

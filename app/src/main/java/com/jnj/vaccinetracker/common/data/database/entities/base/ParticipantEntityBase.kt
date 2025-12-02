@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.common.data.database.entities.base
 
 import com.jnj.vaccinetracker.common.data.database.entities.BirthDateEntity
 import com.jnj.vaccinetracker.common.data.database.entities.GenderEntity
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 
 interface ParticipantEntityBase : ParticipantUuidContainer {
     val phone: String?
@@ -17,6 +18,7 @@ interface ParticipantEntityBase : ParticipantUuidContainer {
     val childLastName: String?
     val motherFirstName: String?
     val motherLastName: String?
+    val dateCreated: Long?
 
     companion object {
         const val COL_PHONE = "phone"

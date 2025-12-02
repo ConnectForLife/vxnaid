@@ -7,6 +7,7 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftParticipantDao
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.SyncErrorRepository
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.helpers.delaySafe
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
@@ -431,6 +432,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 childFirstName = childFirstName,
                 childLastName = childLastName,
                 childCategory = childCategoryValue,
+                dateCreated = dateNow().time
             )
             val registerRequest = participantManager.getRegisterParticipant(registerDetails)
 

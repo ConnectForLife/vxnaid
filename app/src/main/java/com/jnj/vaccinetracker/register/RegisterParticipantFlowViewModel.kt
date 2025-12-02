@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.annotation.StringRes
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.domain.entities.Address
@@ -17,6 +18,7 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantImageUiModel.Companion.toUiModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
+import java.util.Date
 import javax.inject.Inject
 
 /**
@@ -55,7 +57,8 @@ class RegisterParticipantFlowViewModel @Inject constructor(
             fatherLastName = "",
             childFirstName = "",
             childLastName = "",
-            childCategory = ""
+            childCategory = "",
+            dateCreated = dateNow().time
         )
     }
     val visitTypeName = mutableLiveData<String>()

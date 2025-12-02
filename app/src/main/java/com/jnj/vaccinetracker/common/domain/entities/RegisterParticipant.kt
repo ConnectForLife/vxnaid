@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.common.domain.entities
 
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import java.util.*
 
 data class RegisterParticipant(
@@ -15,7 +16,8 @@ data class RegisterParticipant(
     val biometricsTemplate: BiometricsTemplateBytes?,
     val scheduleFirstVisit: ScheduleFirstVisit,
     val childFirstName: String?,
-    val childLastName: String?
+    val childLastName: String?,
+    val dateCreated: Long?
 )
 
 data class UpdateParticipant(
@@ -31,7 +33,8 @@ data class UpdateParticipant(
     val image: ImageBytes?,
     val scheduleFirstVisit: ScheduleFirstVisit,
     val childFirstName: String?,
-    val childLastName: String?
+    val childLastName: String?,
+    val dateCreated: Long?
 )
 
 data class ScheduleFirstVisit(

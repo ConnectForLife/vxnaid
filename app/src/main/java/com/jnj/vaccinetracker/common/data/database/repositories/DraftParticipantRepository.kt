@@ -1,7 +1,6 @@
 package com.jnj.vaccinetracker.common.data.database.repositories
 
 import com.jnj.vaccinetracker.common.data.database.daos.base.deleteByParticipantUuid
-import com.jnj.vaccinetracker.common.data.database.daos.base.findAllByMotherName
 import com.jnj.vaccinetracker.common.data.database.daos.base.findAllByPhoneNullable
 import com.jnj.vaccinetracker.common.data.database.daos.base.updateDraftStateOrThrow
 import com.jnj.vaccinetracker.common.data.database.daos.draft.DraftParticipantAddressDao
@@ -12,12 +11,12 @@ import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipa
 import com.jnj.vaccinetracker.common.data.database.entities.draft.DraftParticipantEntity
 import com.jnj.vaccinetracker.common.data.database.mappers.toDomain
 import com.jnj.vaccinetracker.common.data.database.mappers.toDraftPersistence
-import com.jnj.vaccinetracker.common.data.database.models.RoomParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.update.RoomUpdateParticipantDraftStateModel
 import com.jnj.vaccinetracker.common.data.database.repositories.base.DeleteByDraftParticipant
 import com.jnj.vaccinetracker.common.data.database.repositories.base.DraftParticipantRepositoryBase
 import com.jnj.vaccinetracker.common.data.database.transaction.ParticipantDbTransactionRunner
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.*
 import com.jnj.vaccinetracker.common.exceptions.InsertEntityException
@@ -25,6 +24,7 @@ import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.yield
+import java.util.Date
 import javax.inject.Inject
 
 class DraftParticipantRepository @Inject constructor(
@@ -56,6 +56,7 @@ class DraftParticipantRepository @Inject constructor(
             .withBirthWeight(birthWeight),
         draftState = draftState,
         isUpdate = isUpdate ?: false,
+        dateCreated = dateCreated,
     )
 
     private fun DraftParticipant.toPersistence() = DraftParticipantEntity(
@@ -69,13 +70,14 @@ class DraftParticipantRepository @Inject constructor(
         birthWeight = birthWeight,
         isBirthDateEstimated = isBirthDateEstimated,
         draftState = DraftState.initialState(),
-        registrationDate = dateModified,
+        registrationDate = Date(dateCreated ?: dateNow().time),
         locationUuid = locationUuid,
         isUpdate = isUpdate,
         childFirstName = childFirstName,
         childLastName = childLastName,
         motherFirstName = motherFirstName,
-        motherLastName = motherLastName
+        motherLastName = motherLastName,
+        dateCreated = dateCreated
     )
 
     override suspend fun findAllByPhone(phone: String?): List<DraftParticipant> {

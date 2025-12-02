@@ -47,7 +47,8 @@ class UpdateParticipantUseCase @Inject constructor(
         draftState = DraftState.initialState(),
         isUpdate = true,
         childFirstName = childFirstName,
-        childLastName = childLastName
+        childLastName = childLastName,
+        dateCreated = dateCreated
     )
 
     private suspend fun writeImageToDisk(file: DraftParticipantImageFile, imageBytes: ImageBytes) {
