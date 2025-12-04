@@ -81,7 +81,7 @@ class BestContactTimePickerDialog(
             set(Calendar.MINUTE, minute)
         }
 
-        val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         return timeFormat.format(calendar.time)
     }
 }
