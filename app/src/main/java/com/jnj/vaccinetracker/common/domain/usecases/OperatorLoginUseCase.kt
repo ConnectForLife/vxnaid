@@ -12,6 +12,7 @@ import com.jnj.vaccinetracker.common.exceptions.SyncUserCredentialsNotAvailableE
 import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
+import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.data.repositories.SyncUserCredentialsRepository
 import kotlinx.coroutines.yield
 import javax.inject.Inject
@@ -23,6 +24,7 @@ class OperatorLoginUseCase @Inject constructor(
     private val api: VaccineTrackerApiDataSource,
     private val passwordHasher: PasswordHasher,
     private val syncUserCredentialsRepository: SyncUserCredentialsRepository,
+    private val syncSettingsRepository: SyncSettingsRepository
 ) {
 
     private fun throwIfCachedSyncAdmin(username: String, password: String) {
@@ -87,6 +89,21 @@ class OperatorLoginUseCase @Inject constructor(
         }
     }
 
+    private fun validateLocations(locationUuids: String) {
+        logInfo("validateLocations")
+        val currentLocationUuid = syncSettingsRepository.getSiteUuid()
+
+        val allowedLocations = locationUuids.split(",").map { it.trim() }
+        if (currentLocationUuid !in allowedLocations) {
+            logInfo("validateLocations failed: Current location $currentLocationUuid not found in allowed locations")
+            throw OperatorAuthenticationException("User cannot log in to this location because he is not assigned to it.",
+                reason = OperatorAuthenticationException.Reason.NotAssignedLocation
+            )
+        } else {
+            logInfo("validateLocations success: Location matches")
+        }
+    }
+
     suspend fun login(username: String, password: String): User {
         logInfo("login: $username")
         throwIfCachedSyncAdmin(username, password)
@@ -99,6 +116,7 @@ class OperatorLoginUseCase @Inject constructor(
             throw OperatorAuthenticationException("user '$username' not authenticated", reason = OperatorAuthenticationException.Reason.RemoteLoginError)
 
         validateRoles(response.user.roles)
+        validateLocations(response.user.userProperties.locationUuid)
 
         onLoggedInOnline(response.user, password)
 

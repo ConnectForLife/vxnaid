@@ -127,6 +127,11 @@ class OperatorAuthenticationException(override val message: String? = null, over
          * user without operator role logged in
          */
         NotOperatorRole,
+
+        /**
+         * user cannot log in to this location because he is not assigned to it
+         */
+        NotAssignedLocation
     }
 }
 

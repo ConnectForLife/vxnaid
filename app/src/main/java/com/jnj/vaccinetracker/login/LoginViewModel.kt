@@ -88,6 +88,7 @@ class LoginViewModel @Inject constructor(
                 -> R.string.login_label_error_not_authenticated
                 OperatorAuthenticationException.Reason.SyncAdminRole -> R.string.login_label_error_sync_admin_role_not_allowed
                 OperatorAuthenticationException.Reason.NotOperatorRole -> R.string.login_label_error_opertor_role_required
+                OperatorAuthenticationException.Reason.NotAssignedLocation -> R.string.login_label_error_location_not_assigned
             }
             errorMessage.set(resourcesWrapper.getString(stringResource))
             loading.set(false)

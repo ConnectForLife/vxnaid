@@ -21,12 +21,18 @@ data class UserDto(
     val display: String,
     val username: String,
     val roles: List<UserRole>,
+    val userProperties: UserProperties
 )
 
 @JsonClass(generateAdapter = true)
 data class UserRole(
     val uuid: String,
     val name: String,
+)
+
+@JsonClass(generateAdapter = true)
+data class UserProperties(
+    val locationUuid: String
 )
 
 fun List<UserRole>.isSyncAdmin() = any { it.name == Constants.ROLE_SYNC_ADMIN }
