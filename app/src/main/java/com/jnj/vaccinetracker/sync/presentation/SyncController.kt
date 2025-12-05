@@ -42,7 +42,7 @@ class SyncController @Inject constructor(
     fun onCreate(foregroundService: ForegroundService) {
         logInfo("onCreate")
         syncNotificationManager.onCreate(foregroundService)
-        licenseSyncService.start()
+//        licenseSyncService.start() // not needed for this impl, uncomment when needed
         masterDataSyncService.start()
         participantPendingCallService.startUploading()
         downstreamSyncService.start()
@@ -54,7 +54,7 @@ class SyncController @Inject constructor(
         observeSyncState(foregroundService)
         heartBeatWakeUpService.startWakeUpHeartBeat()
         deviceNameSyncService.start()
-        biometricsTemplateSyncService.start()
+//        biometricsTemplateSyncService.start() // not needed for this impl, uncomment when needed
     }
 
     private fun observeSyncState(foregroundService: ForegroundService) {
