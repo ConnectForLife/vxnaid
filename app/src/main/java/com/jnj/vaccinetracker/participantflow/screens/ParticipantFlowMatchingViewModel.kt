@@ -32,6 +32,8 @@ import kotlinx.coroutines.yield
 import javax.inject.Inject
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
 import androidx.annotation.RequiresApi
 
@@ -193,6 +195,14 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
 
             itemsList.add(SubtitleItem(text = styledText))
             itemsList.addAll(nonSiteParticipants)
+        } else {
+            val warningText = SpannableString(resourcesWrapper.getString(R.string.participant_matching_label_empty_other_results_warning_msg)).apply {
+                setSpan(StyleSpan(Typeface.BOLD), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(ForegroundColorSpan(android.graphics.Color.parseColor("#FFA500")), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(RelativeSizeSpan(1.3f), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+
+            itemsList.add(SubtitleItem(text = warningText))
         }
         items.set(itemsList)
 

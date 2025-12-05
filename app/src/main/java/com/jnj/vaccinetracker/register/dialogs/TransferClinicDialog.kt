@@ -55,8 +55,11 @@ class TransferClinicDialog(
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_transfer_clinic, container, false)
-
         participantViewModel = ParticipantUpdateViewModel(participantManager)
+
+        binding.btnClose.setOnClickListener {
+            dismissAllowingStateLoss()
+        }
 
         val participantSummaryUiModel = ParticipantSummaryUiModel(
             participant.participantUUID!!,
@@ -71,40 +74,44 @@ class TransferClinicDialog(
         lifecycleScope.launch {
             try {
                 val fetchedParticipant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(participant.participantUUID!!)
-                val updatedAttributes = fetchedParticipant?.attributes?.toMutableMap() ?: mutableMapOf()
-                updatedAttributes[Constants.ATTRIBUTE_LOCATION] = currentLocationUuid
+                if (fetchedParticipant != null) {
+                    val updatedAttributes = fetchedParticipant.attributes.toMutableMap()
+                    updatedAttributes[Constants.ATTRIBUTE_LOCATION] = currentLocationUuid
 
-                val participantToUpdate = UpdateParticipant(
-                    fetchedParticipant!!.participantUuid,
-                    fetchedParticipant.participantId,
-                    fetchedParticipant.nin,
-                    fetchedParticipant.childNumber,
-                    fetchedParticipant.gender,
-                    fetchedParticipant.isBirthDateEstimated ?: false,
-                    fetchedParticipant.birthDate,
-                    fetchedParticipant.address!!,
-                    updatedAttributes,
-                    null,
-                    createScheduleFirstVisit(),
-                    fetchedParticipant.childFirstName,
-                    fetchedParticipant.childLastName,
-                    fetchedParticipant.dateCreated
-                )
+                    val participantToUpdate = UpdateParticipant(
+                        fetchedParticipant.participantUuid,
+                        fetchedParticipant.participantId,
+                        fetchedParticipant.nin,
+                        fetchedParticipant.childNumber,
+                        fetchedParticipant.gender,
+                        fetchedParticipant.isBirthDateEstimated ?: false,
+                        fetchedParticipant.birthDate,
+                        fetchedParticipant.address!!,
+                        updatedAttributes,
+                        null,
+                        createScheduleFirstVisit(),
+                        fetchedParticipant.childFirstName,
+                        fetchedParticipant.childLastName,
+                        fetchedParticipant.dateCreated
+                    )
 
-                binding.btnTransferAndContinueVisit.setOnClickListener {
-                    try {
-                        startParticipantVisitContraindications(participantSummaryUiModel)
-                        participantViewModel.updateParticipantInBackground(participantToUpdate)
-                    } catch (e: Exception) {
-                        Log.e("TransferClinicDialog", "Something went wrong during updating participant location", e)
+                    binding.btnTransferAndContinueVisit.setOnClickListener {
+                        try {
+                            startParticipantVisitContraindications(participantSummaryUiModel)
+                            participantViewModel.updateParticipantInBackground(participantToUpdate)
+                        } catch (e: Exception) {
+                            Log.e("TransferClinicDialog", "Something went wrong during updating participant location", e)
+                        }
+
+                        dismissAllowingStateLoss()
                     }
 
-                    dismissAllowingStateLoss()
-                }
-
-                binding.btnJustVisit.setOnClickListener {
-                    startParticipantVisitContraindications(participantSummaryUiModel)
-                    dismissAllowingStateLoss()
+                    binding.btnJustVisit.setOnClickListener {
+                        startParticipantVisitContraindications(participantSummaryUiModel)
+                        dismissAllowingStateLoss()
+                    }
+                } else {
+                    handleErrorState()
                 }
             } catch (e: Exception) {
                 Log.e("TransferClinicDialog", "Error fetching participant", e)
@@ -112,6 +119,18 @@ class TransferClinicDialog(
         }
 
         return binding.root
+    }
+
+    private fun handleErrorState() {
+        binding.textViewErrorMessage.apply {
+            visibility = View.VISIBLE
+        }
+
+        binding.btnTransferAndContinueVisit.isEnabled = false
+        binding.btnTransferAndContinueVisit.alpha = 0.5f
+
+        binding.btnJustVisit.isEnabled = false
+        binding.btnJustVisit.alpha = 0.5f
     }
 
     private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel) {

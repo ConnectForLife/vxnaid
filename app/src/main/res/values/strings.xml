@@ -137,6 +137,7 @@
     <string name="participant_matching_btn_match_selected">Vaccinate Child</string>
     <string name="participant_matching_label_no_results_this_site">No match found within your site.</string>
     <string name="participant_matching_label_other_results">The following matches were found outside your site:</string>
+    <string name="participant_matching_label_empty_other_results_warning_msg">If you expect any participants from other sites, make sure you have an Internet connection to search for them.</string>
     <string name="participant_matching_label_amount_of_results">Total matches: %d</string>
     <string name="participant_registration_picture_title">New Child photo</string>
     <string name="participant_registration_details_title">Child details</string>
@@ -456,6 +457,7 @@
     <string name="transfer_clinic_question">Would you like to transfer  this child to your Health Facility?</string>
     <string name="transfer_clinic_transfer_and_continue">Transfer and continue with visit</string>
     <string name="transfer_clinic_just_visit">Just a visit</string>
+    <string name="transfer_clinic_participant_not_found_msg">Cannot load participant</string>
     <string name="general_label_enter_number">Enter number</string>
     <string name="visit_z_score_weight_for_height_label">Weight for height</string>
     <string name="visit_z_score_weight_hint">Fill weight first</string>

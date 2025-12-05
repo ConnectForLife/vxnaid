@@ -56,9 +56,6 @@ class UpdateParticipantUseCase @Inject constructor(
     }
 
     suspend fun updateParticipant(updateParticipant: UpdateParticipant): DraftParticipant {
-        findParticipantByParticipantIdUseCase.findByParticipantId(updateParticipant.participantId)
-            ?: throw ParticipantNotFoundException()
-
         val deletedParticipant = findParticipantByParticipantIdUseCase.findDeletedParticipantbyId(updateParticipant.participantId)
         if (deletedParticipant != null) {
             throw ParticipantDeletedException()

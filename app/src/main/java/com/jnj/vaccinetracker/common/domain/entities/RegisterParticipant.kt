@@ -1,6 +1,5 @@
 package com.jnj.vaccinetracker.common.domain.entities
 
-import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import java.util.*
 
 data class RegisterParticipant(
