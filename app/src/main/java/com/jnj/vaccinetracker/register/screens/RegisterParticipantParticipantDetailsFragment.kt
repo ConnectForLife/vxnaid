@@ -517,6 +517,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
 
         binding.btnSelectContactTime.setOnClickListener {
             val dialog = BestContactTimePickerDialog(viewModel.bestContactTime.value)
+            dialog.setListener(this) // Add this line to set the fragment as the listener
             dialog.show(childFragmentManager, "bestContactTimePicker")
         }
     }
