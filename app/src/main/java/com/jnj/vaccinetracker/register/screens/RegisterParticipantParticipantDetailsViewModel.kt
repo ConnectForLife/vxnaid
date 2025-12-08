@@ -385,8 +385,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
         val areInputsValid = validateInputs(participantId, gender, birthDate, homeLocation,
             motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName,
-            childLastName, childNumber, birthWeight, bestContactTimeValue)
-        val isNinValid = isNinValueValid(nin)
+            childLastName, childNumber, birthWeight, bestContactTimeValue, nin)
 
         var phoneNumberToSubmit: String? = null
 
@@ -407,7 +406,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         } else if (!phone.get().isNullOrEmpty()) {
             phoneNumberToSubmit = fullPhoneNumber
         }
-        if (!areInputsValid || !isNinValid)
+        if (!areInputsValid)
             return
 
         loading.set(true)
@@ -476,8 +475,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             } else {
                 participantManager.registerParticipant(registerRequest)
             }
-
-
 
             loading.set(false)
 
@@ -591,6 +588,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         childNumber: String?,
         birthWeight: String?,
         bestContactTime: String?,
+        nin: String?
     ): Boolean {
         var isValid = true
         val validationErrors: MutableList<String> = mutableListOf()
@@ -679,28 +677,17 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             addValidationError(textInputValidator.validate(childLastName), R.string.participant_registration_details_error_no_letters_used, childLastNameValidationMessage)
         }
 
-        this.validationErrors.value = validationErrors
-
-        return isValid
-    }
-
-
-    private fun isNinValueValid(ninValue: String?): Boolean {
-        if (isEditMode() && originalNinValue == ninValue) {
-            return true;
-        }
-
-        var isValid = true
-
-        if (!ninValue.isNullOrEmpty()) {
-            if (!ninValidator.validate(ninValue)) {
-                isValid = false
-                ninValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_nin_wrong_format))
-            } else if (isNinAlreadyExist(ninValue)) {
-                isValid = false
-                ninValidationMessage.set(resourcesWrapper.getString(R.string.participant_registration_details_error_nin_already_exist))
+        val shouldValidateNin = !(isEditMode() && originalNinValue == nin)
+        if (shouldValidateNin && !nin.isNullOrEmpty()) {
+            val isFormatValid = ninValidator.validate(nin)
+            addValidationError(isFormatValid, R.string.participant_registration_details_error_nin_wrong_format, ninValidationMessage)
+            if (isFormatValid) {
+                val isNinUnique = !isNinAlreadyExist(nin)
+                addValidationError(isNinUnique, R.string.participant_registration_details_error_nin_already_exist, ninValidationMessage)
             }
         }
+
+        this.validationErrors.value = validationErrors
 
         return isValid
     }

@@ -5,6 +5,7 @@ import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.helpers.uuid
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.transaction.ParticipantDbTransactionRunner
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.data.files.ParticipantDataFileIO
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.domain.entities.*
@@ -84,7 +85,8 @@ class RegisterParticipantUseCaseTest : FunSpec({
         scheduleFirstVisit = createScheduleFirstVisit(),
         attributes = emptyMap(),
         childFirstName = "childFirstName",
-        childLastName = "childLastName"
+        childLastName = "childLastName",
+        dateCreated = DateEntity().time
     )
 
     val uploadedDraftParticipantTemplatesPending = DraftParticipant(
@@ -102,7 +104,8 @@ class RegisterParticipantUseCaseTest : FunSpec({
         address = registerParticipant.address,
         draftState = DraftState.UPLOADED,
         childFirstName = "childFirstName",
-        childLastName = "childLastName"
+        childLastName = "childLastName",
+        dateCreated = DateEntity().time
     )
 
     val uploadedDraftParticipantTemplatesUploaded = DraftParticipant(
@@ -120,7 +123,8 @@ class RegisterParticipantUseCaseTest : FunSpec({
         address = registerParticipant.address,
         draftState = DraftState.UPLOADED,
         childFirstName = "childFirstName",
-        childLastName = "childLastName"
+        childLastName = "childLastName",
+        dateCreated = DateEntity().time
     )
 
     val draftVisit = DraftVisit(

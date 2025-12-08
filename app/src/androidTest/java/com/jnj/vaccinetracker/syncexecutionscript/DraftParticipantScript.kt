@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.jnj.vaccinetracker.VaccineTrackerApplication
 import com.jnj.vaccinetracker.common.data.database.repositories.ParticipantBiometricsTemplateRepository
+import com.jnj.vaccinetracker.common.data.database.typealiases.DateEntity
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.helpers.AndroidFiles
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -117,7 +118,9 @@ class DraftParticipantScript {
                     fatherLastName = "fatherLastName",
                     childFirstName = "childFirstName",
                     childLastName = "childLastName",
-                    childCategory = "childCategory"
+                    childCategory = "childCategory",
+                    bestContactTime = "10:30",
+                    dateCreated = DateEntity().time
 
                 )
             )

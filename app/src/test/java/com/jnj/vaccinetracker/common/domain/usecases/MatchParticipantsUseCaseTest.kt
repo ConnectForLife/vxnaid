@@ -80,6 +80,7 @@ class MatchParticipantsUseCaseTest : FunSpec({
             null,
             "childFirstName",
             "childLastName",
+            DateEntity().time
         )
 
     fun draftParticipant(uuid: String = uuid(), participantId: String = "", childNumber: String = "", nin: String = "", phone: String? = null, gender: Gender = Gender.FEMALE, withTemplate: Boolean = true) =
@@ -98,7 +99,9 @@ class MatchParticipantsUseCaseTest : FunSpec({
             null,
             "childFirstName",
             "childLastName",
-            DraftState.initialState()
+            DraftState.initialState(),
+            false,
+            DateEntity().time
         )
     test("when remote api successfully returns result then return that") {
         // Arrange
