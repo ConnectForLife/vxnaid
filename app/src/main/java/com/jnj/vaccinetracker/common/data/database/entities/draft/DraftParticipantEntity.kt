@@ -21,6 +21,8 @@ data class DraftParticipantEntity(
     override val gender: GenderEntity,
     override val birthDate: BirthDateEntity,
     override val birthWeight: String?,
+    @ColumnInfo(defaultValue = "NULL")
+    override val bestContactTime: String?,
     @ColumnInfo(index = true)
     override val isBirthDateEstimated: Boolean?,
     override val registrationDate: DateEntity,

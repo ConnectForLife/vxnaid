@@ -15,7 +15,9 @@ data class ParticipantEntity(
     override val childNumber: String?,
     @ColumnInfo(index = true)
     override val phone: String?,
-    override val birthWeight: String?, 
+    override val birthWeight: String?,
+    @ColumnInfo(defaultValue = "NULL")
+    override val bestContactTime: String?,
     override val gender: GenderEntity,
     override val dateCreated: Long?,
     override val birthDate: BirthDateEntity,

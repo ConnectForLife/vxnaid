@@ -55,7 +55,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     RegisterParticipantConfirmNoTelephoneDialog.RegisterParticipationNoTelephoneConfirmationListener,
     RegisterParticipantHasChildEverVaccinatedDialog.RegisterParticipationIsChildNewbornListener,
     RegisterParticipantSuccessfulDialog.RegisterParticipationCompletionListener,
-    EstimatedAgeDialog.EstimatedAgePickerListener {
+    EstimatedAgeDialog.EstimatedAgePickerListener,
+    BestContactTimePickerDialog.BestContactTimePickerListener {
 
     companion object {
         private const val TAG_HOME_LOCATION_PICKER = "homeLocationPicker"
@@ -513,6 +514,12 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         binding.btnGoToHistorical.setOnClickListener {
             goToEditHistoricalVisits()
         }
+
+        binding.btnSelectContactTime.setOnClickListener {
+            val dialog = BestContactTimePickerDialog(viewModel.bestContactTime.value)
+            dialog.setListener(this) // Add this line to set the fragment as the listener
+            dialog.show(childFragmentManager, "bestContactTimePicker")
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -648,6 +655,15 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         val currentDetails = flowViewModel.registerDetails.value
         if (currentDetails != null) {
             val updatedDetails = currentDetails.copy(birthDate = estimatedBirthDate!!, isBirthDateEstimated = true)
+            flowViewModel.registerDetails.set(updatedDetails)
+        }
+    }
+
+    override fun onBestContactTimePicked(time: String) {
+        viewModel.bestContactTime.value = time
+        val currentDetails = flowViewModel.registerDetails.value
+        if (currentDetails != null) {
+            val updatedDetails = currentDetails.copy(bestContactTime = time)
             flowViewModel.registerDetails.set(updatedDetails)
         }
     }

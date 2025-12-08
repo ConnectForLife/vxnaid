@@ -14,6 +14,7 @@ interface ParticipantEntityBase : ParticipantUuidContainer {
     val isBirthDateEstimated: Boolean?
     val locationUuid: String?
     val birthWeight: String?
+    val bestContactTime: String?
     val childFirstName: String?
     val childLastName: String?
     val motherFirstName: String?
