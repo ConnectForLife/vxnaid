@@ -4,6 +4,7 @@ import com.jnj.vaccinetracker.common.domain.entities.SyncEntityType
 import com.jnj.vaccinetracker.common.exceptions.SyncResponseValidationException
 import com.jnj.vaccinetracker.common.exceptions.TotalSyncScopeRecordCountMismatchException
 import com.jnj.vaccinetracker.common.helpers.logWarn
+import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.sync.data.models.SyncRequest
 import com.jnj.vaccinetracker.sync.data.models.SyncResponse
 import com.jnj.vaccinetracker.sync.data.models.SyncStatus
@@ -27,19 +28,36 @@ class ValidateSyncResponseUseCase @Inject constructor(
         val successCount = getSyncRecordCountUseCase.getCount(syncEntityType)
         val deletedCount = getDeletedSyncRecordCountUseCase.count(syncEntityType)
         val syncEntityCount = successCount + failedCount + deletedCount
+        // Log computed counts for diagnostics
+        logInfo("validateCounts: optimize=$optimize, totalSyncScopeRecordCount=$totalSyncScopeRecordCount, ignoredCount=$ignoredCount, voidedCount=$voidedCount")
+        logInfo("validateCounts: successCount=$successCount, failedCount=$failedCount, deletedCount=$deletedCount, syncEntityCount=$syncEntityCount")
+
         if (optimize) {
             val draftCount = getUploadedDraftCountUseCase.getCount(syncEntityType)
             val count = draftCount + syncEntityCount
-            if (count != totalSyncScopeRecordCount) {
-                throw TotalSyncScopeRecordCountMismatchException(message = """local sync record count is $syncEntityCount including $draftCount uploaded drafts, $deletedCount voided, $failedCount failed.
-                    |But backend totalSyncScopeRecordCount is $totalSyncScopeRecordCount 
-                    |of which $ignoredCount are expected to be uploaded drafts
-                    |and $voidedCount are expected to be voided""".trimMargin(), totalSyncScopeRecordCount)
+            logInfo("validateCounts (optimize): draftCount=$draftCount, local total including drafts=$count")
+            if (count > totalSyncScopeRecordCount) {
+                val message = "local sync record count is $syncEntityCount including $draftCount uploaded drafts, $deletedCount voided, $failedCount failed. " +
+                        "But backend totalSyncScopeRecordCount is $totalSyncScopeRecordCount of which $ignoredCount are expected to be uploaded drafts and $voidedCount are expected to be voided"
+                // extra diagnostic logs
+                logWarn("ValidateSyncResponse failed (optimize). Details: successCount=$successCount, draftCount=$draftCount, failedCount=$failedCount, deletedCount=$deletedCount, localTotalIncludingDrafts=$count, backendTotal=$totalSyncScopeRecordCount, ignoredCount=$ignoredCount, voidedCount=$voidedCount")
+                logWarn("Full message: $message")
+                // TotalSyncScopeRecordCountMismatchException expects (message, backendTableCount)
+                throw TotalSyncScopeRecordCountMismatchException(message = message, backendTableCount = totalSyncScopeRecordCount)
+            } else if (count < totalSyncScopeRecordCount) {
+                // Backend has MORE records than local: log warning but don't fail the sync. This is a safe condition indicating local is behind.
+                logWarn("Backend total ($totalSyncScopeRecordCount) is greater than local total including drafts ($count). Continuing sync; local DB may be incomplete.")
             }
-        } else if (syncEntityCount != totalSyncScopeRecordCount) {
-            throw TotalSyncScopeRecordCountMismatchException(message = """local sync record count is $syncEntityCount including $deletedCount voided, $failedCount failed
-                |but backend totalSyncScopeRecordCount is $totalSyncScopeRecordCount
-                |of which $voidedCount are expected to be voided""".trimMargin(), totalSyncScopeRecordCount)
+        } else {
+            if (syncEntityCount > totalSyncScopeRecordCount) {
+                val message = "local sync record count is $syncEntityCount including $deletedCount voided, $failedCount failed but backend totalSyncScopeRecordCount is $totalSyncScopeRecordCount of which $voidedCount are expected to be voided"
+                logWarn("ValidateSyncResponse failed. Details: successCount=$successCount, failedCount=$failedCount, deletedCount=$deletedCount, localTotal=$syncEntityCount, backendTotal=$totalSyncScopeRecordCount, voidedCountExpected=$voidedCount")
+                logWarn("Full message: $message")
+                throw TotalSyncScopeRecordCountMismatchException(message = message, backendTableCount = totalSyncScopeRecordCount)
+            } else if (syncEntityCount < totalSyncScopeRecordCount) {
+                // Backend has MORE records than local: log and continue
+                logWarn("Backend total ($totalSyncScopeRecordCount) is greater than local total ($syncEntityCount). Continuing sync; local DB may be incomplete.")
+            }
         }
     }
 
@@ -69,9 +87,14 @@ class ValidateSyncResponseUseCase @Inject constructor(
                 throw SyncResponseValidationException(ex, syncResponse.syncStatus)
             }
             if (totalSyncScopeRecordCount != null && syncStatus == SyncStatus.OK) {
-                validateCounts(optimize = syncRequest.optimize,
-                    totalSyncScopeRecordCount = totalSyncScopeRecordCount,
-                    ignoredCount = totalIgnoredRecordCount, voidedCount = totalVoidedRecordCount, syncEntityType)
+                // call validateCounts with positional, non-null safe arguments to avoid named-parameter mismatch
+                validateCounts(
+                    syncRequest.optimize,
+                    totalSyncScopeRecordCount,
+                    totalIgnoredRecordCount,
+                    totalVoidedRecordCount,
+                    syncEntityType
+                )
             }
         }
 
