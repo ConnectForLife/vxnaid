@@ -118,14 +118,7 @@ class ParticipantRepository @Inject constructor(
         try {
             if (orReplace) {
                 val isDeletedByUuid = participantDao.deleteByParticipantUuid(model.participantUuid) > 0
-                val isDeletedById = participantDao.findByParticipantId(model.participantId)?.let {
-                    if (it.participantUuid != model.participantUuid) {
-                        participantDao.deleteByParticipantUuid(it.participantUuid) > 0
-                    } else {
-                        false
-                    }
-                } ?: false
-                if (isDeletedByUuid || isDeletedById) {
+                if (isDeletedByUuid) {
                     logInfo("deleted participant for replace ${model.participantUuid} or participantId ${model.participantId}")
                 }
             }
