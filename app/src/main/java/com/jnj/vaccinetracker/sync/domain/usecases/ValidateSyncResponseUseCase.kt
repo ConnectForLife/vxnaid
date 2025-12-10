@@ -28,7 +28,6 @@ class ValidateSyncResponseUseCase @Inject constructor(
         val successCount = getSyncRecordCountUseCase.getCount(syncEntityType)
         val deletedCount = getDeletedSyncRecordCountUseCase.count(syncEntityType)
         val syncEntityCount = successCount + failedCount + deletedCount
-        // Log computed counts for diagnostics
         logInfo("validateCounts: optimize=$optimize, totalSyncScopeRecordCount=$totalSyncScopeRecordCount, ignoredCount=$ignoredCount, voidedCount=$voidedCount")
         logInfo("validateCounts: successCount=$successCount, failedCount=$failedCount, deletedCount=$deletedCount, syncEntityCount=$syncEntityCount")
 
@@ -39,10 +38,8 @@ class ValidateSyncResponseUseCase @Inject constructor(
             if (count > totalSyncScopeRecordCount) {
                 val message = "local sync record count is $syncEntityCount including $draftCount uploaded drafts, $deletedCount voided, $failedCount failed. " +
                         "But backend totalSyncScopeRecordCount is $totalSyncScopeRecordCount of which $ignoredCount are expected to be uploaded drafts and $voidedCount are expected to be voided"
-                // extra diagnostic logs
                 logWarn("ValidateSyncResponse failed (optimize). Details: successCount=$successCount, draftCount=$draftCount, failedCount=$failedCount, deletedCount=$deletedCount, localTotalIncludingDrafts=$count, backendTotal=$totalSyncScopeRecordCount, ignoredCount=$ignoredCount, voidedCount=$voidedCount")
                 logWarn("Full message: $message")
-                // TotalSyncScopeRecordCountMismatchException expects (message, backendTableCount)
                 throw TotalSyncScopeRecordCountMismatchException(message = message, backendTableCount = totalSyncScopeRecordCount)
             } else if (count < totalSyncScopeRecordCount) {
                 // Backend has MORE records than local: log warning but don't fail the sync. This is a safe condition indicating local is behind.

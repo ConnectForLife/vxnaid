@@ -25,6 +25,7 @@ import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.yield
 import javax.inject.Inject
+import kotlin.compareTo
 
 class ParticipantRepository @Inject constructor(
     private val transactionRunner: ParticipantDbTransactionRunner,
@@ -117,9 +118,21 @@ class ParticipantRepository @Inject constructor(
     override suspend fun insert(model: Participant, orReplace: Boolean) = transactionRunner.withTransaction {
         try {
             if (orReplace) {
-                val isDeletedByUuid = participantDao.deleteByParticipantUuid(model.participantUuid) > 0
-                if (isDeletedByUuid) {
-                    logInfo("deleted participant for replace ${model.participantUuid} or participantId ${model.participantId}")
+                // First, delete any existing record with the same participantId (regardless of UUID)
+                val existingByParticipantId = participantDao.findByParticipantId(model.participantId)
+                if (existingByParticipantId != null) {
+                    val deletedById = participantDao.deleteByParticipantUuid(existingByParticipantId.participantUuid) > 0
+                    if (deletedById) {
+                        logInfo("deleted participant by participantId ${model.participantId} (uuid: ${existingByParticipantId.participantUuid})")
+                    }
+                }
+
+                // Then delete by UUID if it's different from what we just deleted
+                if (existingByParticipantId?.participantUuid != model.participantUuid) {
+                    val deletedByUuid = participantDao.deleteByParticipantUuid(model.participantUuid) > 0
+                    if (deletedByUuid) {
+                        logInfo("deleted participant by uuid ${model.participantUuid}")
+                    }
                 }
             }
 
