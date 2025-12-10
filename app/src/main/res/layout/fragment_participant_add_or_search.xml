@@ -101,6 +101,20 @@
                 android:textStyle="bold"
                 app:cornerRadius="@dimen/button_corner_radius" />
 
+            <Button
+                android:id="@+id/btn_test_crash"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingVertical="@dimen/btn_padding_32_64_20"
+                android:backgroundTint="@color/sync_offline"
+                android:text="Trigger crash"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:textColor="@color/colorTextOnSecondary"
+                android:textSize="@dimen/btn_text_size_18_32"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/button_corner_radius" />
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
