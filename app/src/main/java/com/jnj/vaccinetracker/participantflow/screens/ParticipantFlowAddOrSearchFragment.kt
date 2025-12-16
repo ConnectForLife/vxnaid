@@ -68,10 +68,6 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
          reportsOverviewViewModel.onReportsOverviewClick()
       }
 
-      binding.btnTestCrash.setOnClickListener {
-         throw IllegalArgumentException("App Crash Test")
-      }
-
       setHasOptionsMenu(true)
       (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
