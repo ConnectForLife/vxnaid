@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="default_base_url" translatable="false">http://vxnaid</string>
+    <string name="default_base_url" translatable="false">http://vxnaid.dev.co.ug</string>
 </resources>
