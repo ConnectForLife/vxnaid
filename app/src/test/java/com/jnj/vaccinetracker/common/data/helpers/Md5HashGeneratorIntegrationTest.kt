@@ -25,7 +25,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
 
 class Md5HashGeneratorIntegrationTest : FunSpec({
