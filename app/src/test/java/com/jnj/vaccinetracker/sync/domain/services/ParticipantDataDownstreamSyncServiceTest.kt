@@ -33,12 +33,12 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ParticipantDataDownstreamSyncServiceTest : FunSpec({
-    val dispatcher = TestCoroutineDispatcher()
+    val dispatcher = StandardTestDispatcher()
     val networkConnectivity: NetworkConnectivity = mockk(relaxUnitFun = true)
     val forceSyncObserver: ForceSyncObserver = mockk()
     val dispatchers = AppCoroutineDispatchers.fromSingleDispatcher(dispatcher)

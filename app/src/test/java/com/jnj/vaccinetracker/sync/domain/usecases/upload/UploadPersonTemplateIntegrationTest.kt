@@ -24,7 +24,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import okhttp3.OkHttpClient
 import readResourceBytes
 
@@ -35,7 +35,7 @@ class UploadPersonTemplateIntegrationTest : FunSpec({
     val backendUrl = "https://vxnaid-development.jnj.connect-for-life.org"
     Logger.TEST_MODE = true
 
-    val dispatcher = TestCoroutineDispatcher()
+    val dispatcher = StandardTestDispatcher()
     val moshi = NetworkModule().provideMoshi()
     val dispatchers = AppCoroutineDispatchers.fromSingleDispatcher(dispatcher)
     val syncSettingsRepository: SyncSettingsRepository = mockk()

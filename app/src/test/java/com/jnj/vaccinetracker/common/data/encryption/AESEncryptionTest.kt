@@ -11,13 +11,13 @@ import io.kotest.matchers.shouldNotBe
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlin.random.Random
 
 class AESEncryptionTest : FunSpec({
 
     val secureBytesGen = SecureBytesGenerator()
-    val testDispatcher = TestCoroutineDispatcher()
+    val testDispatcher = StandardTestDispatcher()
     val base64 = TestBase64()
 
     val aesEncryptionKeyFactory = AESEncryptionKeyFactory(SecretKeyAlgorithmProvider(), secureBytesGen, SecurePasswordGenerator())
