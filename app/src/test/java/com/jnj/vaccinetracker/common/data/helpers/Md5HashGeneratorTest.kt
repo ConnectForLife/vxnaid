@@ -5,12 +5,12 @@ import com.jnj.vaccinetracker.common.domain.entities.Configuration
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import readResource
 
 class Md5HashGeneratorTest : FunSpec({
 
-    val sut = Md5HashGenerator(AppCoroutineDispatchers.fromSingleDispatcher(TestCoroutineDispatcher()))
+    val sut = Md5HashGenerator(AppCoroutineDispatchers.fromSingleDispatcher(StandardTestDispatcher()))
 
     data class TestEntry(val fileName: String, val expectedHash: String)
     listOf(TestEntry(

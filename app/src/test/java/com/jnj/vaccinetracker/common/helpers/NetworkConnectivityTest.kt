@@ -7,12 +7,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Assert.*
 
 class NetworkConnectivityTest : FunSpec({
 
-    val testDispatcher = TestCoroutineDispatcher()
+    val testDispatcher = StandardTestDispatcher()
     val reactiveNetworkConnectivity: ReactiveNetworkConnectivity = mockk()
     val internetConnectivity: InternetConnectivity = mockk()
     val connectivity = MutableStateFlow(Connectivity.disconnected())

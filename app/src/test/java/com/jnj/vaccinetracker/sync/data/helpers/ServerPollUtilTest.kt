@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 
 class ServerPollUtilTest : FunSpec({
     val syncSettingsObserver: SyncSettingsObserver = mockk()
     val networkConnectivity: NetworkConnectivity = mockk()
     val forceSyncObserver: ForceSyncObserver = mockk()
-    val dispatcher = TestCoroutineDispatcher()
+    val dispatcher = StandardTestDispatcher()
 
     val serverPoll = ServerPollUtil(syncSettingsObserver, networkConnectivity, forceSyncObserver, AppCoroutineDispatchers.fromSingleDispatcher(dispatcher))
     test("skipDelayWhenSyncSettingsChanged") {

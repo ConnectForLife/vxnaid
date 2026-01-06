@@ -19,7 +19,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 
 class GetParticipantVisitDetailsUseCaseTest : FunSpec({
     val participantUuid = uuid()
@@ -31,7 +31,7 @@ class GetParticipantVisitDetailsUseCaseTest : FunSpec({
     val draftVisitEncounterRepository: DraftVisitEncounterRepository = createDraftVisitEncounterRepository(draftVisitEncounters)
     val visitRepository: VisitRepository = createVisitRepository(visits)
     val api: VaccineTrackerSyncApiDataSource = createApi(visitDetails)
-    val dispatcher = TestCoroutineDispatcher()
+    val dispatcher = StandardTestDispatcher()
     val dispatchers = AppCoroutineDispatchers.fromSingleDispatcher(dispatcher)
     val useCase = GetParticipantVisitDetailsUseCase(draftVisitRepository, draftVisitEncounterRepository, visitRepository, api, dispatchers)
 

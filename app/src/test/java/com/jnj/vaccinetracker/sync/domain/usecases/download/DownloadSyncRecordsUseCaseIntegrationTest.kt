@@ -33,7 +33,7 @@ import io.mockk.CapturingSlot
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import okhttp3.OkHttpClient
 
 
@@ -54,7 +54,7 @@ class DownloadSyncRecordsUseCaseIntegrationTest : FunSpec({
     }
 
     val syncRequests = mutableListOf<SyncRequest>()
-    val dispatcher = TestCoroutineDispatcher()
+    val dispatcher = StandardTestDispatcher()
     val dispatchers = AppCoroutineDispatchers.fromSingleDispatcher(dispatcher)
     val syncSettingsRepository: SyncSettingsRepository = mockk()
     val userRepository: UserRepository = mockk()

@@ -24,11 +24,11 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import okhttp3.OkHttpClient
 
 class Md5HashGeneratorIntegrationTest : FunSpec({
-    val dispatcher = TestCoroutineDispatcher()
+    val dispatcher = StandardTestDispatcher()
     val dispatchers = AppCoroutineDispatchers.fromSingleDispatcher(dispatcher)
     val md5HashGenerator = Md5HashGenerator(dispatchers)
     val backendUrl = "https://vxnaid-development.jnj.connect-for-life.org"

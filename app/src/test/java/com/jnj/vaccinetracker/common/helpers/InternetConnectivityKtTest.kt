@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 
 class InternetConnectivityKtTest : FunSpec({
 
@@ -40,7 +40,7 @@ class InternetConnectivityKtTest : FunSpec({
 
     test("observeInternetConnectivity") {
         // Arrange
-        val dispatcher = TestCoroutineDispatcher()
+        val dispatcher = StandardTestDispatcher()
         val dispatchers = AppCoroutineDispatchers.fromSingleDispatcher(dispatcher)
         val syncSettingsRepo: SyncSettingsRepository = mockk()
         var backendUrl: String? = "invalid address"
