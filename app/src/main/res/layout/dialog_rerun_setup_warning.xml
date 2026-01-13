@@ -65,20 +65,24 @@
 
             <Button
                 android:id="@+id/btn_cancel"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/general_label_cancel"
-                android:textColor="@color/colorPrimary" />
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"
+                android:contentDescription="@string/general_label_cancel" />
 
             <Button
                 android:id="@+id/btn_continue"
+                style="?attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="@string/setup_btn_continue"
-                android:backgroundTint="@color/errorDark"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/darker_gray"
+                android:backgroundTint="@android:color/transparent"
+                android:elevation="0dp"
+                android:contentDescription="@string/setup_btn_continue" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

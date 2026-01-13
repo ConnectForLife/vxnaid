@@ -72,7 +72,7 @@
     <string name="cancel">Cancel</string>
     <string name="login_label_validation_no_backend_url">Please enter a valid backend URL</string>
     <string name="dialog_login_title">Session expired</string>
-    <string name="dialog_login_description">Your session has expired. Please provide operator password to logon again or terminate current session.</string>
+    <string name="dialog_login_description">Your session has expired. Please enter your operator password to sign in again, or terminate the current session.</string>
     <string name="dialog_login_btn_terminate">Terminate session</string>
     <string name="dialog_login_btn_renew">Renew login</string>
     <string name="site_selection_title">Welcome operator</string>
@@ -558,5 +558,5 @@
     <string name="selected_vaccines">Selected Vaccines:</string>
     <string name="participant_registration_details_action_update_participant_mobile_version" translatable="false">Update Child</string>
     <string name="general_label_warning">Warning</string>
-    <string name="rerun_setup_dialog_msg_part1">This action is strictly for System Administrators. It is NOT intended for operators.\n</string>
-    <string name="rerun_setup_dialog_msg_part2">Do you want to continue?</string></resources>
+    <string name="rerun_setup_dialog_msg_part1">Attention: This action is reserved for System Administrators only. If you are an operator, do NOT continue.</string>
+    <string name="rerun_setup_dialog_msg_part2">Tap Cancel to abort.</string></resources>
