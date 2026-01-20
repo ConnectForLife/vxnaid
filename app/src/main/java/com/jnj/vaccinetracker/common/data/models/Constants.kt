@@ -14,6 +14,7 @@ object Constants {
     // Participant
     const val ATTRIBUTE_LOCATION = "LocationAttribute"
     const val ATTRIBUTE_LANGUAGE = "personLanguage"
+    const val ATTRIBUTE_PREFERRED_CALL_LANGUAGE = "Preferred Call Language"
     const val ATTRIBUTE_TELEPHONE = "Telephone Number"
     const val ATTRIBUTE_VACCINE = "Vaccination program"
     const val ATTRIBUTE_ORIGINAL_PARTICIPANT_ID = "originalParticipantId"

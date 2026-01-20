@@ -28,6 +28,7 @@ sealed class ParticipantBase {
     val regimen: String? get() = attributes[Constants.ATTRIBUTE_VACCINE]
     val birthWeight: String? get() = attributes[Constants.ATTRIBUTE_BIRTH_WEIGHT]
     val bestContactTime: String? get() = attributes[Constants.ATTRIBUTE_BEST_CONTACT_TIME]
+    val preferredCallLanguage: String? get() = attributes[Constants.ATTRIBUTE_PREFERRED_CALL_LANGUAGE]
     val fatherFirstname: String? get() = attributes[Constants.ATTRIBUTE_FATHER_FIRST_NAME]
     val fatherLastName: String? get() = attributes[Constants.ATTRIBUTE_FATHER_LAST_NAME]
     val motherFirstName: String? get() = attributes[Constants.ATTRIBUTE_MOTHER_FIRST_NAME]
@@ -103,6 +104,11 @@ fun Map<String, String>.withBirthWeight(birthWeight: String?): Map<String,String
 fun Map<String, String>.withBestContactTime(bestContactTime: String?): Map<String, String> {
     val bestContactTimeKey = Constants.ATTRIBUTE_BEST_CONTACT_TIME
     return bestContactTime?.let { this + mapOf(bestContactTimeKey to it) } ?: filterKeys { it != bestContactTimeKey }
+}
+
+fun Map<String, String>.withPreferredCallLanguage(preferredCallLanguage: String?): Map<String, String> {
+    val preferredCallLanguageKey = Constants.ATTRIBUTE_PREFERRED_CALL_LANGUAGE
+    return preferredCallLanguage?.let { this + mapOf(preferredCallLanguageKey to it) } ?: filterKeys { it != preferredCallLanguageKey }
 }
 
 fun DraftParticipant.toParticipantWithoutAssets(): Participant = Participant(
