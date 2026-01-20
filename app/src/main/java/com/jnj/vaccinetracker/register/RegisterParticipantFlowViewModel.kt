@@ -49,7 +49,6 @@ class RegisterParticipantFlowViewModel @Inject constructor(
             telephone = "",
             siteUuid = "",
             language = "",
-            preferredCallLanguage = null,
             address = Address("", "", "", "", "", "", ""),
             picture = null,
             biometricsTemplateBytes = null,

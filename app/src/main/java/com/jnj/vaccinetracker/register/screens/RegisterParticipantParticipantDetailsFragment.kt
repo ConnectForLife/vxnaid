@@ -575,7 +575,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             viewModel.preferredCallLanguage.set(DisplayValue(selectedLanguage, selectedLanguage))
             val currentDetails = flowViewModel.registerDetails.value
             if (currentDetails != null) {
-                val updatedDetails = currentDetails.copy(preferredCallLanguage = selectedLanguage)
+                val updatedDetails = currentDetails.copy(language = selectedLanguage)
                 flowViewModel.registerDetails.set(updatedDetails)
             }
         }

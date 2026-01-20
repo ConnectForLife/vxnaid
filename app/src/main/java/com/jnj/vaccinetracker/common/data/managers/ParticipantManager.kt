@@ -81,7 +81,6 @@ class ParticipantManager @Inject constructor(
         telephone: String?,
         siteUuid: String,
         language: String,
-        preferredCallLanguage: String?,
         fatherFirstName: String?,
         fatherLastName: String?,
         motherFirstName: String,
@@ -109,9 +108,6 @@ class ParticipantManager @Inject constructor(
             personAttributes[Constants.ATTRIBUTE_BEST_CONTACT_TIME] = bestContactTime
         }
 
-        if (preferredCallLanguage != null) {
-            personAttributes[Constants.ATTRIBUTE_PREFERRED_CALL_LANGUAGE] = preferredCallLanguage
-        }
 
         if (fatherFirstName != null) {
             personAttributes[Constants.ATTRIBUTE_FATHER_FIRST_NAME] = fatherFirstName
@@ -139,7 +135,6 @@ class ParticipantManager @Inject constructor(
         val telephone: String?,
         val siteUuid: String,
         val language: String,
-        val preferredCallLanguage: String?,
         val address: Address,
         val picture: ImageBytes?,
         val biometricsTemplateBytes: BiometricsTemplateBytes?,
@@ -164,7 +159,6 @@ class ParticipantManager @Inject constructor(
             telephone = registerDetails.telephone,
             siteUuid = registerDetails.siteUuid,
             language = registerDetails.language,
-            preferredCallLanguage = registerDetails.preferredCallLanguage,
             fatherFirstName = registerDetails.fatherFirstName,
             fatherLastName = registerDetails.fatherLastName,
             motherFirstName = registerDetails.motherFirstName,

@@ -1,7 +1,7 @@
 # Preferred Call Language Feature
 
 ## Overview
-This feature implements the ability to capture a participant's preferred language for automated call reminders (IVR calls) during registration. This follows OpenMRS best practices by storing the preference as a **Person Attribute**.
+This feature implements the ability to capture a participant's preferred language for automated call reminders (IVR calls) during registration. This uses the **existing OpenMRS "personLanguage" attribute** instead of creating a new one.
 
 ## Implementation Details
 
@@ -9,69 +9,60 @@ This feature implements the ability to capture a participant's preferred languag
 
 #### Constants
 **File:** `Constants.kt`
-- Added: `ATTRIBUTE_PREFERRED_CALL_LANGUAGE = "Preferred Call Language"`
+- Uses existing: `ATTRIBUTE_LANGUAGE = "personLanguage"`
+- No new attribute needed!
 
 #### Participant Entity
 **File:** `Participant.kt`
-- Added accessor: `preferredCallLanguage: String?` - retrieves the value from attributes
-- Added extension function: `withPreferredCallLanguage(String?)` - for updating attributes map
+- Uses existing accessor: `language: String?` - retrieves the value from attributes using `ATTRIBUTE_LANGUAGE`
+- No extension function needed - uses existing attribute infrastructure
 
 #### ParticipantManager
 **File:** `ParticipantManager.kt`
-- Updated `getParticipantAttributes()` to accept `preferredCallLanguage` parameter
-- Updated `RegisterDetails` data class to include `preferredCallLanguage: String?`
-- Stores the value in person attributes if provided
+- Updated to use the selected language from dropdown
+- Stores the value in existing `personLanguage` attribute
+- No longer hardcoded to "English"
 
 ### 2. UI Changes
 
 #### ViewModel
 **File:** `RegisterParticipantParticipantDetailsViewModel.kt`
-- Added field: `preferredCallLanguage = mutableLiveData<DisplayValue>()`
+- Added field: `preferredCallLanguage = mutableLiveData<DisplayValue>()` (for UI binding only)
 - Added validation: `preferredCallLanguageValidationMessage`
-- Added list: `preferredCallLanguages` - populated from configuration (same as person languages)
-- Updated `doRegistration()` to capture selected language value
+- Updated `doRegistration()` to use selected language value for the existing `language` parameter
 
 #### Flow ViewModel
 **File:** `RegisterParticipantFlowViewModel.kt`
-- Updated initial `RegisterDetails` to include `preferredCallLanguage = null`
+- No changes needed - uses existing `language` field in `RegisterDetails`
 
 ### 3. How It Works
 
 #### During Registration:
 1. User fills in participant details
-2. User selects preferred call language from dropdown (optional)
-3. Options available: English, Luganda (from configuration)
-4. On submit, the selected language is saved as a person attribute
-5. If not selected, value is `null` (optional field)
+2. User selects preferred call language from dropdown (labeled "Preferred Call Language")
+3. Options available: English, Luganda (hardcoded)
+4. On submit, the selected language is saved to the existing `personLanguage` attribute
+5. If not selected, defaults to "English"
 
 #### Data Storage:
 ```kotlin
-// In person attributes map
-personAttributes[Constants.ATTRIBUTE_PREFERRED_CALL_LANGUAGE] = "English" // or "Luganda"
+// In person attributes map - uses EXISTING attribute
+personAttributes[Constants.ATTRIBUTE_LANGUAGE] = "English" // or "Luganda"
+// Attribute name in OpenMRS: "personLanguage"
 ```
 
 #### Accessing the Data:
 ```kotlin
 // From any ParticipantBase object
-val callLanguage = participant.preferredCallLanguage
-// Returns: "English", "Luganda", or null
+val callLanguage = participant.language
+// Returns: "English", "Luganda", etc.
 ```
 
 ## OpenMRS Integration
 
-### Person Attribute Type Setup (Required in OpenMRS)
+### Using Existing Person Attribute
 
-#### Create Person Attribute Type
-**Name:** `Preferred Call Language`
-**Description:** `Preferred language for automated call reminders`
-**Format:** Text or Coded (recommended)
-
-If using Coded format, create a Concept:
-- **Concept Name:** `Call Language Preference`
-- **Answers:**
-  - English
-  - Luganda
-  - (Future: Swahili, Ateso, etc.)
+**IMPORTANT:** This feature uses the **existing "personLanguage" attribute** that's already part of the standard OpenMRS person model. No new Person Attribute Type needs to be created!
 
 ### REST API Integration
 
@@ -81,7 +72,7 @@ If using Coded format, create a Concept:
   "person": {
     "attributes": [
       {
-        "attributeType": "UUID_OF_PREFERRED_CALL_LANGUAGE_ATTR",
+        "attributeType": "personLanguage",
         "value": "English"
       }
     ]
@@ -97,7 +88,7 @@ Response:
 {
   "attributes": [
     {
-      "attributeType": "Preferred Call Language",
+      "attributeType": "personLanguage",
       "value": "English"
     }
   ]
@@ -112,11 +103,11 @@ Response:
 ```pseudo
 function makeCall(phoneNumber):
     person = findPersonByPhone(phoneNumber)
-    preferredLanguage = person.preferredCallLanguage
+    language = person.language  // Uses existing personLanguage attribute
     
-    if preferredLanguage:
+    if language:
         // Play call in preferred language directly
-        playCallflow(preferredLanguage)
+        playCallflow(language)
     else:
         // Show language selection menu
         showLanguageSelectionMenu()
@@ -135,7 +126,7 @@ function showLanguageSelectionMenu():
         language = "Luganda"
     
     // Save selection for future calls
-    updatePersonAttribute(personId, "Preferred Call Language", language)
+    updatePersonAttribute(personId, "personLanguage", language)
     
     playCallflow(language)
 ```
