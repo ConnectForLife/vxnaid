@@ -47,6 +47,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
 import javax.inject.Inject
+import android.util.Log
+import android.widget.Toast
 
 /**
  * @author timonelen
@@ -140,8 +142,6 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                        layoutParams.horizontalBias = 0.5f
                        closeButton.layoutParams = layoutParams
                        canFinish = true
-
-                       // Show best contact time picker dialog
                        showBestContactTimePickerDialog()
                    }
                } catch (ex: Exception) {
@@ -260,7 +260,6 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         lifecycleScope.launch {
             try {
                 participant?.let { participantSummary ->
-                    // Get full participant data
                     val fullParticipant = findParticipantByParticipantIdUseCase.findByParticipantId(participantSummary.participantId)
 
                     fullParticipant?.let { participant ->
@@ -295,7 +294,12 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                     }
                 }
             } catch (ex: Exception) {
-                // Handle error silently or show a toast
+                Log.e("VisitRegisteredSuccessDialog", "Failed to update participant best contact time: ${ex.message}", ex)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.best_contact_time_update_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
