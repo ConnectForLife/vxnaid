@@ -106,7 +106,6 @@ fun Map<String, String>.withBestContactTime(bestContactTime: String?): Map<Strin
     return bestContactTime?.let { this + mapOf(bestContactTimeKey to it) } ?: filterKeys { it != bestContactTimeKey }
 }
 
-
 fun DraftParticipant.toParticipantWithoutAssets(): Participant = Participant(
     participantUuid = participantUuid,
     dateModified = dateModified,

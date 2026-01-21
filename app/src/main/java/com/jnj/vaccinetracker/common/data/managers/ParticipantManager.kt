@@ -108,7 +108,6 @@ class ParticipantManager @Inject constructor(
             personAttributes[Constants.ATTRIBUTE_BEST_CONTACT_TIME] = bestContactTime
         }
 
-
         if (fatherFirstName != null) {
             personAttributes[Constants.ATTRIBUTE_FATHER_FIRST_NAME] = fatherFirstName
         }

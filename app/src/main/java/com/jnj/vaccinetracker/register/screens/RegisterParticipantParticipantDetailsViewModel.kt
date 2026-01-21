@@ -349,7 +349,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         languages.set(configuration.personLanguages.map { language ->
             DisplayValue(language.name, loc[language.name]) })
 
-        // Populate preferred call languages with the same options as person languages
         preferredCallLanguages.set(configuration.personLanguages.map { language ->
             DisplayValue(language.name, loc[language.name]) })
     }

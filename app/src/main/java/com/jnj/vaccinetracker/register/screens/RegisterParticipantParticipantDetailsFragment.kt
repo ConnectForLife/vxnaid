@@ -120,7 +120,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             binding.scrollView!!.scrollTo(0, 0)
         }
 
-        // Setup preferred call language dropdown with hardcoded values
         setupPreferredCallLanguageDropdown()
     }
 
@@ -561,7 +560,6 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     }
 
     private fun setupPreferredCallLanguageDropdown() {
-        // Hardcoded language options for call reminders
         val languageOptions = listOf("English", "Luganda")
         val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, languageOptions)
         binding.dropdownPreferredCallLanguage.setAdapter(adapter)
