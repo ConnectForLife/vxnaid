@@ -18,11 +18,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
+import com.jnj.vaccinetracker.common.domain.entities.UpdateParticipant
+import com.jnj.vaccinetracker.common.domain.entities.withBestContactTime
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
+import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantIdUseCase
+import com.jnj.vaccinetracker.common.domain.usecases.UpdateParticipantUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.findParent
@@ -30,6 +35,7 @@ import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.jnj.vaccinetracker.databinding.DialogVisitRegisteredSuccessBinding
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
+import com.jnj.vaccinetracker.register.dialogs.BestContactTimePickerDialog
 import com.jnj.vaccinetracker.register.dialogs.ScheduleVisitDatePickerDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
@@ -41,6 +47,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
 import javax.inject.Inject
+import android.util.Log
+import android.widget.Toast
 
 /**
  * @author timonelen
@@ -73,6 +81,9 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     private val participant: ParticipantSummaryUiModel? by lazy { requireArguments().getParcelable(PARTICIPANT) }
     private val currentVisitUuid: String? by lazy { requireArguments().getString(CURRENT_VISIT_UUID) }
     @Inject lateinit var createVisitUseCase: CreateVisitUseCase
+    @Inject lateinit var updateParticipantUseCase: UpdateParticipantUseCase
+    @Inject lateinit var findParticipantByParticipantIdUseCase: FindParticipantByParticipantIdUseCase
+    @Inject lateinit var participantManager: ParticipantManager
     @Inject lateinit var userRepository: UserRepository
     @Inject lateinit var syncSettingsRepository: SyncSettingsRepository
     @Inject lateinit var configurationManager: ConfigurationManager
@@ -131,6 +142,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                        layoutParams.horizontalBias = 0.5f
                        closeButton.layoutParams = layoutParams
                        canFinish = true
+                       showBestContactTimePickerDialog()
                    }
                } catch (ex: Exception) {
                    visitScheduleResultTextView.text = getString(R.string.visit_schedule_visit_failed)
@@ -232,6 +244,81 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
             val weeksDifference = nextVaccine.weeksAfterBirth - currentVaccine.weeksAfterBirth
             LocalDate.now().plusWeeks(weeksDifference.toLong())
         }
+    }
+
+    private fun showBestContactTimePickerDialog() {
+        val bestContactTimePickerDialog = BestContactTimePickerDialog()
+        bestContactTimePickerDialog.setListener(object : BestContactTimePickerDialog.BestContactTimePickerListener {
+            override fun onBestContactTimePicked(time: String) {
+                updateParticipantBestContactTime(time)
+            }
+        })
+        bestContactTimePickerDialog.show(childFragmentManager, "bestContactTimePickerDialog")
+    }
+
+    private fun updateParticipantBestContactTime(bestContactTime: String) {
+        lifecycleScope.launch {
+            try {
+                participant?.let { participantSummary ->
+                    val fullParticipant = findParticipantByParticipantIdUseCase.findByParticipantId(participantSummary.participantId)
+
+                    fullParticipant?.let { participant ->
+                        val updatedAttributes = participant.attributes.withBestContactTime(bestContactTime)
+
+                        val updateParticipant = UpdateParticipant(
+                            participantUuid = participant.participantUuid,
+                            participantId = participant.participantId,
+                            nin = participant.nin,
+                            childNumber = participant.childNumber,
+                            gender = participant.gender,
+                            isBirthDateEstimated = participant.isBirthDateEstimated ?: false,
+                            birthDate = participant.birthDate,
+                            address = participant.address ?: com.jnj.vaccinetracker.common.domain.entities.Address(
+                                address1 = null,
+                                address2 = null,
+                                cityVillage = null,
+                                stateProvince = null,
+                                country = null,
+                                countyDistrict = null,
+                                postalCode = null
+                            ),
+                            attributes = updatedAttributes,
+                            image = null,
+                            scheduleFirstVisit = createScheduleFirstVisit(),
+                            childFirstName = participant.childFirstName,
+                            childLastName = participant.childLastName,
+                            dateCreated = participant.dateCreated
+                        )
+
+                        updateParticipantUseCase.updateParticipant(updateParticipant)
+                    }
+                }
+            } catch (ex: Exception) {
+                Log.e("VisitRegisteredSuccessDialog", "Failed to update participant best contact time: ${ex.message}", ex)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.best_contact_time_update_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun createScheduleFirstVisit(): com.jnj.vaccinetracker.common.domain.entities.ScheduleFirstVisit {
+        val locationUuid = syncSettingsRepository.getSiteUuid()
+            ?: throw NoSiteUuidAvailableException("Trying to update participant without a selected site")
+        val operatorUuid = userRepository.getUser()?.uuid
+            ?: throw OperatorUuidNotAvailableException("Trying to update participant without stored operator uuid")
+        return com.jnj.vaccinetracker.common.domain.entities.ScheduleFirstVisit(
+            visitType = Constants.VISIT_TYPE_DOSING,
+            startDatetime = Date(),
+            locationUuid = locationUuid,
+            attributes = mapOf(
+                Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
+                Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+                Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to "1"
+            )
+        )
     }
 
     interface VisitRegisteredSuccessDialogListener {

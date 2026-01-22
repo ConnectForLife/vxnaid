@@ -165,6 +165,7 @@
     <string name="participant_registration_details_birth_weight" translatable="false">Birth Weight (kg)</string>
     <string name="participant_registration_details_best_contact_time" translatable="false">Best Contact Time</string>
     <string name="select_time" translatable="false">Select Time</string>
+    <string name="best_contact_time_update_failed">Failed to update best contact time. Please try again.</string>
     <string name="participant_registration_details_label_home_location">Address</string>
     <string name="participant_registration_details_home_location_hint">Enter the Child\'s address</string>
     <string name="participant_registration_details_action_set_home_location">Set address</string>
