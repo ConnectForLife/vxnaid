@@ -119,6 +119,8 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
         binding.scrollView?.post {
             binding.scrollView!!.scrollTo(0, 0)
         }
+
+        setupPreferredCallLanguageDropdown()
     }
 
     override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
@@ -552,6 +554,26 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             val currentDetails = flowViewModel.registerDetails.value
             if (currentDetails != null) {
                 val updatedDetails = currentDetails.copy(childCategory = selectedCategory)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
+        }
+    }
+
+    private fun setupPreferredCallLanguageDropdown() {
+        val languageOptions = listOf("English", "Luganda")
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, languageOptions)
+        binding.dropdownPreferredCallLanguage.setAdapter(adapter)
+
+        viewModel.preferredCallLanguage.value?.let { language ->
+            binding.dropdownPreferredCallLanguage.setText(language.display, false)
+        }
+
+        binding.dropdownPreferredCallLanguage.setOnItemClickListener { _, _, position, _ ->
+            val selectedLanguage = languageOptions[position]
+            viewModel.preferredCallLanguage.set(DisplayValue(selectedLanguage, selectedLanguage))
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(language = selectedLanguage)
                 flowViewModel.registerDetails.set(updatedDetails)
             }
         }

@@ -185,14 +185,17 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val homeLocation = mutableLiveData<Address>()
     val vaccine = mutableLiveData<DisplayValue>()
     val language = mutableLiveData<DisplayValue>()
+    val preferredCallLanguage = mutableLiveData<DisplayValue>()
 
     val genderValidationMessage = mutableLiveData<String>()
     val phoneValidationMessage = mutableLiveData<String>()
     val homeLocationValidationMessage = mutableLiveData<String>()
     val languageValidationMessage = mutableLiveData<String>()
+    val preferredCallLanguageValidationMessage = mutableLiveData<String>()
 
     val vaccineNames = mutableLiveData<List<DisplayValue>>()
     val languages = mutableLiveData<List<DisplayValue>>()
+    val preferredCallLanguages = mutableLiveData<List<DisplayValue>>()
     val ninIdentifiers = mutableLiveData<NinIdentifiersList>()
 
     var visitTypes = mutableLiveData<List<String>>()
@@ -345,6 +348,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
         languages.set(configuration.personLanguages.map { language ->
             DisplayValue(language.name, loc[language.name]) })
+
+        preferredCallLanguages.set(configuration.personLanguages.map { language ->
+            DisplayValue(language.name, loc[language.name]) })
     }
 
     private suspend fun ImageBytes.compress() = ImageHelper.compressRawImage(this, dispatchers.io)
@@ -425,7 +431,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 isBirthDateEstimated = isBirthDateEstimated!!,
                 telephone = phoneNumberToSubmit,
                 siteUuid = siteUuid,
-                language = "English",
+                language = preferredCallLanguage.get()?.value ?: "English",
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,

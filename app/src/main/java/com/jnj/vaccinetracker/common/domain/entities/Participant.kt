@@ -28,6 +28,7 @@ sealed class ParticipantBase {
     val regimen: String? get() = attributes[Constants.ATTRIBUTE_VACCINE]
     val birthWeight: String? get() = attributes[Constants.ATTRIBUTE_BIRTH_WEIGHT]
     val bestContactTime: String? get() = attributes[Constants.ATTRIBUTE_BEST_CONTACT_TIME]
+    val language: String? get() = attributes[Constants.ATTRIBUTE_LANGUAGE]
     val fatherFirstname: String? get() = attributes[Constants.ATTRIBUTE_FATHER_FIRST_NAME]
     val fatherLastName: String? get() = attributes[Constants.ATTRIBUTE_FATHER_LAST_NAME]
     val motherFirstName: String? get() = attributes[Constants.ATTRIBUTE_MOTHER_FIRST_NAME]
