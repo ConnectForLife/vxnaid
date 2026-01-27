@@ -35,7 +35,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:paddingHorizontal="32dp"
-                android:paddingVertical="16dp"
+                android:paddingVertical="@dimen/margin_8"
                 tools:ignore="NestedWeights">
 
                 <TextView
@@ -133,7 +133,7 @@
                     android:id="@+id/separator"
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:layout_marginVertical="16dp"
+                    android:layout_marginVertical="@dimen/margin_8"
                     android:background="@color/colorPrimary" />
 
                 <LinearLayout
@@ -679,79 +679,71 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/input_group_birth_weight"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal"
-                    >
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:id="@+id/input_group_birth_weight"
+                    <TextView
+                        android:id="@+id/participant_registration_details_label_birth_weight"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:text="@string/participant_registration_details_birth_weight"
+                        android:textAppearance="@style/LabelText" />
+
+                    <EditText
+                        android:id="@+id/edit_birth_weight"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:hint="@string/general_label_kg"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal"
+                        android:text="@{viewModel.birthWeight}"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/participant_registration_details_label_birth_weight"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:maxLines="2"
-                            android:text="@string/participant_registration_details_birth_weight"
-                            android:textAppearance="@style/LabelText" />
 
-                        <EditText
-                            android:id="@+id/edit_birth_weight"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="4dp"
-                            android:layout_weight="1"
-                            android:hint="@string/general_label_kg"
-                            android:importantForAutofill="no"
-                            android:textAlignment="center"
-                            android:inputType="numberDecimal"
-                            android:text="@{viewModel.birthWeight}"
-                            android:textSize="18sp" />
-                    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/input_group_best_contact_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:id="@+id/input_group_best_contact_time"
+                    <TextView
+                        android:id="@+id/participant_registration_details_label_best_contact_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:text="@string/participant_registration_details_best_contact_time"
+                        android:textAppearance="@style/LabelText" />
+
+                    <TextView
+                        android:id="@+id/text_best_contact_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/margin_8"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:hint="@string/best_contact_time"
+                        android:textAlignment="center"
+                        android:textSize="18sp"
+                        android:text="@{viewModel.bestContactTime}" />
 
-                        <TextView
-                            android:id="@+id/participant_registration_details_label_best_contact_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:maxLines="2"
-                            android:text="@string/participant_registration_details_best_contact_time"
-                            android:textAppearance="@style/LabelText" />
-
-                        <TextView
-                            android:id="@+id/text_best_contact_time"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/margin_8"
-                            android:layout_weight="1"
-                            android:hint="@string/select_time"
-                            android:textAlignment="center"
-                            android:textSize="18sp"
-                            android:text="@{viewModel.bestContactTime}" />
-
-                        <Button
-                            android:id="@+id/btn_select_contact_time"
-                            style="@style/Widget.AppCompat.Button.Small"
-                            android:layout_width="wrap_content"
-                            android:layout_height="45dp"
-                            android:layout_weight="0"
-                            android:backgroundTint="@color/colorPrimary"
-                            android:text="@string/select_time"
-                            android:textAppearance="@style/ButtonTextStyling" />
-                    </LinearLayout>
+                    <Button
+                        android:id="@+id/btn_select_contact_time"
+                        style="@style/Widget.AppCompat.Button.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:layout_weight="0"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:text="@string/select_time"
+                        android:textAppearance="@style/ButtonTextStyling" />
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout

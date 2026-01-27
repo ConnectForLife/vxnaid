@@ -801,10 +801,10 @@
                         android:layout_marginStart="@dimen/margin_4"
                         android:layout_marginEnd="@dimen/margin_4"
                         android:layout_weight="1"
-                        android:hint="@string/select_time"
+                        android:hint="@string/best_contact_time_mobile"
                         android:minHeight="48dp"
                         android:textAlignment="center"
-                        android:textSize="@dimen/text_14"
+                        android:textSize="@dimen/text_16"
                         android:text="@{viewModel.bestContactTime}" />
 
                     <Button
