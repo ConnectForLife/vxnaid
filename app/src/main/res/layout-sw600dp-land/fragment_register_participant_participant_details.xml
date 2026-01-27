@@ -701,7 +701,6 @@
                         android:layout_weight="1"
                         android:hint="@string/general_label_kg"
                         android:importantForAutofill="no"
-                        android:textAlignment="center"
                         android:inputType="numberDecimal"
                         android:text="@{viewModel.birthWeight}"
                         android:textSize="18sp" />
