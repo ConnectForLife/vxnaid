@@ -731,7 +731,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/margin_8"
                         android:layout_weight="1"
-                        android:hint="@string/select_time"
+                        android:hint="@string/best_contact_time"
                         android:textAlignment="center"
                         android:textSize="18sp"
                         android:text="@{viewModel.bestContactTime}" />
