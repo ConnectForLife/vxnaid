@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 14,
+    "version": 15,
     "identityHash": "af1916d4cfdc563aa85ff9cee821c3a1",
     "entities": [
       {
@@ -103,8 +103,6 @@
             "fieldPath": "motherFirstName",
             "columnName": "motherFirstName",
             "affinity": "TEXT",
-            "fieldPath": "phone",
-            "columnName": "phone",
             "notNull": false
           },
           {
@@ -668,8 +666,6 @@
             "fieldPath": "dateModified",
             "columnName": "dateModified",
             "affinity": "INTEGER",
-            "fieldPath": "phone",
-            "columnName": "phone",
             "notNull": true
           }
         ],
