@@ -560,17 +560,17 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     }
 
     private fun setupPreferredCallLanguageDropdown() {
-        val languageOptions = listOf("English", "Luganda")
+        val languageOptions = listOf(Constants.PERSONAL_LANGUAGE_ENGLISH, Constants.PERSONAL_LANGUAGE_LUGANDA)
         val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, languageOptions)
         binding.dropdownPreferredCallLanguage.setAdapter(adapter)
 
-        viewModel.preferredCallLanguage.value?.let { language ->
+        viewModel.language.value?.let { language ->
             binding.dropdownPreferredCallLanguage.setText(language.display, false)
         }
 
         binding.dropdownPreferredCallLanguage.setOnItemClickListener { _, _, position, _ ->
             val selectedLanguage = languageOptions[position]
-            viewModel.preferredCallLanguage.set(DisplayValue(selectedLanguage, selectedLanguage))
+            viewModel.language.set(DisplayValue(selectedLanguage, selectedLanguage))
             val currentDetails = flowViewModel.registerDetails.value
             if (currentDetails != null) {
                 val updatedDetails = currentDetails.copy(language = selectedLanguage)
