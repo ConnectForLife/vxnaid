@@ -145,6 +145,10 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             setupChildCategoryDropdown()
         }
 
+        viewModel.language.observe(lifecycleOwner) {
+            setupPreferredCallLanguageDropdown()
+        }
+
         viewModel.genderValidationMessage.observe(lifecycleOwner) { genderValidationMessage ->
             logDebug("validate gender" + genderValidationMessage)
 

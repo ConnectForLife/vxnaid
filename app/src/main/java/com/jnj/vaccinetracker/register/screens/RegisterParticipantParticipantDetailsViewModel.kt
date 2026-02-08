@@ -291,6 +291,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantBase?.childCategory?.let { category ->
                 setSelectedChildCategory(DisplayValue(category, category))
             }
+            participantBase?.attributes?.get(Constants.ATTRIBUTE_LANGUAGE)?.let { language ->
+                setSelectedLanguage(DisplayValue(language, language))
+            }
             participantBase?.address?.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
                 setHomeLocation(address, stringRepresentation)
@@ -315,6 +318,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             args.registerDetails.childLastName?.let { setChildLastName(it) }
             args.registerDetails.childCategory?.let { category ->
                 setSelectedChildCategory(DisplayValue(category, category))
+            }
+            args.registerDetails.language?.let { language ->
+                setSelectedLanguage(DisplayValue(language, language))
             }
             args.registerDetails.address.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
@@ -908,6 +914,12 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (this.childCategory.get() == childCategoryName) return
         childCategory.set(childCategoryName)
         childCategoryValidationMessage.set(null)
+    }
+
+    fun setSelectedLanguage(languageName: DisplayValue) {
+        if (this.language.get() == languageName) return
+        language.set(languageName)
+        languageValidationMessage.set(null)
     }
 
     fun setHomeLocation(homeLocation: Address, stringRepresentation: String) {
