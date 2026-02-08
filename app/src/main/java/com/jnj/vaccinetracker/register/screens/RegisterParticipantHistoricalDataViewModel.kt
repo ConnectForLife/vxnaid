@@ -46,6 +46,7 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
 ) : ViewModelBase() {
 
    val registerVaccinesSuccessEvents = eventFlow<ParticipantSummaryUiModel>()
+   val errorMessageEvents = eventFlow<String>()
    val loading = mutableLiveBoolean()
    val errorMessage = mutableLiveData<String>()
    private val participantArg = stateFlow<RegisterParticipant?>(null)
@@ -305,28 +306,39 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
        val today = Date()
 
        if (birthDate != null && newDateJava.before(birthDate)) {
-           errorMessage.postValue("Visit date cannot be before birth date.")
+           val errorMsg = "Visit date cannot be before birth date."
+           errorMessage.postValue(errorMsg)
+           errorMessageEvents.tryEmit(errorMsg)
            return false
        }
 
        if (newDateJava.after(today)) {
-           errorMessage.postValue("Visit date cannot be in the future.")
+           val errorMsg = "Visit date cannot be in the future."
+           errorMessage.postValue(errorMsg)
+           errorMessageEvents.tryEmit(errorMsg)
            return false
        }
 
+       // Only check against already occurred visits (confirmed), not against session dates being entered
        val allVisits = (groupedVisitsByType.value?.values?.flatten() ?: emptyList())
-       val sessionDates = visitTypesData.value?.values?.mapNotNull { it.visitDate } ?: emptyList()
-       val allVisitDates = allVisits.map { it.visitDate.time } + sessionDates.map { it.time }
+       val allVisitDates = allVisits.map { it.visitDate.time }
 
        val newDateMidnight = newDateJava.time.toMidnight()
+
+       // Check for overlap only with confirmed visits (already in database)
        val overlap = allVisitDates.any { it.toMidnight() == newDateMidnight }
        if (overlap) {
-           errorMessage.postValue("Visit date overlaps with an existing visit.")
+           val errorMsg = "Visit date overlaps with an existing visit."
+           errorMessage.postValue(errorMsg)
+           errorMessageEvents.tryEmit(errorMsg)
            return false
        }
 
-       if (allVisitDates.any { newDateJava.time < it }) {
-           errorMessage.postValue("The selected date is before a previous visit. Please select a later date.")
+       // Check that new date is after all confirmed visits
+       if (allVisitDates.any { it.toMidnight() > newDateMidnight }) {
+           val errorMsg = "The selected date is before or same as a previous visit. Please select a later date."
+           errorMessage.postValue(errorMsg)
+           errorMessageEvents.tryEmit(errorMsg)
            return false
        }
 

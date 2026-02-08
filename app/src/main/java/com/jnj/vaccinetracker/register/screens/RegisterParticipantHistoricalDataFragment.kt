@@ -76,18 +76,6 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
 
        setupClickListeners()
 
-       viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-           if (!message.isNullOrEmpty()) {
-             val dialog = PastVisitDateAlertDialog.newInstance(
-                 title = getString(R.string.past_visit_date_error_title),
-                 message = message,
-                 buttonLabel = getString(R.string.past_visit_date_ok)
-             ) {
-               viewModel.clearErrorMessage()
-             }
-             dialog.show(parentFragmentManager, "PastVisitDateAlertDialog")
-         }
-       }
 
        return binding.root
    }
@@ -101,6 +89,21 @@ class RegisterParticipantHistoricalDataFragment : BaseFragment(),
       combinedSource.observe(lifecycleOwner) {
          setupButtons()
       }
+
+      viewModel.errorMessageEvents
+         .asFlow()
+         .onEach { message ->
+            val dialog = PastVisitDateAlertDialog.newInstance(
+                title = getString(R.string.past_visit_date_error_title),
+                message = message,
+                buttonLabel = getString(R.string.past_visit_date_ok)
+            ) {
+               viewModel.clearErrorMessage()
+            }
+            dialog.show(childFragmentManager, "PastVisitDateAlertDialog")
+         }
+         .launchIn(lifecycleOwner.lifecycleScope)
+
       observeViewModelEvents(lifecycleOwner)
    }
 
