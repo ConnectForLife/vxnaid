@@ -137,4 +137,6 @@ object Constants {
     const val NINE_MONTHS_VISIT_TYPE = "9 months"
     const val HEP_B_BD_VACCINE_CONCEPT_NAME = "Hep B BD Vxnaid"
     const val POLIO_0_VACCINE_CONCEPT_NAME = "Polio 0 Vxnaid"
+    const val PERSONAL_LANGUAGE_ENGLISH = "English"
+    const val PERSONAL_LANGUAGE_LUGANDA = "Luganda"
 }

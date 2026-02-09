@@ -185,17 +185,13 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val homeLocation = mutableLiveData<Address>()
     val vaccine = mutableLiveData<DisplayValue>()
     val language = mutableLiveData<DisplayValue>()
-    val preferredCallLanguage = mutableLiveData<DisplayValue>()
-
     val genderValidationMessage = mutableLiveData<String>()
     val phoneValidationMessage = mutableLiveData<String>()
     val homeLocationValidationMessage = mutableLiveData<String>()
     val languageValidationMessage = mutableLiveData<String>()
-    val preferredCallLanguageValidationMessage = mutableLiveData<String>()
 
     val vaccineNames = mutableLiveData<List<DisplayValue>>()
     val languages = mutableLiveData<List<DisplayValue>>()
-    val preferredCallLanguages = mutableLiveData<List<DisplayValue>>()
     val ninIdentifiers = mutableLiveData<NinIdentifiersList>()
 
     var visitTypes = mutableLiveData<List<String>>()
@@ -295,6 +291,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantBase?.childCategory?.let { category ->
                 setSelectedChildCategory(DisplayValue(category, category))
             }
+            participantBase?.attributes?.get(Constants.ATTRIBUTE_LANGUAGE)?.let { language ->
+                setSelectedLanguage(DisplayValue(language, language))
+            }
             participantBase?.address?.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
                 setHomeLocation(address, stringRepresentation)
@@ -319,6 +318,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             args.registerDetails.childLastName?.let { setChildLastName(it) }
             args.registerDetails.childCategory?.let { category ->
                 setSelectedChildCategory(DisplayValue(category, category))
+            }
+            args.registerDetails.language?.let { language ->
+                setSelectedLanguage(DisplayValue(language, language))
             }
             args.registerDetails.address.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
@@ -348,9 +350,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
 
         languages.set(configuration.personLanguages.map { language ->
             DisplayValue(language.name, loc[language.name]) })
-
-        preferredCallLanguages.set(configuration.personLanguages.map { language ->
-            DisplayValue(language.name, loc[language.name]) })
     }
 
     private suspend fun ImageBytes.compress() = ImageHelper.compressRawImage(this, dispatchers.io)
@@ -373,7 +372,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val participantId = participantId.get()
         val nin = nin.get()
         val childNumber = childNumber.get()
-        logInfo("setting up birthweight")
         val birthWeight = birthWeight.get()
         val bestContactTimeValue = bestContactTime.get()
         val gender = gender.get()
@@ -388,6 +386,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val childLastName = childLastName.get()
         val childUuid = participantUuid.get()
         val childCategoryValue = childCategory.get()?.value
+        val languageValue = language.get()?.value
 
         val areInputsValid = validateInputs(participantId, gender, birthDate, homeLocation,
             motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName,
@@ -431,7 +430,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 isBirthDateEstimated = isBirthDateEstimated!!,
                 telephone = phoneNumberToSubmit,
                 siteUuid = siteUuid,
-                language = preferredCallLanguage.get()?.value ?: "English",
+                language = languageValue,
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,
@@ -915,6 +914,12 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (this.childCategory.get() == childCategoryName) return
         childCategory.set(childCategoryName)
         childCategoryValidationMessage.set(null)
+    }
+
+    fun setSelectedLanguage(languageName: DisplayValue) {
+        if (this.language.get() == languageName) return
+        language.set(languageName)
+        languageValidationMessage.set(null)
     }
 
     fun setHomeLocation(homeLocation: Address, stringRepresentation: String) {

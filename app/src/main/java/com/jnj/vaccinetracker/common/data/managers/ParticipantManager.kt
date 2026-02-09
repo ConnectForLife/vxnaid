@@ -80,7 +80,7 @@ class ParticipantManager @Inject constructor(
         bestContactTime: String?,
         telephone: String?,
         siteUuid: String,
-        language: String,
+        language: String?,
         fatherFirstName: String?,
         fatherLastName: String?,
         motherFirstName: String,
@@ -91,7 +91,6 @@ class ParticipantManager @Inject constructor(
 
         val personAttributes = mutableMapOf(
             Constants.ATTRIBUTE_LOCATION to siteUuid,
-            Constants.ATTRIBUTE_LANGUAGE to language,
             Constants.ATTRIBUTE_OPERATOR to operatorUUid,
             Constants.ATTRIBUTE_MOTHER_FIRST_NAME to motherFirstName,
             Constants.ATTRIBUTE_MOTHER_LAST_NAME to motherLastName
@@ -119,6 +118,10 @@ class ParticipantManager @Inject constructor(
         if (childCategory != null) {
             personAttributes[Constants.ATTRIBUTE_CHILD_CATEGORY] = childCategory
         }
+
+        if (language != null) {
+            personAttributes[Constants.ATTRIBUTE_LANGUAGE] = language
+        }
         return personAttributes
     }
 
@@ -133,7 +136,7 @@ class ParticipantManager @Inject constructor(
         val isBirthDateEstimated: Boolean,
         val telephone: String?,
         val siteUuid: String,
-        val language: String,
+        val language: String?,
         val address: Address,
         val picture: ImageBytes?,
         val biometricsTemplateBytes: BiometricsTemplateBytes?,
