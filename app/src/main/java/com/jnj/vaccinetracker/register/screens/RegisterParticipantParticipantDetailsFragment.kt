@@ -192,6 +192,10 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
                 birthDatePicked, yearsEstimated, monthsEstimated, weeksEstimated
             ).show(childFragmentManager, TAG_ESTIMATED_AGE_PICKER)
         }
+
+        binding.editCohortId.doAfterTextChanged {
+            viewModel.setCohortId(it?.toString().orEmpty())
+        }
     }
 
     private fun setupPhoneInput() {

@@ -118,6 +118,7 @@
     <string name="participant_registration_details_label_participant_id">NIP du participant</string>
     <string name="participant_registration_details_label_iris_id">NIP de l\'iris</string>
     <string name="participant_registration_details_label_gender">Genre</string>
+    <string name="participant_registration_details_cohort_id_label">Identifiant de la cohorte</string>
     <string name="participant_registration_details_error_country_api">Impossible de charger les données. Veuillez contacter votre administrateur.</string>
     <string name="gender_male">Masculin</string>
     <string name="gender_female">Féminin</string>

@@ -9,7 +9,6 @@ import com.jnj.vaccinetracker.common.domain.usecases.MatchParticipantsUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.RegisterParticipantUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
-import com.jnj.vaccinetracker.common.helpers.NetworkConnectivity
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateTime
 import javax.inject.Inject
@@ -83,6 +82,7 @@ class ParticipantManager @Inject constructor(
         language: String,
         vaccine: String,
         isPatientBelongToProgram: Boolean,
+        cohortId: String?,
         address: Address,
         picture: ImageBytes?,
         biometricsTemplateBytes: BiometricsTemplateBytes?,
@@ -94,7 +94,8 @@ class ParticipantManager @Inject constructor(
             Constants.ATTRIBUTE_LANGUAGE to language,
             Constants.ATTRIBUTE_VACCINE to vaccine,
             Constants.ATTRIBUTE_OPERATOR to operatorUUid,
-            Constants.IS_PATIENT_BELONG_TO_PROGRAM to isPatientBelongToProgram.toString()
+            Constants.ATTRIBUTE_IS_PATIENT_BELONG_TO_PROGRAM to isPatientBelongToProgram.toString(),
+            Constants.ATTRIBUTE_COHORT_ID to cohortId!!
         )
         if (telephone != null) {
             personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone

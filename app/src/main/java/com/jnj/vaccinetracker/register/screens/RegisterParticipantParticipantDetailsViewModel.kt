@@ -96,6 +96,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val vaccine = mutableLiveData<DisplayValue>()
     val language = mutableLiveData<DisplayValue>()
     val isPatientBelongToProgram = mutableLiveBoolean(true)
+    val cohortId = mutableLiveData<String?>()
 
     val participantIdValidationMessage = mutableLiveData<String>()
     val confirmParticipantIdValidationMessage = mutableLiveData<String>()
@@ -209,9 +210,9 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val gender = gender.get()
         val birthDate = birthDate.get()
         val isBirthDateEstimated = isBirthDateEstimated.get()
-        Log.d("IS BIRTH DATE ESTIMATED", "Is birth date estimated: $isBirthDateEstimated")
         val fullPhoneNumber = createFullPhone()
         val isPatientBelongToProgram = isPatientBelongToProgram.get()
+        val cohortId = cohortId.get() ?: ""
 
         val isValidInput = validateInput(
             participantId,
@@ -262,6 +263,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 language = language?.value!!,
                 vaccine = vaccine?.value!!,
                 isPatientBelongToProgram = isPatientBelongToProgram,
+                cohortId = cohortId,
                 address = homeLocation!!,
                 picture = compressedImage,
                 biometricsTemplateBytes = biometricsTemplateBytes,
@@ -501,6 +503,11 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     fun setIsPatientBelongToProgram(isPatientBelongToProgram: Boolean) {
         if (this.isPatientBelongToProgram.get() == isPatientBelongToProgram) return
         this.isPatientBelongToProgram.set(isPatientBelongToProgram)
+    }
+
+    fun setCohortId(cohortId: String) {
+        if (this.cohortId.get() == cohortId) return
+        this.cohortId.set(cohortId)
     }
 
     private fun validateYearOfBirth(yearOfBirth: String?, isInlineValidation: Boolean): Boolean {
