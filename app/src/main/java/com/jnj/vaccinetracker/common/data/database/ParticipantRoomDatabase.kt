@@ -250,9 +250,9 @@ abstract class ParticipantRoomDatabase : RoomDatabase() {
                 ParticipantRoomDatabase::class.java,
                 name,
             ).setAutoCloseTimeout(1000, TimeUnit.DAYS)
-                .openHelperFactory(swappableFactory)
+//                .openHelperFactory(swappableFactory)
                 .build().also {
-                    it.factory = swappableFactory
+//                    it.factory = swappableFactory
                 }
         }
 

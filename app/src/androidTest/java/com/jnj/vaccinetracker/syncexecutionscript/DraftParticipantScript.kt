@@ -105,6 +105,7 @@ class DraftParticipantScript {
                 language = lang,
                 vaccine = vaccine,
                 isPatientBelongToProgram = true,
+                cohortId = "",
                 address = address,
                 picture = image,
                 biometricsTemplateBytes = template
