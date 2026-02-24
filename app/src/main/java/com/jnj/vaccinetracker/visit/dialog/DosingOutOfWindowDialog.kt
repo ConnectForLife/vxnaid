@@ -4,17 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.helpers.findParent
-import com.jnj.vaccinetracker.common.ui.BaseDialogFragment
 import com.jnj.vaccinetracker.databinding.DialogDosingOutOfWindowBinding
 
 /**
  * @author maartenvangiel
  * @version 1
  */
-class DosingOutOfWindowDialog : BaseDialogFragment() {
+class DosingOutOfWindowDialog : BottomSheetDialogFragment() {
 
     private lateinit var binding: DialogDosingOutOfWindowBinding
 
@@ -45,6 +48,20 @@ class DosingOutOfWindowDialog : BaseDialogFragment() {
             findParent<DosingOutOfWindowDialogListener>()?.onOutOfWindowDosingCanceled()
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Expand the bottom sheet fully so content is not cut off in landscape
+        dialog?.setOnShowListener { dialogInterface ->
+            val bottomSheetDialog = dialogInterface as? BottomSheetDialog
+            val bottomSheet = bottomSheetDialog?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+            }
+        }
     }
 
     interface DosingOutOfWindowDialogListener {

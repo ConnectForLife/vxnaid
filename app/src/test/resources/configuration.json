@@ -130,7 +130,7 @@
     {
       "mandatory": false,
       "type": "iris_scan"
-    }
+
   ],
   "irisScore": 40,
   "addressFields": {
