@@ -59,7 +59,6 @@ class DosingOutOfWindowDialog : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Expand the bottom sheet fully so content is not cut off in landscape
         dialog?.setOnShowListener { dialogInterface ->
             val bottomSheetDialog = dialogInterface as? BottomSheetDialog
             val bottomSheet = bottomSheetDialog?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
