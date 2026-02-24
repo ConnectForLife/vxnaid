@@ -19,7 +19,9 @@ import com.jnj.vaccinetracker.visit.VisitActivity
 import com.jnj.vaccinetracker.visit.VisitViewModel
 import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
 import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import kotlin.math.ceil
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -118,10 +120,17 @@ class ContraindicationsFragment : BaseFragment() {
          .commit()
    }
 
+    private fun formatScheduledDate(): String? {
+        val visitDate = viewModel.dosingVisit.value?.visitDate ?: return null
+        val dateFormat = SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH)
+        return dateFormat.format(visitDate)
+    }
+
     private fun showOutsideTimeWindowConfirmationDialog() {
         val dialog = DosingOutOfWindowDialog.newInstance(
             true,
-            R.string.visit_dosing_warning_out_of_time_window_description
+            R.string.visit_dosing_warning_out_of_time_window_description,
+            formatScheduledDate()
         )
         dialog.isCancelable = false
         dialog.show(requireActivity().supportFragmentManager, VisitActivity.TAG_DIALOG_DOSING_OUT_OF_WINDOW)
@@ -130,7 +139,8 @@ class ContraindicationsFragment : BaseFragment() {
    private fun showFarFromWindowDialog() {
        val dialog = DosingOutOfWindowDialog.newInstance(
            false,
-           R.string.visit_dosing_warning_far_from_time_window_description
+           R.string.visit_dosing_warning_far_from_time_window_description,
+           formatScheduledDate()
        )
        dialog.isCancelable = false
        dialog.show(requireActivity().supportFragmentManager, "TAG_DOSING_OUT_OF_WINDOW")

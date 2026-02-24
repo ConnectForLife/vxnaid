@@ -22,10 +22,11 @@ class DosingOutOfWindowDialog : BottomSheetDialogFragment() {
     private lateinit var binding: DialogDosingOutOfWindowBinding
 
     companion object {
-        fun newInstance(showConfirmButton: Boolean, descriptionResId: Int): DosingOutOfWindowDialog {
+        fun newInstance(showConfirmButton: Boolean, descriptionResId: Int, scheduledDate: String? = null): DosingOutOfWindowDialog {
             val args = Bundle()
             args.putBoolean("showConfirmButton", showConfirmButton)
             args.putInt("descriptionResId", descriptionResId)
+            scheduledDate?.let { args.putString("scheduledDate", it) }
             val dialog = DosingOutOfWindowDialog()
             dialog.arguments = args
             return dialog
@@ -38,9 +39,15 @@ class DosingOutOfWindowDialog : BottomSheetDialogFragment() {
 
         val showConfirm = arguments?.getBoolean("showConfirmButton") ?: true
         val descriptionResId = arguments?.getInt("descriptionResId") ?: R.string.visit_dosing_warning_out_of_time_window_description
+        val scheduledDate = arguments?.getString("scheduledDate")
 
         binding.btnConfirm.visibility = if (showConfirm) View.VISIBLE else View.GONE
         binding.textViewDescription.setText(descriptionResId)
+
+        if (!scheduledDate.isNullOrEmpty()) {
+            binding.textViewScheduledDate.visibility = View.VISIBLE
+            binding.textViewScheduledDate.text = getString(R.string.visit_dosing_scheduled_date_label, scheduledDate)
+        }
 
         binding.btnConfirm.setOnClickListener { dismissAllowingStateLoss() }
         binding.btnCancel.setOnClickListener {
