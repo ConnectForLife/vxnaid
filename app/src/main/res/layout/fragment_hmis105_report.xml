@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_8_16">
+
+        <!-- Date Filter Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/margin_16_32"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="@dimen/margin_8_16">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/start_date"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_14" />
+
+                <Button
+                    android:id="@+id/btn_start_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_date"
+                    android:layout_marginTop="@dimen/margin_4_8" />
+
+                <TextView
+                    android:id="@+id/label_start_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="N/A"
+                    android:textSize="@dimen/text_12"
+                    android:layout_marginTop="@dimen/margin_4_8" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/margin_8_16">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/end_date"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_14" />
+
+                <Button
+                    android:id="@+id/btn_end_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_date"
+                    android:layout_marginTop="@dimen/margin_4_8" />
+
+                <TextView
+                    android:id="@+id/label_end_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="N/A"
+                    android:textSize="@dimen/text_12"
+                    android:layout_marginTop="@dimen/margin_4_8" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Export Button -->
+        <Button
+            android:id="@+id/btn_export_excel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/export_to_excel"
+            android:layout_marginBottom="@dimen/margin_16_32"
+            android:layout_gravity="center" />
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <!-- Report Data RecyclerView -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <!-- Header Row -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@color/colorPrimary">
+
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:text="Doses"
+                        android:padding="@dimen/padding_8_16"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Under 1\nStatic"
+                        android:padding="@dimen/padding_8_16"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Under 1\nOutreach"
+                        android:padding="@dimen/padding_8_16"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="1-4 Yrs\nStatic"
+                        android:padding="@dimen/padding_8_16"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="1-4 Yrs\nOutreach"
+                        android:padding="@dimen/padding_8_16"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="5-14 Yrs\nStatic"
+                        android:padding="@dimen/padding_8_16"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="5-14 Yrs\nOutreach"
+                        android:padding="@dimen/padding_8_16"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="Total"
+                        android:padding="@dimen/padding_8_16"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+
+                </LinearLayout>
+
+                <!-- Data Rows -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_report"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
+</layout>
+
