@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.reportsoverview.hmis105.repository
 
+import android.util.Log
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -22,6 +23,7 @@ class Hmis105Repository @Inject constructor(
 ) {
 
     companion object {
+        private val TAG = "Hmis105Repository"
         // HMIS 105 Report Vaccine Concept Names (These should be mapped to actual concept UUIDs in your system)
         private val HMIS105_VACCINES = mapOf(
             "BCG Vxnaid" to "CL01. BCG",
@@ -53,48 +55,70 @@ class Hmis105Repository @Inject constructor(
         endDate: Date,
         locationUuid: String? = null
     ): List<Hmis105ReportDTO> {
-        try {
+        return try {
+            Log.d(TAG, "Starting to fetch HMIS 105 report data")
+            
             val vaccineConfig = configurationManager.getSubstancesConfig()
                 .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
+            Log.d(TAG, "Loaded ${vaccineConfig.size} vaccine configurations")
 
             val visitDates = getVisitDatesInRange(startDate, endDate)
+            Log.d(TAG, "Found ${visitDates.size} visits in date range")
+            
             val reportRows = mutableMapOf<String, Hmis105ReportDTO>()
 
             for (visit in visitDates) {
-                val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-                if (participant == null) continue
-
-                val ageGroup = calculateAgeGroup(participant.birthDate, visit.startDatetime)
-                val deliveryMode = visit.visitLocation ?: Constants.VISIT_PLACE_STATIC
-
-                for ((key, observation) in visit.observations) {
-                    val vaccineConceptName = vaccineConfig.find { key == "${it.conceptName} ${Constants.DATE_STR}" }
-                    if (vaccineConceptName != null) {
-                        val reportLabel = HMIS105_VACCINES[vaccineConceptName.conceptName] ?: vaccineConceptName.label
-                        updateReportRow(reportRows, reportLabel, ageGroup, deliveryMode)
+                try {
+                    val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+                    if (participant == null) {
+                        Log.d(TAG, "Participant not found for visit ${visit.visitUuid}")
+                        continue
                     }
+
+                    val ageGroup = calculateAgeGroup(participant.birthDate, visit.startDatetime)
+                    val deliveryMode = visit.visitLocation ?: Constants.VISIT_PLACE_STATIC
+
+                    for ((key, observation) in visit.observations) {
+                        val vaccineConceptName = vaccineConfig.find { key == "${it.conceptName} ${Constants.DATE_STR}" }
+                        if (vaccineConceptName != null) {
+                            val reportLabel = HMIS105_VACCINES[vaccineConceptName.conceptName] ?: vaccineConceptName.label
+                            updateReportRow(reportRows, reportLabel, ageGroup, deliveryMode)
+                        }
+                    }
+                } catch (ex: Exception) {
+                    Log.e(TAG, "Error processing visit ${visit.visitUuid}", ex)
+                    // Continue with next visit
+                    continue
                 }
             }
 
-            return reportRows.values.toList()
+            Log.d(TAG, "Generated ${reportRows.size} report rows")
+            reportRows.values.toList()
                 .sortedWith(compareBy<Hmis105ReportDTO> { it.doses }.thenBy { it.doses })
         } catch (ex: Exception) {
-            return emptyList()
+            Log.e(TAG, "Error in getHmisMalaria105ReportData", ex)
+            emptyList()
         }
     }
 
     private suspend fun getVisitDatesInRange(startDate: Date, endDate: Date): List<Visit> {
-        val occurredVisits = visitRepository
-            .findAllVisitsByAttributeTypeAndValue(Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED)
-            .filter { visit ->
-                visit.startDatetime.time in startDate.time..endDate.time
-            }
+        return try {
+            val occurredVisits = visitRepository
+                .findAllVisitsByAttributeTypeAndValue(Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED)
+                .filter { visit ->
+                    visit.startDatetime.time in startDate.time..endDate.time
+                }
 
-        val draftVisitEncounters = draftVisitEncounterRepository.findVisitsBeforeDate(endDate)
-            .filter { it.startDatetime.time >= startDate.time }
-        val draftVisitEncountersAsVisits = draftVisitEncounters.map { convertDraftVisitEncounterToVisit(it) }
+            val draftVisitEncounters = draftVisitEncounterRepository.findVisitsBeforeDate(endDate)
+                .filter { it.startDatetime.time >= startDate.time }
+            val draftVisitEncountersAsVisits = draftVisitEncounters.map { convertDraftVisitEncounterToVisit(it) }
 
-        return occurredVisits + draftVisitEncountersAsVisits
+            Log.d(TAG, "Occurred visits: ${occurredVisits.size}, Draft visits: ${draftVisitEncountersAsVisits.size}")
+            occurredVisits + draftVisitEncountersAsVisits
+        } catch (ex: Exception) {
+            Log.e(TAG, "Error fetching visits", ex)
+            emptyList()
+        }
     }
 
     private fun convertDraftVisitEncounterToVisit(draftVisitEncounter: DraftVisitEncounter): Visit {

@@ -1,6 +1,7 @@
 package com.jnj.vaccinetracker.reportsoverview.hmis105.model
 
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.R
@@ -23,7 +24,7 @@ class Hmis105ViewModel @Inject constructor(
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
 
-    val reportDTOs = mutableLiveData<List<Hmis105ReportDTO>>()
+    val reportDTOs = mutableLiveData<List<Hmis105ReportDTO>>(emptyList())
     val isLoading = mutableLiveData<Boolean>(false)
     val currentScreen = mutableLiveData<Screen>()
     var navigationDirection = NavigationDirection.NONE
@@ -42,9 +43,12 @@ class Hmis105ViewModel @Inject constructor(
                 val start = startDate?.toDate() ?: getTodayMidnight()
                 val end = endDate?.toDate() ?: addDaysToDate(getTodayMidnight(), 1)
                 
+                Log.d("Hmis105ViewModel", "Loading report data from $start to $end")
                 val data = hmisMalaria105Repository.getHmisMalaria105ReportData(start, end, currentLocationUuid)
+                Log.d("Hmis105ViewModel", "Report data loaded: ${data.size} rows")
                 reportDTOs.value = data
             } catch (ex: Exception) {
+                Log.e("Hmis105ViewModel", "Error loading report data", ex)
                 reportDTOs.value = emptyList()
             } finally {
                 isLoading.value = false

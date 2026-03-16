@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.reportsoverview.hmis105.screens
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -32,6 +33,7 @@ class Hmis105ReportFragment : BaseFragment(),
     ReportOverviewDatePickerDialog.VisitsOverviewDatePickerListener {
 
     companion object {
+        private const val TAG = "Hmis105ReportFragment"
         private const val START_DATE_PICKER_DIALOG_TAG = "startDatePickerHmis105"
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePickerHmis105"
     }
@@ -48,16 +50,23 @@ class Hmis105ReportFragment : BaseFragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d(TAG, "onCreateView called")
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_hmis105_report, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
 
-        setupRecyclerView()
-        initializeDefaultDates()
-        setupDateButtons()
-        setupDownloadButton()
-        loadReportData()
-        observeViewModel()
+        try {
+            setupRecyclerView()
+            initializeDefaultDates()
+            setupDateButtons()
+            setupDownloadButton()
+            loadReportData()
+            observeViewModel()
+            Log.d(TAG, "Fragment setup completed successfully")
+        } catch (ex: Exception) {
+            Log.e(TAG, "Error during fragment setup", ex)
+            Toast.makeText(requireContext(), "Error initializing report: ${ex.message}", Toast.LENGTH_SHORT).show()
+        }
 
         return binding.root
     }
