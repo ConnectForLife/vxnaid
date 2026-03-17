@@ -565,4 +565,13 @@
     <string name="participant_registration_details_action_update_participant_mobile_version" translatable="false">Update Child</string>
     <string name="general_label_warning">Warning</string>
     <string name="rerun_setup_dialog_msg_part1">Attention: This action is reserved for System Administrators only. If you are an operator, do NOT continue.</string>
-    <string name="rerun_setup_dialog_msg_part2">Tap Cancel to abort.</string></resources>
+    <string name="rerun_setup_dialog_msg_part2">Tap Cancel to abort.</string>
+    <!-- Vaccination Date Selection -->
+    <string name="visit_label_vaccination_date">Vaccination Date</string>
+    <string name="visit_hint_vaccination_date">Select the date vaccination was given</string>
+    <string name="visit_error_date_future">Vaccination date cannot be in the future</string>
+    <string name="visit_error_date_too_old">Vaccination date cannot be more than 90 days in the past</string>
+    <string name="visit_error_date_before_last_dose">Vaccination date must be after the last vaccination (%s)</string>
+    <string name="visit_preview_next_visit">Next visit will be scheduled for: %s</string>
+    <string name="visit_date_validation_confirm_title">Confirm Vaccination Date</string>
+    <string name="visit_date_validation_confirm_message">You selected %s for vaccination, but today is %s. Is this correct?</string></resources>
