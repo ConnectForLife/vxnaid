@@ -100,7 +100,6 @@ class VisitViewModel @Inject constructor(
 
     var allLocations = MutableLiveData<List<Site>>(listOf())
 
-    // ============ VACCINATION DATE SELECTION ============
     val selectedVisitDate = MutableLiveData(Date())
 
     val selectedVisitDateDisplay = selectedVisitDate.map { date ->
@@ -110,7 +109,6 @@ class VisitViewModel @Inject constructor(
     val nextVisitPreviewText = selectedVisitDate.map { selectedDate ->
         calculateNextVisitPreview(selectedDate)
     }
-    // ============ END: VACCINATION DATE SELECTION ============
 
     init {
         initState()
@@ -551,8 +549,6 @@ class VisitViewModel @Inject constructor(
         }
     }
 
-    // ============ VACCINATION DATE METHODS ============
-
     private fun formatDateForDisplay(date: Date): String {
         val dateFormat = SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH)
         return dateFormat.format(date)
@@ -570,13 +566,11 @@ class VisitViewModel @Inject constructor(
                 return ""
             }
             
-            // Calculate the difference between selected date and last dose
             val lastDoseCalendar = Calendar.getInstance().apply { time = lastDosingVisit.startDate }
             val selectedCalendar = Calendar.getInstance().apply { time = selectedDate }
             
             val daysDifference = ((selectedCalendar.timeInMillis - lastDoseCalendar.timeInMillis) / (1000 * 60 * 60 * 24)).toInt()
             
-            // If user selected a date different from last dose, calculate adjusted next visit
             if (daysDifference != 0) {
                 val nextVisitCalendar = Calendar.getInstance().apply { 
                     time = upcomingVisitValue.startDate
@@ -610,40 +604,13 @@ class VisitViewModel @Inject constructor(
 
     private fun validateVisitDate(date: Date): Boolean {
         val today = Date()
-        val dateFormat = SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH)
         
-        // Don't allow future dates
         if (date > today) {
             errorMessage.set(resourcesWrapper.getString(R.string.visit_error_date_future))
             return false
         }
         
-        // Don't allow dates older than 90 days
-        val ninetyDaysAgo = Date(today.time - (90 * 24 * 60 * 60 * 1000))
-        if (date < ninetyDaysAgo) {
-            errorMessage.set(resourcesWrapper.getString(R.string.visit_error_date_too_old))
-            return false
-        }
-        
-        // Validate that selected date is not before last dosing visit
-        val lastDosingVisit = patientVisits.value?.find { 
-            it.visitType == Constants.VISIT_TYPE_DOSING && 
-            it.visitStatus == Constants.VISIT_STATUS_OCCURRED 
-        }
-        
-        if (lastDosingVisit != null && date < lastDosingVisit.startDate) {
-            errorMessage.set(
-                resourcesWrapper.getString(
-                    R.string.visit_error_date_before_last_dose,
-                    dateFormat.format(lastDosingVisit.startDate)
-                )
-            )
-            return false
-        }
-        
         return true
     }
-
-    // ============ END: VACCINATION DATE METHODS ============
 }
 

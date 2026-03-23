@@ -168,7 +168,6 @@ class VisitActivity :
     override fun onStart() {
         super.onStart()
         
-        // Setup date picker click listeners
         binding.visitDateInputLayout?.setOnClickListener {
             showDatePickerDialog()
         }
@@ -469,11 +468,7 @@ class VisitActivity :
             day
         )
         
-        // Set constraints
         datePickerDialog.datePicker.maxDate = Date().time
-        
-        val ninetyDaysAgo = Date(Date().time - (90 * 24 * 60 * 60 * 1000))
-        datePickerDialog.datePicker.minDate = ninetyDaysAgo.time
         
         datePickerDialog.show()
     }

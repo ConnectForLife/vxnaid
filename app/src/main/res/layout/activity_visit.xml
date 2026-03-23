@@ -133,7 +133,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_container" />
 
-        <!-- ============ NEW: VACCINATION DATE PICKER SECTION ============ -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/visit_date_input_layout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -177,7 +176,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/visit_date_input_layout" />
-        <!-- ============ END: NEW DATE PICKER SECTION ============ -->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/input_group_visit_type"
