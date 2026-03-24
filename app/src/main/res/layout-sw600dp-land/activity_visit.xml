@@ -263,7 +263,48 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_container" />
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/visit_date_input_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_8"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:hint="@string/visit_label_vaccination_date"
+            android:clickable="true"
+            android:focusable="true"
+            android:cursorVisible="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separator">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/visit_date_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                android:text="@{viewModel.selectedVisitDateDisplay}"
+                android:textSize="14sp"
+                android:clickable="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/next_visit_preview"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_8"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="12dp"
+            android:text="@{viewModel.nextVisitPreviewText}"
+            android:textAppearance="@style/GeneralText"
+            android:textSize="11sp"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/visit_date_input_layout" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -273,9 +314,9 @@
             android:layout_marginTop="@dimen/margin_4"
             android:background="@drawable/white_with_stroke"
             android:backgroundTint="@color/colorAccent"
-            app:layout_constraintEnd_toEndOf="@id/details_container"
-            app:layout_constraintStart_toStartOf="@id/details_container"
-            app:layout_constraintTop_toBottomOf="@id/details_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/next_visit_preview"
             app:tabGravity="fill"
             app:tabIndicatorColor="@color/colorAccent"
             app:tabIndicatorHeight="3dp"
