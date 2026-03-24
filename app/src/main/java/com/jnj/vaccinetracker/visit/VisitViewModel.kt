@@ -81,20 +81,19 @@ class VisitViewModel @Inject constructor(
     var suggestedSubstancesData = MutableLiveData(listOf<SubstanceDataModel>())
     var selectedSubstancesData = MutableLiveData(listOf<SubstanceDataModel>())
     var substancesDataAll = MutableLiveData(listOf<SubstanceDataModel>())
-    var selectedSubstancesWithBarcodes =
-        MutableLiveData<MutableMap<String, Map<String, String>>>(mutableMapOf())
+    var selectedSubstancesWithBarcodes = MutableLiveData<MutableMap<String, Map<String, String>>>(mutableMapOf())
     var selectedOtherSubstances = MutableLiveData<MutableMap<String, String>>()
-    var otherSubstancesData = MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
-    var suggestedOtherSubstancesData = MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
-    var checkOtherSubstances = MutableLiveData(false)
-    var isAnyOtherSubstancesEmpty = MutableLiveData(false)
+    var otherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
+    var suggestedOtherSubstancesData =  MutableLiveData<List<OtherSubstanceDataModel>>(listOf())
+    var checkOtherSubstances =  MutableLiveData(false)
+    var isAnyOtherSubstancesEmpty =  MutableLiveData(false)
     var visitsCounter = MutableLiveData(0)
     val patientVisits = MutableLiveData<List<VisitDetail>>(listOf())
 
-    var isSuggesting = MutableLiveData(true)
-    var selectedVisitType = MutableLiveData<String>()
-    var suggestedVisitType = MutableLiveData<String>()
-    var visitTypes = MutableLiveData<List<String>>()
+    var isSuggesting =  MutableLiveData(true)
+    var selectedVisitType =  MutableLiveData<String>()
+    var suggestedVisitType =  MutableLiveData<String>()
+    var visitTypes =  MutableLiveData<List<String>>()
     var missingSubstancesVisitDate = MutableLiveData<Date>(null)
     var contraindicationsRescheduleDate = MutableLiveData<DateTime>(null)
     var contraindicationsRescheduleReasonText = MutableLiveData<String>(null)
@@ -137,18 +136,15 @@ class VisitViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun load(participantSummary: ParticipantSummaryUiModel) {
         try {
-            visitTypes.value =
-                configurationManager.getSubstancesConfig().map { it.visitType }.distinct()
+            visitTypes.value = configurationManager.getSubstancesConfig().map { it.visitType }.distinct()
 
-            patientVisits.value =
-                visitManager.getVisitsForParticipant(participantSummary.participantUuid)
+            patientVisits.value = visitManager.getVisitsForParticipant(participantSummary.participantUuid)
             visitsCounter.value = patientVisits.value?.count()
 
             val suggestedVisitTypeFromConfig = SubstancesDataUtil.getVisitTypeForCurrentVisit(
                 participantSummary.birthDateText,
                 patientVisits.value!!,
-                configurationManager
-            )
+                configurationManager)
             suggestedVisitType.value = suggestedVisitTypeFromConfig
             selectedVisitType.value = suggestedVisitTypeFromConfig
 
@@ -253,10 +249,8 @@ class VisitViewModel @Inject constructor(
      * @param newVisitDate  date of next visit
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun submitDosingVisit(
-        newVisitDate: Date? = null, visitPlace: String? = null,
-        referralObservations: Map<String, String> = emptyMap(), outreachName: String? = null
-    ) {
+    fun submitDosingVisit(newVisitDate: Date? = null, visitPlace: String? = null,
+                          referralObservations: Map<String, String> = emptyMap(), outreachName: String? = null) {
         val participant = participant.get()
         val dosingVisit = dosingVisit.get()
         val visitsCounter = visitsCounter.value
@@ -335,14 +329,8 @@ class VisitViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun getNextVisitDate(participant: ParticipantSummaryUiModel): Date? {
-        val weeksNumberAfterBirthForNextVisit =
-            findWeeksNumberAfterBirthForNextVisit(participant.birthDateText)
-        return weeksNumberAfterBirthForNextVisit?.let {
-            calculateNextVisitDate(
-                participant.birthDateText,
-                it
-            )
-        }
+        val weeksNumberAfterBirthForNextVisit = findWeeksNumberAfterBirthForNextVisit(participant.birthDateText)
+        return weeksNumberAfterBirthForNextVisit?.let { calculateNextVisitDate(participant.birthDateText, it) }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -362,10 +350,7 @@ class VisitViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun buildVisitObject(
-        participant: ParticipantSummaryUiModel,
-        visitDate: Date
-    ): CreateVisit {
+    private suspend fun buildVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Operator uuid not available")
         val locationUuid = getLocationUuid()
@@ -389,9 +374,7 @@ class VisitViewModel @Inject constructor(
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val birthDate = LocalDate.parse(birthDateText, formatter)
         val nextVisitDate = birthDate.plusWeeks(weeksNumberAfterBirth.toLong())
-        return Date.from(
-            nextVisitDate.atStartOfDay(ZoneId.of(Constants.UTC_TIME_ZONE_NAME)).toInstant()
-        )
+        return Date.from(nextVisitDate.atStartOfDay(ZoneId.of(Constants.UTC_TIME_ZONE_NAME)).toInstant())
     }
 
     private suspend fun onVisitLogged() {
@@ -414,10 +397,7 @@ class VisitViewModel @Inject constructor(
 
     fun addObsToObsMap(conceptName: String, barcode: String, manufacturerName: String) {
         val currentMap = selectedSubstancesWithBarcodes.value?.toMutableMap() ?: mutableMapOf()
-        currentMap[conceptName] = mapOf(
-            Constants.BARCODE_STR to barcode,
-            Constants.MANUFACTURER_NAME_STR to manufacturerName
-        )
+        currentMap[conceptName] = mapOf(Constants.BARCODE_STR to barcode, Constants.MANUFACTURER_NAME_STR to manufacturerName)
         selectedSubstancesWithBarcodes.postValue(currentMap)
     }
 
@@ -438,7 +418,7 @@ class VisitViewModel @Inject constructor(
 
         return suggestedSubstancesData.value
             ?.filter { it.conceptName !in selectedConceptNames }
-            ?.map { it.label } ?: listOf()
+           ?.map { it.label } ?: listOf()
     }
 
     fun checkIfAnyOtherSubstancesEmpty() {
@@ -513,8 +493,7 @@ class VisitViewModel @Inject constructor(
                 )
             )
 
-            val contraindicationsRescheduleReasonText =
-                contraindicationsRescheduleReasonText.value.toString()
+            val contraindicationsRescheduleReasonText = contraindicationsRescheduleReasonText.value.toString()
             val attributesToAdd =
                 mutableMapOf(Constants.RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME to contraindicationsRescheduleReasonText)
             visitManager.updateVisitAttributes(
@@ -529,10 +508,7 @@ class VisitViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun findVisitType(
-        participant: ParticipantSummaryUiModel,
-        visitTime: Date
-    ): String {
+    private suspend fun findVisitType(participant: ParticipantSummaryUiModel, visitTime: Date): String {
         val participantVisits = visitManager.getVisitsForParticipant(participant.participantUuid)
         return SubstancesDataUtil.getVisitTypeForVisitWithGivenDate(
             participant.birthDateText,
@@ -543,18 +519,12 @@ class VisitViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun buildNextVisitObject(
-        participant: ParticipantSummaryUiModel,
-        visitDate: Date
-    ): CreateVisit {
+    private suspend fun buildNextVisitObject(participant: ParticipantSummaryUiModel, visitDate: Date): CreateVisit {
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Location not available")
-        val visitType = dosingVisit.value?.visitTypeVxnaid ?: findVisitType(
-            participant,
-            visitDate
-        ) // it assigns visit type of current visit to new rescheduled one
+        val visitType = dosingVisit.value?.visitTypeVxnaid ?: findVisitType(participant, visitDate) // it assigns visit type of current visit to new rescheduled one
         return CreateVisit(
             participantUuid = participant.participantUuid,
             visitType = Constants.VISIT_TYPE_DOSING,

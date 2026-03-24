@@ -168,7 +168,6 @@ class VisitActivity :
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
-
         viewModel.errorMessage.observe(this) { errorMessage ->
             errorSnackbar?.dismiss()
 
