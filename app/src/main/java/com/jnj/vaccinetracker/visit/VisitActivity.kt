@@ -155,11 +155,12 @@ class VisitActivity :
                 viewModel.onVisitTypeDropdownChange()
             }
         }
-        // Date picker click listener
-        binding.visitDateInputLayout?.setOnClickListener {
+
+        binding.visitDateInputLayout.setOnClickListener {
             showDatePickerDialog()
         }
-        binding.visitDateInput?.setOnClickListener {
+
+        binding.visitDateInput.setOnClickListener {
             showDatePickerDialog()
         }
     }
@@ -167,14 +168,7 @@ class VisitActivity :
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
-        
-        binding.visitDateInputLayout?.setOnClickListener {
-            showDatePickerDialog()
-        }
-        binding.visitDateInput?.setOnClickListener {
-            showDatePickerDialog()
-        }
-        
+
         viewModel.errorMessage.observe(this) { errorMessage ->
             errorSnackbar?.dismiss()
 
