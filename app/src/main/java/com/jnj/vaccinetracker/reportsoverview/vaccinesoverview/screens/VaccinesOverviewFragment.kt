@@ -169,8 +169,9 @@ class VaccinesOverviewFragment : BaseFragment(),
     }
 
     private fun initializeDefaultDates() {
-        val today = DateTime.now()
-        val firstDayOfMonth = today.startOfMonth
+        val now = DateTime.now()
+        val today = DateTime(now.yearInt, now.month1, now.dayOfMonth)
+        val firstDayOfMonth = DateTime(now.yearInt, now.month1, 1)
 
         selectedStartDate = firstDayOfMonth
         selectedEndDate = today
