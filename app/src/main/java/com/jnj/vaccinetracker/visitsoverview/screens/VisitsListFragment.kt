@@ -153,8 +153,8 @@ class VisitsListFragment : BaseFragment(),
                 setDateLabelsAndLoadData { visitsListViewModel.getHistoricalVisitsData() }
             }
             Constants.VISITS_OVERVIEW_MISSED_VISITS_KEY -> {
-                val now = DateTime.now()
-                val yesterday = DateTime(now.yearInt, now.month1, now.dayOfMonth - 1)
+                val yesterdayDateTime = DateTime.now() - 1.days
+                val yesterday = DateTime(yesterdayDateTime.yearInt, yesterdayDateTime.month1, yesterdayDateTime.dayOfMonth)
                 selectedStartDate = yesterday
                 selectedEndDate = yesterday
                 binding.labelStartDate.text = formatDate(selectedStartDate)
