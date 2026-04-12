@@ -64,7 +64,6 @@ class HardcodedHeightForAgeZScore(
             LinearLayout.LayoutParams.WRAP_CONTENT
          )
          setPadding(16.dpToPx, 16.dpToPx, 16.dpToPx, 16.dpToPx)
-         // Prevent the container from receiving focus
          descendantFocusability = LinearLayout.FOCUS_BLOCK_DESCENDANTS
       }
    }
