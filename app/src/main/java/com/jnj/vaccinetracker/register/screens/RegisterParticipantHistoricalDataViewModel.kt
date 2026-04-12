@@ -319,13 +319,11 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
            return false
        }
 
-       // Only check against already occurred visits (confirmed), not against session dates being entered
        val allVisits = (groupedVisitsByType.value?.values?.flatten() ?: emptyList())
        val allVisitDates = allVisits.map { it.visitDate.time }
 
        val newDateMidnight = newDateJava.time.toMidnight()
 
-       // Check for overlap only with confirmed visits (already in database)
        val overlap = allVisitDates.any { it.toMidnight() == newDateMidnight }
        if (overlap) {
            val errorMsg = "Visit date overlaps with an existing visit."
@@ -334,7 +332,6 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
            return false
        }
 
-       // Check that new date is after all confirmed visits
        if (allVisitDates.any { it.toMidnight() > newDateMidnight }) {
            val errorMsg = "The selected date is before or same as a previous visit. Please select a later date."
            errorMessage.postValue(errorMsg)
