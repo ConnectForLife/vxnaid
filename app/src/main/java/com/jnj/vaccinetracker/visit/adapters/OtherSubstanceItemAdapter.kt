@@ -243,6 +243,11 @@ class OtherSubstanceItemAdapter(
         fun bind(item: OtherSubstanceDataModel) {
             labelTextView.text = item.label
             inputEditText.setText(item.value)
+            // Prevent EditText from automatically receiving focus and causing scroll
+            // Users can still tap directly on the field to edit it
+            inputEditText.isFocusable = false
+            inputEditText.isFocusableInTouchMode = true
+            
             inputEditText.addTextChangedListener { editable ->
                 val value = editable.toString()
                 item.value = value
