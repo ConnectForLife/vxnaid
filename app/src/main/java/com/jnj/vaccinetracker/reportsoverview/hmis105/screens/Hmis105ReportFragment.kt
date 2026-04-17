@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
@@ -38,48 +39,78 @@ class Hmis105ReportFragment : BaseFragment(),
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePickerHmis105"
     }
 
-    private lateinit var binding: FragmentHmis105ReportBinding
-    private lateinit var adapter: Hmis105Adapter
-    private val viewModel: Hmis105ViewModel by viewModels { viewModelFactory }
-    
-    private var selectedStartDate: DateTime? = null
-    private var selectedEndDate: DateTime? = null
+     private lateinit var binding: FragmentHmis105ReportBinding
+     private lateinit var adapter: Hmis105Adapter
+     private val viewModel: Hmis105ViewModel by viewModels { viewModelFactory }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        Log.d(TAG, "onCreateView called")
-        setHasOptionsMenu(true)
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_hmis105_report, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
+     private var selectedStartDate: DateTime? = null
+     private var selectedEndDate: DateTime? = null
 
-        try {
-            setupRecyclerView()
-            initializeDefaultDates()
-            setupDateButtons()
-            setupDownloadButton()
-            loadReportData()
-            observeViewModel()
-            Log.d(TAG, "Fragment setup completed successfully")
-        } catch (ex: Exception) {
-            Log.e(TAG, "Error during fragment setup", ex)
-            Toast.makeText(requireContext(), "Error initializing report: ${ex.message}", Toast.LENGTH_SHORT).show()
-        }
+      override fun onCreateView(
+          inflater: LayoutInflater,
+          container: ViewGroup?,
+          savedInstanceState: Bundle?
+      ): View {
+          Log.d(TAG, "onCreateView called")
+          setHasOptionsMenu(true)
+          binding = DataBindingUtil.inflate(inflater, R.layout.fragment_hmis105_report, container, false)
+          binding.lifecycleOwner = viewLifecycleOwner
 
-        return binding.root
-    }
+          try {
+              setupRecyclerView()
+              initializeDefaultDates()
+              setupDateButtons()
+              setupDownloadButton()
+              Log.d(TAG, "Fragment setup completed successfully")
+          } catch (ex: Exception) {
+              Log.e(TAG, "Error during fragment setup: ${ex.message}", ex)
+              Toast.makeText(requireContext(), "Error initializing report: ${ex.message}", Toast.LENGTH_LONG).show()
+          }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+          return binding.root
+      }
 
-        (activity as AppCompatActivity).supportActionBar?.apply {
-            title = getString(R.string.hmis105_report_title)
-            setDisplayHomeAsUpEnabled(true)
-            setHomeButtonEnabled(true)
-        }
-    }
+      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+          super.onViewCreated(view, savedInstanceState)
+          Log.d(TAG, "onViewCreated called")
+
+          try {
+              (activity as? AppCompatActivity)?.supportActionBar?.apply {
+                  title = getString(R.string.hmis105_report_title)
+                  setDisplayHomeAsUpEnabled(true)
+                  setHomeButtonEnabled(true)
+              }
+
+              // Load data after view is created
+              loadReportData()
+          } catch (ex: Exception) {
+              Log.e(TAG, "Error in onViewCreated: ${ex.message}", ex)
+              Toast.makeText(requireContext(), "Error: ${ex.message}", Toast.LENGTH_LONG).show()
+          }
+      }
+
+       override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
+           Log.d(TAG, "observeViewModel called")
+           try {
+               viewModel.reportDTOs.observe(lifecycleOwner) { data ->
+                   Log.d(TAG, "Report data updated: ${data?.size ?: 0} rows")
+                   if (::adapter.isInitialized) {
+                       adapter.submitList(data)
+                   } else {
+                       Log.w(TAG, "Adapter not initialized when data arrived")
+                   }
+               }
+
+               viewModel.isLoading.observe(lifecycleOwner) { isLoading ->
+                   Log.d(TAG, "Loading state: $isLoading")
+                   if (::binding.isInitialized) {
+                       binding.progressBar.visibility = if (isLoading == true) View.VISIBLE else View.GONE
+                   }
+               }
+           } catch (ex: Exception) {
+               Log.e(TAG, "Error in observeViewModel: ${ex.message}", ex)
+           }
+       }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -147,19 +178,11 @@ class Hmis105ReportFragment : BaseFragment(),
         }
     }
 
-    private fun loadReportData() {
-        viewModel.getHmisMalaria105Data(selectedStartDate, selectedEndDate)
-    }
+     private fun loadReportData() {
+         Log.d(TAG, "loadReportData called")
+         viewModel.getHmisMalaria105Data(selectedStartDate, selectedEndDate)
+     }
 
-    private fun observeViewModel() {
-        viewModel.reportDTOs.observe(viewLifecycleOwner) { data ->
-            adapter.submitList(data)
-        }
-
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading == true) View.VISIBLE else View.GONE
-        }
-    }
 
     @SuppressLint("SimpleDateFormat")
     private fun exportToExcel() {
