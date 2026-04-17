@@ -59,7 +59,7 @@ class Hmis105ViewModel @Inject constructor(
                 val end = endDate?.toDate() ?: addDaysToDate(getTodayMidnight(), 1)
                 
                 Log.d("Hmis105ViewModel", "Loading report data from $start to $end")
-
+                
                 // Load data on IO dispatcher
                 val data = withContext(dispatchers.io) {
                     try {
@@ -76,8 +76,25 @@ class Hmis105ViewModel @Inject constructor(
 
                         val allVisits = occurredVisits + draftVisitEncountersAsVisits
                         Log.d("Hmis105ViewModel", "Total visits found: ${allVisits.size}")
+                        
+                        val reportData = mutableListOf<Hmis105ReportDTO>()
+                        
+                        // Add individual vaccine doses
+                        reportData.addAll(createHmis105ReportDTOList(allVisits, start, end))
+                        
+                        // Add fully immunized by 1 year
+                        reportData.add(createFullyImmunized1Year(allVisits, start, end))
+                        
+                        // Add LLINs
+                        reportData.add(createLLINSReport(allVisits, start, end))
+                        
+                        // Add section heading
+                        reportData.add(Hmis105ReportDTO(doses = "SECOND YEAR OF LIFE"))
 
-                        createHmis105ReportDTOList(allVisits)
+                        // Add fully immunized by 2 years
+                        reportData.add(createFullyImmunized2Years(allVisits, start, end))
+                        
+                        reportData
                     } catch (ex: Exception) {
                         Log.e("Hmis105ViewModel", "Repository error: ${ex.message}", ex)
                         emptyList()
@@ -95,7 +112,161 @@ class Hmis105ViewModel @Inject constructor(
         }
     }
 
-    private suspend fun createHmis105ReportDTOList(visits: List<Visit>): List<Hmis105ReportDTO> {
+    private suspend fun createFullyImmunized1Year(visits: List<Visit>, start: Date, end: Date): Hmis105ReportDTO {
+        val participantsMap = mutableMapOf<String, ParticipantBase?>()
+        
+        // Cache participants
+        visits.forEach { visit ->
+            if (!participantsMap.containsKey(visit.participantUuid)) {
+                val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+                participantsMap[visit.participantUuid] = participant
+            }
+        }
+
+        var under1Static = 0
+        var under1Outreach = 0
+
+        for (visit in visits) {
+            val participant = participantsMap[visit.participantUuid]
+            if (participant != null) {
+                val ageInMonths = calculateAgeInMonths(participant.birthDate)
+                
+                // Check if 8-12 months old
+                if (ageInMonths in 8..12) {
+                    // Check if has Yellow Fever AND MR1
+                    val hasYellowFever = visit.observations.keys.any { 
+                        it.contains("CL22") || it.contains("Yellow Fever")
+                    }
+                    val hasMR1 = visit.observations.keys.any { 
+                        it.contains("CL23") || it.contains("Measles Rubella 1")
+                    }
+                    
+                    if (hasYellowFever && hasMR1) {
+                        val visitLocation = visit.visitLocation
+                        if (visitLocation == Constants.VISIT_PLACE_STATIC) {
+                            under1Static++
+                        } else if (visitLocation == Constants.VISIT_PLACE_OUTREACH || visitLocation == Constants.VISIT_PLACE_SCHOOL) {
+                            under1Outreach++
+                        }
+                    }
+                }
+            }
+        }
+
+        return Hmis105ReportDTO(
+            doses = "CL24. Fully immunized by 1 year",
+            under1Static = under1Static,
+            under1Outreach = under1Outreach,
+            total = under1Static + under1Outreach
+        )
+    }
+
+    private suspend fun createFullyImmunized2Years(visits: List<Visit>, start: Date, end: Date): Hmis105ReportDTO {
+        val participantsMap = mutableMapOf<String, ParticipantBase?>()
+        
+        // Cache participants
+        visits.forEach { visit ->
+            if (!participantsMap.containsKey(visit.participantUuid)) {
+                val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+                participantsMap[visit.participantUuid] = participant
+            }
+        }
+
+        var age1to4Static = 0
+        var age1to4Outreach = 0
+
+        // Track distinct people who received MR2
+        val peopleMR2 = mutableSetOf<String>()
+
+        for (visit in visits) {
+            val participant = participantsMap[visit.participantUuid]
+            if (participant != null) {
+                val ageInMonths = calculateAgeInMonths(participant.birthDate)
+                
+                // Check if 17-24 months old
+                if (ageInMonths in 15..24) {
+                    // Check if received MR2 - UUID: b3e01696-40ca-4b08-8448-d64bef8be88d
+                    val hasMR2 = visit.observations.keys.any { obsKey ->
+                        // Check both by concept UUID and common naming patterns
+                        obsKey.contains("b3e01696-40ca-4b08-8448-d64bef8be88d") ||
+                        obsKey.contains("MR2") ||
+                        obsKey.contains("Measles Rubella 2") ||
+                        obsKey.contains("CL27")
+                    }
+                    
+                    if (hasMR2) {
+                        peopleMR2.add(visit.participantUuid)
+                        val visitLocation = visit.visitLocation
+                        when {
+                            visitLocation == Constants.VISIT_PLACE_STATIC -> age1to4Static++
+                            visitLocation == Constants.VISIT_PLACE_OUTREACH || visitLocation == Constants.VISIT_PLACE_SCHOOL -> age1to4Outreach++
+                        }
+                    }
+                }
+            }
+        }
+
+        return Hmis105ReportDTO(
+            doses = "CL28. Fully immunized by 2 years",
+            age1to4Static = age1to4Static,
+            age1to4Outreach = age1to4Outreach,
+            total = age1to4Static + age1to4Outreach
+        )
+    }
+
+    private suspend fun createLLINSReport(visits: List<Visit>, start: Date, end: Date): Hmis105ReportDTO {
+        val participantsMap = mutableMapOf<String, ParticipantBase?>()
+        
+        // Cache participants
+        visits.forEach { visit ->
+            if (!participantsMap.containsKey(visit.participantUuid)) {
+                val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
+                participantsMap[visit.participantUuid] = participant
+            }
+        }
+
+        var under1Static = 0
+        var under1Outreach = 0
+
+        for (visit in visits) {
+            val participant = participantsMap[visit.participantUuid]
+            if (participant != null) {
+                val ageInMonths = calculateAgeInMonths(participant.birthDate)
+                
+                // Check if under 1 year
+                if (ageInMonths < 12) {
+                    // Check if received LLINs (has LLIN observation with value "yes")
+                    val hasLLINs = visit.observations.values.any { obs ->
+                        obs.value.equals("yes", ignoreCase = true)
+                    }
+                    
+                    if (hasLLINs) {
+                        val visitLocation = visit.visitLocation
+                        if (visitLocation == Constants.VISIT_PLACE_STATIC) {
+                            under1Static++
+                        } else if (visitLocation == Constants.VISIT_PLACE_OUTREACH || visitLocation == Constants.VISIT_PLACE_SCHOOL) {
+                            under1Outreach++
+                        }
+                    }
+                }
+            }
+        }
+
+        return Hmis105ReportDTO(
+            doses = "CL25. No. received LLINs",
+            under1Static = under1Static,
+            under1Outreach = under1Outreach,
+            total = under1Static + under1Outreach
+        )
+    }
+
+    private fun calculateAgeInMonths(birthDate: BirthDate): Int {
+        val currentDate = DateTime.now()
+        val birthDateTime = birthDate.toDateTime()
+        return (currentDate.yearInt - birthDateTime.yearInt) * 12 + (currentDate.month0 - birthDateTime.month0)
+    }
+
+    private suspend fun createHmis105ReportDTOList(visits: List<Visit>, start: Date, end: Date): List<Hmis105ReportDTO> {
         val reportRowsMap = mutableMapOf<String, Hmis105ReportDTO>()
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
 
