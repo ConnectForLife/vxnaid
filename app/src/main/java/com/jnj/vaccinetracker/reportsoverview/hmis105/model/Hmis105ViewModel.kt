@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
@@ -14,8 +13,6 @@ import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.BirthDate
-import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
-import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
 import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
@@ -26,14 +23,12 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
 import javax.inject.Inject
 
 class Hmis105ViewModel @Inject constructor(
     userRepository: UserRepository,
     private val configurationManager: ConfigurationManager,
     private val visitRepository: VisitRepository,
-    private val draftVisitEncounterRepository: DraftVisitEncounterRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
@@ -45,6 +40,33 @@ class Hmis105ViewModel @Inject constructor(
     
     private var screens = listOf<Screen>()
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
+
+    companion object {
+        // HMIS 105 Report Vaccine Concept Names mapping
+        private val HMIS105_VACCINES = mapOf(
+            "BCG Vxnaid" to "CL01. BCG",
+            "Hep B BD Vxnaid" to "CL02. Hep B BD",
+            "PAB for Td Vxnaid" to "CL03. PAB for Td",
+            "Polio 0 Vxnaid" to "CL04. Polio 0",
+            "Polio 1 Vxnaid" to "CL05. Polio 1",
+            "Polio 2 Vxnaid" to "CL06. Polio 2",
+            "Polio 3 Vxnaid" to "CL07. Polio 3",
+            "IPV 1 Vxnaid" to "CL08. IPV 1",
+            "IPV 2 Vxnaid" to "CL09. IPV 2",
+            "DPT-HepB-Hib 1 Vxnaid" to "CL10. DPT-HepB-Hib 1",
+            "DPT-HepB-Hib 2 Vxnaid" to "CL11. DPT-HepB-Hib 2",
+            "DPT-HepB-Hib 3 Vxnaid" to "CL12. DPT-HepB-Hib 3",
+            "PCV 1 Vxnaid" to "CL13. PCV 1",
+            "PCV 2 Vxnaid" to "CL14. PCV 2",
+            "PCV 3 Vxnaid" to "CL15. PCV 3",
+            "Rota 1 Vxnaid" to "CL16. Rota 1",
+            "Rota 2 Vxnaid" to "CL17. Rota 2",
+            "Rota 3 Vxnaid" to "CL18. Rota 3",
+            "Yellow Fever Vxnaid" to "CL22. Yellow Fever",
+            "Measles Rubella 1 Vxnaid" to "CL23. Measles Rubella 1 (MR1)",
+            "Measles Rubella 2 Vxnaid" to "CL27. Measles Rubella 2 (MR2)"
+        )
+    }
 
     init {
         initScreens()
@@ -63,37 +85,32 @@ class Hmis105ViewModel @Inject constructor(
                 // Load data on IO dispatcher
                 val data = withContext(dispatchers.io) {
                     try {
-                        val occurredVisits = visitRepository
+                        // Only count confirmed visits (exclude draft visits to match SQL behavior)
+                        val allVisits = visitRepository
                             .findAllVisitsByAttributeTypeAndValue(Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED)
                             .filter { visit ->
                                 visit.startDatetime.time in start.time..end.time &&
                                 participantFromCurrentLocation(visit, currentLocationUuid)
                             }
 
-                        val draftVisitEncounters = draftVisitEncounterRepository.findVisitsBeforeDate(end)
-                            .filter { it.startDatetime.time >= start.time }
-                        val draftVisitEncountersAsVisits = draftVisitEncounters.map { convertDraftVisitEncounterToVisit(it) }
-
-                        val allVisits = occurredVisits + draftVisitEncountersAsVisits
                         Log.d("Hmis105ViewModel", "Total visits found: ${allVisits.size}")
                         
                         val reportData = mutableListOf<Hmis105ReportDTO>()
                         
                         // Add individual vaccine doses
-                        reportData.addAll(createHmis105ReportDTOList(allVisits, start, end))
-                        
+                        reportData.addAll(createHmis105ReportDTOList(allVisits))
+
                         // Add fully immunized by 1 year
-                        reportData.add(createFullyImmunized1Year(allVisits, start, end))
-                        
+                        reportData.add(createFullyImmunized1Year(allVisits))
+
                         // Add LLINs
-                        reportData.add(createLLINSReport(allVisits, start, end))
-                        
+                        reportData.add(createLLINSReport(allVisits))
+
                         // Add section heading
                         reportData.add(Hmis105ReportDTO(doses = "SECOND YEAR OF LIFE"))
 
                         // Add fully immunized by 2 years
-                        reportData.add(createFullyImmunized2Years(allVisits, start, end))
-                        
+                        reportData.add(createFullyImmunized2Years(allVisits))
                         reportData
                     } catch (ex: Exception) {
                         Log.e("Hmis105ViewModel", "Repository error: ${ex.message}", ex)
@@ -112,7 +129,7 @@ class Hmis105ViewModel @Inject constructor(
         }
     }
 
-    private suspend fun createFullyImmunized1Year(visits: List<Visit>, start: Date, end: Date): Hmis105ReportDTO {
+    private suspend fun createFullyImmunized1Year(visits: List<Visit>): Hmis105ReportDTO {
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
         
         // Cache participants
@@ -161,7 +178,7 @@ class Hmis105ViewModel @Inject constructor(
         )
     }
 
-    private suspend fun createFullyImmunized2Years(visits: List<Visit>, start: Date, end: Date): Hmis105ReportDTO {
+    private suspend fun createFullyImmunized2Years(visits: List<Visit>): Hmis105ReportDTO {
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
         
         // Cache participants
@@ -183,8 +200,8 @@ class Hmis105ViewModel @Inject constructor(
             if (participant != null) {
                 val ageInMonths = calculateAgeInMonths(participant.birthDate)
                 
-                // Check if 17-24 months old
-                if (ageInMonths in 15..24) {
+                // Check if 17-24 months old (per SQL specification)
+                if (ageInMonths in 17..24) {
                     // Check if received MR2 - UUID: b3e01696-40ca-4b08-8448-d64bef8be88d
                     val hasMR2 = visit.observations.keys.any { obsKey ->
                         // Check both by concept UUID and common naming patterns
@@ -214,7 +231,7 @@ class Hmis105ViewModel @Inject constructor(
         )
     }
 
-    private suspend fun createLLINSReport(visits: List<Visit>, start: Date, end: Date): Hmis105ReportDTO {
+    private suspend fun createLLINSReport(visits: List<Visit>): Hmis105ReportDTO {
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
         
         // Cache participants
@@ -235,8 +252,12 @@ class Hmis105ViewModel @Inject constructor(
                 
                 // Check if under 1 year
                 if (ageInMonths < 12) {
-                    // Check if received LLINs (has LLIN observation with value "yes")
-                    val hasLLINs = visit.observations.values.any { obs ->
+                    // Check if received LLINs: look for observation key/concept for LLIN (UUID: 6de53ec6-bf3f-41fe-bf2e-e61447a6557a)
+                    // with value "yes"
+                    val hasLLINs = visit.observations.any { (key, obs) ->
+                        (key.contains("6de53ec6-bf3f-41fe-bf2e-e61447a6557a") ||
+                         key.contains("LLIN") ||
+                         key.contains("Long-Lasting Insecticidal Net")) &&
                         obs.value.equals("yes", ignoreCase = true)
                     }
                     
@@ -266,7 +287,7 @@ class Hmis105ViewModel @Inject constructor(
         return (currentDate.yearInt - birthDateTime.yearInt) * 12 + (currentDate.month0 - birthDateTime.month0)
     }
 
-    private suspend fun createHmis105ReportDTOList(visits: List<Visit>, start: Date, end: Date): List<Hmis105ReportDTO> {
+    private suspend fun createHmis105ReportDTOList(visits: List<Visit>): List<Hmis105ReportDTO> {
         val reportRowsMap = mutableMapOf<String, Hmis105ReportDTO>()
         val participantsMap = mutableMapOf<String, ParticipantBase?>()
 
@@ -278,25 +299,48 @@ class Hmis105ViewModel @Inject constructor(
             }
         }
 
-        val vaccineConceptNames = configurationManager.getSubstancesConfig()
+        val vaccinesConfig = configurationManager.getSubstancesConfig()
             .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
-            .map { it.conceptName }
+
+        Log.d("Hmis105ViewModel", "Available vaccine concept names: ${vaccinesConfig.map { it.conceptName }}")
 
         for (visit in visits) {
             val participant = participantsMap[visit.participantUuid]
             if (participant != null) {
                 for ((key, _) in visit.observations) {
-                    val vaccineConceptName = vaccineConceptNames.find { key == "$it ${Constants.DATE_STR}" }
-                    if (vaccineConceptName != null) {
-                        val ageGroup = calculateChildAgeGroup(participant.birthDate)
-                        val visitLocation = visit.visitLocation
+                    // Extract vaccine name from observation key by removing " Date" suffix
+                    val extractedVaccineName = if (key.endsWith(" ${Constants.DATE_STR}")) {
+                        key.split(" ${Constants.DATE_STR}")[0]
+                    } else {
+                        null
+                    }
 
-                        updateReportRow(reportRowsMap, vaccineConceptName, ageGroup, visitLocation)
+                    if (extractedVaccineName != null) {
+                        Log.d("Hmis105ViewModel", "Found observation key: $key -> vaccine name: $extractedVaccineName")
+
+                        // Match with config to validate it exists
+                        val matchedVaccine = vaccinesConfig.find { it.conceptName == extractedVaccineName }
+                        if (matchedVaccine != null) {
+                            // Get HMIS label from mapping
+                            val hmisLabel = HMIS105_VACCINES[extractedVaccineName]
+                            if (hmisLabel != null) {
+                                val ageGroup = calculateChildAgeGroup(participant.birthDate)
+                                val visitLocation = visit.visitLocation
+
+                                updateReportRow(reportRowsMap, hmisLabel, ageGroup, visitLocation)
+                                Log.d("Hmis105ViewModel", "Mapped $extractedVaccineName to HMIS label: $hmisLabel")
+                            } else {
+                                Log.w("Hmis105ViewModel", "No HMIS mapping for vaccine: $extractedVaccineName")
+                            }
+                        } else {
+                            Log.w("Hmis105ViewModel", "No vaccine config match for: $extractedVaccineName")
+                        }
                     }
                 }
             }
         }
 
+        Log.d("Hmis105ViewModel", "Final report rows: ${reportRowsMap.keys}")
         return reportRowsMap.values.toList().sortedBy { it.doses }
     }
 
@@ -346,19 +390,6 @@ class Hmis105ViewModel @Inject constructor(
         }
     }
 
-    private fun convertDraftVisitEncounterToVisit(draftVisitEncounter: DraftVisitEncounter): Visit {
-        return Visit(
-            visitUuid = draftVisitEncounter.visitUuid,
-            startDatetime = draftVisitEncounter.startDatetime,
-            visitType = draftVisitEncounter.visitType,
-            participantUuid = draftVisitEncounter.participantUuid,
-            attributes = draftVisitEncounter.attributes,
-            observations = draftVisitEncounter.observations.mapValues { entry ->
-                ObservationValue(entry.value, draftVisitEncounter.startDatetime)
-            },
-            dateModified = Date(System.currentTimeMillis())
-        )
-    }
 
     private suspend fun participantFromCurrentLocation(visit: Visit, locationUuid: String?): Boolean {
         val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
