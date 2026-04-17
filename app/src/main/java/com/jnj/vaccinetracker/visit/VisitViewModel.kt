@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
@@ -38,6 +39,7 @@ import kotlinx.coroutines.yield
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -97,6 +99,16 @@ class VisitViewModel @Inject constructor(
     var contraindicationsRescheduleReasonText = MutableLiveData<String>(null)
 
     var allLocations = MutableLiveData<List<Site>>(listOf())
+
+    val selectedVisitDate = MutableLiveData(Date())
+
+    val selectedVisitDateDisplay = selectedVisitDate.map { date ->
+        formatDateForDisplay(date)
+    }
+
+    val nextVisitPreviewText = selectedVisitDate.map { selectedDate ->
+        calculateNextVisitPreview(selectedDate)
+    }
 
     init {
         initState()
@@ -257,7 +269,7 @@ class VisitViewModel @Inject constructor(
         scope.launch {
             try {
                 visitManager.registerDosingVisit(
-                    encounterDatetime = Date(),
+                    encounterDatetime = selectedVisitDate.value ?: Date(),
                     visitUuid = dosingVisit.uuid,
                     participantUuid = participant.participantUuid,
                     dosingNumber = visitsCounter ?: 0,
@@ -458,7 +470,7 @@ class VisitViewModel @Inject constructor(
         return syncSettingsRepository.getSiteUuidOrThrow()
     }
 
-    private fun filterOtherSubstancesByLLIN(otherSubstancesList: List<OtherSubstanceDataModel>) : List<OtherSubstanceDataModel> {
+    private fun filterOtherSubstancesByLLIN(otherSubstancesList: List<OtherSubstanceDataModel>): List<OtherSubstanceDataModel> {
         return if (isLLINAlreadyAdministered() == true) {
             otherSubstancesList.filter { it.conceptName != Constants.CONCEPT_NAME_RECEIVED_LLIN }
         } else {
@@ -535,6 +547,111 @@ class VisitViewModel @Inject constructor(
                 allLocations.value = emptyList()
             }
         }
+    }
+
+    private fun formatDateForDisplay(date: Date): String {
+        val dateFormat = SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH)
+        return dateFormat.format(date)
+    }
+
+    private fun calculateNextVisitPreview(selectedDate: Date): String {
+        return try {
+            val visits = patientVisits.value ?: return ""
+
+            val lastDosingVisit = visits
+                .filter {
+                    it.visitType == Constants.VISIT_TYPE_DOSING &&
+                            it.visitStatus == Constants.VISIT_STATUS_OCCURRED
+                }
+                .maxByOrNull { it.startDate.time }
+                ?: return ""
+
+            val upcomingVisitFromList = visits
+                .filter {
+                    it.visitStatus == Constants.VISIT_STATUS_SCHEDULED &&
+                            it.startDate.after(lastDosingVisit.startDate)
+                }
+                .minByOrNull { it.startDate }
+                ?: return ""
+
+            val lastDoseCalendar = Calendar.getInstance().apply { time = lastDosingVisit.startDate }
+            val selectedCalendar = Calendar.getInstance().apply { time = selectedDate }
+
+            val daysDifference =
+                ((selectedCalendar.timeInMillis - lastDoseCalendar.timeInMillis) / (1000 * 60 * 60 * 24)).toInt()
+
+            val dateFormat = SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH)
+            if (daysDifference != 0) {
+                val nextVisitCalendar = Calendar.getInstance().apply {
+                    time = upcomingVisitFromList.startDate
+                }
+                nextVisitCalendar.add(Calendar.DAY_OF_YEAR, daysDifference)
+
+                resourcesWrapper.getString(
+                    R.string.visit_preview_next_visit,
+                    dateFormat.format(nextVisitCalendar.time)
+                )
+            } else {
+                resourcesWrapper.getString(
+                    R.string.visit_preview_next_visit,
+                    dateFormat.format(upcomingVisitFromList.startDate)
+                )
+            }
+        } catch (ex: Exception) {
+            logWarn("Error calculating next visit preview: ", ex)
+            ""
+        }
+    }
+
+    fun onVisitDateSelected(date: Date) {
+        if (validateVisitDate(date)) {
+            selectedVisitDate.value = date
+
+            val daysDifference = ((Date().time - date.time) / (1000 * 60 * 60 * 24)).toInt()
+            if (daysDifference > 7) {
+                logInfo(
+                    "Vaccination date selected ${daysDifference} days ago: ${
+                        formatDateForDisplay(
+                            date
+                        )
+                    }"
+                )
+            } else {
+                logInfo("Vaccination date selected: ${formatDateForDisplay(date)}")
+            }
+        }
+    }
+
+    private fun validateVisitDate(date: Date): Boolean {
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
+        if (date > today) {
+            errorMessage.set(resourcesWrapper.getString(R.string.visit_error_date_future))
+            return false
+        }
+
+        val lastDosingVisit = patientVisits.value
+            ?.filter {
+                it.visitType == Constants.VISIT_TYPE_DOSING &&
+                        it.visitStatus == Constants.VISIT_STATUS_OCCURRED
+            }
+            ?.maxByOrNull { it.startDate.time }
+
+        if (lastDosingVisit != null && date < lastDosingVisit.startDate) {
+            val previousDateStr = formatDateForDisplay(lastDosingVisit.startDate)
+            errorMessage.set("Vaccination date cannot be before previous visit ($previousDateStr)")
+            logWarn("Selected visit date is before previous dosing visit: $previousDateStr")
+            return false
+        }
+
+        // Clear any previous error messages when a valid date is selected
+        errorMessage.set(null)
+        return true
     }
 }
 

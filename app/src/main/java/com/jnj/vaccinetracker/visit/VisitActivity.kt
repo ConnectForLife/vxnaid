@@ -35,6 +35,7 @@ import com.jnj.vaccinetracker.visit.dialog.DosingOutOfWindowDialog
 import com.jnj.vaccinetracker.visit.dialog.RescheduleVisitDialog
 import com.jnj.vaccinetracker.visit.dialog.VisitRegisteredSuccessDialog
 import java.util.Date
+import java.util.Calendar
 import com.jnj.vaccinetracker.visit.model.SubstanceDataModel
 import com.jnj.vaccinetracker.visit.screens.ContraindicationsFragment
 import com.jnj.vaccinetracker.visit.screens.ReferralFragment
@@ -153,6 +154,14 @@ class VisitActivity :
                 updateSelectedVisitType(selectedVisitType)
                 viewModel.onVisitTypeDropdownChange()
             }
+        }
+
+        binding.visitDateInputLayout.setOnClickListener {
+            showDatePickerDialog()
+        }
+
+        binding.visitDateInput.setOnClickListener {
+            showDatePickerDialog()
         }
     }
 
@@ -423,5 +432,37 @@ class VisitActivity :
         viewModel.contraindicationsRescheduleDate.value = newVisitDate
         viewModel.contraindicationsRescheduleReasonText.value = rescheduleReasonText
         navigateToReferralFragment(isAfterVisit = false)
+    }
+
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance().apply {
+            time = viewModel.selectedVisitDate.value ?: Date()
+        }
+        
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        
+        val datePickerDialog = android.app.DatePickerDialog(
+            this,
+            { _: android.widget.DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
+                val selectedDate = Calendar.getInstance().apply {
+                    set(selectedYear, selectedMonth, selectedDay)
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.time
+                
+                viewModel.onVisitDateSelected(selectedDate)
+            },
+            year,
+            month,
+            day
+        )
+        
+        datePickerDialog.datePicker.maxDate = Date().time
+        
+        datePickerDialog.show()
     }
 }

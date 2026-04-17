@@ -220,6 +220,7 @@
     <string name="visit_label_vaccine">Regimen</string>
     <string name="visit_label_visit_type">Please select the appropriate visit type</string>
     <string name="visit_label_title">Visit</string>
+    <string name="visit_dosing_title_history">Dosing History:</string>
     <string name="visit_dosing_label_scan_or_manual_entry">Please scan the barcode vial or enter it manually below:</string>
     <string name="visit_dosing_label_visit_number">Visit counter:</string>
     <string name="visit_dosing_label_time_window">Scheduled date:</string>
@@ -573,3 +574,8 @@
     <string name="export_to_excel">Export to Excel</string>
     <string name="no_data_to_export">No data available to export</string>
     <string name="file_exported_successfully">File exported successfully</string></resources>
+    <string name="visit_label_vaccination_date">Vaccination Date</string>
+    <string name="visit_error_date_future">Vaccination date cannot be in the future</string>
+    <string name="visit_preview_next_visit">Next visit will be scheduled for: %s</string>
+</resources>
+
