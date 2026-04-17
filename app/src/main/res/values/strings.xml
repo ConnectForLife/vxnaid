@@ -578,4 +578,3 @@
     <string name="visit_error_date_future">Vaccination date cannot be in the future</string>
     <string name="visit_preview_next_visit">Next visit will be scheduled for: %s</string>
 </resources>
-
