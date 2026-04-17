@@ -573,7 +573,7 @@
     <string name="select_date">Select Date</string>
     <string name="export_to_excel">Export to Excel</string>
     <string name="no_data_to_export">No data available to export</string>
-    <string name="file_exported_successfully">File exported successfully</string></resources>
+    <string name="file_exported_successfully">File exported successfully</string>
     <string name="visit_label_vaccination_date">Vaccination Date</string>
     <string name="visit_error_date_future">Vaccination date cannot be in the future</string>
     <string name="visit_preview_next_visit">Next visit will be scheduled for: %s</string>
