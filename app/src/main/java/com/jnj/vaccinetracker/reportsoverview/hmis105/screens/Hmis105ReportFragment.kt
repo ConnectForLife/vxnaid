@@ -218,31 +218,23 @@ class Hmis105ReportFragment : BaseFragment(),
             return
         }
 
-        val fileName = "HMIS105_Report_${DateUtil.convertDateToString(dateNow(), DateFormat.FORMAT_DATE.toString())}.xls"
+        val fileName = "${buildFileName()}.xls"
         val mimeType = "application/vnd.ms-excel"
 
         FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
             val workbook = HSSFWorkbook()
             val sheet = workbook.createSheet(getString(R.string.hmis105_report_title).replace(" ", "_"))
 
-            // Create header row
             val headerRow = sheet.createRow(0)
-            val headers = listOf(
-                "Doses",
-                "Under 1 - Static",
-                "Under 1 - Outreach/School",
-                "1-4 Years - Static",
-                "1-4 Years - Outreach/School",
-                "5-14 Years - Static",
-                "5-14 Years - Outreach/School",
-                "Total"
-            )
+            headerRow.createCell(0).setCellValue("Doses")
+            headerRow.createCell(1).setCellValue("Under 1 - Static")
+            headerRow.createCell(2).setCellValue("Under 1 - Outreach/School")
+            headerRow.createCell(3).setCellValue("1-4 Years - Static")
+            headerRow.createCell(4).setCellValue("1-4 Years - Outreach/School")
+            headerRow.createCell(5).setCellValue("5-14 Years - Static")
+            headerRow.createCell(6).setCellValue("5-14 Years - Outreach/School")
+            headerRow.createCell(7).setCellValue("Total")
 
-            headers.forEachIndexed { index, header ->
-                headerRow.createCell(index).setCellValue(header)
-            }
-
-            // Create data rows
             data.forEachIndexed { index, report ->
                 val row = sheet.createRow(index + 1)
                 row.createCell(0).setCellValue(report.doses)
@@ -255,14 +247,27 @@ class Hmis105ReportFragment : BaseFragment(),
                 row.createCell(7).setCellValue(report.total.toDouble())
             }
 
-            // Auto-resize columns
-            repeat(headers.size) { sheet.autoSizeColumn(it) }
+            sheet.setColumnWidth(0, 4000)
+            sheet.setColumnWidth(1, 4000)
+            sheet.setColumnWidth(2, 4500)
+            sheet.setColumnWidth(3, 4000)
+            sheet.setColumnWidth(4, 4500)
+            sheet.setColumnWidth(5, 4000)
+            sheet.setColumnWidth(6, 4500)
+            sheet.setColumnWidth(7, 4000)
 
             workbook.write(outputStream)
             workbook.close()
-
-            Toast.makeText(requireContext(), getString(R.string.file_exported_successfully), Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun buildFileName(): String {
+        return "${getString(R.string.hmis105_report_title).replace(" ", "_")}_${
+            DateUtil.convertDateToString(
+                dateNow(),
+                DateFormat.FORMAT_DATE.toString()
+            )
+        }"
     }
 
     private fun formatDate(date: DateTime?): String {
