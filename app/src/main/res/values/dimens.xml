@@ -29,12 +29,18 @@
     <dimen name="margin_48_80">48dp</dimen>
 
     <!-- General text sizes -->
+    <dimen name="text_9">11sp</dimen>
+    <dimen name="text_10">11sp</dimen>
+    <dimen name="text_11">11sp</dimen>
     <dimen name="text_12">12sp</dimen>
+    <dimen name="text_13">13sp</dimen>
     <dimen name="text_14">14sp</dimen>
     <dimen name="text_16">16sp</dimen>
     <dimen name="text_24">24sp</dimen>
     <dimen name="text_size_12_16">12sp</dimen>
-    <dimen name="text_size_12_18">12sp</dimen>
+    <dimen name="text_size_11_14">12sp</dimen>
+    <dimen name="text_size_12_14">12sp</dimen>
+    <dimen name="text_size_14_16">12sp</dimen>
     <dimen name="text_size_14_18">14sp</dimen>
     <dimen name="text_size_16_20">16sp</dimen>
     <dimen name="text_size_16_26">16sp</dimen>
