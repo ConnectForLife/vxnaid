@@ -42,12 +42,13 @@
 
                 <TextView
                     android:id="@+id/label_start_date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/visits_overview_not_set_label"
-                    android:textSize="@dimen/text_size_12_14"
+                    android:textSize="@dimen/text_16"
                     android:textStyle="bold"
-                    android:layout_marginStart="@dimen/margin_4" />
+                    android:layout_marginStart="@dimen/margin_4"/>
 
             </LinearLayout>
 
@@ -71,12 +72,13 @@
 
                 <TextView
                     android:id="@+id/label_end_date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/not_set"
-                    android:textSize="@dimen/text_size_12_14"
+                    android:textSize="@dimen/text_16"
                     android:textStyle="bold"
-                    android:layout_marginStart="@dimen/margin_4" />
+                    android:layout_marginStart="@dimen/margin_4"/>
 
             </LinearLayout>
 
@@ -116,7 +118,7 @@
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_10" />
+                        android:textSize="@dimen/text_12" />
 
                     <TextView
                         android:layout_width="70dp"
@@ -126,7 +128,7 @@
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_9" />
+                        android:textSize="@dimen/text_12" />
 
                     <TextView
                         android:layout_width="70dp"
@@ -136,7 +138,7 @@
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_9" />
+                        android:textSize="@dimen/text_12" />
 
                     <TextView
                         android:layout_width="70dp"
@@ -146,7 +148,7 @@
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_9" />
+                        android:textSize="@dimen/text_12" />
 
                     <TextView
                         android:layout_width="70dp"
@@ -156,7 +158,7 @@
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_9" />
+                        android:textSize="@dimen/text_12" />
 
                     <TextView
                         android:layout_width="70dp"
@@ -166,7 +168,7 @@
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_9" />
+                        android:textSize="@dimen/text_12" />
 
                     <TextView
                         android:layout_width="70dp"
@@ -176,7 +178,7 @@
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_9" />
+                        android:textSize="@dimen/text_12" />
 
                     <TextView
                         android:layout_width="80dp"
@@ -186,7 +188,7 @@
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_10" />
+                        android:textSize="@dimen/text_12" />
 
                 </LinearLayout>
 

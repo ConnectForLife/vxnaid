@@ -115,86 +115,88 @@
                         android:layout_weight="2"
                         android:layout_height="wrap_content"
                         android:text="@string/doses"
-                        android:padding="@dimen/padding_8_16"
+                        android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        android:textSize="@dimen/text_14"/>
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/under_1_nstatic"
-                        android:padding="@dimen/padding_8_16"
+                        android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_12" />
+                        android:textSize="@dimen/text_14"/>
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/under_1_noutreach"
-                        android:padding="@dimen/padding_8_16"
+                        android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_12" />
+                        android:textSize="@dimen/text_14"/>
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/_1_4_yrs_nstatic"
-                        android:padding="@dimen/padding_8_16"
+                        android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_12" />
+                        android:textSize="@dimen/text_14" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/_1_4_yrs_noutreach"
-                        android:padding="@dimen/padding_8_16"
+                        android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_12" />
+                        android:textSize="@dimen/text_14" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/_5_14_yrs_nstatic"
-                        android:padding="@dimen/padding_8_16"
+                        android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_12" />
+                        android:textSize="@dimen/text_14" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/_5_14_yrs_noutreach"
-                        android:padding="@dimen/padding_8_16"
+                        android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_12" />
+                        android:textSize="@dimen/text_14" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="0.8"
                         android:layout_height="wrap_content"
                         android:text="@string/total"
-                        android:padding="@dimen/padding_8_16"
+                        android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        android:textSize="@dimen/text_14"/>
 
                 </LinearLayout>
 

@@ -12,7 +12,8 @@
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_4_8"
-            android:textSize="@dimen/text_10"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold"
             android:gravity="center" />
 
         <TextView
@@ -20,7 +21,8 @@
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_4_8"
-            android:textSize="@dimen/text_9"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold"
             android:gravity="center" />
 
         <TextView
@@ -28,7 +30,8 @@
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_4_8"
-            android:textSize="@dimen/text_9"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold"
             android:gravity="center" />
 
         <TextView
@@ -36,7 +39,8 @@
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_4_8"
-            android:textSize="@dimen/text_9"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold"
             android:gravity="center" />
 
         <TextView
@@ -44,7 +48,8 @@
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_4_8"
-            android:textSize="@dimen/text_9"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold"
             android:gravity="center" />
 
         <TextView
@@ -52,7 +57,8 @@
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_4_8"
-            android:textSize="@dimen/text_9"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold"
             android:gravity="center" />
 
         <TextView
@@ -60,7 +66,8 @@
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_4_8"
-            android:textSize="@dimen/text_9"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold"
             android:gravity="center" />
 
         <TextView
@@ -68,7 +75,7 @@
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_4_8"
-            android:textSize="@dimen/text_10"
+            android:textSize="@dimen/text_14"
             android:textStyle="bold"
             android:gravity="center" />
 

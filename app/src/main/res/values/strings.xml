@@ -577,12 +577,12 @@
     <string name="visit_label_vaccination_date">Vaccination Date</string>
     <string name="visit_error_date_future">Vaccination date cannot be in the future</string>
     <string name="visit_preview_next_visit">Next visit will be scheduled for: %s</string>
-    <string name="under_1_nstatic">Under 1\nStatic</string>
-    <string name="under_1_noutreach">Under 1\nOutreach</string>
+    <string name="under_1_nstatic">Under 1 Static</string>
+    <string name="under_1_noutreach">Under 1 Outreach</string>
     <string name="doses">Doses</string>
-    <string name="_1_4_yrs_nstatic">1-4 Yrs\nStatic</string>
-    <string name="_5_14_yrs_nstatic">5-14 Yrs\nStatic</string>
-    <string name="_5_14_yrs_noutreach">5-14 Yrs\nOutreach</string>
+    <string name="_1_4_yrs_nstatic">1-4 Yrs Static</string>
+    <string name="_5_14_yrs_nstatic">5-14 Yrs Static</string>
+    <string name="_5_14_yrs_noutreach">5-14 Yrs Outreach</string>
     <string name="total">Total</string>
-    <string name="_1_4_yrs_noutreach">1-4 Yrs\nOutreach</string>
+    <string name="_1_4_yrs_noutreach">1-4 Yrs Outreach</string>
 </resources>
