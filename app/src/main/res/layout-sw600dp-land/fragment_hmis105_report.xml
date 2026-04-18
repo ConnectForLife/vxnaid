@@ -124,7 +124,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/under_1_nstatic"
+                        android:text="@string/under_1_static"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -135,7 +135,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/under_1_noutreach"
+                        android:text="@string/under_1_outreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -146,7 +146,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/_1_4_yrs_nstatic"
+                        android:text="@string/_1_4_yrs_static"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -157,7 +157,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/_1_4_yrs_noutreach"
+                        android:text="@string/_1_4_yrs_outreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -168,7 +168,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/_5_14_yrs_nstatic"
+                        android:text="@string/_5_14_yrs_static"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -179,7 +179,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1.1"
-                        android:text="@string/_5_14_yrs_noutreach"
+                        android:text="@string/_5_14_yrs_outreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -196,7 +196,6 @@
                         android:textStyle="bold"
                         android:gravity="center"
                         android:textSize="@dimen/text_15" />
-
                 </LinearLayout>
 
                 <!-- Data Rows -->
@@ -206,7 +205,6 @@
                     android:layout_height="match_parent" />
 
             </LinearLayout>
-
 
         <!-- Download Button Container at Bottom -->
         <LinearLayout
@@ -225,7 +223,6 @@
                 android:paddingVertical="@dimen/btn_padding_4_8"
                 android:text="@string/visits_overview_download_excel_button_label"
                 android:textSize="@dimen/text_size_12_14" />
-
         </LinearLayout>
 
     </LinearLayout>
