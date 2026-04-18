@@ -24,7 +24,8 @@
             <!-- Start Date Container -->
             <LinearLayout
                 android:id="@+id/search_container"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
@@ -32,16 +33,18 @@
 
                 <Button
                     android:id="@+id/btn_start_date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
+                    android:layout_marginEnd="12dp"
                     android:paddingHorizontal="@dimen/padding_4"
                     android:text="@string/visits_overview_start_date_label"
                     android:textSize="@dimen/text_size_12_14" />
 
                 <TextView
                     android:id="@+id/label_start_date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/visits_overview_not_set_label"
                     android:textSize="@dimen/text_size_14_16"
@@ -53,7 +56,8 @@
             <!-- End Date Container -->
             <LinearLayout
                 android:id="@+id/search_container_end_date"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
@@ -61,16 +65,18 @@
 
                 <Button
                     android:id="@+id/btn_end_date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
+                    android:layout_marginEnd="12dp"
                     android:paddingHorizontal="@dimen/padding_4"
                     android:text="@string/visits_overview_end_date_label"
                     android:textSize="@dimen/text_size_12_14" />
 
                 <TextView
                     android:id="@+id/label_end_date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/not_set"
                     android:textSize="@dimen/text_size_14_16"
@@ -84,19 +90,13 @@
         <!-- Progress Bar -->
         <ProgressBar
             android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone" />
 
-        <!-- Report Data RecyclerView with HorizontalScrollView -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
@@ -108,96 +108,103 @@
                     android:background="@color/colorPrimary">
 
                     <TextView
-                        android:layout_width="100dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="2"
                         android:text="@string/doses"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_11" />
+                        android:textSize="@dimen/text_13" />
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/under_1_nstatic"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_11" />
+                        android:textSize="@dimen/text_13" />
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/under_1_noutreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_11" />
+                        android:textSize="@dimen/text_13" />
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/_1_4_yrs_nstatic"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_11" />
+                        android:textSize="@dimen/text_13" />
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/_1_4_yrs_noutreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_11" />
+                        android:textSize="@dimen/text_13" />
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/_5_14_yrs_nstatic"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_11" />
+                        android:textSize="@dimen/text_13" />
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/_5_14_yrs_noutreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_11" />
+                        android:textSize="@dimen/text_13" />
 
                     <TextView
-                        android:layout_width="100dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/total"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:textSize="@dimen/text_11" />
+                        android:textSize="@dimen/text_13" />
 
                 </LinearLayout>
 
                 <!-- Data Rows -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view_report"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
             </LinearLayout>
 
-        </HorizontalScrollView>
 
         <!-- Download Button Container at Bottom -->
         <LinearLayout
