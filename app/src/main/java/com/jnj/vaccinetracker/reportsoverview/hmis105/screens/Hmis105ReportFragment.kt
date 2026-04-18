@@ -43,51 +43,68 @@ class Hmis105ReportFragment : BaseFragment(),
      private lateinit var adapter: Hmis105Adapter
      private val viewModel: Hmis105ViewModel by viewModels { viewModelFactory }
 
-     private var selectedStartDate: DateTime? = null
-     private var selectedEndDate: DateTime? = null
+       override fun onCreateView(
+           inflater: LayoutInflater,
+           container: ViewGroup?,
+           savedInstanceState: Bundle?
+       ): View {
+           Log.d(TAG, "onCreateView called, savedInstanceState: ${savedInstanceState != null}")
+           setHasOptionsMenu(true)
+           binding = DataBindingUtil.inflate(inflater, R.layout.fragment_hmis105_report, container, false)
+           binding.lifecycleOwner = viewLifecycleOwner
 
-      override fun onCreateView(
-          inflater: LayoutInflater,
-          container: ViewGroup?,
-          savedInstanceState: Bundle?
-      ): View {
-          Log.d(TAG, "onCreateView called")
-          setHasOptionsMenu(true)
-          binding = DataBindingUtil.inflate(inflater, R.layout.fragment_hmis105_report, container, false)
-          binding.lifecycleOwner = viewLifecycleOwner
+           try {
+               setupRecyclerView()
+               // Restore ViewModel state if available (on configuration change)
+               if (savedInstanceState != null) {
+                   Log.d(TAG, "Restoring ViewModel state from savedInstanceState")
+                   viewModel.restoreInstanceState(savedInstanceState)
+               }
+               // Initialize dates only if they're not already set (first load or after restoration)
+               if (viewModel.selectedStartDate.value == null && viewModel.selectedEndDate.value == null) {
+                   Log.d(TAG, "Initializing default dates")
+                   initializeDefaultDates()
+               } else {
+                   Log.d(TAG, "Dates already set, updating labels")
+                   updateDateLabels()
+               }
+               setupDateButtons()
+               setupDownloadButton()
+               Log.d(TAG, "Fragment setup completed successfully")
+           } catch (ex: Exception) {
+               Log.e(TAG, "Error during fragment setup: ${ex.message}", ex)
+               Toast.makeText(requireContext(), "Error initializing report: ${ex.message}", Toast.LENGTH_LONG).show()
+           }
 
-          try {
-              setupRecyclerView()
-              initializeDefaultDates()
-              setupDateButtons()
-              setupDownloadButton()
-              Log.d(TAG, "Fragment setup completed successfully")
-          } catch (ex: Exception) {
-              Log.e(TAG, "Error during fragment setup: ${ex.message}", ex)
-              Toast.makeText(requireContext(), "Error initializing report: ${ex.message}", Toast.LENGTH_LONG).show()
-          }
+           return binding.root
+       }
 
-          return binding.root
-      }
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+            Log.d(TAG, "onViewCreated called, savedInstanceState: ${savedInstanceState != null}")
 
-      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-          super.onViewCreated(view, savedInstanceState)
-          Log.d(TAG, "onViewCreated called")
+            try {
+                (activity as? AppCompatActivity)?.supportActionBar?.apply {
+                    title = getString(R.string.hmis105_report_title)
+                    setDisplayHomeAsUpEnabled(true)
+                    setHomeButtonEnabled(true)
+                }
 
-          try {
-              (activity as? AppCompatActivity)?.supportActionBar?.apply {
-                  title = getString(R.string.hmis105_report_title)
-                  setDisplayHomeAsUpEnabled(true)
-                  setHomeButtonEnabled(true)
-              }
-
-              // Load data after view is created
-              loadReportData()
-          } catch (ex: Exception) {
-              Log.e(TAG, "Error in onViewCreated: ${ex.message}", ex)
-              Toast.makeText(requireContext(), "Error: ${ex.message}", Toast.LENGTH_LONG).show()
-          }
-      }
+                // Only load data if this is the first time or if dates were explicitly changed
+                // If there's saved data in reportDTOs, don't reload (configuration change case)
+                if (viewModel.reportDTOs.value.isNullOrEmpty() && 
+                    viewModel.selectedStartDate.value != null && 
+                    viewModel.selectedEndDate.value != null) {
+                    Log.d(TAG, "Loading report data")
+                    loadReportData()
+                } else if (!viewModel.reportDTOs.value.isNullOrEmpty()) {
+                    Log.d(TAG, "Data already loaded, not reloading (configuration change)")
+                }
+            } catch (ex: Exception) {
+                Log.e(TAG, "Error in onViewCreated: ${ex.message}", ex)
+                Toast.makeText(requireContext(), "Error: ${ex.message}", Toast.LENGTH_LONG).show()
+            }
+        }
 
        override fun observeViewModel(lifecycleOwner: LifecycleOwner) {
            Log.d(TAG, "observeViewModel called")
@@ -112,15 +129,21 @@ class Hmis105ReportFragment : BaseFragment(),
            }
        }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                activity?.onBackPressedDispatcher?.onBackPressed()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+         return when (item.itemId) {
+             android.R.id.home -> {
+                 activity?.onBackPressedDispatcher?.onBackPressed()
+                 true
+             }
+             else -> super.onOptionsItemSelected(item)
+         }
+     }
+
+     override fun onSaveInstanceState(outState: Bundle) {
+         super.onSaveInstanceState(outState)
+         Log.d(TAG, "onSaveInstanceState called")
+         viewModel.saveInstanceState(outState)
+     }
 
     private fun setupRecyclerView() {
         adapter = Hmis105Adapter()
@@ -128,15 +151,18 @@ class Hmis105ReportFragment : BaseFragment(),
         binding.recyclerViewReport.adapter = adapter
     }
 
-    private fun initializeDefaultDates() {
-        val today = DateTime.now()
-        val monthStart = DateTime(today.yearInt, today.month, 1)
-        selectedStartDate = monthStart
-        selectedEndDate = today
-        
-        binding.labelStartDate.text = formatDate(selectedStartDate)
-        binding.labelEndDate.text = formatDate(selectedEndDate)
-    }
+     private fun initializeDefaultDates() {
+         val today = DateTime.now()
+         val monthStart = DateTime(today.yearInt, today.month, 1)
+         viewModel.selectedStartDate.value = monthStart
+         viewModel.selectedEndDate.value = today
+         updateDateLabels()
+     }
+
+     private fun updateDateLabels() {
+         binding.labelStartDate.text = formatDate(viewModel.selectedStartDate.value)
+         binding.labelEndDate.text = formatDate(viewModel.selectedEndDate.value)
+     }
 
     private fun setupDateButtons() {
         binding.btnStartDate.setOnClickListener {
@@ -153,35 +179,35 @@ class Hmis105ReportFragment : BaseFragment(),
         }
     }
 
-    private fun showDatePickerDialog(isStartDate: Boolean) {
-        val datePickerDialog = ReportOverviewDatePickerDialog(
-            selectedDate = if (isStartDate) selectedStartDate else selectedEndDate
-        )
-        datePickerDialog.show(
-            childFragmentManager,
-            if (isStartDate) START_DATE_PICKER_DIALOG_TAG else END_DATE_PICKER_DIALOG_TAG
-        )
-    }
-
-    override fun onDatePicked(date: DateTime?, tag: String?) {
-        date?.let {
-            if (tag == START_DATE_PICKER_DIALOG_TAG) {
-                selectedStartDate = it
-                binding.labelStartDate.text = formatDate(selectedStartDate)
-            } else if (tag == END_DATE_PICKER_DIALOG_TAG) {
-                selectedEndDate = it
-                binding.labelEndDate.text = formatDate(selectedEndDate)
-            }
-            if (selectedStartDate != null && selectedEndDate != null) {
-                loadReportData()
-            }
-        }
-    }
-
-     private fun loadReportData() {
-         Log.d(TAG, "loadReportData called")
-         viewModel.getHmisMalaria105Data(selectedStartDate, selectedEndDate)
+     private fun showDatePickerDialog(isStartDate: Boolean) {
+         val datePickerDialog = ReportOverviewDatePickerDialog(
+             selectedDate = if (isStartDate) viewModel.selectedStartDate.value else viewModel.selectedEndDate.value
+         )
+         datePickerDialog.show(
+             childFragmentManager,
+             if (isStartDate) START_DATE_PICKER_DIALOG_TAG else END_DATE_PICKER_DIALOG_TAG
+         )
      }
+
+     override fun onDatePicked(date: DateTime?, tag: String?) {
+         date?.let {
+             if (tag == START_DATE_PICKER_DIALOG_TAG) {
+                 viewModel.selectedStartDate.value = it
+                 binding.labelStartDate.text = formatDate(it)
+             } else if (tag == END_DATE_PICKER_DIALOG_TAG) {
+                 viewModel.selectedEndDate.value = it
+                 binding.labelEndDate.text = formatDate(it)
+             }
+             if (viewModel.selectedStartDate.value != null && viewModel.selectedEndDate.value != null) {
+                 loadReportData()
+             }
+         }
+     }
+
+      private fun loadReportData() {
+          Log.d(TAG, "loadReportData called")
+          viewModel.getHmisMalaria105Data(viewModel.selectedStartDate.value, viewModel.selectedEndDate.value)
+      }
 
 
     @SuppressLint("SimpleDateFormat")

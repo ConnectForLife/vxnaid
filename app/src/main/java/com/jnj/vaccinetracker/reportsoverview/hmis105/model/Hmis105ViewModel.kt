@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.reportsoverview.hmis105.model
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.StringRes
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
@@ -36,6 +37,8 @@ class Hmis105ViewModel @Inject constructor(
     val reportDTOs = mutableLiveData<List<Hmis105ReportDTO>>(emptyList())
     val isLoading = mutableLiveData<Boolean>(false)
     val currentScreen = mutableLiveData<Screen>()
+    val selectedStartDate = MutableLiveData<DateTime?>(null)
+    val selectedEndDate = MutableLiveData<DateTime?>(null)
     var navigationDirection = NavigationDirection.NONE
     
     private var screens = listOf<Screen>()
@@ -420,8 +423,33 @@ class Hmis105ViewModel @Inject constructor(
         HMIS105_REPORT(R.string.hmis105_report_title)
     }
 
-    override fun saveInstanceState(outState: Bundle) {}
+    override fun saveInstanceState(outState: Bundle) {
+        selectedStartDate.value?.let { 
+            outState.putString("selectedStartDate", it.toString())
+        }
+        selectedEndDate.value?.let { 
+            outState.putString("selectedEndDate", it.toString())
+        }
+    }
 
-    override fun restoreInstanceState(savedInstanceState: Bundle) {}
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        val startDateStr = savedInstanceState.getString("selectedStartDate")
+        val endDateStr = savedInstanceState.getString("selectedEndDate")
+        
+        if (startDateStr != null) {
+            try {
+                selectedStartDate.value = DateTime.parse(startDateStr).local
+            } catch (e: Exception) {
+                Log.e("Hmis105ViewModel", "Failed to parse start date: $startDateStr", e)
+            }
+        }
+        if (endDateStr != null) {
+            try {
+                selectedEndDate.value = DateTime.parse(endDateStr).local
+            } catch (e: Exception) {
+                Log.e("Hmis105ViewModel", "Failed to parse end date: $endDateStr", e)
+            }
+        }
+    }
 }
 
