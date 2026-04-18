@@ -13,5 +13,5 @@
     <dimen name="return_visit_guide_btn_padding_32_70_32">32dp</dimen>
 
     <!-- Reports Overview -->
-    <dimen name="report_overview_btn_padding_70_100_70">70dp</dimen>
+    <dimen name="report_overview_btn_padding_70_100_50">50dp</dimen>
 </resources>

@@ -54,7 +54,7 @@
     <dimen name="complete_input_text_size_18_24">24sp</dimen>
 
     <!-- Reports Overview -->
-    <dimen name="report_overview_btn_padding_70_100_70">100dp</dimen>
+    <dimen name="report_overview_btn_padding_70_100_50">100dp</dimen>
 
     <!-- contraindications  -->
     <dimen name="contraindications_text_size">50sp</dimen>
