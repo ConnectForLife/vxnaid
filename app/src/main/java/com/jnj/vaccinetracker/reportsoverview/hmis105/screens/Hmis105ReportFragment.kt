@@ -206,7 +206,7 @@ class Hmis105ReportFragment : BaseFragment(),
 
       private fun loadReportData() {
           Log.d(TAG, "loadReportData called")
-          viewModel.getHmisMalaria105Data(viewModel.selectedStartDate.value, viewModel.selectedEndDate.value)
+          viewModel.getHMIS105Data(viewModel.selectedStartDate.value, viewModel.selectedEndDate.value)
       }
 
 

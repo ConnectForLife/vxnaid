@@ -9,7 +9,6 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
-import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
@@ -24,11 +23,11 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 import javax.inject.Inject
 
 class Hmis105ViewModel @Inject constructor(
     userRepository: UserRepository,
-    private val configurationManager: ConfigurationManager,
     private val visitRepository: VisitRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
     override val dispatchers: AppCoroutineDispatchers
@@ -45,17 +44,6 @@ class Hmis105ViewModel @Inject constructor(
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
     companion object {
-
-        // -----------------------------------------------------------------------
-        // Observation keys — these are the FULL concept names as stored in the
-        // local database (concept_name.name column).
-        // They include "(MR1)"/"(MR2)" and the word "Date" as part of the name.
-        // Source: concept_name table confirmed from database dump.
-        // -----------------------------------------------------------------------
-
-        // Individual vaccines mapped to HMIS 105 report labels.
-        // MR2 is intentionally EXCLUDED here — it is rendered separately as CL27
-        // after the SECOND YEAR OF LIFE heading, matching SQL ordering position 5.
         private val HMIS105_VACCINES = mapOf(
             "BCG Vxnaid Date"                      to "CL01. BCG",
             "Hep B BD Vxnaid Date"                 to "CL02. Hep B BD",
@@ -79,13 +67,9 @@ class Hmis105ViewModel @Inject constructor(
             "Measles Rubella 1 (MR1) Vxnaid Date" to "CL23. Measles Rubella 1 (MR1)"
         )
 
-        // Exact observation keys for vaccines used in special computed rows.
-        // Must match concept_name.name in the database exactly.
         private const val KEY_MR1          = "Measles Rubella 1 (MR1) Vxnaid Date"
         private const val KEY_MR2          = "Measles Rubella 2 (MR2) Vxnaid Date"
         private const val KEY_YELLOW_FEVER = "Yellow Fever Vxnaid Date"
-
-        // Concept UUIDs from the SQL query — used for LLINs obs lookup only
         private const val UUID_LLINS = "6de53ec6-bf3f-41fe-bf2e-e61447a6557a"
     }
 
@@ -93,12 +77,8 @@ class Hmis105ViewModel @Inject constructor(
         initScreens()
     }
 
-    // =========================================================================
-    // Entry point
-    // =========================================================================
-
-    fun getHmisMalaria105Data(startDate: DateTime?, endDate: DateTime?) {
-        Log.d("Hmis105ViewModel", "getHmisMalaria105Data called")
+    fun getHMIS105Data(startDate: DateTime?, endDate: DateTime?) {
+        Log.d("Hmis105ViewModel", "getHMIS105Data called")
         isLoading.value = true
         viewModelScope.launch {
             try {
@@ -109,49 +89,33 @@ class Hmis105ViewModel @Inject constructor(
 
                 val data = withContext(dispatchers.io) {
                     try {
-                        // Only confirmed visits at the current facility within the date range.
-                        // Mirrors SQL: o.obs_datetime >= :startDate AND < :endDate
-                        //              AND pa.value IN (location uuids for :location)
-                        val allVisits = visitRepository
+                        val candidateVisits = visitRepository
                             .findAllVisitsByAttributeTypeAndValue(
                                 Constants.ATTRIBUTE_VISIT_STATUS,
                                 Constants.VISIT_STATUS_OCCURRED
                             )
                             .filter { visit ->
-                                visit.startDatetime.time in start.time until end.time &&
-                                        participantFromCurrentLocation(visit, currentLocationUuid)
+                                participantFromCurrentLocation(visit, currentLocationUuid)
                             }
+                        val participantsMap = buildParticipantsMap(candidateVisits)
+                        val allVisits = candidateVisits.filter { visit ->
+                            visit.observations.values.any { obsValue ->
+                                obsValue.dateTime.time in start.time until end.time
+                            }
+                        }
 
                         Log.d("Hmis105ViewModel", "Total visits found: ${allVisits.size}")
 
-                        // Log all unique observation keys — useful for debugging
-                        // concept name mismatches between app and database
                         val allKeys = allVisits.flatMap { it.observations.keys }.toSet()
                         Log.d("Hmis105ViewModel", "All obs keys in filtered visits: $allKeys")
-
-                        // Build participant cache once — shared across all report sections
-                        val participantsMap = buildParticipantsMap(allVisits)
-
                         val reportData = mutableListOf<Hmis105ReportDTO>()
 
-                        // CL01–CL23: individual vaccines (MR2 excluded from this list)
-                        reportData.addAll(createHmis105ReportDTOList(allVisits, participantsMap))
-
-                        // CL24: Fully immunized by 1 year (MR1 + Yellow Fever, age 8–12 months)
-                        reportData.add(createFullyImmunized1Year(allVisits, participantsMap))
-
-                        // CL25: LLINs (under 1 year, value = "yes")
-                        reportData.add(createLLINSReport(allVisits, participantsMap))
-
-                        // Section heading — formatting row only, no counts
+                        reportData.addAll(createHmis105ReportDTOList(allVisits, participantsMap, start, end))
+                        reportData.add(createFullyImmunized1Year(allVisits, participantsMap, start, end))
+                        reportData.add(createLLINSReport(allVisits, participantsMap, start, end))
                         reportData.add(Hmis105ReportDTO(doses = "SECOND YEAR OF LIFE"))
-
-                        // CL27: MR2 — rendered after heading, matches SQL ordering position 5
-                        reportData.add(createMR2Report(allVisits, participantsMap))
-
-                        // CL28: Fully immunized by 2 years (MR2, age 17–24 months at vaccination)
-                        reportData.add(createFullyImmunized2Years(allVisits, participantsMap))
-
+                        reportData.add(createMR2Report(allVisits, participantsMap, start, end))
+                        reportData.add(createFullyImmunized2Years(allVisits, participantsMap, start, end))
                         reportData
                     } catch (ex: Exception) {
                         Log.e("Hmis105ViewModel", "Repository error: ${ex.message}", ex)
@@ -170,10 +134,6 @@ class Hmis105ViewModel @Inject constructor(
         }
     }
 
-    // =========================================================================
-    // Participant cache — built once, passed to all report section builders
-    // =========================================================================
-
     private suspend fun buildParticipantsMap(visits: List<Visit>): Map<String, ParticipantBase?> {
         val map = mutableMapOf<String, ParticipantBase?>()
         for (visit in visits) {
@@ -185,43 +145,16 @@ class Hmis105ViewModel @Inject constructor(
         return map
     }
 
-    // =========================================================================
-    // Age helpers
-    //
-    // CRITICAL: All age calculations use the VISIT DATE (obs_datetime), never
-    // DateTime.now(). This matches the SQL behaviour:
-    //   TIMESTAMPDIFF(MONTH, p.birthdate, o.obs_datetime)
-    //   TIMESTAMPDIFF(YEAR,  p.birthdate, o.obs_datetime)
-    // Using today's date would place children in the wrong age buckets for
-    // historical visits, producing counts that don't match the SQL report.
-    // =========================================================================
-
-    /**
-     * Age in whole months at [referenceDate].
-     * Matches SQL: TIMESTAMPDIFF(MONTH, p.birthdate, referenceDate)
-     */
     private fun calculateAgeInMonthsAt(birthDate: BirthDate, referenceDate: DateTime): Int {
         val birth = birthDate.toDateTime()
         return (referenceDate.yearInt - birth.yearInt) * 12 +
                 (referenceDate.month0 - birth.month0)
     }
 
-    /**
-     * Age in whole years at [referenceDate].
-     * Matches SQL: TIMESTAMPDIFF(YEAR, p.birthdate, referenceDate)
-     */
     private fun calculateAgeInYearsAt(birthDate: BirthDate, referenceDate: DateTime): Int {
         return calculateAgeInMonthsAt(birthDate, referenceDate) / 12
     }
 
-    /**
-     * Maps to the SQL age buckets used across CL01–CL23 and CL27.
-     * Age is evaluated at [visitDate] (obs_datetime), never today.
-     *
-     *   0–11  months → GROUP_AGE_FIRST  (Under 1 year)
-     *  12–59  months → GROUP_AGE_SECOND (1–4 years)
-     *   5–14  years  → GROUP_AGE_THIRD  (5–14 years)
-     */
     private fun calculateChildAgeGroupAt(birthDate: BirthDate, visitDate: DateTime): String {
         val ageInMonths = calculateAgeInMonthsAt(birthDate, visitDate)
         val ageInYears  = calculateAgeInYearsAt(birthDate, visitDate)
@@ -233,78 +166,56 @@ class Hmis105ViewModel @Inject constructor(
         }
     }
 
-    // =========================================================================
-    // Observation key helper
-    //
-    // Observation keys are the FULL concept name as stored in concept_name.name.
-    // Example: "Measles Rubella 1 (MR1) Vxnaid Date"
-    // No suffix is appended in code — the key IS the complete name including "Date".
-    // =========================================================================
-
-    private fun visitHasObs(visit: Visit, conceptName: String): Boolean {
-        return visit.observations.containsKey(conceptName)
-    }
-
-    // =========================================================================
-    // CL01–CL23: Individual vaccines
-    //
-    // - Observation key looked up directly in HMIS105_VACCINES map
-    // - MR2 excluded (handled separately as CL27)
-    // - Age group evaluated at visit date, not today
-    // =========================================================================
-
-    private suspend fun createHmis105ReportDTOList(
+    private fun createHmis105ReportDTOList(
         visits: List<Visit>,
-        participantsMap: Map<String, ParticipantBase?>
+        participantsMap: Map<String, ParticipantBase?>,
+        startDate: Date,
+        endDate: Date
     ): List<Hmis105ReportDTO> {
 
         val reportRowsMap = mutableMapOf<String, Hmis105ReportDTO>()
+        val nowDateTime = DateTime.now()  // Use current time for age, matching SQL
 
         for (visit in visits) {
             val participant   = participantsMap[visit.participantUuid] ?: continue
-            val visitDateTime = DateTime(visit.startDatetime.time)
 
-            for ((key, _) in visit.observations) {
-                // Direct map lookup — key is the full concept name
+            for ((key, obsValue) in visit.observations) {
+                if (obsValue.dateTime.time !in startDate.time until endDate.time) {
+                    continue
+                }
+
                 val hmisLabel = HMIS105_VACCINES[key] ?: continue
-
-                val ageGroup      = calculateChildAgeGroupAt(participant.birthDate, visitDateTime)
+                val ageGroup      = calculateChildAgeGroupAt(participant.birthDate, nowDateTime)
                 val visitLocation = visit.visitLocation
 
                 updateReportRow(reportRowsMap, hmisLabel, ageGroup, visitLocation)
                 Log.d("Hmis105ViewModel", "Mapped [$key] → [$hmisLabel] | age: $ageGroup | loc: $visitLocation")
             }
         }
-
-        Log.d("Hmis105ViewModel", "CL01–CL23 rows generated: ${reportRowsMap.keys}")
         return reportRowsMap.values.toList().sortedBy { it.doses }
     }
-
-    // =========================================================================
-    // CL24: Fully Immunized by 1 Year
-    //
-    // SQL logic:
-    //   - Driven from MR1 obs at this facility in the date range
-    //   - Child must be 8–12 months at time of MR1 vaccination (obs_datetime)
-    //   - Child must also have received Yellow Fever at this facility in range
-    //   - Delivery mode taken from the MR1 visit
-    //   - Result always <= MIN(CL22 Yellow Fever count, CL23 MR1 count)
-    // =========================================================================
-
-    private suspend fun createFullyImmunized1Year(
+    private fun createFullyImmunized1Year(
         visits: List<Visit>,
-        participantsMap: Map<String, ParticipantBase?>
+        participantsMap: Map<String, ParticipantBase?>,
+        startDate: Date,
+        endDate: Date
     ): Hmis105ReportDTO {
 
-        // Distinct participants who received Yellow Fever in the date range at this facility
         val yellowFeverRecipients = visits
-            .filter { visitHasObs(it, KEY_YELLOW_FEVER) }
+            .filter { visit ->
+                visit.observations.any { (key, obsValue) ->
+                    key == KEY_YELLOW_FEVER && obsValue.dateTime.time in startDate.time until endDate.time
+                }
+            }
             .map { it.participantUuid }
             .toSet()
 
-        // Distinct participants who received MR1 in the date range at this facility
         val mr1Recipients = visits
-            .filter { visitHasObs(it, KEY_MR1) }
+            .filter { visit ->
+                visit.observations.any { (key, obsValue) ->
+                    key == KEY_MR1 && obsValue.dateTime.time in startDate.time until endDate.time
+                }
+            }
             .map { it.participantUuid }
             .toSet()
 
@@ -321,22 +232,22 @@ class Hmis105ViewModel @Inject constructor(
         for (participantUuid in bothVaccinesUuids) {
             val participant = participantsMap[participantUuid] ?: continue
 
-            // Age is checked at the MR1 visit date (obs_datetime), not today
             val mr1Visit = visits.firstOrNull { visit ->
                 visit.participantUuid == participantUuid &&
-                        visitHasObs(visit, KEY_MR1)
+                        visit.observations.any { (key, obsValue) ->
+                            key == KEY_MR1 && obsValue.dateTime.time in startDate.time until endDate.time
+                        }
             } ?: continue
 
-            val visitDateTime = DateTime(mr1Visit.startDatetime.time)
+            val mr1ObsValue = mr1Visit.observations[KEY_MR1] ?: continue
+            val visitDateTime = DateTime(mr1ObsValue.dateTime.time)
             val ageAtMR1      = calculateAgeInMonthsAt(participant.birthDate, visitDateTime)
 
-            // Age window 8–12 months at vaccination time — matches SQL
             if (ageAtMR1 !in 8..12) {
                 Log.d("Hmis105ViewModel", "CL24 skip $participantUuid — age at MR1 was $ageAtMR1 months")
                 continue
             }
 
-            // Delivery mode from the MR1 visit
             when (mr1Visit.visitLocation) {
                 Constants.VISIT_PLACE_STATIC   -> under1Static++
                 Constants.VISIT_PLACE_OUTREACH,
@@ -354,19 +265,11 @@ class Hmis105ViewModel @Inject constructor(
         )
     }
 
-    // =========================================================================
-    // CL25: LLINs
-    //
-    // SQL logic:
-    //   - Concept UUID: 6de53ec6-bf3f-41fe-bf2e-e61447a6557a
-    //   - LOWER(TRIM(o.value_text)) = 'yes'
-    //   - Age 0–11 months at observation date (obs_datetime)
-    //   - Only Static / Outreach / School delivery modes counted
-    // =========================================================================
-
-    private suspend fun createLLINSReport(
+    private fun createLLINSReport(
         visits: List<Visit>,
-        participantsMap: Map<String, ParticipantBase?>
+        participantsMap: Map<String, ParticipantBase?>,
+        startDate: Date,
+        endDate: Date
     ): Hmis105ReportDTO {
 
         var under1Static   = 0
@@ -374,22 +277,17 @@ class Hmis105ViewModel @Inject constructor(
 
         for (visit in visits) {
             val participant   = participantsMap[visit.participantUuid] ?: continue
-            val visitDateTime = DateTime(visit.startDatetime.time)
-
-            // Age at visit date — matches TIMESTAMPDIFF(MONTH, p.birthdate, o.obs_datetime)
-            val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, visitDateTime)
-            if (ageInMonths !in 0..11) continue
-
-            // Check for LLINs observation with value "yes"
-            // Key may be stored by UUID or display name containing "LLIN"
-            val hasLLINs = visit.observations.any { (key, obs) ->
+            val llinsEntry = visit.observations.entries.firstOrNull { (key, obs) ->
                 (key.contains(UUID_LLINS, ignoreCase = true) ||
                         key.contains("LLIN", ignoreCase = true)) &&
-                        obs.value.trim().equals("yes", ignoreCase = true)
-            }
-            if (!hasLLINs) continue
+                        obs.value.trim().equals("yes", ignoreCase = true) &&
+                        obs.dateTime.time in startDate.time until endDate.time
+            } ?: continue
 
-            // SQL only counts known delivery modes — no default fallback for LLINs
+            val obsDateTime = DateTime(llinsEntry.value.dateTime.time)
+            val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, obsDateTime)
+            if (ageInMonths !in 0..11) continue
+
             when (visit.visitLocation) {
                 Constants.VISIT_PLACE_STATIC   -> under1Static++
                 Constants.VISIT_PLACE_OUTREACH,
@@ -406,21 +304,11 @@ class Hmis105ViewModel @Inject constructor(
         )
     }
 
-    // =========================================================================
-    // CL27: Measles Rubella 2 (MR2)
-    //
-    // SQL logic:
-    //   - All MR2 recipients at this facility in the date range
-    //   - Age buckets at vaccination date:
-    //       12–59 months → 1-4 years columns
-    //       5–14 years   → 5-14 years columns
-    //   - Under-1 columns are always 0
-    //   - Rendered AFTER SECOND YEAR OF LIFE heading (SQL ordering position 5)
-    // =========================================================================
-
-    private suspend fun createMR2Report(
+    private fun createMR2Report(
         visits: List<Visit>,
-        participantsMap: Map<String, ParticipantBase?>
+        participantsMap: Map<String, ParticipantBase?>,
+        startDate: Date,
+        endDate: Date
     ): Hmis105ReportDTO {
 
         var age1to4Static    = 0
@@ -429,12 +317,13 @@ class Hmis105ViewModel @Inject constructor(
         var age5to14Outreach = 0
 
         for (visit in visits) {
-            if (!visitHasObs(visit, KEY_MR2)) continue
+            val mr2Obs = visit.observations[KEY_MR2]?.takeIf {
+                it.dateTime.time in startDate.time until endDate.time
+            } ?: continue
 
             val participant   = participantsMap[visit.participantUuid] ?: continue
-            val visitDateTime = DateTime(visit.startDatetime.time)
-
-            val ageGroup      = calculateChildAgeGroupAt(participant.birthDate, visitDateTime)
+            val mr2DateTime = DateTime(mr2Obs.dateTime.time)
+            val ageGroup      = calculateChildAgeGroupAt(participant.birthDate, mr2DateTime)
             val visitLocation = visit.visitLocation
 
             when {
@@ -468,34 +357,24 @@ class Hmis105ViewModel @Inject constructor(
         )
     }
 
-    // =========================================================================
-    // CL28: Fully Immunized by 2 Years
-    //
-    // SQL logic:
-    //   - Same base population as CL27 (MR2 recipients at this facility in range)
-    //   - Age window: 17–24 months at time of MR2 vaccination (obs_datetime)
-    //   - Result always <= CL27 (same group, narrower age window)
-    //   - Under-1 and 5-14 columns are always 0
-    // =========================================================================
-
-    private suspend fun createFullyImmunized2Years(
+    private fun createFullyImmunized2Years(
         visits: List<Visit>,
-        participantsMap: Map<String, ParticipantBase?>
+        participantsMap: Map<String, ParticipantBase?>,
+        startDate: Date,
+        endDate: Date
     ): Hmis105ReportDTO {
 
         var age1to4Static   = 0
         var age1to4Outreach = 0
 
         for (visit in visits) {
-            if (!visitHasObs(visit, KEY_MR2)) continue
-
+            val mr2Obs = visit.observations[KEY_MR2]?.takeIf {
+                it.dateTime.time in startDate.time until endDate.time
+            } ?: continue
             val participant   = participantsMap[visit.participantUuid] ?: continue
-            val visitDateTime = DateTime(visit.startDatetime.time)
+            val mr2DateTime = DateTime(mr2Obs.dateTime.time)
+            val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, mr2DateTime)
 
-            // Age at MR2 vaccination date — matches TIMESTAMPDIFF(MONTH, p.birthdate, o.obs_datetime)
-            val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, visitDateTime)
-
-            // Age window 17–24 months — matches SQL
             if (ageInMonths !in 17..24) {
                 Log.d("Hmis105ViewModel", "CL28 skip ${visit.participantUuid} — age at MR2 was $ageInMonths months")
                 continue
@@ -517,10 +396,6 @@ class Hmis105ViewModel @Inject constructor(
             total           = age1to4Static + age1to4Outreach
         )
     }
-
-    // =========================================================================
-    // updateReportRow — applies increment to the correct column
-    // =========================================================================
 
     private fun updateReportRow(
         reportRows: MutableMap<String, Hmis105ReportDTO>,
@@ -563,10 +438,6 @@ class Hmis105ViewModel @Inject constructor(
         reportRows[vaccine] = updatedRow.copy(total = total)
     }
 
-    // =========================================================================
-    // Location filter
-    // =========================================================================
-
     private suspend fun participantFromCurrentLocation(
         visit: Visit,
         locationUuid: String?
@@ -575,10 +446,6 @@ class Hmis105ViewModel @Inject constructor(
             .findByParticipantUuid(visit.participantUuid)
         return participant?.locationUuid == locationUuid
     }
-
-    // =========================================================================
-    // Screen / state management
-    // =========================================================================
 
     private fun initScreens() {
         screens = createScreens()
