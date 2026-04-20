@@ -45,44 +45,38 @@ class Hmis105ViewModel @Inject constructor(
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
     companion object {
-        // HMIS 105 Report Vaccine Concept UUIDs — keyed by concept name matching SQL UUIDs
-        // CL27 (MR2) is intentionally EXCLUDED here; it is rendered as its own section
-        // after the SECOND YEAR OF LIFE heading, separate from the main vaccine list.
+        // HMIS 105 Report Vaccine Concept Names (without " Date" suffix)
+        // Observation keys are stored as "<ConceptName> Date" in the database
+        // CL27 (MR2) is intentionally EXCLUDED here; rendered after SECOND YEAR OF LIFE heading
         private val HMIS105_VACCINES = mapOf(
-            "BCG Vxnaid"              to "CL01. BCG",
-            "Hep B BD Vxnaid"         to "CL02. Hep B BD",
-            "PAB for Td Vxnaid"       to "CL03. PAB for Td",
-            "Polio 0 Vxnaid"          to "CL04. Polio 0",
-            "Polio 1 Vxnaid"          to "CL05. Polio 1",
-            "Polio 2 Vxnaid"          to "CL06. Polio 2",
-            "Polio 3 Vxnaid"          to "CL07. Polio 3",
-            "IPV 1 Vxnaid"            to "CL08. IPV 1",
-            "IPV 2 Vxnaid"            to "CL09. IPV 2",
-            "DPT-HepB-Hib 1 Vxnaid"  to "CL10. DPT-HepB-Hib 1",
-            "DPT-HepB-Hib 2 Vxnaid"  to "CL11. DPT-HepB-Hib 2",
-            "DPT-HepB-Hib 3 Vxnaid"  to "CL12. DPT-HepB-Hib 3",
-            "PCV 1 Vxnaid"            to "CL13. PCV 1",
-            "PCV 2 Vxnaid"            to "CL14. PCV 2",
-            "PCV 3 Vxnaid"            to "CL15. PCV 3",
-            "Rota 1 Vxnaid"           to "CL16. Rota 1",
-            "Rota 2 Vxnaid"           to "CL17. Rota 2",
-            "Rota 3 Vxnaid"           to "CL18. Rota 3",
-            "Yellow Fever Vxnaid"     to "CL22. Yellow Fever",
-            "Measles Rubella 1 Vxnaid" to "CL23. Measles Rubella 1 (MR1)"
-            // NOTE: "Measles Rubella 2 Vxnaid" / MR2 is NOT here.
-            // It is handled separately in createMR2Report() and
-            // rendered after the SECOND YEAR OF LIFE heading, matching the SQL ordering.
+            "BCG Vxnaid"                          to "CL01. BCG",
+            "Hep B BD Vxnaid"                     to "CL02. Hep B BD",
+            "PAB for Td Vxnaid"                   to "CL03. PAB for Td",
+            "Polio 0 Vxnaid"                      to "CL04. Polio 0",
+            "Polio 1 Vxnaid"                      to "CL05. Polio 1",
+            "Polio 2 Vxnaid"                      to "CL06. Polio 2",
+            "Polio 3 Vxnaid"                      to "CL07. Polio 3",
+            "IPV 1 Vxnaid"                        to "CL08. IPV 1",
+            "IPV 2 Vxnaid"                        to "CL09. IPV 2",
+            "DPT-HepB-Hib 1 Vxnaid"              to "CL10. DPT-HepB-Hib 1",
+            "DPT-HepB-Hib 2 Vxnaid"              to "CL11. DPT-HepB-Hib 2",
+            "DPT-HepB-Hib 3 Vxnaid"              to "CL12. DPT-HepB-Hib 3",
+            "PCV 1 Vxnaid"                        to "CL13. PCV 1",
+            "PCV 2 Vxnaid"                        to "CL14. PCV 2",
+            "PCV 3 Vxnaid"                        to "CL15. PCV 3",
+            "Rota 1 Vxnaid"                       to "CL16. Rota 1",
+            "Rota 2 Vxnaid"                       to "CL17. Rota 2",
+            "Rota 3 Vxnaid"                       to "CL18. Rota 3",
+            "Yellow Fever Vxnaid"                 to "CL22. Yellow Fever",
+            "Measles Rubella 1 (MR1) Vxnaid"     to "CL23. Measles Rubella 1 (MR1)"
+            // NOTE: "Measles Rubella 2 (MR2) Vxnaid" is NOT here (handled separately as CL27)
         )
 
-        // Concept UUIDs — must match the SQL query exactly
-        private const val UUID_YELLOW_FEVER = "cc292194-9599-493e-9caf-9d6952472a27"
-        private const val UUID_MR1          = "df6d4a83-6aed-44aa-93f2-db25600a9af8"
-        private const val UUID_MR2          = "b3e01696-40ca-4b08-8448-d64bef8be88d"
-        private const val UUID_LLINS        = "6de53ec6-bf3f-41fe-bf2e-e61447a6557a"
-
-        // Observation key suffixes used to store vaccine dates
-        private const val DATE_OBS_SUFFIX   = " Date"
-        private const val MR2_CONCEPT_NAME  = "Measles Rubella 2 Vxnaid"
+        // Observation key suffixes and concept names (without " Date" suffix)
+        private const val DATE_OBS_SUFFIX       = " Date"
+        private const val YELLOW_FEVER_NAME     = "Yellow Fever Vxnaid"
+        private const val MR1_CONCEPT_NAME      = "Measles Rubella 1 (MR1) Vxnaid"
+        private const val MR2_CONCEPT_NAME      = "Measles Rubella 2 (MR2) Vxnaid"
     }
 
     init {
@@ -221,23 +215,13 @@ class Hmis105ViewModel @Inject constructor(
     // -------------------------------------------------------------------------
 
     /**
-     * Returns true if the visit contains an observation for the given concept UUID.
-     * Resolves UUID → concept name via the vaccinesConfig list.
-     */
-    private fun visitHasConceptByUuid(visit: Visit, conceptUuid: String): Boolean {
-        // Observation keys are stored as "<ConceptName> Date"
-        return visit.observations.keys.any { key ->
-            key == "$conceptUuid$DATE_OBS_SUFFIX" ||   // if stored by UUID
-                    key.startsWith(conceptUuid)                 // fallback prefix match
-        }
-    }
-
-    /**
      * Returns true if the visit contains an observation matching the given concept name.
-     * Used for vaccine matching where keys are "<ConceptName> Date".
+     * Observation keys are stored as "<ConceptName> Date" in the database.
+     * This checks for the full key including the " Date" suffix.
      */
     private fun visitHasConceptByName(visit: Visit, conceptName: String): Boolean {
-        return visit.observations.containsKey("$conceptName$DATE_OBS_SUFFIX")
+        val fullKey = "$conceptName$DATE_OBS_SUFFIX"
+        return visit.observations.containsKey(fullKey)
     }
 
     // -------------------------------------------------------------------------
@@ -302,13 +286,13 @@ class Hmis105ViewModel @Inject constructor(
 
         // Collect participants who received Yellow Fever (any visit in range)
         val yellowFeverRecipients = visits
-            .filter { visitHasConceptByName(it, "Yellow Fever Vxnaid") }
+            .filter { visitHasConceptByName(it, YELLOW_FEVER_NAME) }
             .map { it.participantUuid }
             .toSet()
 
         // Collect participants who received MR1 (any visit in range)
         val mr1Recipients = visits
-            .filter { visitHasConceptByName(it, "Measles Rubella 1 Vxnaid") }
+            .filter { visitHasConceptByName(it, MR1_CONCEPT_NAME) }
             .map { it.participantUuid }
             .toSet()
 
@@ -328,7 +312,7 @@ class Hmis105ViewModel @Inject constructor(
             // (mirrors SQL: age checked at o.obs_datetime of the MR1 observation)
             val mr1Visit = visits.firstOrNull { visit ->
                 visit.participantUuid == participantUuid &&
-                        visitHasConceptByName(visit, "Measles Rubella 1 Vxnaid")
+                        visitHasConceptByName(visit, MR1_CONCEPT_NAME)
             } ?: continue
 
             val visitDateTime  = DateTime(mr1Visit.startDatetime.time)
@@ -382,7 +366,7 @@ class Hmis105ViewModel @Inject constructor(
             // Check for LLINs observation with value "yes"
             // Matches SQL: c.uuid = UUID_LLINS AND LOWER(TRIM(o.value_text)) = 'yes'
             val hasLLINs = visit.observations.any { (key, obs) ->
-                (key.contains(UUID_LLINS) || key.contains("LLIN")) &&
+                (key.contains("LLIN") || key.contains("Long-Lasting")) &&
                         obs.value.trim().equals("yes", ignoreCase = true)
             }
             if (!hasLLINs) continue
