@@ -89,15 +89,15 @@ class Hmis105ViewModel @Inject constructor(
 
                 val data = withContext(dispatchers.io) {
                     try {
-                        val candidateVisits = visitRepository
+                        val occurredVisits = visitRepository
                             .findAllVisitsByAttributeTypeAndValue(
                                 Constants.ATTRIBUTE_VISIT_STATUS,
                                 Constants.VISIT_STATUS_OCCURRED
                             )
-                            .filter { visit ->
-                                participantFromCurrentLocation(visit, currentLocationUuid)
-                            }
-                        val participantsMap = buildParticipantsMap(candidateVisits)
+                        val participantsMap = buildParticipantsMap(occurredVisits)
+                        val candidateVisits = occurredVisits.filter { visit ->
+                            participantsMap[visit.participantUuid]?.locationUuid == currentLocationUuid
+                        }
                         val allVisits = candidateVisits.filter { visit ->
                             visit.observations.values.any { obsValue ->
                                 obsValue.dateTime.time in start.time until end.time
@@ -438,14 +438,6 @@ class Hmis105ViewModel @Inject constructor(
         reportRows[vaccine] = updatedRow.copy(total = total)
     }
 
-    private suspend fun participantFromCurrentLocation(
-        visit: Visit,
-        locationUuid: String?
-    ): Boolean {
-        val participant = findParticipantByParticipantUuidUseCase
-            .findByParticipantUuid(visit.participantUuid)
-        return participant?.locationUuid == locationUuid
-    }
 
     private fun initScreens() {
         screens = createScreens()

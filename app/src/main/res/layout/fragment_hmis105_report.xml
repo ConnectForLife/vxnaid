@@ -143,7 +143,7 @@
                     <TextView
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/_1_4_yrs_static"
+                        android:text="@string/age_1_4_yrs_static"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -153,7 +153,7 @@
                     <TextView
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/_1_4_yrs_outreach"
+                        android:text="@string/age_1_4_yrs_outreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -163,7 +163,7 @@
                     <TextView
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/_5_14_yrs_static"
+                        android:text="@string/age_5_14_yrs_static"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"
@@ -173,7 +173,7 @@
                     <TextView
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/_5_14_yrs_outreach"
+                        android:text="@string/age_5_14_yrs_outreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
                         android:textStyle="bold"

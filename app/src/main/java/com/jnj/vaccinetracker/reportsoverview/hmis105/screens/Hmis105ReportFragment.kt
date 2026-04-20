@@ -23,6 +23,7 @@ import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.common.util.FileUtil
 import com.jnj.vaccinetracker.databinding.FragmentHmis105ReportBinding
 import com.jnj.vaccinetracker.reportsoverview.hmis105.adapters.Hmis105Adapter
+import com.jnj.vaccinetracker.reportsoverview.hmis105.dto.Hmis105ReportDTO
 import com.jnj.vaccinetracker.reportsoverview.hmis105.model.Hmis105ViewModel
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.DateFormat
@@ -70,8 +71,8 @@ class Hmis105ReportFragment : BaseFragment(),
                setupDownloadButton()
                Log.d(TAG, "Fragment setup completed successfully")
            } catch (ex: Exception) {
-               Log.e(TAG, "Error during fragment setup: ${ex.message}", ex)
-               Toast.makeText(requireContext(), "Error initializing report: ${ex.message}", Toast.LENGTH_LONG).show()
+               Log.e(TAG, "Error during fragment setup", ex)
+               Toast.makeText(requireContext(), getString(R.string.hmis105_initialization_error), Toast.LENGTH_LONG).show()
            }
 
            return binding.root
@@ -96,8 +97,8 @@ class Hmis105ReportFragment : BaseFragment(),
                     Log.d(TAG, "Data already loaded, not reloading (configuration change)")
                 }
             } catch (ex: Exception) {
-                Log.e(TAG, "Error in onViewCreated: ${ex.message}", ex)
-                Toast.makeText(requireContext(), "Error: ${ex.message}", Toast.LENGTH_LONG).show()
+                Log.e(TAG, "Error in onViewCreated", ex)
+                Toast.makeText(requireContext(), getString(R.string.hmis105_load_error), Toast.LENGTH_LONG).show()
             }
         }
 
@@ -217,43 +218,56 @@ class Hmis105ReportFragment : BaseFragment(),
         val mimeType = "application/vnd.ms-excel"
 
         FileUtil.exportToFile(requireContext(), fileName, mimeType) { outputStream ->
-            val workbook = HSSFWorkbook()
-            val sheet = workbook.createSheet(getString(R.string.hmis105_report_title).replace(" ", "_"))
+            HSSFWorkbook().use { workbook ->
+                val sheet = workbook.createSheet(getString(R.string.hmis105_report_title).replace(" ", "_"))
 
-            val headerRow = sheet.createRow(0)
-            headerRow.createCell(0).setCellValue("Doses")
-            headerRow.createCell(1).setCellValue("Under 1 - Static")
-            headerRow.createCell(2).setCellValue("Under 1 - Outreach/School")
-            headerRow.createCell(3).setCellValue("1-4 Years - Static")
-            headerRow.createCell(4).setCellValue("1-4 Years - Outreach/School")
-            headerRow.createCell(5).setCellValue("5-14 Years - Static")
-            headerRow.createCell(6).setCellValue("5-14 Years - Outreach/School")
-            headerRow.createCell(7).setCellValue("Total")
+                val headerRow = sheet.createRow(0)
+                headerRow.createCell(0).setCellValue("Doses")
+                headerRow.createCell(1).setCellValue("Under 1 - Static")
+                headerRow.createCell(2).setCellValue("Under 1 - Outreach/School")
+                headerRow.createCell(3).setCellValue("1-4 Years - Static")
+                headerRow.createCell(4).setCellValue("1-4 Years - Outreach/School")
+                headerRow.createCell(5).setCellValue("5-14 Years - Static")
+                headerRow.createCell(6).setCellValue("5-14 Years - Outreach/School")
+                headerRow.createCell(7).setCellValue("Total")
 
-            data.forEachIndexed { index, report ->
-                val row = sheet.createRow(index + 1)
-                row.createCell(0).setCellValue(report.doses)
-                row.createCell(1).setCellValue(report.under1Static.toDouble())
-                row.createCell(2).setCellValue(report.under1Outreach.toDouble())
-                row.createCell(3).setCellValue(report.age1to4Static.toDouble())
-                row.createCell(4).setCellValue(report.age1to4Outreach.toDouble())
-                row.createCell(5).setCellValue(report.age5to14Static.toDouble())
-                row.createCell(6).setCellValue(report.age5to14Outreach.toDouble())
-                row.createCell(7).setCellValue(report.total.toDouble())
+                data.forEachIndexed { index, report ->
+                    val row = sheet.createRow(index + 1)
+                    row.createCell(0).setCellValue(report.doses)
+                    if (!isSectionHeader(report)) {
+                        row.createCell(1).setCellValue(report.under1Static.toDouble())
+                        row.createCell(2).setCellValue(report.under1Outreach.toDouble())
+                        row.createCell(3).setCellValue(report.age1to4Static.toDouble())
+                        row.createCell(4).setCellValue(report.age1to4Outreach.toDouble())
+                        row.createCell(5).setCellValue(report.age5to14Static.toDouble())
+                        row.createCell(6).setCellValue(report.age5to14Outreach.toDouble())
+                        row.createCell(7).setCellValue(report.total.toDouble())
+                    }
+                }
+
+                sheet.setColumnWidth(0, 4000)
+                sheet.setColumnWidth(1, 4000)
+                sheet.setColumnWidth(2, 4500)
+                sheet.setColumnWidth(3, 4000)
+                sheet.setColumnWidth(4, 4500)
+                sheet.setColumnWidth(5, 4000)
+                sheet.setColumnWidth(6, 4500)
+                sheet.setColumnWidth(7, 4000)
+
+                workbook.write(outputStream)
             }
-
-            sheet.setColumnWidth(0, 4000)
-            sheet.setColumnWidth(1, 4000)
-            sheet.setColumnWidth(2, 4500)
-            sheet.setColumnWidth(3, 4000)
-            sheet.setColumnWidth(4, 4500)
-            sheet.setColumnWidth(5, 4000)
-            sheet.setColumnWidth(6, 4500)
-            sheet.setColumnWidth(7, 4000)
-
-            workbook.write(outputStream)
-            workbook.close()
         }
+    }
+
+    private fun isSectionHeader(report: Hmis105ReportDTO): Boolean {
+        return report.under1Static == 0 &&
+            report.under1Outreach == 0 &&
+            report.age1to4Static == 0 &&
+            report.age1to4Outreach == 0 &&
+            report.age5to14Static == 0 &&
+            report.age5to14Outreach == 0 &&
+            report.total == 0 &&
+            report.doses == report.doses.uppercase()
     }
 
     private fun buildFileName(): String {
