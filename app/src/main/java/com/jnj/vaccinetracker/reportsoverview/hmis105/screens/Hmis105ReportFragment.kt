@@ -55,12 +55,10 @@ class Hmis105ReportFragment : BaseFragment(),
 
            try {
                setupRecyclerView()
-               // Restore ViewModel state if available (on configuration change)
                if (savedInstanceState != null) {
                    Log.d(TAG, "Restoring ViewModel state from savedInstanceState")
                    viewModel.restoreInstanceState(savedInstanceState)
                }
-               // Initialize dates only if they're not already set (first load or after restoration)
                if (viewModel.selectedStartDate.value == null && viewModel.selectedEndDate.value == null) {
                    Log.d(TAG, "Initializing default dates")
                    initializeDefaultDates()
@@ -89,10 +87,7 @@ class Hmis105ReportFragment : BaseFragment(),
                     setDisplayHomeAsUpEnabled(true)
                     setHomeButtonEnabled(true)
                 }
-
-                // Only load data if this is the first time or if dates were explicitly changed
-                // If there's saved data in reportDTOs, don't reload (configuration change case)
-                if (viewModel.reportDTOs.value.isNullOrEmpty() && 
+                if (viewModel.reportDTOs.value.isNullOrEmpty() &&
                     viewModel.selectedStartDate.value != null && 
                     viewModel.selectedEndDate.value != null) {
                     Log.d(TAG, "Loading report data")
@@ -274,4 +269,3 @@ class Hmis105ReportFragment : BaseFragment(),
         return date?.let { DateUtil.convertDateToString(it.toDate(), DateFormat.FORMAT_DATE.toString()) } ?: "N/A"
     }
 }
-
