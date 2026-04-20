@@ -134,7 +134,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="1.1"
                         android:text="@string/under_1_outreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
@@ -156,7 +156,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="1.1"
                         android:text="@string/_1_4_yrs_outreach"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
@@ -189,7 +189,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="0.9"
                         android:text="@string/total"
                         android:padding="@dimen/padding_4_8"
                         android:textColor="@color/colorTextOnSecondary"
