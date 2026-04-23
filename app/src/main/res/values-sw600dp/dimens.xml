@@ -16,6 +16,9 @@
     <dimen name="margin_48_80">80dp</dimen>
 
     <!-- General text sizes -->
+    <dimen name="text_size_11_14">14sp</dimen>
+    <dimen name="text_size_12_14">14sp</dimen>
+    <dimen name="text_size_14_16">16sp</dimen>
     <dimen name="text_size_12_16">16sp</dimen>
     <dimen name="text_size_12_18">18sp</dimen>
     <dimen name="text_size_16_20">20sp</dimen>
@@ -51,7 +54,7 @@
     <dimen name="complete_input_text_size_18_24">24sp</dimen>
 
     <!-- Reports Overview -->
-    <dimen name="report_overview_btn_padding_70_100_70">100dp</dimen>
+    <dimen name="report_overview_btn_padding_70_100_50">100dp</dimen>
 
     <!-- contraindications  -->
     <dimen name="contraindications_text_size">50sp</dimen>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/padding_8"
+        android:paddingVertical="@dimen/padding_4">
+
+        <!-- Date Filter Section - Horizontal Layout for Landscape -->
+        <LinearLayout
+            android:id="@+id/date_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="4dp"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/padding_4"
+            android:layout_marginBottom="@dimen/margin_4_8">
+
+            <!-- Start Date Container -->
+            <LinearLayout
+                android:id="@+id/search_container"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginEnd="@dimen/margin_8_16">
+
+                <Button
+                    android:id="@+id/btn_start_date"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:paddingHorizontal="@dimen/padding_4"
+                    android:text="@string/visits_overview_start_date_label"
+                    android:textSize="@dimen/text_size_12_14" />
+
+                <TextView
+                    android:id="@+id/label_start_date"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/visits_overview_not_set_label"
+                    android:textSize="@dimen/text_size_14_16"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_4" />
+
+            </LinearLayout>
+
+            <!-- End Date Container -->
+            <LinearLayout
+                android:id="@+id/search_container_end_date"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/margin_4_8">
+
+                <Button
+                    android:id="@+id/btn_end_date"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:paddingHorizontal="@dimen/padding_4"
+                    android:text="@string/visits_overview_end_date_label"
+                    android:textSize="@dimen/text_size_12_14" />
+
+                <TextView
+                    android:id="@+id/label_end_date"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/not_set"
+                    android:textSize="@dimen/text_size_14_16"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_4" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <!-- Report Data RecyclerView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+                <!-- Header Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@color/colorPrimary">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/doses"
+                        android:padding="@dimen/padding_4_8"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_15" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/under_1_static"
+                        android:padding="@dimen/padding_4_8"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_15" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.1"
+                        android:text="@string/under_1_outreach"
+                        android:padding="@dimen/padding_4_8"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_15" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/age_1_4_yrs_static"
+                        android:padding="@dimen/padding_4_8"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_15" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.1"
+                        android:text="@string/age_1_4_yrs_outreach"
+                        android:padding="@dimen/padding_4_8"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_15" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/age_5_14_yrs_static"
+                        android:padding="@dimen/padding_4_8"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_15" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.1"
+                        android:text="@string/age_5_14_yrs_outreach"
+                        android:padding="@dimen/padding_4_8"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_15" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.9"
+                        android:text="@string/total"
+                        android:padding="@dimen/padding_4_8"
+                        android:textColor="@color/colorTextOnSecondary"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_15" />
+                </LinearLayout>
+
+                <!-- Data Rows -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_report"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+        <!-- Download Button Container at Bottom -->
+        <LinearLayout
+            android:id="@+id/btn_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/margin_4_8">
+
+            <Button
+                android:id="@+id/btn_export_excel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingVertical="@dimen/btn_padding_4_8"
+                android:text="@string/visits_overview_download_excel_button_label"
+                android:textSize="@dimen/text_size_12_14" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>
+

@@ -567,7 +567,19 @@
     <string name="general_label_warning">Warning</string>
     <string name="rerun_setup_dialog_msg_part1">Attention: This action is reserved for System Administrators only. If you are an operator, do NOT continue.</string>
     <string name="rerun_setup_dialog_msg_part2">Tap Cancel to abort.</string>
+    <string name="hmis105_report_title">HMIS 105 Report</string>
+    <string name="hmis105_initialization_error">Unable to initialize the report. Please try again.</string>
+    <string name="hmis105_load_error">Unable to load the report. Please try again.</string>
+    <string name="no_data_to_export">No data available to export</string>
     <string name="visit_label_vaccination_date">Vaccination Date</string>
     <string name="visit_error_date_future">Vaccination date cannot be in the future</string>
     <string name="visit_preview_next_visit">Next visit will be scheduled for: %s</string>
+    <string name="under_1_static">Under 1 Static</string>
+    <string name="under_1_outreach">Under 1 Outreach</string>
+    <string name="doses">Doses</string>
+    <string name="age_1_4_yrs_static">1-4 Yrs Static</string>
+    <string name="age_1_4_yrs_outreach">1-4 Yrs Outreach</string>
+    <string name="age_5_14_yrs_static">5-14 Yrs Static</string>
+    <string name="age_5_14_yrs_outreach">5-14 Yrs Outreach</string>
+    <string name="total">Total</string>
 </resources>
