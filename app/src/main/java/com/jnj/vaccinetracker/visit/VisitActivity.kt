@@ -334,11 +334,14 @@ class VisitActivity :
                 Constants.VISIT_PLACE_FILE_KEY,
                 Constants.VISIT_PLACE_STATIC
             )
-        val outreachName =
+        val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
             getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE).getString(
                 Constants.OUTREACH_NAME,
-                Constants.VISIT_PLACE_OUTREACH
+                null
             )
+        } else {
+            null
+        }
         viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations, outreachName)
     }
 
