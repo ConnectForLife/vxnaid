@@ -169,14 +169,6 @@
                             android:maxLines="2"
                             android:text="@string/participant_flow_child_number_title"
                             android:textAppearance="@style/LabelText" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="2dp"
-                            android:text="@string/participant_registration_add_asterisk"
-                            android:textColor="@android:color/holo_red_dark"
-                            android:textSize="18sp" />
                     </LinearLayout>
 
                     <EditText
