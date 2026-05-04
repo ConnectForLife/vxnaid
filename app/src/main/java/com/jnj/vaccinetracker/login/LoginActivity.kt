@@ -38,6 +38,7 @@ class LoginActivity : BaseActivity() {
     companion object {
         private const val TAG_SETTINGS_DIALOG = "SettingsDialog"
         private const val TAG_UPDATE_DIALOG = "UpdateDialog"
+        private const val KEY_SELECTED_VISIT_PLACE = "selectedVisitPlace"
 
         fun create(context: Context): Intent {
             return Intent(context, LoginActivity::class.java)
@@ -60,6 +61,10 @@ class LoginActivity : BaseActivity() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         viewModel.init(true)
+
+        if (savedInstanceState != null) {
+            selectedVisitPlace = savedInstanceState.getString(KEY_SELECTED_VISIT_PLACE)
+        }
 
         binding.btnLogin.setOnClickListener { login() }
         binding.editPassword.setOnEditorActionListener { _, actionId, _ ->
@@ -113,9 +118,27 @@ class LoginActivity : BaseActivity() {
             }
         }
 
+        // Restore UI state after rotation
+        if (selectedVisitPlace != null) {
+            val index = visitPlaces.indexOf(selectedVisitPlace)
+            if (index >= 0) {
+                binding.dropdownLoginVisitPlace.setText(visitPlaces[index], false)
+                if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
+                    textInputOutreachName.visibility = View.VISIBLE
+                    visitPlaceIcon.visibility = View.VISIBLE
+                    binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
+                }
+            }
+        }
+
         binding.root.setOnClickListener { hideKeyboard() }
         binding.btnUpdate.setOnClickListener { showUpdateDialog() }
         observeViewModel(this)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_SELECTED_VISIT_PLACE, selectedVisitPlace)
     }
 
     override val syncBanner: SyncBanner
@@ -170,9 +193,13 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
-        val outreachName = binding.editOutreachName.text.toString().uppercase()
+        val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
+            binding.editOutreachName.text.toString().trim().uppercase()
+        } else {
+            null
+        }
 
-        if ((selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isEmpty())) {
+        if ((visitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isNullOrBlank())) {
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
             return
         } else {
@@ -180,9 +207,9 @@ class LoginActivity : BaseActivity() {
         }
     }
 
-    private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, outreachName: String) {
-        val message = if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
-            getString(R.string.confirm_visit_place_message_with_outreach, visitPlace, outreachName)
+    private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, outreachName: String?) {
+        val message = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
+            getString(R.string.confirm_visit_place_message_with_outreach, visitPlace, outreachName ?: "")
         } else {
             getString(R.string.confirm_visit_place_message, visitPlace)
         }
@@ -191,8 +218,7 @@ class LoginActivity : BaseActivity() {
             .setTitle(R.string.confirm_visit_place_title)
             .setMessage(message)
             .setPositiveButton(R.string.confirm) { _, _ ->
-                val defaultOutreachName = outreachName.ifEmpty { "No Outreach" }
-                saveVisitPlaceToMemory(visitPlace, defaultOutreachName)
+                saveVisitPlaceToMemory(visitPlace, outreachName)
                 viewModel.login(username, password, visitPlace)
             }
             .setNegativeButton(R.string.cancel, null)
@@ -209,11 +235,15 @@ class LoginActivity : BaseActivity() {
         finish()
     }
 
-    private fun saveVisitPlaceToMemory(visitPlace: String, outreachName: String) {
+    private fun saveVisitPlaceToMemory(visitPlace: String, outreachName: String?) {
         val sharedPreferences = getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString(Constants.VISIT_PLACE_FILE_KEY, visitPlace)
-        editor.putString(Constants.OUTREACH_NAME, outreachName)
+        if (!outreachName.isNullOrEmpty()) {
+            editor.putString(Constants.OUTREACH_NAME, outreachName)
+        } else {
+            editor.remove(Constants.OUTREACH_NAME)
+        }
         editor.apply()
     }
 }
