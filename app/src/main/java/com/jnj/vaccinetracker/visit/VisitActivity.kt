@@ -329,13 +329,13 @@ class VisitActivity :
 
     override fun onReferralAfterVisitPageFinish(referralObservations: Map<String, String>) {
         val missingSubstanceVisitDate = viewModel.missingSubstancesVisitDate.value
-        val visitPlace =
-            getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE).getString(
-                Constants.VISIT_PLACE_FILE_KEY,
-                Constants.VISIT_PLACE_STATIC
-            )
+        val sharedPreferences = getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE)
+        val visitPlace = sharedPreferences.getString(
+            Constants.VISIT_PLACE_FILE_KEY,
+            Constants.VISIT_PLACE_STATIC
+        )
         val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
-            getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, MODE_PRIVATE).getString(
+            sharedPreferences.getString(
                 Constants.OUTREACH_NAME,
                 null
             )

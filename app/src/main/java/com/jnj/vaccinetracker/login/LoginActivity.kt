@@ -195,12 +195,7 @@ class LoginActivity : BaseActivity() {
             .setTitle(R.string.confirm_visit_place_title)
             .setMessage(message)
             .setPositiveButton(R.string.confirm) { _, _ ->
-                val finalOutreachName = if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
-                    outreachName?.ifEmpty { "No Outreach" }
-                } else {
-                    null
-                }
-                saveVisitPlaceToMemory(visitPlace, finalOutreachName)
+                saveVisitPlaceToMemory(visitPlace, outreachName)
                 viewModel.login(username, password, visitPlace)
             }
             .setNegativeButton(R.string.cancel, null)
