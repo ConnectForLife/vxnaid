@@ -645,11 +645,10 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             }
         }
 
-        addValidationError(!childNumber.isNullOrEmpty(), R.string.participant_registration_details_error_no_child_number, childNumberValidationMessage)
-
         addValidationError(gender == Gender.MALE || gender == Gender.FEMALE, R.string.participant_registration_details_error_no_gender, genderValidationMessage)
 
         addValidationError(birthDate != null, R.string.participant_registration_details_error_birth_date_cannot_be_empty, birthDateValidationMessage)
+
         addValidationError(birthDate != null, R.string.participant_registration_details_error_birth_date_cannot_be_empty, estimatedAgeValidationMessage)
 
         addValidationError(homeLocation?.isWholeAddressEmpty() == false, R.string.participant_registration_details_error_no_home_location, homeLocationValidationMessage)
