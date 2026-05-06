@@ -47,7 +47,6 @@ class Hmis105ViewModel @Inject constructor(
         private val HMIS105_VACCINES = mapOf(
             "BCG Vxnaid Date"                      to "CL01. BCG",
             "Hep B BD Vxnaid Date"                 to "CL02. Hep B BD",
-            "PAB for Td Vxnaid Date"               to "CL03. PAB for Td",
             "Polio 0 Vxnaid Date"                  to "CL04. Polio 0",
             "Polio 1 Vxnaid Date"                  to "CL05. Polio 1",
             "Polio 2 Vxnaid Date"                  to "CL06. Polio 2",
@@ -71,6 +70,7 @@ class Hmis105ViewModel @Inject constructor(
         private const val KEY_MR2          = "Measles Rubella 2 (MR2) Vxnaid Date"
         private const val KEY_YELLOW_FEVER = "Yellow Fever Vxnaid Date"
         private const val UUID_LLINS = "6de53ec6-bf3f-41fe-bf2e-e61447a6557a"
+        private const val UUID_PAB = "b8ca722b-9731-4e50-8081-ac9131230718"
     }
 
     init {
@@ -111,11 +111,22 @@ class Hmis105ViewModel @Inject constructor(
                         val reportData = mutableListOf<Hmis105ReportDTO>()
 
                         reportData.addAll(createHmis105ReportDTOList(allVisits, participantsMap, start, end))
+                        reportData.add(createPABReport(allVisits, participantsMap, start, end))
                         reportData.add(createFullyImmunized1Year(allVisits, participantsMap, start, end))
                         reportData.add(createLLINSReport(allVisits, participantsMap, start, end))
                         reportData.add(Hmis105ReportDTO(doses = "SECOND YEAR OF LIFE"))
                         reportData.add(createMR2Report(allVisits, participantsMap, start, end))
                         reportData.add(createFullyImmunized2Years(allVisits, participantsMap, start, end))
+                        
+                        reportData.sortWith { a, b ->
+                            val aOrder = getSortOrder(a.doses)
+                            val bOrder = getSortOrder(b.doses)
+                            when {
+                                aOrder.first != bOrder.first -> aOrder.first.compareTo(bOrder.first)
+                                else -> aOrder.second.compareTo(bOrder.second)
+                            }
+                        }
+                        
                         reportData
                     } catch (ex: Exception) {
                         Log.e("Hmis105ViewModel", "Repository error: ${ex.message}", ex)
@@ -143,6 +154,24 @@ class Hmis105ViewModel @Inject constructor(
             }
         }
         return map
+    }
+
+    private fun getSortOrder(doses: String): Pair<Int, Int> {
+        return when {
+            doses == "SECOND YEAR OF LIFE" -> Pair(3, 0)
+            else -> {
+                val clMatch = Regex("CL(\\d+)").find(doses)
+                val clNumber = clMatch?.groupValues?.get(1)?.toIntOrNull() ?: 999
+                when {
+                    clNumber in 1..23 -> Pair(0, clNumber)    // Individual vaccines (sorted by CL number)
+                    clNumber == 24 -> Pair(1, 24)             // Fully immunized by 1 year
+                    clNumber == 25 -> Pair(2, 25)             // LLINs
+                    clNumber == 27 -> Pair(4, 27)             // MR2
+                    clNumber == 28 -> Pair(5, 28)             // Fully immunized by 2 years
+                    else -> Pair(6, 999)                      // Unknown items at the end
+                }
+            }
+        }
     }
 
     private fun calculateAgeInMonthsAt(birthDate: BirthDate, referenceDate: DateTime): Int {
@@ -174,8 +203,7 @@ class Hmis105ViewModel @Inject constructor(
     ): List<Hmis105ReportDTO> {
 
         val reportRowsMap = mutableMapOf<String, Hmis105ReportDTO>()
-        val nowDateTime = DateTime.now()  // Use current time for age, matching SQL
-
+        val nowDateTime = DateTime.now()
         for (visit in visits) {
             val participant   = participantsMap[visit.participantUuid] ?: continue
 
@@ -222,7 +250,6 @@ class Hmis105ViewModel @Inject constructor(
         Log.d("Hmis105ViewModel", "CL24 Yellow Fever recipients: ${yellowFeverRecipients.size}")
         Log.d("Hmis105ViewModel", "CL24 MR1 recipients: ${mr1Recipients.size}")
 
-        // Must have received BOTH vaccines (intersection)
         val bothVaccinesUuids = yellowFeverRecipients.intersect(mr1Recipients)
         Log.d("Hmis105ViewModel", "CL24 received both YF + MR1: ${bothVaccinesUuids.size}")
 
@@ -298,6 +325,46 @@ class Hmis105ViewModel @Inject constructor(
         Log.d("Hmis105ViewModel", "CL25 LLINs — Static: $under1Static, Outreach: $under1Outreach")
         return Hmis105ReportDTO(
             doses          = "CL25. No. received LLINs",
+            under1Static   = under1Static,
+            under1Outreach = under1Outreach,
+            total          = under1Static + under1Outreach
+        )
+    }
+
+    private fun createPABReport(
+        visits: List<Visit>,
+        participantsMap: Map<String, ParticipantBase?>,
+        startDate: Date,
+        endDate: Date
+    ): Hmis105ReportDTO {
+
+        var under1Static   = 0
+        var under1Outreach = 0
+
+        for (visit in visits) {
+            val participant   = participantsMap[visit.participantUuid] ?: continue
+
+            val pabEntry = visit.observations.entries.firstOrNull { (key, obs) ->
+                (key.contains(UUID_PAB, ignoreCase = true) ||
+                        key.contains("PAB", ignoreCase = true)) &&
+                        obs.value.trim().isNotEmpty() &&
+                        obs.dateTime.time in startDate.time until endDate.time
+            } ?: continue
+
+            val obsDateTime = DateTime(pabEntry.value.dateTime.time)
+            val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, obsDateTime)
+            if (ageInMonths !in 0..11) continue
+
+            when (visit.visitLocation) {
+                Constants.VISIT_PLACE_STATIC   -> under1Static++
+                Constants.VISIT_PLACE_OUTREACH,
+                Constants.VISIT_PLACE_SCHOOL   -> under1Outreach++
+            }
+        }
+
+        Log.d("Hmis105ViewModel", "CL03 PAB for Td — Static: $under1Static, Outreach: $under1Outreach")
+        return Hmis105ReportDTO(
+            doses          = "CL03. PAB for Td",
             under1Static   = under1Static,
             under1Outreach = under1Outreach,
             total          = under1Static + under1Outreach
