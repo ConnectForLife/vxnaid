@@ -286,7 +286,6 @@ class OtherSubstanceItemAdapter(
         fun bind(item: OtherSubstanceDataModel) {
             labelTextView.text = item.label
 
-            // Only rebuild radio buttons if options changed — avoids unnecessary removeAllViews
             val existingTags = (0 until radioGroup.childCount)
                 .map { radioGroup.getChildAt(it).tag as? String }
             val optionTags = item.options
@@ -303,16 +302,13 @@ class OtherSubstanceItemAdapter(
                 }
             }
 
-            // Detach listener BEFORE programmatically checking, to prevent callback firing during bind
             radioGroup.setOnCheckedChangeListener(null)
 
-            // Restore checked state
             for (i in 0 until radioGroup.childCount) {
                 val rb = radioGroup.getChildAt(i) as? RadioButton
                 rb?.isChecked = rb?.tag == item.value
             }
 
-            // Re-attach listener only AFTER state is restored
             radioGroup.setOnCheckedChangeListener { _, checkedId ->
                 val selectedRadioButton = radioGroup.findViewById<RadioButton>(checkedId)
                 if (selectedRadioButton != null) {
@@ -320,8 +316,6 @@ class OtherSubstanceItemAdapter(
                     item.value = selectedValue
                     listener.addOtherSubstance(item.conceptName, selectedValue)
                     labelTextView.error = null
-
-                    // After radio selection, redirect focus to container — not EditText
                     (itemView.rootView.findViewById<View>(R.id.container_dosing_visit))
                         ?.requestFocus()
                 }

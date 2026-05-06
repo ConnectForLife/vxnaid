@@ -28,8 +28,6 @@ class NonScrollingNestedScrollView @JvmOverloads constructor(
 
 
     override fun requestChildFocus(child: View?, focused: View?) {
-        // Always call super to maintain proper ViewGroup focus bookkeeping
-        // The requestChildRectangleOnScreen override handles preventing auto-scroll
         super.requestChildFocus(child, focused)
     }
 
@@ -38,8 +36,6 @@ class NonScrollingNestedScrollView @JvmOverloads constructor(
         rectangle: Rect,
         immediate: Boolean
     ): Boolean {
-        // Always prevent scroll-to-focused-child behavior
-        // This ensures the view gets focus (for keyboard input) but doesn't scroll into view
         return false
     }
 }
