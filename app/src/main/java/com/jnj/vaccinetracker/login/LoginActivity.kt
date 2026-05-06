@@ -39,6 +39,7 @@ class LoginActivity : BaseActivity() {
         private const val TAG_SETTINGS_DIALOG = "SettingsDialog"
         private const val TAG_UPDATE_DIALOG = "UpdateDialog"
         private const val KEY_SELECTED_VISIT_PLACE = "selectedVisitPlace"
+        private const val KEY_SELECTED_ATTACHED_CLINIC = "selectedAttachedClinic"
 
         fun create(context: Context): Intent {
             return Intent(context, LoginActivity::class.java)
@@ -53,6 +54,7 @@ class LoginActivity : BaseActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private var selectedVisitPlace: String? = null
+    private var selectedAttachedClinic: String? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +66,7 @@ class LoginActivity : BaseActivity() {
 
         if (savedInstanceState != null) {
             selectedVisitPlace = savedInstanceState.getString(KEY_SELECTED_VISIT_PLACE)
+            selectedAttachedClinic = savedInstanceState.getString(KEY_SELECTED_ATTACHED_CLINIC)
         }
 
         binding.btnLogin.setOnClickListener { login() }
@@ -93,6 +96,7 @@ class LoginActivity : BaseActivity() {
             editPassword.setSelection(editPassword.text?.length ?: 0)
         }
 
+
         val visitPlaces = listOf(
             Constants.VISIT_PLACE_STATIC,
             Constants.VISIT_PLACE_OUTREACH,
@@ -118,6 +122,24 @@ class LoginActivity : BaseActivity() {
             }
         }
 
+        // Setup attached clinic dropdown - Observer will update when parent location changes
+        viewModel.attachedClinics.observe(this) { clinics ->
+            val clinicNames = clinics?.map { it.name } ?: emptyList()
+            val attachedClinicAdapter = ArrayAdapter(
+                this,
+                R.layout.item_dropdown,
+                clinicNames
+            )
+            binding.dropdownLoginAttachedClinic.setAdapter(attachedClinicAdapter)
+        }
+        binding.dropdownLoginAttachedClinic.setOnItemClickListener { _, _, position, _ ->
+            val clinicNames = viewModel.attachedClinics.value?.map { it.name } ?: emptyList()
+            if (position < clinicNames.size) {
+                selectedAttachedClinic = clinicNames[position]
+                Log.e("Selected Attached Clinic", "Selected Attached Clinic: $selectedAttachedClinic")
+            }
+        }
+
         // Restore UI state after rotation
         if (selectedVisitPlace != null) {
             val index = visitPlaces.indexOf(selectedVisitPlace)
@@ -130,6 +152,10 @@ class LoginActivity : BaseActivity() {
                 }
             }
         }
+        // Restore attached clinic selection after rotation
+        if (selectedAttachedClinic != null && selectedAttachedClinic!!.isNotEmpty()) {
+            binding.dropdownLoginAttachedClinic.setText(selectedAttachedClinic, false)
+        }
 
         binding.root.setOnClickListener { hideKeyboard() }
         binding.btnUpdate.setOnClickListener { showUpdateDialog() }
@@ -139,6 +165,7 @@ class LoginActivity : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(KEY_SELECTED_VISIT_PLACE, selectedVisitPlace)
+        outState.putString(KEY_SELECTED_ATTACHED_CLINIC, selectedAttachedClinic)
     }
 
     override val syncBanner: SyncBanner
@@ -193,6 +220,7 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
+        val attachedClinic = binding.dropdownLoginAttachedClinic.text.toString()
         val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
             binding.editOutreachName.text.toString().trim().uppercase()
         } else {
@@ -203,11 +231,11 @@ class LoginActivity : BaseActivity() {
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
             return
         } else {
-            showConfirmVisitPlaceDialog(username, password, visitPlace, outreachName)
+            showConfirmVisitPlaceDialog(username, password, visitPlace, attachedClinic, outreachName)
         }
     }
 
-    private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, outreachName: String?) {
+    private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, attachedClinic: String, outreachName: String?) {
         val message = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
             getString(R.string.confirm_visit_place_message_with_outreach, visitPlace, outreachName ?: "")
         } else {
@@ -219,7 +247,7 @@ class LoginActivity : BaseActivity() {
             .setMessage(message)
             .setPositiveButton(R.string.confirm) { _, _ ->
                 saveVisitPlaceToMemory(visitPlace, outreachName)
-                viewModel.login(username, password, visitPlace)
+                viewModel.login(username, password, visitPlace, attachedClinic)
             }
             .setNegativeButton(R.string.cancel, null)
             .setCancelable(false)

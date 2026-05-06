@@ -3,15 +3,18 @@ package com.jnj.vaccinetracker.login
 import com.jnj.vaccinetracker.BuildConfig
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.LicenseManager
 import com.jnj.vaccinetracker.common.data.managers.LoginManager
 import com.jnj.vaccinetracker.common.data.managers.UpdateManager
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
+import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.exceptions.OperatorAuthenticationException
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.isManualFlavor
 import com.jnj.vaccinetracker.common.helpers.logError
+import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
@@ -34,6 +37,7 @@ class LoginViewModel @Inject constructor(
     private val syncSettingsRepository: SyncSettingsRepository,
     private val licenseManager: LicenseManager,
     private val updateManager: UpdateManager,
+    private val configurationManager: ConfigurationManager,
     override val dispatchers: AppCoroutineDispatchers,
     private val resourcesWrapper: ResourcesWrapper,
 ) : ViewModelBase() {
@@ -42,12 +46,15 @@ class LoginViewModel @Inject constructor(
     val usernameValidationMessage = mutableLiveData<String>()
     val passwordValidationMessage = mutableLiveData<String>()
     val visitPlaceValidationMessage = mutableLiveData<String>()
+    val attachedClinicValidationMessage = mutableLiveData<String>()
     val errorMessage = mutableLiveData<String>()
     val prefillUsername = mutableLiveData<String>()
     val versionNumber = mutableLiveData<String>()
     val deviceName = mutableLiveData<String>()
     val latestVersion = mutableLiveBoolean(true)
+    val attachedClinics = mutableLiveData<List<Site>>(emptyList())
     private val prefillBackendUrl = mutableLiveData<String>()
+    private var allSites = emptyList<Site>()
 
     val loginCompleted = eventFlow<Unit>()
 
@@ -68,6 +75,99 @@ class LoginViewModel @Inject constructor(
         syncSettingsRepository.observeBackendUrl()
             .onEach { prefillBackendUrl.set(it) }
             .launchIn(scope)
+        // Load sites from configuration and filter attached clinics
+        scope.launch {
+            loadSitesFromConfiguration()
+            // After loading sites, populate attached clinics based on the previously selected site
+            val selectedSiteUuid = syncSettingsRepository.getSiteUuid()
+            if (selectedSiteUuid != null) {
+                val selectedSite = allSites.find { it.uuid == selectedSiteUuid }
+                if (selectedSite != null) {
+                    filterAttachedClinicsByParent(selectedSite.name)
+                }
+            }
+        }
+    }
+
+    private suspend fun loadSitesFromConfiguration() {
+        try {
+            allSites = configurationManager.getSites()
+            logInfo("Loaded ${allSites.size} sites")
+            
+            // Log first 5 sites with details to see field population
+            if (allSites.isNotEmpty()) {
+                logInfo("First site sample: name=${allSites[0].name}, locationId=${allSites[0].locationId}, parentLocationId=${allSites[0].parentLocationId}")
+            }
+            
+            // Check if ANY site has non-null locationId
+            val sitesWithLocationId = allSites.count { it.locationId != null }
+            val sitesWithParentLocationId = allSites.count { it.parentLocationId != null }
+            logInfo("Sites with locationId=$sitesWithLocationId, Sites with parentLocationId=$sitesWithParentLocationId (out of ${allSites.size} total)")
+            
+            // Log sites grouped by parentLocationId to see structure
+            if (sitesWithParentLocationId > 0) {
+                val grouped = allSites.groupBy { it.parentLocationId }
+                logInfo("Sites grouped by parentLocationId: ${grouped.keys}")
+            }
+        } catch (ex: Throwable) {
+            yield()
+            ex.rethrowIfFatal()
+            logError("Failed to load sites from configuration: ", ex)
+        }
+    }
+
+    /**
+     * Filter and update attached clinics based on the selected parent location.
+     * Shows all child clinics that have the selected site as their parent.
+     * Example: If site "CFL Clinic" (location_id=1) is selected, 
+     * this returns all sites with parent_location=1 (A, A1, A2, A3)
+     * @param selectedSiteName The name of the selected parent location
+     */
+    fun filterAttachedClinicsByParent(selectedSiteName: String?) {
+        if (selectedSiteName.isNullOrEmpty()) {
+            attachedClinics.value = emptyList()
+            return
+        }
+        
+        // Find the selected site to get its location ID
+        val selectedSite = allSites.find { it.name == selectedSiteName }
+        if (selectedSite == null) {
+            logError("Selected site not found: $selectedSiteName")
+            attachedClinics.value = emptyList()
+            return
+        }
+        
+        logInfo("Filtering attached clinics for: ${selectedSite.name}, locationId=${selectedSite.locationId}, parentLocationId=${selectedSite.parentLocationId}")
+        
+        // Determine which location ID to use as parent
+        val parentLocationIdToMatch = selectedSite.locationId
+        
+        if (parentLocationIdToMatch == null) {
+            logInfo("locationId is null for ${selectedSite.name}, checking if this is a parent location with children")
+            // Fallback: if locationId is not available, find siblings by checking if they have same parent
+            if (selectedSite.parentLocationId != null) {
+                // This site is a child, find siblings
+                val siblingClinics = allSites.filter { site ->
+                    site.parentLocationId == selectedSite.parentLocationId && site.name != selectedSiteName
+                }
+                logInfo("Found ${siblingClinics.size} sibling clinics")
+                attachedClinics.value = siblingClinics
+            } else {
+                // This site is a parent (no parent itself), try finding by UUID or other means
+                logInfo("Cannot find locationId for parent site: $selectedSiteName")
+                attachedClinics.value = emptyList()
+            }
+        } else {
+            // Find all sites that have this location as their parent
+            val filteredClinics = allSites.filter { site ->
+                site.parentLocationId == parentLocationIdToMatch
+            }
+            logInfo("Found ${filteredClinics.size} child clinics with parentLocationId=$parentLocationIdToMatch")
+            filteredClinics.forEach { clinic ->
+                logInfo("  - ${clinic.name} (parentLocationId=${clinic.parentLocationId})")
+            }
+            attachedClinics.value = filteredClinics
+        }
     }
 
     private suspend fun doLogin(
@@ -108,8 +208,9 @@ class LoginViewModel @Inject constructor(
         username: String,
         password: String,
         visitPlace: String,
+        attachedClinic: String = "",
     ) {
-        if (!validateInput(username, password, visitPlace)) return
+        if (!validateInput(username, password, visitPlace, attachedClinic)) return
         scope.launch {
             doLogin(username, password)
         }
@@ -154,6 +255,7 @@ class LoginViewModel @Inject constructor(
         username: String,
         password: String,
         visitPlace: String,
+        attachedClinic: String = "",
     ): Boolean {
         var validated = true
         usernameValidationMessage.set(null)
@@ -172,6 +274,11 @@ class LoginViewModel @Inject constructor(
         if (visitPlace.isEmpty()) {
             validated = false
             visitPlaceValidationMessage.set(resourcesWrapper.getString(R.string.login_label_validation_no_visit_place))
+        }
+
+        if (attachedClinic.isEmpty()) {
+            validated = false
+            attachedClinicValidationMessage.set(resourcesWrapper.getString(R.string.login_label_attached_clinic_validation_error))
         }
 
         return validated

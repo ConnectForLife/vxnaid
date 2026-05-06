@@ -25,7 +25,9 @@
     <string name="login_label_sign_in">Sign in</string>
     <string name="login_label_username">Username</string>
     <string name="login_label_password">Password</string>
-    <string name="login_label_visit_location_hint">Select visit place</string>
+     <string name="login_label_visit_location_hint">Select visit place</string>
+      <string name="login_label_attached_clinic_hint">Select attached clinic</string>
+      <string name="login_label_attached_clinic_validation_error">Please select an attached clinic</string>
     <string name="login_label_visit_outreach_hint" translatable="false">Type Outreach name</string>
     <string name="settings_label_backend_url">Backend URL</string>
     <string name="settings_label_licenses">Biometric Licenses</string>

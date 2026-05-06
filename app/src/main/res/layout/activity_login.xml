@@ -149,6 +149,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
+
                 <LinearLayout
                     android:id="@+id/input_group_login_visit_location"
                     android:layout_width="match_parent"
@@ -175,6 +176,37 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/login_label_visit_location_hint"
+                            android:inputType="none" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/input_group_login_attached_clinic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_8"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/img_login_attached_clinic"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        app:srcCompat="@drawable/ic_location" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        android:layout_width="@dimen/login_input_field_width"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_16"
+                        app:error="@{viewModel.attachedClinicValidationMessage}">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/dropdown_login_attached_clinic"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/login_label_attached_clinic_hint"
                             android:inputType="none" />
 
                     </com.google.android.material.textfield.TextInputLayout>
