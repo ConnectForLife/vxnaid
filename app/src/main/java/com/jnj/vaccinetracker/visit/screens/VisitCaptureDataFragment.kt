@@ -57,6 +57,11 @@ class VisitCaptureDataFragment :
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.containerDosingVisit.requestFocus()
+    }
+
     private fun setOtherSubstancesRecyclerView() {
         otherSubstancesAdapter = OtherSubstanceItemAdapter(mutableListOf(), this, participant = viewModel.participant.value!!)
         binding.recyclerViewOtherSubstances.layoutManager = LinearLayoutManager(requireContext())

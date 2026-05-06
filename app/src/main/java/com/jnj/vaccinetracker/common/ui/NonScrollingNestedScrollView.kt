@@ -1,13 +1,24 @@
 package com.jnj.vaccinetracker.common.ui
 
 import android.content.Context
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.widget.NestedScrollView
 
 /**
  * A custom NestedScrollView that prevents auto-scrolling when child views request focus.
- * This solves the issue where EditText fields in RecyclerViews cause unwanted scrolling.
+ *
+ * **Problem it solves:**
+ * When EditText fields or radio buttons receive focus (either via user tap or programmatic),
+ * the parent NestedScrollView automatically scrolls to make the focused view visible, causing
+ * unwanted visual glitches and focus-stealing behavior during list updates.
+ *
+ * **Solution:**
+ * - Always calls super.requestChildFocus() to maintain proper focus bookkeeping
+ * - Overrides requestChildRectangleOnScreen() to block auto-scroll behavior entirely
+ *
+ * This ensures proper focus state while preventing unwanted scrolling.
  */
 class NonScrollingNestedScrollView @JvmOverloads constructor(
     context: Context,
@@ -15,34 +26,16 @@ class NonScrollingNestedScrollView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : NestedScrollView(context, attrs, defStyleAttr) {
 
-    private var allowScroll = true
 
     override fun requestChildFocus(child: View?, focused: View?) {
-        val previousScrollY = scrollY
-        allowScroll = false
         super.requestChildFocus(child, focused)
-        post {
-            scrollTo(0, previousScrollY)
-            allowScroll = true
-        }
     }
 
-    override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
-        if (allowScroll) {
-            super.onNestedPreScroll(target, dx, dy, consumed, type)
-        }
-    }
-
-    override fun onNestedScroll(
-        target: View,
-        dxConsumed: Int,
-        dyConsumed: Int,
-        dxUnconsumed: Int,
-        dyUnconsumed: Int,
-        type: Int
-    ) {
-        if (allowScroll) {
-            super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type)
-        }
+    override fun requestChildRectangleOnScreen(
+        child: View,
+        rectangle: Rect,
+        immediate: Boolean
+    ): Boolean {
+        return false
     }
 }
