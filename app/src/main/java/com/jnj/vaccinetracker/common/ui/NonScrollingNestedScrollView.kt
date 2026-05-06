@@ -10,7 +10,6 @@ import androidx.core.widget.NestedScrollView
 /**
  * A custom NestedScrollView that prevents auto-scrolling when child views request focus.
  * This solves the issue where EditText fields in RecyclerViews/radio buttons cause unwanted scrolling.
- *
  * Allows touch-initiated focus (user taps) but blocks programmatic/layout-driven focus to prevent glitching.
  */
 class NonScrollingNestedScrollView @JvmOverloads constructor(
@@ -30,11 +29,9 @@ class NonScrollingNestedScrollView @JvmOverloads constructor(
 
     override fun requestChildFocus(child: View?, focused: View?) {
         if (isTouchFocusing) {
-            // User tapped — allow focus normally, but don't scroll
             isTouchFocusing = false
             super.requestChildFocus(child, focused)
         }
-        // Otherwise (programmatic/layout-driven) — silently block, no super call
     }
 
     override fun requestChildRectangleOnScreen(
@@ -42,8 +39,6 @@ class NonScrollingNestedScrollView @JvmOverloads constructor(
         rectangle: Rect,
         immediate: Boolean
     ): Boolean {
-        // Always block scroll-to-focused-child, even for touch focus
-        // The EditText gets focus but the scroll doesn't happen
         return false
     }
 }

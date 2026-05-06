@@ -104,7 +104,6 @@ class OtherSubstanceItemAdapter(
     fun updateItemsList(otherSubstances: List<OtherSubstanceDataModel>?) {
         val existingItemsMap = items.associateBy { it.conceptName }
         val newItems = otherSubstances?.map { newItem ->
-            // Preserve values from existing items
             existingItemsMap[newItem.conceptName]?.value?.let { newItem.value = it }
             newItem
         } ?: emptyList()
@@ -120,7 +119,7 @@ class OtherSubstanceItemAdapter(
 
         items.clear()
         items.addAll(newItems)
-        diffResult.dispatchUpdatesTo(this) // Only rebinds changed items, not the weight EditText
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun checkIfAnyItemsEmpty(itemsValues: MutableMap<String, String>?, recyclerView: RecyclerView): List<String> {

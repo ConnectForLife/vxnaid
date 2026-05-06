@@ -59,7 +59,6 @@ class VisitCaptureDataFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Grab focus on the container immediately so EditText doesn't auto-focus on load
         binding.containerDosingVisit.requestFocus()
     }
 
