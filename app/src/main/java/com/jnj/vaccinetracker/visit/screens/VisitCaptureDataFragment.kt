@@ -57,6 +57,12 @@ class VisitCaptureDataFragment :
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Grab focus on the container immediately so EditText doesn't auto-focus on load
+        binding.containerDosingVisit.requestFocus()
+    }
+
     private fun setOtherSubstancesRecyclerView() {
         otherSubstancesAdapter = OtherSubstanceItemAdapter(mutableListOf(), this, participant = viewModel.participant.value!!)
         binding.recyclerViewOtherSubstances.layoutManager = LinearLayoutManager(requireContext())

@@ -11,6 +11,7 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.models.Constants
@@ -102,19 +103,24 @@ class OtherSubstanceItemAdapter(
 
     fun updateItemsList(otherSubstances: List<OtherSubstanceDataModel>?) {
         val existingItemsMap = items.associateBy { it.conceptName }
+        val newItems = otherSubstances?.map { newItem ->
+            // Preserve values from existing items
+            existingItemsMap[newItem.conceptName]?.value?.let { newItem.value = it }
+            newItem
+        } ?: emptyList()
+
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = items.size
+            override fun getNewListSize() = newItems.size
+            override fun areItemsTheSame(oldPos: Int, newPos: Int) =
+                items[oldPos].conceptName == newItems[newPos].conceptName
+            override fun areContentsTheSame(oldPos: Int, newPos: Int) =
+                items[oldPos] == newItems[newPos]
+        })
+
         items.clear()
-        if (otherSubstances != null) {
-            otherSubstances.forEach { newItem ->
-                val existingItem = existingItemsMap[newItem.conceptName]
-                if (existingItem != null) {
-                    newItem.value = existingItem.value
-                }
-                items.add(newItem)
-            }
-        } else {
-            items.addAll(emptyList())
-        }
-        notifyDataSetChanged()
+        items.addAll(newItems)
+        diffResult.dispatchUpdatesTo(this) // Only rebinds changed items, not the weight EditText
     }
 
     fun checkIfAnyItemsEmpty(itemsValues: MutableMap<String, String>?, recyclerView: RecyclerView): List<String> {
@@ -243,8 +249,6 @@ class OtherSubstanceItemAdapter(
         fun bind(item: OtherSubstanceDataModel) {
             labelTextView.text = item.label
             inputEditText.setText(item.value)
-            inputEditText.isFocusable = false
-            inputEditText.isFocusableInTouchMode = true
             inputEditText.addTextChangedListener { editable ->
                 val value = editable.toString()
                 item.value = value
@@ -282,29 +286,45 @@ class OtherSubstanceItemAdapter(
 
         fun bind(item: OtherSubstanceDataModel) {
             labelTextView.text = item.label
-            radioGroup.removeAllViews()
 
-            item.options.forEachIndexed { index, option ->
-                val radioButton = RadioButton(itemView.context).apply {
-                    text = option
-                    id = View.generateViewId()
-                    tag = index
+            // Only rebuild radio buttons if options changed — avoids unnecessary removeAllViews
+            val existingTags = (0 until radioGroup.childCount)
+                .map { radioGroup.getChildAt(it).tag as? String }
+            val optionTags = item.options
 
-                    if (option == item.value) {
-                        isChecked = true
+            if (existingTags != optionTags) {
+                radioGroup.removeAllViews()
+                item.options.forEachIndexed { _, option ->
+                    val radioButton = RadioButton(itemView.context).apply {
+                        text = option
+                        id = View.generateViewId()
+                        tag = option  // use value as tag, not index
                     }
+                    radioGroup.addView(radioButton)
                 }
-                radioGroup.addView(radioButton)
             }
 
+            // Detach listener BEFORE programmatically checking, to prevent callback firing during bind
+            radioGroup.setOnCheckedChangeListener(null)
+
+            // Restore checked state
+            for (i in 0 until radioGroup.childCount) {
+                val rb = radioGroup.getChildAt(i) as? RadioButton
+                rb?.isChecked = rb?.tag == item.value
+            }
+
+            // Re-attach listener only AFTER state is restored
             radioGroup.setOnCheckedChangeListener { _, checkedId ->
                 val selectedRadioButton = radioGroup.findViewById<RadioButton>(checkedId)
                 if (selectedRadioButton != null) {
-                    val selectedIndex = selectedRadioButton.tag as Int
-                    val selectedValue = item.options[selectedIndex]
+                    val selectedValue = selectedRadioButton.tag as String
                     item.value = selectedValue
                     listener.addOtherSubstance(item.conceptName, selectedValue)
                     labelTextView.error = null
+
+                    // After radio selection, redirect focus to container — not EditText
+                    (itemView.rootView.findViewById<View>(R.id.container_dosing_visit))
+                        ?.requestFocus()
                 }
             }
         }
