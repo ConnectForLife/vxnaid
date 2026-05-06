@@ -3,14 +3,22 @@ package com.jnj.vaccinetracker.common.ui
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import androidx.core.widget.NestedScrollView
 
 /**
  * A custom NestedScrollView that prevents auto-scrolling when child views request focus.
- * This solves the issue where EditText fields in RecyclerViews/radio buttons cause unwanted scrolling.
- * Allows touch-initiated focus (user taps) but blocks programmatic/layout-driven focus to prevent glitching.
+ *
+ * **Problem it solves:**
+ * When EditText fields or radio buttons receive focus (either via user tap or programmatic),
+ * the parent NestedScrollView automatically scrolls to make the focused view visible, causing
+ * unwanted visual glitches and focus-stealing behavior during list updates.
+ *
+ * **Solution:**
+ * - Always calls super.requestChildFocus() to maintain proper focus bookkeeping
+ * - Overrides requestChildRectangleOnScreen() to block auto-scroll behavior entirely
+ *
+ * This ensures proper focus state while preventing unwanted scrolling.
  */
 class NonScrollingNestedScrollView @JvmOverloads constructor(
     context: Context,
@@ -18,20 +26,11 @@ class NonScrollingNestedScrollView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : NestedScrollView(context, attrs, defStyleAttr) {
 
-    private var isTouchFocusing = false
-
-    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.action == MotionEvent.ACTION_DOWN) {
-            isTouchFocusing = true
-        }
-        return super.onInterceptTouchEvent(ev)
-    }
 
     override fun requestChildFocus(child: View?, focused: View?) {
-        if (isTouchFocusing) {
-            isTouchFocusing = false
-            super.requestChildFocus(child, focused)
-        }
+        // Always call super to maintain proper ViewGroup focus bookkeeping
+        // The requestChildRectangleOnScreen override handles preventing auto-scroll
+        super.requestChildFocus(child, focused)
     }
 
     override fun requestChildRectangleOnScreen(
@@ -39,6 +38,8 @@ class NonScrollingNestedScrollView @JvmOverloads constructor(
         rectangle: Rect,
         immediate: Boolean
     ): Boolean {
+        // Always prevent scroll-to-focused-child behavior
+        // This ensures the view gets focus (for keyboard input) but doesn't scroll into view
         return false
     }
 }
