@@ -96,7 +96,6 @@ class LoginActivity : BaseActivity() {
             editPassword.setSelection(editPassword.text?.length ?: 0)
         }
 
-
         val visitPlaces = listOf(
             Constants.VISIT_PLACE_STATIC,
             Constants.VISIT_PLACE_OUTREACH,

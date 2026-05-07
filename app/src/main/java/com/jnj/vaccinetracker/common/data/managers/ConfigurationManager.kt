@@ -14,6 +14,7 @@ import com.jnj.vaccinetracker.common.domain.usecases.masterdata.GetSitesUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.masterdata.GetSubstancesConfigUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.masterdata.GetSubstancesGroupConfigUseCase
 import com.jnj.vaccinetracker.common.exceptions.SiteNotFoundException
+import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.ui.model.SiteUiModel
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,7 +38,15 @@ class ConfigurationManager @Inject constructor(
 
     suspend fun getConfiguration() = getConfigurationUseCase.getMasterData()
 
-    suspend fun getSites() = getSitesUseCase.getMasterData().results
+    suspend fun getSites(): List<com.jnj.vaccinetracker.common.domain.entities.Site> {
+        logInfo("📍 ConfigurationManager.getSites() - Fetching sites")
+        val sites = getSitesUseCase.getMasterData().results
+        logInfo("📍 ConfigurationManager.getSites() - Retrieved ${sites.size} sites")
+        sites.forEach { site ->
+            logInfo("📍 ConfigurationManager Site: name=${site.name}, uuid=${site.uuid}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}")
+        }
+        return sites
+    }
 
     suspend fun getSiteUiModelByUuid(uui: String): SiteUiModel {
         return getSiteByUuid(uui).let { site ->

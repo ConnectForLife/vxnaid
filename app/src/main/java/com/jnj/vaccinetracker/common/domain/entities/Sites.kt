@@ -18,10 +18,9 @@ data class Site(
     val cluster: String = "",
     val countryCode: String = "",
     val siteCode: String = "",
-    @Json(name = "location_id")
     val locationId: Int? = null,
-    @Json(name = "parent_location")
     val parentLocationId: Int? = null,
+    val parentLocationUuid: String? = null,
 ) {
     override fun toString() = name
 }

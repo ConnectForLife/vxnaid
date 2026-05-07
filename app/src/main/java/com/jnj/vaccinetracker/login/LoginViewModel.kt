@@ -92,22 +92,9 @@ class LoginViewModel @Inject constructor(
     private suspend fun loadSitesFromConfiguration() {
         try {
             allSites = configurationManager.getSites()
-            logInfo("Loaded ${allSites.size} sites")
-            
-            // Log first 5 sites with details to see field population
-            if (allSites.isNotEmpty()) {
-                logInfo("First site sample: name=${allSites[0].name}, locationId=${allSites[0].locationId}, parentLocationId=${allSites[0].parentLocationId}")
-            }
-            
-            // Check if ANY site has non-null locationId
-            val sitesWithLocationId = allSites.count { it.locationId != null }
-            val sitesWithParentLocationId = allSites.count { it.parentLocationId != null }
-            logInfo("Sites with locationId=$sitesWithLocationId, Sites with parentLocationId=$sitesWithParentLocationId (out of ${allSites.size} total)")
-            
-            // Log sites grouped by parentLocationId to see structure
-            if (sitesWithParentLocationId > 0) {
-                val grouped = allSites.groupBy { it.parentLocationId }
-                logInfo("Sites grouped by parentLocationId: ${grouped.keys}")
+            logInfo("📍 Loaded ${allSites.size} sites from configuration")
+            allSites.forEach { site ->
+                logInfo("📍 Site: name=${site.name}, uuid=${site.uuid}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}, parentLocationUuid=${site.parentLocationUuid}")
             }
         } catch (ex: Throwable) {
             yield()
@@ -124,7 +111,9 @@ class LoginViewModel @Inject constructor(
      * @param selectedSiteName The name of the selected parent location
      */
     fun filterAttachedClinicsByParent(selectedSiteName: String?) {
+        logInfo("🔍 filterAttachedClinicsByParent called with: $selectedSiteName")
         if (selectedSiteName.isNullOrEmpty()) {
+            logInfo("🔍 selectedSiteName is empty, returning no clinics")
             attachedClinics.value = emptyList()
             return
         }
@@ -132,40 +121,40 @@ class LoginViewModel @Inject constructor(
         // Find the selected site to get its location ID
         val selectedSite = allSites.find { it.name == selectedSiteName }
         if (selectedSite == null) {
-            logError("Selected site not found: $selectedSiteName")
+            logError("🔍 Selected site not found: $selectedSiteName")
+            logInfo("🔍 Available sites: ${allSites.map { it.name }}")
             attachedClinics.value = emptyList()
             return
         }
         
-        logInfo("Filtering attached clinics for: ${selectedSite.name}, locationId=${selectedSite.locationId}, parentLocationId=${selectedSite.parentLocationId}")
+        logInfo("🔍 Selected site found: uuid=${selectedSite.uuid}, locationId=${selectedSite.locationId}, parentLocationId=${selectedSite.parentLocationId}")
         
         // Determine which location ID to use as parent
         val parentLocationIdToMatch = selectedSite.locationId
         
         if (parentLocationIdToMatch == null) {
-            logInfo("locationId is null for ${selectedSite.name}, checking if this is a parent location with children")
+            logInfo("🔍 parentLocationIdToMatch is null, checking parentsituation")
             // Fallback: if locationId is not available, find siblings by checking if they have same parent
             if (selectedSite.parentLocationId != null) {
                 // This site is a child, find siblings
+                logInfo("🔍 Selected site is a child (has parentLocationId=${selectedSite.parentLocationId}), finding siblings")
                 val siblingClinics = allSites.filter { site ->
                     site.parentLocationId == selectedSite.parentLocationId && site.name != selectedSiteName
                 }
-                logInfo("Found ${siblingClinics.size} sibling clinics")
+                logInfo("🔍 Found ${siblingClinics.size} sibling clinics: ${siblingClinics.map { it.name }}")
                 attachedClinics.value = siblingClinics
             } else {
-                // This site is a parent (no parent itself), try finding by UUID or other means
-                logInfo("Cannot find locationId for parent site: $selectedSiteName")
+                // This site is a parent (no parent itself), no children will be filtered
+                logInfo("🔍 Selected site is a parent (no parent itself), no attached clinics")
                 attachedClinics.value = emptyList()
             }
         } else {
             // Find all sites that have this location as their parent
+            logInfo("🔍 Looking for sites with parentLocationId=$parentLocationIdToMatch")
             val filteredClinics = allSites.filter { site ->
                 site.parentLocationId == parentLocationIdToMatch
             }
-            logInfo("Found ${filteredClinics.size} child clinics with parentLocationId=$parentLocationIdToMatch")
-            filteredClinics.forEach { clinic ->
-                logInfo("  - ${clinic.name} (parentLocationId=${clinic.parentLocationId})")
-            }
+            logInfo("🔍 Found ${filteredClinics.size} child clinics: ${filteredClinics.map { it.name }}")
             attachedClinics.value = filteredClinics
         }
     }
