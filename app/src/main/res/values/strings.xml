@@ -530,7 +530,7 @@
     <string name="visits_overview_no_available_app_message">No application available to open this file</string>
     <string name="visits_overview_failed_to_open_file_message">Failed to open the file</string>
     <string name="qrcode">qr code image</string>
-    <string name="vaccines_overview_title">Vaccines Overview</string>
+    <string name="vaccines_overview_title">Tally Sheet / Vaccines Overview</string>
     <string name="vaccines_administered_title">Vaccines Administered</string>
     <string name="vaccine_name_label">Vaccine name</string>
     <string name="vaccine_total_label">Total</string>
