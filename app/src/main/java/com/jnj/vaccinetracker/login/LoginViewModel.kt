@@ -18,6 +18,7 @@ import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.jnj.vaccinetracker.common.data.models.Constants
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -249,6 +250,8 @@ class LoginViewModel @Inject constructor(
         var validated = true
         usernameValidationMessage.set(null)
         passwordValidationMessage.set(null)
+        visitPlaceValidationMessage.set(null)
+        attachedClinicValidationMessage.set(null)
 
         if (username.isEmpty()) {
             validated = false
@@ -265,7 +268,7 @@ class LoginViewModel @Inject constructor(
             visitPlaceValidationMessage.set(resourcesWrapper.getString(R.string.login_label_validation_no_visit_place))
         }
 
-        if (attachedClinic.isEmpty()) {
+        if (visitPlace == Constants.VISIT_PLACE_OUTREACH && attachedClinic.isEmpty()) {
             validated = false
             attachedClinicValidationMessage.set(resourcesWrapper.getString(R.string.login_label_attached_clinic_validation_error))
         }

@@ -756,6 +756,15 @@
                         android:text="@string/participant_registration_details_birth_weight"
                         android:textAppearance="@style/LabelText" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginEnd="7dp"
+                        android:text="@string/participant_registration_add_asterisk"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="18sp" />
+
                     <EditText
                         android:id="@+id/edit_birth_weight"
                         android:layout_width="0dp"

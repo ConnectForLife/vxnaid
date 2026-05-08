@@ -85,6 +85,7 @@ class LoginActivity : BaseActivity() {
         val visitPlaceIcon = findViewById<ImageView>(R.id.img_location_name)
         textInputOutreachName.visibility = View.GONE
         visitPlaceIcon.visibility = View.GONE
+        binding.inputGroupLoginAttachedClinic.visibility = View.GONE
 
         textInputPasswordLayout.setEndIconOnClickListener {
             if (editPassword.inputType == (android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
@@ -113,10 +114,14 @@ class LoginActivity : BaseActivity() {
             if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
                 textInputOutreachName.visibility = View.VISIBLE
                 visitPlaceIcon.visibility = View.VISIBLE
+                binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
                 binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
             } else {
                 textInputOutreachName.visibility = View.GONE
                 visitPlaceIcon.visibility = View.GONE
+                binding.inputGroupLoginAttachedClinic.visibility = View.GONE
+                binding.dropdownLoginAttachedClinic.setText("", false)
+                selectedAttachedClinic = null
                 binding.root.setBackgroundColor(getColor(R.color.white))
             }
         }
@@ -147,6 +152,7 @@ class LoginActivity : BaseActivity() {
                 if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
                     textInputOutreachName.visibility = View.VISIBLE
                     visitPlaceIcon.visibility = View.VISIBLE
+                    binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
                     binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
                 }
             }
@@ -219,7 +225,11 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
-        val attachedClinic = binding.dropdownLoginAttachedClinic.text.toString()
+        val attachedClinic = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
+            binding.dropdownLoginAttachedClinic.text.toString()
+        } else {
+            ""
+        }
         val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
             binding.editOutreachName.text.toString().trim().uppercase()
         } else {
