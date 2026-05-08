@@ -77,7 +77,7 @@ class VisitsOverviewFlowActivity : BaseActivity() {
         val intent = Intent(this, ParticipantFlowActivity::class.java)
         intent.putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
         intent.putExtra(Constants.PARTICIPANT_MATCH_ID, childID)
+        intent.putExtra(Constants.FINISH_ON_BACK_FROM_MATCH_SCREEN, true)
         startActivity(intent)
-        finish()
     }
 }

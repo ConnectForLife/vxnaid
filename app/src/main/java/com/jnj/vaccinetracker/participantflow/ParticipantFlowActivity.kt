@@ -131,7 +131,10 @@ class ParticipantFlowActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PARTICIPANT_MATCHING ||
+        val finishOnBackFromMatchScreen = intent.getBooleanExtra(Constants.FINISH_ON_BACK_FROM_MATCH_SCREEN, false)
+        if (finishOnBackFromMatchScreen && viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PARTICIPANT_MATCHING) {
+            finish()
+        } else if (viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PARTICIPANT_MATCHING ||
             viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PARTICIPANT_ID ||
             viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.PHONE ||
             viewModel.currentScreen.value == ParticipantFlowViewModel.Screen.MOTHER_NAME) {

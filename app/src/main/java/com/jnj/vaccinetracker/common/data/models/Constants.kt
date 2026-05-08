@@ -95,6 +95,7 @@ object Constants {
     const val CALL_NAVIGATE_TO_MATCH_SCREEN = "CALL_NAVIGATE_TO_MATCH_SCREEN"
     const val PARTICIPANT_MATCH_ID = "PARTICIPANT_MATCH_ID"
 
+    const val FINISH_ON_BACK_FROM_MATCH_SCREEN = "FINISH_ON_BACK_FROM_MATCH_SCREEN"
     const val VISIT_PLACE_STATIC = "Static"
     const val VISIT_PLACE_OUTREACH = "Outreach"
     const val VISIT_PLACE_SCHOOL = "School"
