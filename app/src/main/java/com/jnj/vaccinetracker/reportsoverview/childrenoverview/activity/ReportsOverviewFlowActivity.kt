@@ -6,11 +6,13 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.helpers.logWarn
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.animateNavigationDirection
 import com.jnj.vaccinetracker.databinding.ActivityReportsOverviewFlowBinding
+import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.reportsoverview.childrenoverview.model.ReportsOverviewViewModel
 import com.jnj.vaccinetracker.reportsoverview.childrenoverview.screens.ReportsOverviewFragment
 
@@ -62,5 +64,13 @@ class ReportsOverviewFlowActivity : BaseActivity() {
                 .replace(R.id.fragment_container, newFragment)
                 .commit()
         }
+    }
+
+    fun goToRegisteredParticipant(childID: String) {
+        val intent = Intent(this, ParticipantFlowActivity::class.java)
+        intent.putExtra(Constants.CALL_NAVIGATE_TO_MATCH_SCREEN, true)
+        intent.putExtra(Constants.PARTICIPANT_MATCH_ID, childID)
+        intent.putExtra(Constants.FINISH_ON_BACK_FROM_MATCH_SCREEN, true)
+        startActivity(intent)
     }
 }

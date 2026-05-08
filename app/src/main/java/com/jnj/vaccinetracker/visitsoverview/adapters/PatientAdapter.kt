@@ -10,7 +10,9 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.databinding.ItemPatientRecordBinding
 import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 
-class PatientAdapter : ListAdapter<ParticipantDataDTO, PatientAdapter.PatientViewHolder>(ParticipantDataDTODiffCallback()) {
+class PatientAdapter(
+    private val onEyeIconClick: (ParticipantDataDTO) -> Unit
+) : ListAdapter<ParticipantDataDTO, PatientAdapter.PatientViewHolder>(ParticipantDataDTODiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PatientViewHolder {
         val binding = ItemPatientRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -34,6 +36,10 @@ class PatientAdapter : ListAdapter<ParticipantDataDTO, PatientAdapter.PatientVie
             }
 
             binding.root.setBackgroundColor(backgroundColor)
+
+            binding.root.setOnClickListener {
+                onEyeIconClick(participant)
+            }
         }
     }
 

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.util.FileUtil
 import com.jnj.vaccinetracker.visitsoverview.adapters.PatientAdapter
+import com.jnj.vaccinetracker.reportsoverview.childrenoverview.activity.ReportsOverviewFlowActivity
 import com.jnj.vaccinetracker.reportsoverview.childrenoverview.model.RegisteredParticipantsViewModel
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.jvm.toDate
@@ -115,7 +116,9 @@ class RegisteredParticipantsFragment : BaseFragment(),
     }
 
     private fun setupRecyclerView() {
-        patientAdapter = PatientAdapter()
+        patientAdapter = PatientAdapter { participant ->
+            (activity as? ReportsOverviewFlowActivity)?.goToRegisteredParticipant(participant.participantId)
+        }
         binding.patientsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.patientsRecyclerView.adapter = patientAdapter
     }

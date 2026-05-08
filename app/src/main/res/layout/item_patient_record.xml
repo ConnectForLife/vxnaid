@@ -11,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:background="@drawable/table_row_background">
+        android:background="@drawable/table_row_background"
+        android:clickable="true"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/tv_clientId"
@@ -21,6 +23,7 @@
             android:textSize="@dimen/visit_list_item_text_12_16"
             android:textStyle="bold"
             android:gravity="center"
+            android:padding="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_birthDate"
@@ -34,6 +37,7 @@
             android:text="@{participant.formattedRegistrationDate}"
             android:textStyle="bold"
             android:gravity="center"
+            android:padding="8dp"
             app:layout_constraintStart_toEndOf="@id/tv_clientId"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_clientName"
@@ -47,6 +51,7 @@
             android:text="@{participant.fullName}"
             android:textStyle="bold"
             android:gravity="center"
+            android:padding="8dp"
             app:layout_constraintStart_toEndOf="@id/tv_birthDate"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_motherName"
@@ -60,7 +65,10 @@
             android:text="@{participant.motherName}"
             android:textStyle="bold"
             android:gravity="center"
+            android:padding="8dp"
             app:layout_constraintStart_toEndOf="@id/tv_clientName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintWidth_percent="0.25" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
