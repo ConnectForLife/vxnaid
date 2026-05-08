@@ -13,6 +13,9 @@ object Constants {
 
     // Participant
     const val ATTRIBUTE_LOCATION = "LocationAttribute"
+    const val ATTRIBUTE_LOCATION_ID = "LocationId"
+    const val ATTRIBUTE_PARENT_LOCATION_ID = "ParentLocationId"
+    const val ATTRIBUTE_PARENT_LOCATION_UUID = "ParentLocationUuid"
     const val ATTRIBUTE_LANGUAGE = "personLanguage"
     const val ATTRIBUTE_TELEPHONE = "Telephone Number"
     const val ATTRIBUTE_VACCINE = "Vaccination program"
@@ -36,7 +39,11 @@ object Constants {
     const val ATTRIBUTE_VISIT_DOSE_NUMBER = "Dose number"
     const val ATTRIBUTE_VISIT_TYPE_VXNAID = "Visit type Vxnaid"
     const val ATTRIBUTE_VISIT_LOCATION = "Visit Location"
+    const val ATTRIBUTE_VISIT_LOCATION_ID = "Visit Location Id"
+    const val ATTRIBUTE_VISIT_PARENT_LOCATION_ID = "Visit Parent Location Id"
     const val ATTRIBUTE_VISIT_OUTREACH_NAME = "Visit Outreach Name"
+    const val ATTRIBUTE_ATTACHED_CLINIC = "Attached Clinic"
+    const val ATTRIBUTE_VISIT_ATTACHED_CLINIC = "Visit Attached Clinic"
     const val VISIT_TYPE_DOSING = "Dosing"
     const val VISIT_TYPE_OTHER = "Other"
     const val VISIT_TYPE_ADVERSE_EFFECTS = "Adverse Effects"
@@ -103,6 +110,7 @@ object Constants {
     const val USER_PREFERENCES_FILE_NAME = "user_preferences"
     const val VISIT_PLACE_FILE_KEY = "visit_place"
     const val OUTREACH_NAME = "outreach_name"
+    const val ATTACHED_CLINIC_FILE_KEY = "attached_clinic"
 
     const val CHILD_CATEGORY_NATIONAL = "National"
     const val CHILD_CATEGORY_FOREIGNER = "Foreigner"

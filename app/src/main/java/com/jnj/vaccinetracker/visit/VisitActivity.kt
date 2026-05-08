@@ -198,6 +198,18 @@ class VisitActivity :
         viewModel.visitTypes.observe(this) { visitTypes ->
             onVisitTypesChanged(visitTypes)
         }
+        viewModel.allLocations.observe(this) { locations ->
+            setupAttachedClinicDropdown(locations)
+        }
+    }
+
+    private fun setupAttachedClinicDropdown(locations: List<com.jnj.vaccinetracker.common.domain.entities.Site>) {
+        val siteNames = locations.map { it.name }
+        val adapter = ArrayAdapter(this, R.layout.item_dropdown, siteNames)
+        binding.dropdownAttachedClinic.setAdapter(adapter)
+        binding.dropdownAttachedClinic.setOnItemClickListener { _, _, position, _ ->
+            viewModel.selectedAttachedClinic.value = locations[position]
+        }
     }
 
     private fun onVisitTypesChanged(visitTypes: List<String>?) {

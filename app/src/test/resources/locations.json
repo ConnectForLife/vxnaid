@@ -1,19 +1,94 @@
 {
   "results": [
     {
-      "uuid": "42655fae-3b09-4b15-bb4b-296311546be4",
-      "name": "Bangalore clinic",
-      "country": "India"
+      "uuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f",
+      "name": "CFL Clinic",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "CFL",
+      "location_id": 1,
+      "parent_location": null
     },
     {
-      "uuid": "1424ae66-aaa6-4c33-b2b1-9789df1dba64",
-      "name": "Mumbai clinic",
-      "country": "India"
+      "uuid": "f029baba-e1a3-4e59-a40a-11517f0d25bb",
+      "name": "Academy1",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "AC1",
+      "location_id": 2,
+      "parent_location": 1
     },
     {
-      "uuid": "3ca102e5-2900-438b-9959-d34c079b71bf",
-      "name": "New Delhi hospital",
-      "country": "India"
+      "uuid": "6f63c332-cca9-4282-a57b-07d92718a9a9",
+      "name": "ActiveLife",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "AL",
+      "location_id": 6,
+      "parent_location": null
+    },
+    {
+      "uuid": "bfc20274-b4ce-4c6d-8985-2476c17663f0",
+      "name": "Bulondo Health Center III",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "BHC",
+      "location_id": 28,
+      "parent_location": null
+    },
+    {
+      "uuid": "9a061601-d638-4048-82db-8112e1607a6a",
+      "name": "Bunamwaya Health Centre II",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "BNW",
+      "location_id": 44,
+      "parent_location": null
+    },
+    {
+      "uuid": "cf724edd-7307-4010-bd90-2242bf9e0fc2",
+      "name": "A",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "A",
+      "location_id": 138,
+      "parent_location": 1
+    },
+    {
+      "uuid": "126b85a7-43e3-4833-b7c5-0443fff0b976",
+      "name": "A1",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "A1",
+      "location_id": 139,
+      "parent_location": 1
+    },
+    {
+      "uuid": "fed2b80f-36e4-4ffd-9f1f-deef87dd731b",
+      "name": "A2",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "A2",
+      "location_id": 140,
+      "parent_location": 1
+    },
+    {
+      "uuid": "4776a548-c21c-440a-93d3-923cc5e411f1",
+      "name": "A3",
+      "country": "Uganda",
+      "cluster": "Central",
+      "countryCode": "UG",
+      "siteCode": "A3",
+      "location_id": 141,
+      "parent_location": 1
     }
   ]
 }

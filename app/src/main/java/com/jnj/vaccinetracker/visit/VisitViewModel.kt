@@ -99,6 +99,7 @@ class VisitViewModel @Inject constructor(
     var contraindicationsRescheduleReasonText = MutableLiveData<String>(null)
 
     var allLocations = MutableLiveData<List<Site>>(listOf())
+    var selectedAttachedClinic = MutableLiveData<Site?>(null)
 
     val selectedVisitDate = MutableLiveData(Date())
 
@@ -193,7 +194,7 @@ class VisitViewModel @Inject constructor(
         }.launchIn(scope)
 
         retryClickEvents.tryEmit(Unit)
-
+        fetchAllLocations()
     }
 
     fun setArguments(participant: ParticipantSummaryUiModel) {
@@ -278,7 +279,8 @@ class VisitViewModel @Inject constructor(
                     visitLocation = visitPlace,
                     visitTypeVxnaid = selectedVisitType,
                     referralObservations = referralObservations,
-                    visitOutreachName = outreachName
+                    visitOutreachName = outreachName,
+                    attachedClinic = selectedAttachedClinic.value?.uuid,
                 )
 
                 if (newVisitDate != null) {

@@ -24,6 +24,9 @@ sealed class ParticipantBase {
 
     val phone: String? get() = attributes[Constants.ATTRIBUTE_TELEPHONE]
     val locationUuid: String? get() = attributes[Constants.ATTRIBUTE_LOCATION]
+    val locationId: String? get() = attributes[Constants.ATTRIBUTE_LOCATION_ID]
+    val parentLocationId: String? get() = attributes[Constants.ATTRIBUTE_PARENT_LOCATION_ID]
+    val parentLocationUuid: String? get() = attributes[Constants.ATTRIBUTE_PARENT_LOCATION_UUID]
     val originalParticipantId: String? get() = attributes[Constants.ATTRIBUTE_ORIGINAL_PARTICIPANT_ID]
     val regimen: String? get() = attributes[Constants.ATTRIBUTE_VACCINE]
     val birthWeight: String? get() = attributes[Constants.ATTRIBUTE_BIRTH_WEIGHT]
@@ -34,6 +37,7 @@ sealed class ParticipantBase {
     val motherFirstName: String? get() = attributes[Constants.ATTRIBUTE_MOTHER_FIRST_NAME]
     val motherLastName: String? get() = attributes[Constants.ATTRIBUTE_MOTHER_LAST_NAME]
     val childCategory: String? get() = attributes[Constants.ATTRIBUTE_CHILD_CATEGORY]
+    val attachedClinic: String? get() = attributes[Constants.ATTRIBUTE_ATTACHED_CLINIC]
     val fullName: String get() = listOfNotNull(childFirstName, childLastName).joinToString(" ")
     val motherName: String get() = listOfNotNull(motherFirstName, motherLastName).joinToString(" ")
 

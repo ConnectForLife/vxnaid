@@ -149,6 +149,10 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             setupPreferredCallLanguageDropdown()
         }
 
+        viewModel.allSites.observe(lifecycleOwner) {
+            setupAttachedClinicsDropdown()
+        }
+
         viewModel.genderValidationMessage.observe(lifecycleOwner) { genderValidationMessage ->
             logDebug("validate gender" + genderValidationMessage)
 
@@ -578,6 +582,27 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
             val currentDetails = flowViewModel.registerDetails.value
             if (currentDetails != null) {
                 val updatedDetails = currentDetails.copy(language = selectedLanguage)
+                flowViewModel.registerDetails.set(updatedDetails)
+            }
+        }
+    }
+
+    private fun setupAttachedClinicsDropdown() {
+        val sites = viewModel.allSites.value ?: return
+        val siteNames = sites.map { it.name }
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, siteNames)
+        binding.dropdownAttachedClinic.setAdapter(adapter)
+
+        viewModel.attachedClinic.value?.let { clinic ->
+            binding.dropdownAttachedClinic.setText(clinic.display, false)
+        }
+
+        binding.dropdownAttachedClinic.setOnItemClickListener { _, _, position, _ ->
+            val selectedSite = sites[position]
+            viewModel.setSelectedAttachedClinic(DisplayValue(selectedSite.uuid, selectedSite.name))
+            val currentDetails = flowViewModel.registerDetails.value
+            if (currentDetails != null) {
+                val updatedDetails = currentDetails.copy(attachedClinic = selectedSite.uuid)
                 flowViewModel.registerDetails.set(updatedDetails)
             }
         }
