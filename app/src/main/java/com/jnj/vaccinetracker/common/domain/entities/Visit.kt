@@ -10,6 +10,11 @@ sealed class VisitBase {
     abstract val visitUuid: String
     abstract val attributes: Map<String, String>
     abstract val visitType: String
+
+    val visitLocation: String get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION] ?: Constants.EMPTY_STRING_VALUE
+    val visitStatus: String get() = attributes[Constants.ATTRIBUTE_VISIT_STATUS] ?: Constants.EMPTY_STRING_VALUE
+    val visitLocationId: String? get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION_ID]
+    val visitParentLocationId: String? get() = attributes[Constants.ATTRIBUTE_VISIT_PARENT_LOCATION_ID]
 }
 
 data class Visit(
@@ -20,10 +25,7 @@ data class Visit(
     val observations: Map<String, ObservationValue>,
     val dateModified: DateEntity,
     override val visitType: String,
-) : VisitBase() {
-    val visitLocation: String get() = attributes[Constants.ATTRIBUTE_VISIT_LOCATION] ?: Constants.EMPTY_STRING_VALUE
-    val visitStatus: String get() = attributes[Constants.ATTRIBUTE_VISIT_STATUS] ?: Constants.EMPTY_STRING_VALUE
-}
+) : VisitBase()
 
 data class DraftVisit(
     override val startDatetime: DateEntity,

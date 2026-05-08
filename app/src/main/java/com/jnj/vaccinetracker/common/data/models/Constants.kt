@@ -13,6 +13,9 @@ object Constants {
 
     // Participant
     const val ATTRIBUTE_LOCATION = "LocationAttribute"
+    const val ATTRIBUTE_LOCATION_ID = "LocationId"
+    const val ATTRIBUTE_PARENT_LOCATION_ID = "ParentLocationId"
+    const val ATTRIBUTE_PARENT_LOCATION_UUID = "ParentLocationUuid"
     const val ATTRIBUTE_LANGUAGE = "personLanguage"
     const val ATTRIBUTE_TELEPHONE = "Telephone Number"
     const val ATTRIBUTE_VACCINE = "Vaccination program"
@@ -36,6 +39,8 @@ object Constants {
     const val ATTRIBUTE_VISIT_DOSE_NUMBER = "Dose number"
     const val ATTRIBUTE_VISIT_TYPE_VXNAID = "Visit type Vxnaid"
     const val ATTRIBUTE_VISIT_LOCATION = "Visit Location"
+    const val ATTRIBUTE_VISIT_LOCATION_ID = "Visit Location Id"
+    const val ATTRIBUTE_VISIT_PARENT_LOCATION_ID = "Visit Parent Location Id"
     const val ATTRIBUTE_VISIT_OUTREACH_NAME = "Visit Outreach Name"
     const val VISIT_TYPE_DOSING = "Dosing"
     const val VISIT_TYPE_OTHER = "Other"

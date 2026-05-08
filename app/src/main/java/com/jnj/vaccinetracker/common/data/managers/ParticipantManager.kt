@@ -10,6 +10,7 @@ import com.jnj.vaccinetracker.common.domain.usecases.RegisterParticipantUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateParticipantUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
+import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateTime
 import javax.inject.Inject
@@ -28,6 +29,7 @@ class ParticipantManager @Inject constructor(
     private val updateParticipantUseCase: UpdateParticipantUseCase,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
+    private val configurationManager: ConfigurationManager,
     ) {
 
     /**
@@ -75,7 +77,7 @@ class ParticipantManager @Inject constructor(
 
     }
 
-    private fun getParticipantAttributes(
+    private suspend fun getParticipantAttributes(
         birthWeight: String?,
         bestContactTime: String?,
         telephone: String?,
@@ -95,6 +97,26 @@ class ParticipantManager @Inject constructor(
             Constants.ATTRIBUTE_MOTHER_FIRST_NAME to motherFirstName,
             Constants.ATTRIBUTE_MOTHER_LAST_NAME to motherLastName
         )
+
+        // Add site location attributes
+        try {
+            val sites = configurationManager.getSites()
+            val currentSite = sites.find { it.uuid == siteUuid }
+            currentSite?.let { site ->
+                site.locationId?.let { locationId ->
+                    personAttributes[Constants.ATTRIBUTE_LOCATION_ID] = locationId.toString()
+                }
+                site.parentLocationId?.let { parentLocationId ->
+                    personAttributes[Constants.ATTRIBUTE_PARENT_LOCATION_ID] = parentLocationId.toString()
+                }
+                site.parentLocationUuid?.let { parentLocationUuid ->
+                    personAttributes[Constants.ATTRIBUTE_PARENT_LOCATION_UUID] = parentLocationUuid
+                }
+            }
+        } catch (e: Exception) {
+            // Log warning but continue without location attributes if fetch fails
+            logInfo("⚠️ ParticipantManager.getParticipantAttributes() - Failed to fetch site location data: ${e.message}")
+        }
 
         if (telephone != null) {
             personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
@@ -151,7 +173,7 @@ class ParticipantManager @Inject constructor(
     )
 
     @SuppressWarnings("LongParameterList")
-    fun getRegisterParticipant(
+    suspend fun getRegisterParticipant(
         registerDetails: RegisterDetails
     ): RegisterParticipant {
 

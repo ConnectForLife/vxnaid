@@ -1,0 +1,222 @@
+# OpenMRS Attribute Types Setup Guide
+
+## Problem
+The app is sending participant attributes with new location hierarchy data, but OpenMRS doesn't recognize these attribute types yet.
+
+**Error:**
+```
+Attribute type : LocationId does not exists
+```
+
+## Solution
+You need to create the new attribute types in your OpenMRS database before the app can sync participant data.
+
+---
+
+## New Attribute Types Required
+
+### Person Attribute Types
+1. **LocationId** - OpenMRS location ID where participant was registered
+2. **ParentLocationId** - Parent location ID for location hierarchy
+3. **ParentLocationUuid** - Parent location UUID for location hierarchy
+
+### Visit Attribute Types
+1. **Visit Location Id** - OpenMRS location ID where visit occurred
+2. **Visit Parent Location Id** - Parent location ID for the visit location
+
+---
+
+## Setup Instructions
+
+### Step 1: Access Your OpenMRS Database
+
+#### Option A: MySQL Command Line
+```bash
+mysql -h your_host -u your_user -p your_database
+```
+
+#### Option B: SSH to Server
+```bash
+ssh user@your_server
+mysql -u openmrs_user -p openmrs_db
+```
+
+#### Option C: phpMyAdmin or Database GUI
+Navigate to your OpenMRS database and open the SQL query interface.
+
+### Step 2: Run the SQL Script
+
+Run the script: `/Users/vinald/work/code/vxnaid/openmrs-attribute-types.sql`
+
+**Option A: Copy and paste in MySQL CLI**
+```bash
+mysql -h your_host -u your_user -p your_database < /path/to/openmrs-attribute-types.sql
+```
+
+**Option B: Manual Setup**
+
+If you prefer to create each attribute type manually:
+
+#### Create Person Attribute Types
+
+```sql
+-- LocationId
+INSERT INTO person_attribute_type (name, description, format, foreign_key, searchable, creator, date_created, retired, uuid)
+VALUES ('LocationId', 'OpenMRS Location ID where participant was registered', 'java.lang.Integer', NULL, 1, 1, NOW(), 0, UUID());
+
+-- ParentLocationId
+INSERT INTO person_attribute_type (name, description, format, foreign_key, searchable, creator, date_created, retired, uuid)
+VALUES ('ParentLocationId', 'Parent Location ID for location hierarchy', 'java.lang.Integer', NULL, 1, 1, NOW(), 0, UUID());
+
+-- ParentLocationUuid
+INSERT INTO person_attribute_type (name, description, format, foreign_key, searchable, creator, date_created, retired, uuid)
+VALUES ('ParentLocationUuid', 'Parent Location UUID for location hierarchy', 'java.lang.String', NULL, 1, 1, NOW(), 0, UUID());
+```
+
+#### Create Visit Attribute Types
+
+```sql
+-- Visit Location Id
+INSERT INTO visit_attribute_type (name, description, data_type, creator, date_created, retired, uuid)
+VALUES ('Visit Location Id', 'OpenMRS Location ID where visit occurred', 'org.openmrs.util.SimpleObject', 1, NOW(), 0, UUID());
+
+-- Visit Parent Location Id
+INSERT INTO visit_attribute_type (name, description, data_type, creator, date_created, retired, uuid)
+VALUES ('Visit Parent Location Id', 'Parent Location ID for the visit location', 'org.openmrs.util.SimpleObject', 1, NOW(), 0, UUID());
+```
+
+### Step 3: Verify Creation
+
+Run these queries to confirm the attribute types were created:
+
+```sql
+-- Verify person attribute types
+SELECT person_attribute_type_id, name, format
+FROM person_attribute_type
+WHERE name IN ('LocationId', 'ParentLocationId', 'ParentLocationUuid');
+
+-- Verify visit attribute types
+SELECT visit_attribute_type_id, name, data_type
+FROM visit_attribute_type
+WHERE name IN ('Visit Location Id', 'Visit Parent Location Id');
+```
+
+Expected output should show all 5 new attribute types with their IDs.
+
+---
+
+## Troubleshooting
+
+### Issue: "Table person_attribute_type doesn't exist"
+**Solution:** Verify you're connected to the correct OpenMRS database.
+
+```sql
+SHOW TABLES LIKE 'person_attribute%';
+```
+
+### Issue: "Duplicate entry for key 'name'"
+**Solution:** The attribute type already exists (from a previous run). This is OK - you can proceed.
+
+### Issue: Still getting "Attribute type does not exist" after inserting
+**Solution:**
+1. Clear app cache on device
+2. Force refresh of metadata in app settings
+3. Restart OpenMRS backend service
+4. Wait 2-3 minutes for changes to propagate
+
+---
+
+## After Setup
+
+### On Your Device/App:
+
+1. **Clear cache:**
+   - Settings → App → Vaccine Tracker → Storage → Clear Cache
+
+2. **Restart app:**
+   - Force stop and reopen the app
+
+3. **Retry registration:**
+   - Attempt to register a new participant
+   - The app should now send location hierarchy data successfully
+
+### Monitor:
+
+Check the logs from your earlier sync error to see if they resolve:
+
+```json
+"stackTrace": "...Attribute type : LocationId does not exists..."
+```
+
+This error should no longer appear.
+
+---
+
+## What Changed in Code
+
+The app now captures location hierarchy information:
+
+**During Registration:**
+- `LocationId` - Site's OpenMRS location ID
+- `ParentLocationId` - Parent location ID
+- `ParentLocationUuid` - Parent location UUID
+
+**During Visit Creation:**
+- `Visit Location Id` - Visit site's location ID
+- `Visit Parent Location Id` - Visit site's parent location ID
+
+This data helps with:
+- Filtering participants by location
+- Building location hierarchies (parent/child clinics)
+- Generating location-based reports
+
+---
+
+## Verifying Data in OpenMRS
+
+Once participants are registered, you can verify the data was stored:
+
+```sql
+-- View participant location attributes
+SELECT
+    p.person_id,
+    p.uuid,
+    GROUP_CONCAT(CONCAT(pat.name, '=', v.value) SEPARATOR ', ') as attributes
+FROM person p
+JOIN person_attribute v ON p.person_id = v.person_id
+JOIN person_attribute_type pat ON v.person_attribute_type_id = pat.person_attribute_type_id
+WHERE pat.name IN ('LocationId', 'ParentLocationId', 'ParentLocationUuid')
+GROUP BY p.person_id
+LIMIT 10;
+
+-- View visit location attributes
+SELECT
+    vis.visit_id,
+    vis.uuid,
+    GROUP_CONCAT(CONCAT(vat.name, '=', v.value_text) SEPARATOR ', ') as attributes
+FROM visit vis
+JOIN visit_attribute v ON vis.visit_id = v.visit_id
+JOIN visit_attribute_type vat ON v.attribute_type_id = vat.visit_attribute_type_id
+WHERE vat.name IN ('Visit Location Id', 'Visit Parent Location Id')
+GROUP BY vis.visit_id
+LIMIT 10;
+```
+
+---
+
+## Next Steps
+
+1. ✅ Create attribute types in OpenMRS (using SQL script)
+2. ✅ Verify attribute types were created successfully
+3. ✅ Clear app cache and restart app
+4. ✅ Retry participant registration
+5. ✅ Monitor sync logs for successful upload
+6. ✅ Query database to verify location data is stored
+
+---
+
+**Need Help?**
+- Check OpenMRS logs: `/opt/openmrs/logs/openmrs.log`
+- Check app logs: Logcat in Android Studio
+- Verify database connection: Run any of the verification queries above
+
