@@ -58,7 +58,6 @@ class RegisterParticipantFlowViewModel @Inject constructor(
             childFirstName = "",
             childLastName = "",
             childCategory = "",
-            attachedClinic = null,
             dateCreated = dateNow().time
         )
     }

@@ -88,7 +88,6 @@ class ParticipantManager @Inject constructor(
         motherFirstName: String,
         motherLastName: String,
         childCategory: String?,
-        attachedClinic: String?,
     ): MutableMap<String, String> {
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
 
@@ -145,9 +144,6 @@ class ParticipantManager @Inject constructor(
             personAttributes[Constants.ATTRIBUTE_LANGUAGE] = language
         }
 
-        if (attachedClinic != null) {
-            personAttributes[Constants.ATTRIBUTE_ATTACHED_CLINIC] = attachedClinic
-        }
         return personAttributes
     }
 
@@ -173,7 +169,6 @@ class ParticipantManager @Inject constructor(
         val childFirstName: String?,
         val childLastName: String?,
         val childCategory: String?,
-        val attachedClinic: String?,
         val dateCreated: Long?
     )
 
@@ -193,7 +188,6 @@ class ParticipantManager @Inject constructor(
             motherFirstName = registerDetails.motherFirstName,
             motherLastName = registerDetails.motherLastName,
             childCategory = registerDetails.childCategory,
-            attachedClinic = registerDetails.attachedClinic
         )
 
         return RegisterParticipant(

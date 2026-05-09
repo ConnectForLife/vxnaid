@@ -166,9 +166,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val childCategory = mutableLiveData<DisplayValue>()
     val childCategoryValidationMessage = mutableLiveData<String>()
     val childCategoryNames = mutableLiveData<List<DisplayValue>>()
-    val attachedClinic = mutableLiveData<DisplayValue>()
-    val allSites = mutableLiveData<List<Site>>()
-
     val birthDate = mutableLiveData<DateTime>()
     val birthDateText = mutableLiveData<String>()
     val birthDateValidationMessage = mutableLiveData<String>()
@@ -246,7 +243,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             val configuration = configurationManager.getConfiguration()
             val loc = configurationManager.getLocalization()
             onSiteAndConfigurationLoaded(site, configuration, loc)
-            allSites.set(configurationManager.getSites())
             setNinIdentifiers()
             onParticipantBack(args)
             onParticipantEdit()
@@ -297,11 +293,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             participantBase?.attributes?.get(Constants.ATTRIBUTE_LANGUAGE)?.let { language ->
                 setSelectedLanguage(DisplayValue(language, language))
             }
-            participantBase?.attachedClinic?.let { clinic ->
-                val site = allSites.value?.find { it.uuid == clinic }
-                val displayName = site?.name ?: clinic
-                setSelectedAttachedClinic(DisplayValue(clinic, displayName))
-            }
             participantBase?.address?.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
                 setHomeLocation(address, stringRepresentation)
@@ -329,11 +320,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
             }
             args.registerDetails.language?.let { language ->
                 setSelectedLanguage(DisplayValue(language, language))
-            }
-            args.registerDetails.attachedClinic?.let { clinic ->
-                val site = allSites.value?.find { it.uuid == clinic }
-                val displayName = site?.name ?: clinic
-                setSelectedAttachedClinic(DisplayValue(clinic, displayName))
             }
             args.registerDetails.address.let { address ->
                 val stringRepresentation = address.toStringRepresentation(configurationManager, getAddressMasterDataOrderUseCase)
@@ -400,7 +386,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         val childUuid = participantUuid.get()
         val childCategoryValue = childCategory.get()?.value
         val languageValue = language.get()?.value
-        val attachedClinicValue = attachedClinic.get()?.value
 
         val areInputsValid = validateInputs(participantId, gender, birthDate, homeLocation,
             motherFirstName, motherLastName, fatherFirstName, fatherLastName, childFirstName,
@@ -455,7 +440,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 childFirstName = childFirstName,
                 childLastName = childLastName,
                 childCategory = childCategoryValue,
-                attachedClinic = attachedClinicValue,
                 dateCreated = dateNow().time
             )
             val registerRequest = participantManager.getRegisterParticipant(registerDetails)
@@ -928,11 +912,6 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
         if (this.childCategory.get() == childCategoryName) return
         childCategory.set(childCategoryName)
         childCategoryValidationMessage.set(null)
-    }
-
-    fun setSelectedAttachedClinic(site: DisplayValue) {
-        if (this.attachedClinic.get() == site) return
-        attachedClinic.set(site)
     }
 
     fun setSelectedLanguage(languageName: DisplayValue) {
