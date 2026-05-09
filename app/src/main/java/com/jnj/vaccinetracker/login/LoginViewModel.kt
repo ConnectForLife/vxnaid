@@ -84,12 +84,10 @@ class LoginViewModel @Inject constructor(
                 if (selectedSite != null) {
                     filterAttachedClinicsByParent(selectedSite.name)
                 } else {
-                    logInfo("📍 Configured site UUID not found in loaded sites — showing all sites")
-                    attachedClinics.value = allSites
+                    logInfo("📍 Configured site UUID not found in loaded sites")
                 }
             } else {
-                logInfo("📍 No configured site UUID — showing all sites")
-                attachedClinics.value = allSites
+                logInfo("📍 No configured site UUID")
             }
         }
     }
@@ -97,9 +95,21 @@ class LoginViewModel @Inject constructor(
     private suspend fun loadSitesFromConfiguration() {
         try {
             allSites = configurationManager.getSites()
-            logInfo("📍 Loaded ${allSites.size} sites from configuration")
+            // If cached data has no location hierarchy (stale cache from before backend update),
+            // force a fresh fetch from the API to get the correct data
+            if (allSites.isNotEmpty() && allSites.none { it.locationId != null }) {
+                logInfo("📍 Cached sites have no location hierarchy — refreshing from API")
+                try {
+                    allSites = configurationManager.refreshSites()
+                } catch (ex: Throwable) {
+                    yield()
+                    ex.rethrowIfFatal()
+                    logError("Failed to refresh sites from API: ", ex)
+                }
+            }
+            logInfo("📍 Loaded ${allSites.size} sites")
             allSites.forEach { site ->
-                logInfo("📍 Site: name=${site.name}, uuid=${site.uuid}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}, parentLocationUuid=${site.parentLocationUuid}")
+                logInfo("📍 Site: name=${site.name}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}")
             }
         } catch (ex: Throwable) {
             yield()
@@ -137,17 +147,8 @@ class LoginViewModel @Inject constructor(
                 logInfo("🔍 Found ${siblingClinics.size} sibling clinics: ${siblingClinics.map { it.name }}")
                 attachedClinics.value = siblingClinics
             } else {
-                // locationId is null — check if ANY site has location hierarchy data
-                val hasAnyHierarchyData = allSites.any { it.locationId != null }
-                if (hasAnyHierarchyData) {
-                    // Backend has hierarchy data but this site has no locationId assigned
-                    logInfo("🔍 Site has no locationId but other sites do — no attached clinics for this site")
-                    attachedClinics.value = emptyList()
-                } else {
-                    // Backend hasn't returned location_id/parent_location yet — show all other sites as fallback
-                    logInfo("🔍 No location hierarchy data from backend, falling back to all sites")
-                    attachedClinics.value = allSites.filter { it.uuid != selectedSite.uuid }
-                }
+                logInfo("🔍 Site has no locationId — no attached clinics for this site")
+                attachedClinics.value = emptyList()
             }
         } else {
             logInfo("🔍 Looking for sites with parentLocationId=$parentLocationIdToMatch")

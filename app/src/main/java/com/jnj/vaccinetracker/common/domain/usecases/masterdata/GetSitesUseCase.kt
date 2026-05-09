@@ -59,4 +59,9 @@ class GetSitesUseCase @Inject constructor(
     override fun setMemoryCache(memoryCache: Sites?) {
         masterDataMemoryDataSource.setSites(memoryCache)
     }
+
+    suspend fun refreshFromRemote(): Sites {
+        logInfo("🌍 GetSitesUseCase.refreshFromRemote() - Force fetching sites from API")
+        return getMasterDataRemote().also { setMemoryCache(it) }
+    }
 }

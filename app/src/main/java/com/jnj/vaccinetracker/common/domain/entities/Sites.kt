@@ -1,7 +1,6 @@
 package com.jnj.vaccinetracker.common.domain.entities
 
 import com.jnj.vaccinetracker.common.exceptions.SiteNotFoundException
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -18,9 +17,7 @@ data class Site(
     val cluster: String = "",
     val countryCode: String = "",
     val siteCode: String = "",
-    @Json(name = "location_id")
     val locationId: Int? = null,
-    @Json(name = "parent_location")
     val parentLocationId: Int? = null,
     val parentLocationUuid: String? = null,
 ) {

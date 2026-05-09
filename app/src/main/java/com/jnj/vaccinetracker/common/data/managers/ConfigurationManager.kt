@@ -61,6 +61,11 @@ class ConfigurationManager @Inject constructor(
         return loc.languages.getTranslationsByLanguage(lang, "en") ?: TranslationMap(emptyMap())
     }
 
+    suspend fun refreshSites(): List<com.jnj.vaccinetracker.common.domain.entities.Site> {
+        logInfo("📍 ConfigurationManager.refreshSites() - Force refreshing sites from API")
+        return getSitesUseCase.refreshFromRemote().results
+    }
+
     suspend fun getSiteByUuid(uuid: String) = getSites()
         .let { sites ->
             sites.find { it.uuid == uuid } ?: throw SiteNotFoundException(uuid)
