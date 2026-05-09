@@ -255,11 +255,6 @@ class LoginViewModel @Inject constructor(
             visitPlaceValidationMessage.set(resourcesWrapper.getString(R.string.login_label_validation_no_visit_place))
         }
 
-        if (visitPlace == Constants.VISIT_PLACE_OUTREACH && attachedClinic.isEmpty()) {
-            validated = false
-            attachedClinicValidationMessage.set(resourcesWrapper.getString(R.string.login_label_attached_clinic_validation_error))
-        }
-
         return validated
     }
 }

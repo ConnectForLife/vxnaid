@@ -4,13 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -81,10 +79,7 @@ class LoginActivity : BaseActivity() {
 
         val textInputPasswordLayout = findViewById<TextInputLayout>(R.id.textInputPassword)
         val editPassword = findViewById<TextInputEditText>(R.id.edit_password)
-        val textInputOutreachName = findViewById<TextInputLayout>(R.id.textInputOutreachName)
-        val visitPlaceIcon = findViewById<ImageView>(R.id.img_location_name)
-        textInputOutreachName.visibility = View.GONE
-        visitPlaceIcon.visibility = View.GONE
+        binding.inputGroupOutreachLocationName.visibility = View.GONE
         binding.inputGroupLoginAttachedClinic.visibility = View.GONE
 
         textInputPasswordLayout.setEndIconOnClickListener {
@@ -105,18 +100,18 @@ class LoginActivity : BaseActivity() {
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
         binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
             selectedVisitPlace = visitPlaces[position]
-            Log.e("Selected Visit Place", "Selected Visit Place: $selectedVisitPlace")
             if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
-                textInputOutreachName.visibility = View.VISIBLE
-                visitPlaceIcon.visibility = View.VISIBLE
                 binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
+                // Show outreach name only when no clinic is selected
+                binding.inputGroupOutreachLocationName.visibility =
+                    if (selectedAttachedClinic.isNullOrEmpty()) View.VISIBLE else View.GONE
                 binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
             } else {
-                textInputOutreachName.visibility = View.GONE
-                visitPlaceIcon.visibility = View.GONE
+                binding.inputGroupOutreachLocationName.visibility = View.GONE
                 binding.inputGroupLoginAttachedClinic.visibility = View.GONE
                 binding.dropdownLoginAttachedClinic.setText("", false)
                 selectedAttachedClinic = null
+                binding.editOutreachName.setText("")
                 binding.root.setBackgroundColor(getColor(R.color.white))
             }
         }
@@ -128,10 +123,12 @@ class LoginActivity : BaseActivity() {
             binding.dropdownLoginAttachedClinic.setAdapter(attachedClinicAdapter)
         }
         binding.dropdownLoginAttachedClinic.setOnItemClickListener { _, _, position, _ ->
-            val clinicNames = viewModel.attachedClinics.value?.map { it.name } ?: emptyList()
-            if (position < clinicNames.size) {
-                selectedAttachedClinic = clinicNames[position]
-                Log.e("Selected Attached Clinic", "Selected Attached Clinic: $selectedAttachedClinic")
+            val clinics = viewModel.attachedClinics.value ?: emptyList()
+            if (position < clinics.size) {
+                selectedAttachedClinic = clinics[position].name
+                // Clinic selected — hide outreach name field; clinic name will be used as outreach name
+                binding.inputGroupOutreachLocationName.visibility = View.GONE
+                binding.editOutreachName.setText("")
             }
         }
 
@@ -141,14 +138,15 @@ class LoginActivity : BaseActivity() {
             if (index >= 0) {
                 binding.dropdownLoginVisitPlace.setText(visitPlaces[index], false)
                 if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
-                    textInputOutreachName.visibility = View.VISIBLE
-                    visitPlaceIcon.visibility = View.VISIBLE
                     binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
                     binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
+                    // Outreach name only shown when no clinic is selected
+                    binding.inputGroupOutreachLocationName.visibility =
+                        if (selectedAttachedClinic.isNullOrEmpty()) View.VISIBLE else View.GONE
                 }
             }
         }
-        if (selectedAttachedClinic != null && selectedAttachedClinic!!.isNotEmpty()) {
+        if (!selectedAttachedClinic.isNullOrEmpty()) {
             binding.dropdownLoginAttachedClinic.setText(selectedAttachedClinic, false)
         }
 
@@ -215,23 +213,26 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
+
         val attachedClinic = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
-            binding.dropdownLoginAttachedClinic.text.toString()
+            selectedAttachedClinic ?: ""
         } else {
             ""
         }
-        val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
-            binding.editOutreachName.text.toString().trim().uppercase()
-        } else {
-            null
+
+        val outreachName: String? = when {
+            visitPlace != Constants.VISIT_PLACE_OUTREACH -> null
+            attachedClinic.isNotEmpty() -> attachedClinic  // clinic name serves as outreach name
+            else -> binding.editOutreachName.text.toString().trim().uppercase()
         }
 
-        if ((visitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isNullOrBlank())) {
+        if (visitPlace == Constants.VISIT_PLACE_OUTREACH && outreachName.isNullOrBlank()) {
+            // No clinic selected AND no outreach name entered
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
             return
-        } else {
-            showConfirmVisitPlaceDialog(username, password, visitPlace, attachedClinic, outreachName)
         }
+
+        showConfirmVisitPlaceDialog(username, password, visitPlace, attachedClinic, outreachName)
     }
 
     private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, attachedClinic: String, outreachName: String?) {
