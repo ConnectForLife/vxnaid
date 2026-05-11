@@ -8,6 +8,8 @@ import com.jnj.vaccinetracker.common.data.database.models.RoomParticipantModel
 import com.jnj.vaccinetracker.common.data.database.models.draft.RoomDraftParticipantModel
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftParticipantRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.ParticipantRepository
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
@@ -19,12 +21,29 @@ import javax.inject.Inject
 class RegisteredParticipantsViewModel@Inject constructor(
     private val participantRepository: ParticipantRepository,
     private val draftParticipantRepository: DraftParticipantRepository,
+    private val configurationManager: ConfigurationManager,
     override val dispatchers: AppCoroutineDispatchers,
     userRepository: UserRepository,
 ) : ViewModelWithState() {
     val patientDTOs = MutableLiveData<List<ParticipantDataDTO>>()
+    val attachedClinics = MutableLiveData<List<String>>(emptyList())
     val isLoading = mutableLiveData<Boolean>()
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
+
+    fun loadAttachedClinics() {
+        viewModelScope.launch {
+            try {
+                val allSites = configurationManager.getSites()
+                val clinicNames = allSites
+                    .filter { it.parentLocationUuid == currentLocationUuid }
+                    .map { it.name }
+                attachedClinics.value = clinicNames
+            } catch (e: Exception) {
+                Log.e("RegisteredParticipantsVM", "Failed to load attached clinics", e)
+                attachedClinics.value = emptyList()
+            }
+        }
+    }
 
     fun fetchAllPatients() {
         isLoading.value = true
@@ -49,7 +68,8 @@ class RegisteredParticipantsViewModel@Inject constructor(
                 fullName = "${patient.childFirstName ?: ""} ${patient.childLastName ?: ""}",
                 motherName = "${patient.motherFirstName ?: ""} ${patient.motherLastName ?: ""}",
                 birthDate = patient.birthDate.toDateTime(),
-                registrationDate = Date(patient.dateCreated ?: patient.birthDate.time)
+                registrationDate = Date(patient.dateCreated ?: patient.birthDate.time),
+                attachedClinic = patient.attributes.find { it.type == Constants.ATTRIBUTE_ATTACHED_CLINIC }?.value
             )
         }
     }
@@ -61,7 +81,8 @@ class RegisteredParticipantsViewModel@Inject constructor(
                 fullName = "${draftPatient.childFirstName ?: ""} ${draftPatient.childLastName ?: ""}",
                 motherName = "${draftPatient.motherFirstName ?: ""} ${draftPatient.motherLastName ?: ""}",
                 birthDate = draftPatient.birthDate.toDateTime(),
-                registrationDate = draftPatient.registrationDate
+                registrationDate = draftPatient.registrationDate,
+                attachedClinic = draftPatient.attributes.find { it.type == Constants.ATTRIBUTE_ATTACHED_CLINIC }?.value
             )
         }
     }

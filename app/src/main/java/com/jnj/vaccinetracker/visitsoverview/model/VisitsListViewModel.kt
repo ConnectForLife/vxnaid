@@ -3,12 +3,14 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
@@ -29,11 +31,28 @@ class VisitsListViewModel @Inject constructor(
     private val draftVisitRepository: DraftVisitRepository,
     private val draftVisitEncounterRepository: DraftVisitEncounterRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+    private val configurationManager: ConfigurationManager,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
     val visitDTOs = mutableLiveData<List<VisitDataDTO>>()
+    val attachedClinics = MutableLiveData<List<String>>(emptyList())
     val isLoading = mutableLiveData<Boolean>()
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
+
+    fun loadAttachedClinics() {
+        viewModelScope.launch {
+            try {
+                val allSites = configurationManager.getSites()
+                val clinicNames = allSites
+                    .filter { it.parentLocationUuid == currentLocationUuid }
+                    .map { it.name }
+                attachedClinics.value = clinicNames
+            } catch (e: Exception) {
+                Log.e("VisitsListViewModel", "Failed to load attached clinics", e)
+                attachedClinics.value = emptyList()
+            }
+        }
+    }
 
     fun getScheduledVisitsData() {
         isLoading.value = true

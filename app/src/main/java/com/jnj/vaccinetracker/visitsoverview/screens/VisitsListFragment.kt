@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.ArrayAdapter
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -63,6 +64,7 @@ class VisitsListFragment : BaseFragment(),
     private val visitsListViewModel: VisitsListViewModel by viewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+    private var selectedClinic: String? = null
     private var visitsKey: String = Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY
 
     @Inject lateinit var configurationManager: ConfigurationManager
@@ -100,6 +102,7 @@ class VisitsListFragment : BaseFragment(),
         setupRecyclerView()
         setupObservers()
         setupFilterButtons()
+        setupClinicFilter()
         setupDownloadButtons()
 
         if (selectedStartDate != null) {
@@ -204,6 +207,25 @@ class VisitsListFragment : BaseFragment(),
         }
     }
 
+    private fun setupClinicFilter() {
+        visitsListViewModel.loadAttachedClinics()
+        visitsListViewModel.attachedClinics.observe(viewLifecycleOwner) { clinics ->
+            if (clinics.isNullOrEmpty()) {
+                binding.clinicFilterContainer.visibility = View.GONE
+                return@observe
+            }
+            binding.clinicFilterContainer.visibility = View.VISIBLE
+            val options = listOf(getString(R.string.filter_all_clinics)) + clinics
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
+            binding.dropdownClinicFilter.setAdapter(adapter)
+            binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
+            binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
+                selectedClinic = if (position == 0) null else clinics[position - 1]
+                applyFilters()
+            }
+        }
+    }
+
     private fun setupDownloadButtons() {
         binding.btnDownloadExcel.setOnClickListener {
             exportToExcel(visitsAdapter.currentList)
@@ -298,7 +320,11 @@ class VisitsListFragment : BaseFragment(),
                         visit.participant.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
                         visit.participant.motherName.lowercase(Locale.getDefault()).contains(searchText)
 
-            dateMatches && textSearchMatches
+            val clinicMatches = selectedClinic == null ||
+                visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
+                    ?.equals(selectedClinic, ignoreCase = true) == true
+
+            dateMatches && textSearchMatches && clinicMatches
         }
 
         binding.totalVisitCount.text =

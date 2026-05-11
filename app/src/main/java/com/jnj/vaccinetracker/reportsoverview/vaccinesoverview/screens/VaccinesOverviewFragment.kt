@@ -59,6 +59,7 @@ class VaccinesOverviewFragment : BaseFragment(),
     private var selectedEndDate: DateTime? = null
     private var selectedLocation: String? = Constants.ALL_STRING
     private var selectedAgeGroup: String? = Constants.ALL_STRING
+    private var selectedClinic: String? = null
 
     @Inject
     lateinit var configurationManager: ConfigurationManager
@@ -78,6 +79,7 @@ class VaccinesOverviewFragment : BaseFragment(),
         setupRecyclerView()
         initializeDefaultDates()
         setupFilterFields()
+        setupClinicFilter()
         loadVaccinesData()
         setupObservers()
         setupDownloadButtons()
@@ -278,6 +280,25 @@ class VaccinesOverviewFragment : BaseFragment(),
         }
     }
 
+    private fun setupClinicFilter() {
+        vaccinesOverviewViewModel.loadAttachedClinics()
+        vaccinesOverviewViewModel.attachedClinics.observe(viewLifecycleOwner) { clinics ->
+            if (clinics.isNullOrEmpty()) {
+                binding.clinicFilterContainer.visibility = View.GONE
+                return@observe
+            }
+            binding.clinicFilterContainer.visibility = View.VISIBLE
+            val options = listOf(getString(R.string.filter_all_clinics)) + clinics
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
+            binding.dropdownClinicFilter.setAdapter(adapter)
+            binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
+            binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
+                selectedClinic = if (position == 0) null else clinics[position - 1]
+                applyFilters()
+            }
+        }
+    }
+
     private fun setupAgeGroupDropdown() {
         val ageGroups = listOf(
             Constants.ALL_STRING,
@@ -361,7 +382,11 @@ class VaccinesOverviewFragment : BaseFragment(),
 
             val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                     observation.ageGroup == selectedAgeGroup
-            dateMatches && vaccineMatches && locationMatches && ageGroupMatches
+
+            val clinicMatches = selectedClinic == null ||
+                observation.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+
+            dateMatches && vaccineMatches && locationMatches && ageGroupMatches && clinicMatches
         }
 
         // Count entries for each location type
@@ -509,7 +534,11 @@ class VaccinesOverviewFragment : BaseFragment(),
 
                 val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                         observation.ageGroup == selectedAgeGroup
-                dateMatches && vaccineMatches && locationMatches && ageGroupMatches
+
+                val clinicMatches = selectedClinic == null ||
+                    observation.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+
+                dateMatches && vaccineMatches && locationMatches && ageGroupMatches && clinicMatches
             }
 
             val filteredAndGroupedData = filteredData.groupBy { it.vaccineName }

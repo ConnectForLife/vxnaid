@@ -19,6 +19,7 @@ import com.jnj.vaccinetracker.databinding.FragmentRegisteredChildrenBinding
 import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 import com.soywiz.klock.DateTime
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.util.FileUtil
@@ -47,6 +48,7 @@ class RegisteredParticipantsFragment : BaseFragment(),
     private val registeredParticipantsViewModel: RegisteredParticipantsViewModel by activityViewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+    private var selectedClinic: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +83,7 @@ class RegisteredParticipantsFragment : BaseFragment(),
         setupRecyclerView()
         setupObservers()
         setupFilterButtons()
+        setupClinicFilter()
         setupDownloadButtons()
 
         if (selectedStartDate != null) binding.labelStartDate.text = formatDate(selectedStartDate)
@@ -150,6 +153,25 @@ class RegisteredParticipantsFragment : BaseFragment(),
         }
     }
 
+    private fun setupClinicFilter() {
+        registeredParticipantsViewModel.loadAttachedClinics()
+        registeredParticipantsViewModel.attachedClinics.observe(viewLifecycleOwner) { clinics ->
+            if (clinics.isNullOrEmpty()) {
+                binding.clinicFilterContainer.visibility = android.view.View.GONE
+                return@observe
+            }
+            binding.clinicFilterContainer.visibility = android.view.View.VISIBLE
+            val options = listOf(getString(R.string.filter_all_clinics)) + clinics
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
+            binding.dropdownClinicFilter.setAdapter(adapter)
+            binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
+            binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
+                selectedClinic = if (position == 0) null else clinics[position - 1]
+                applyFilters()
+            }
+        }
+    }
+
     private fun applyFilters(
         patients: List<ParticipantDataDTO> = registeredParticipantsViewModel.patientDTOs.value ?: emptyList()
     ) {
@@ -168,7 +190,10 @@ class RegisteredParticipantsFragment : BaseFragment(),
                 patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
                 patient.motherName.lowercase(Locale.getDefault()).contains(searchText)
 
-            dateMatches && textSearchMatches
+            val clinicMatches = selectedClinic == null ||
+                patient.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+
+            dateMatches && textSearchMatches && clinicMatches
         }
 
         binding.totalPatientCount.text =
