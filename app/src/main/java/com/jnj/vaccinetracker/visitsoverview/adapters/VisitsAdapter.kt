@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.databinding.ItemVisitRecordBinding
 import com.jnj.vaccinetracker.visitsoverview.dto.VisitDataDTO
 
@@ -29,7 +30,10 @@ class VisitsAdapter(
             binding.visit = visit
             binding.executePendingBindings()
 
-            val backgroundColor = if (bindingAdapterPosition % 2 == 0) {
+            val isOutreach = !visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC].isNullOrBlank()
+            val backgroundColor = if (isOutreach) {
+                ContextCompat.getColor(binding.root.context, R.color.row_outreach_background)
+            } else if (bindingAdapterPosition % 2 == 0) {
                 ContextCompat.getColor(binding.root.context, R.color.row_odd_background)
             } else {
                 ContextCompat.getColor(binding.root.context, R.color.row_even_background)

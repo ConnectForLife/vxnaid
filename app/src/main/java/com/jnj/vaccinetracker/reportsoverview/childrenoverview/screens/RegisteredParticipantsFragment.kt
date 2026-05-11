@@ -41,6 +41,7 @@ class RegisteredParticipantsFragment : BaseFragment(),
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePicker"
         private const val STATE_START_DATE_MILLIS = "state_start_date_millis"
         private const val STATE_END_DATE_MILLIS = "state_end_date_millis"
+        private const val PARENT_CLINIC_FILTER = "__PARENT__"
     }
 
     private lateinit var patientAdapter: PatientAdapter
@@ -161,12 +162,18 @@ class RegisteredParticipantsFragment : BaseFragment(),
                 return@observe
             }
             binding.clinicFilterContainer.visibility = android.view.View.VISIBLE
-            val options = listOf(getString(R.string.filter_all_clinics)) + clinics
+            val parentName = registeredParticipantsViewModel.parentSiteName.value
+                ?: getString(R.string.filter_parent_facility)
+            val options = listOf(getString(R.string.filter_all_clinics), parentName) + clinics
             val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
             binding.dropdownClinicFilter.setAdapter(adapter)
             binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
             binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
-                selectedClinic = if (position == 0) null else clinics[position - 1]
+                selectedClinic = when (position) {
+                    0 -> null
+                    1 -> PARENT_CLINIC_FILTER
+                    else -> clinics[position - 2]
+                }
                 applyFilters()
             }
         }
@@ -190,8 +197,11 @@ class RegisteredParticipantsFragment : BaseFragment(),
                 patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
                 patient.motherName.lowercase(Locale.getDefault()).contains(searchText)
 
-            val clinicMatches = selectedClinic == null ||
-                patient.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+            val clinicMatches = when (selectedClinic) {
+                null -> true
+                PARENT_CLINIC_FILTER -> patient.attachedClinic.isNullOrBlank()
+                else -> patient.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+            }
 
             dateMatches && textSearchMatches && clinicMatches
         }

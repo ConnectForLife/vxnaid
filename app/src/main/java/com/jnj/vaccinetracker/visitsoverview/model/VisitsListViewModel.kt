@@ -36,6 +36,7 @@ class VisitsListViewModel @Inject constructor(
 ) : ViewModelWithState() {
     val visitDTOs = mutableLiveData<List<VisitDataDTO>>()
     val attachedClinics = MutableLiveData<List<String>>(emptyList())
+    val parentSiteName = MutableLiveData<String?>(null)
     val isLoading = mutableLiveData<Boolean>()
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
@@ -43,6 +44,7 @@ class VisitsListViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val allSites = configurationManager.getSites()
+                parentSiteName.value = allSites.find { it.uuid == currentLocationUuid }?.name
                 val clinicNames = allSites
                     .filter { it.parentLocationUuid == currentLocationUuid }
                     .map { it.name }

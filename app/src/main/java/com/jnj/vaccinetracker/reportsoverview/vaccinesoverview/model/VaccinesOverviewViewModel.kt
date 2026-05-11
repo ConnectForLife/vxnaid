@@ -39,6 +39,7 @@ class VaccinesOverviewViewModel @Inject constructor(
 ) : ViewModelWithState() {
     val vaccineDTOs = mutableLiveData<List<VaccineObservationDTO>>()
     val attachedClinics = MutableLiveData<List<String>>(emptyList())
+    val parentSiteName = MutableLiveData<String?>(null)
     val substancesConfig = mutableLiveData<SubstancesConfig>(emptyList())
     val currentScreen = mutableLiveData<Screen>()
     var navigationDirection = NavigationDirection.NONE
@@ -50,6 +51,7 @@ class VaccinesOverviewViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val allSites = configurationManager.getSites()
+                parentSiteName.value = allSites.find { it.uuid == currentLocationUuid }?.name
                 val clinicNames = allSites
                     .filter { it.parentLocationUuid == currentLocationUuid }
                     .map { it.name }

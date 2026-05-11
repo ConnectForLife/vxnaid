@@ -29,7 +29,9 @@ class PatientAdapter(
             binding.participant = participant
             binding.executePendingBindings()
 
-            val backgroundColor = if (bindingAdapterPosition % 2 == 0) {
+            val backgroundColor = if (!participant.attachedClinic.isNullOrBlank()) {
+                ContextCompat.getColor(binding.root.context, R.color.row_outreach_background)
+            } else if (bindingAdapterPosition % 2 == 0) {
                 ContextCompat.getColor(binding.root.context, R.color.row_odd_background)
             } else {
                 ContextCompat.getColor(binding.root.context, R.color.row_even_background)

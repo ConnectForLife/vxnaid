@@ -37,6 +37,7 @@
     <color name="row_even_background">#F0F0F0</color>
     <color name="row_odd_background">#FFFFFF</color>
     <color name="outreach_bg_color">#BDBDBD</color>
+    <color name="row_outreach_background">#BBDEFB</color>
     <drawable name="alert_background">@color/alertLight</drawable>
     <drawable name="error_background">@color/errorLight</drawable>
 </resources>

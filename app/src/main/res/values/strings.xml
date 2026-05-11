@@ -566,6 +566,7 @@
     <string name="registered_children_search_hint">Search by ID, child or mother name</string>
     <string name="filter_facility_hint">Facility</string>
     <string name="filter_all_clinics">All Clinics</string>
+    <string name="filter_parent_facility">Parent Facility</string>
     <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
     <string name="children_overview_client_birthdate_column_label">Date of Birth</string>
     <string name="children_overview_client_registration_date_column_label">Registration Date</string>

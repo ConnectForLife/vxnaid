@@ -49,6 +49,7 @@ class VaccinesOverviewFragment : BaseFragment(),
     companion object {
         private const val START_DATE_PICKER_DIALOG_TAG = "startDatePicker"
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePicker"
+        private const val PARENT_CLINIC_FILTER = "__PARENT__"
     }
 
     private lateinit var binding: FragmentVaccinesOverviewBinding
@@ -288,12 +289,18 @@ class VaccinesOverviewFragment : BaseFragment(),
                 return@observe
             }
             binding.clinicFilterContainer.visibility = View.VISIBLE
-            val options = listOf(getString(R.string.filter_all_clinics)) + clinics
+            val parentName = vaccinesOverviewViewModel.parentSiteName.value
+                ?: getString(R.string.filter_parent_facility)
+            val options = listOf(getString(R.string.filter_all_clinics), parentName) + clinics
             val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
             binding.dropdownClinicFilter.setAdapter(adapter)
             binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
             binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
-                selectedClinic = if (position == 0) null else clinics[position - 1]
+                selectedClinic = when (position) {
+                    0 -> null
+                    1 -> PARENT_CLINIC_FILTER
+                    else -> clinics[position - 2]
+                }
                 applyFilters()
             }
         }
@@ -383,8 +390,11 @@ class VaccinesOverviewFragment : BaseFragment(),
             val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                     observation.ageGroup == selectedAgeGroup
 
-            val clinicMatches = selectedClinic == null ||
-                observation.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+            val clinicMatches = when (selectedClinic) {
+                null -> true
+                PARENT_CLINIC_FILTER -> observation.attachedClinic.isNullOrBlank()
+                else -> observation.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+            }
 
             dateMatches && vaccineMatches && locationMatches && ageGroupMatches && clinicMatches
         }
@@ -535,8 +545,11 @@ class VaccinesOverviewFragment : BaseFragment(),
                 val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                         observation.ageGroup == selectedAgeGroup
 
-                val clinicMatches = selectedClinic == null ||
-                    observation.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+                val clinicMatches = when (selectedClinic) {
+                    null -> true
+                    PARENT_CLINIC_FILTER -> observation.attachedClinic.isNullOrBlank()
+                    else -> observation.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+                }
 
                 dateMatches && vaccineMatches && locationMatches && ageGroupMatches && clinicMatches
             }
