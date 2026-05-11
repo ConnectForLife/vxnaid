@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.model
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.StringRes
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
@@ -37,12 +38,30 @@ class VaccinesOverviewViewModel @Inject constructor(
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
     val vaccineDTOs = mutableLiveData<List<VaccineObservationDTO>>()
+    val attachedClinics = MutableLiveData<List<String>>(emptyList())
+    val parentSiteName = MutableLiveData<String?>(null)
     val substancesConfig = mutableLiveData<SubstancesConfig>(emptyList())
     val currentScreen = mutableLiveData<Screen>()
     var navigationDirection = NavigationDirection.NONE
     private var screens = listOf<Screen>()
     val isLoading = mutableLiveData<Boolean>()
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
+
+    fun loadAttachedClinics() {
+        viewModelScope.launch {
+            try {
+                val allSites = configurationManager.getSites()
+                parentSiteName.value = allSites.find { it.uuid == currentLocationUuid }?.name
+                val clinicNames = allSites
+                    .filter { it.parentLocationUuid == currentLocationUuid }
+                    .map { it.name }
+                attachedClinics.value = clinicNames
+            } catch (e: Exception) {
+                Log.e("VaccinesOverviewVM", "Failed to load attached clinics", e)
+                attachedClinics.value = emptyList()
+            }
+        }
+    }
 
     init {
         initScreens()
@@ -102,8 +121,9 @@ class VaccinesOverviewViewModel @Inject constructor(
                     val vaccineConceptName = vaccineConceptDateNames.find { key == "$it ${Constants.DATE_STR}" }
                     if (vaccineConceptName != null) {
                         val ageGroup = calculateChildAgeGroup(participant.birthDate)
-                        val visitLocation = visit.visitLocation ?: Constants.ALL_STRING // Default to "All" if location is null
-                        val dto = VaccineObservationDTO(vaccineConceptName, observation.value, visitLocation, ageGroup)
+                        val visitLocation = visit.visitLocation ?: Constants.ALL_STRING
+                        val attachedClinic = visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
+                        val dto = VaccineObservationDTO(vaccineConceptName, observation.value, visitLocation, ageGroup, attachedClinic)
                         if (!vaccineObservationDTOList.contains(dto)) { // Avoid duplicates
                             vaccineObservationDTOList.add(dto)
                         }

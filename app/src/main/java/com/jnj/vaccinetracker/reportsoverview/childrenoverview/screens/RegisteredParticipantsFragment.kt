@@ -19,6 +19,7 @@ import com.jnj.vaccinetracker.databinding.FragmentRegisteredChildrenBinding
 import com.jnj.vaccinetracker.visitsoverview.dto.ParticipantDataDTO
 import com.soywiz.klock.DateTime
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.util.FileUtil
@@ -40,6 +41,7 @@ class RegisteredParticipantsFragment : BaseFragment(),
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePicker"
         private const val STATE_START_DATE_MILLIS = "state_start_date_millis"
         private const val STATE_END_DATE_MILLIS = "state_end_date_millis"
+        private const val PARENT_CLINIC_FILTER = "__PARENT__"
     }
 
     private lateinit var patientAdapter: PatientAdapter
@@ -47,6 +49,7 @@ class RegisteredParticipantsFragment : BaseFragment(),
     private val registeredParticipantsViewModel: RegisteredParticipantsViewModel by activityViewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+    private var selectedClinic: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +84,7 @@ class RegisteredParticipantsFragment : BaseFragment(),
         setupRecyclerView()
         setupObservers()
         setupFilterButtons()
+        setupClinicFilter()
         setupDownloadButtons()
 
         if (selectedStartDate != null) binding.labelStartDate.text = formatDate(selectedStartDate)
@@ -150,6 +154,31 @@ class RegisteredParticipantsFragment : BaseFragment(),
         }
     }
 
+    private fun setupClinicFilter() {
+        registeredParticipantsViewModel.loadAttachedClinics()
+        registeredParticipantsViewModel.attachedClinics.observe(viewLifecycleOwner) { clinics ->
+            if (clinics.isNullOrEmpty()) {
+                binding.clinicFilterContainer.visibility = android.view.View.GONE
+                return@observe
+            }
+            binding.clinicFilterContainer.visibility = android.view.View.VISIBLE
+            val parentName = registeredParticipantsViewModel.parentSiteName.value
+                ?: getString(R.string.filter_parent_facility)
+            val options = listOf(getString(R.string.filter_all_clinics), parentName) + clinics
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
+            binding.dropdownClinicFilter.setAdapter(adapter)
+            binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
+            binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
+                selectedClinic = when (position) {
+                    0 -> null
+                    1 -> PARENT_CLINIC_FILTER
+                    else -> clinics[position - 2]
+                }
+                applyFilters()
+            }
+        }
+    }
+
     private fun applyFilters(
         patients: List<ParticipantDataDTO> = registeredParticipantsViewModel.patientDTOs.value ?: emptyList()
     ) {
@@ -168,7 +197,13 @@ class RegisteredParticipantsFragment : BaseFragment(),
                 patient.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
                 patient.motherName.lowercase(Locale.getDefault()).contains(searchText)
 
-            dateMatches && textSearchMatches
+            val clinicMatches = when (selectedClinic) {
+                null -> true
+                PARENT_CLINIC_FILTER -> patient.attachedClinic.isNullOrBlank()
+                else -> patient.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+            }
+
+            dateMatches && textSearchMatches && clinicMatches
         }
 
         binding.totalPatientCount.text =

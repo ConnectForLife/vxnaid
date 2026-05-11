@@ -4,5 +4,6 @@ class VaccineObservationDTO(
     val vaccineName: String,
     val administerDate: String,
     var visitLocation: String,
-    val ageGroup: String
+    val ageGroup: String,
+    val attachedClinic: String? = null
 )

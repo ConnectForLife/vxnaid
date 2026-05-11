@@ -13,6 +13,7 @@ import com.jnj.vaccinetracker.common.domain.usecases.UpdateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.exceptions.VisitNotFound
+import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.util.DateUtil
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.sync.domain.entities.UpcomingVisit
@@ -46,7 +47,8 @@ class VisitManager @Inject constructor(
         visitLocation: String? = null,
         visitOutreachName: String? = null,
         visitTypeVxnaid: String? = null,
-        referralObservations: Map<String, String> = emptyMap()
+        referralObservations: Map<String, String> = emptyMap(),
+        attachedClinic: String? = null,
     ) {
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Trying to register dosing visit without a selected site")
@@ -54,7 +56,7 @@ class VisitManager @Inject constructor(
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Trying to register dosing visit without stored operator UUID")
 
-        val attributes = buildVisitAttributes(operatorUuid, dosingNumber, visitLocation, visitOutreachName, visitTypeVxnaid)
+        val attributes = buildVisitAttributes(operatorUuid, dosingNumber, visitLocation, visitOutreachName, visitTypeVxnaid, locationUuid, attachedClinic)
 
         var observations = buildObservations(
             substanceObservations = substanceObservations,
@@ -78,15 +80,23 @@ class VisitManager @Inject constructor(
         updateVisitUseCase.updateVisit(request)
     }
 
-    private fun buildVisitAttributes(operatorUuid: String, dosingNumber: Int, visitLocation: String?, visitOutreachName: String?,visitTypeVxnaid: String?): Map<String, String> {
-        return mapOf(
+    private fun buildVisitAttributes(operatorUuid: String, dosingNumber: Int, visitLocation: String?, visitOutreachName: String?, visitTypeVxnaid: String?, locationUuid: String, attachedClinic: String?): Map<String, String> {
+        val attributes = mutableMapOf(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
             Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to dosingNumber.toString(),
-            Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitTypeVxnaid.toString(),
-            *listOfNotNull(visitLocation?.let { Constants.ATTRIBUTE_VISIT_LOCATION to visitLocation }).toTypedArray(),
-            *listOfNotNull(visitOutreachName?.let { Constants.ATTRIBUTE_VISIT_OUTREACH_NAME to visitOutreachName }).toTypedArray()
+            Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitTypeVxnaid.toString()
         )
+        if (visitLocation != null) {
+            attributes[Constants.ATTRIBUTE_VISIT_LOCATION] = visitLocation
+        }
+        if (visitOutreachName != null) {
+            attributes[Constants.ATTRIBUTE_VISIT_OUTREACH_NAME] = visitOutreachName
+        }
+        if (attachedClinic != null) {
+            attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC] = attachedClinic
+        }
+        return attributes
     }
 
     private fun buildObservations(

@@ -14,7 +14,8 @@ data class ParticipantDataDTO(
     val fullName: String,
     val motherName: String,
     val birthDate: DateTime,
-    val registrationDate: Date
+    val registrationDate: Date,
+    val attachedClinic: String? = null
 ) : Parcelable {
     val formattedRegistrationDate: String get() = DateUtil.convertDateToString(registrationDate,
         DateFormat.FORMAT_DATE.toString())

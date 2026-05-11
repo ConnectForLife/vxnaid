@@ -58,7 +58,8 @@ class RegisterParticipantFlowViewModel @Inject constructor(
             childFirstName = "",
             childLastName = "",
             childCategory = "",
-            dateCreated = dateNow().time
+            dateCreated = dateNow().time,
+            attachedClinic = null
         )
     }
     val visitTypeName = mutableLiveData<String>()
@@ -70,6 +71,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
     val countryCode = mutableLiveData<String>()
     val phoneNumber = mutableLiveData<String>()
     val requestFinish = mutableLiveData<Boolean>()
+    val attachedClinic = mutableLiveData<String?>(null)
 
     suspend fun setArguments(
         participantId: String?,
@@ -80,6 +82,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         isManualEnteredId: Boolean,
         participantUuid: String?,
         duplicateError: String? = null,
+        attachedClinic: String? = null,
     ) {
         if (currentScreen.get() == null) {
             currentScreen.set(Screen.PARTICIPANT_DETAILS)
@@ -92,6 +95,7 @@ class RegisterParticipantFlowViewModel @Inject constructor(
         this.isManualEnteredId.set(isManualEnteredId)
         this.duplicateError.value = duplicateError
         this.participantUuid.set(participantUuid)
+        this.attachedClinic.set(attachedClinic)
         if (participantUuid != null) {
             val participantPicture = loadParticipantPicture(participantUuid)?.toUiModel()
             if (participantPicture != null && !isImageEmpty(participantPicture.byteArray)) {

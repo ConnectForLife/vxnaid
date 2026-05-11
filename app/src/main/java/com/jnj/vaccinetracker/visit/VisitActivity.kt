@@ -335,14 +335,12 @@ class VisitActivity :
             Constants.VISIT_PLACE_STATIC
         )
         val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
-            sharedPreferences.getString(
-                Constants.OUTREACH_NAME,
-                null
-            )
+            sharedPreferences.getString(Constants.OUTREACH_NAME, null)
         } else {
             null
         }
-        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations, outreachName)
+        val attachedClinic = sharedPreferences.getString(Constants.ATTACHED_CLINIC_FILE_KEY, null)
+        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations, outreachName, attachedClinic)
     }
 
     override fun onReferralAfterContraindicationsPageFinish(finish: Boolean, referralObservations: Map<String, String>) {

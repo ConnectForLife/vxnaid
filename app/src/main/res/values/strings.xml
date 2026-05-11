@@ -26,6 +26,8 @@
     <string name="login_label_username">Username</string>
     <string name="login_label_password">Password</string>
     <string name="login_label_visit_location_hint">Select visit place</string>
+    <string name="login_label_attached_clinic_hint">Select attached clinic</string>
+    <string name="login_label_attached_clinic_validation_error">Please select an attached clinic</string>
     <string name="login_label_visit_outreach_hint" translatable="false">Type Outreach name</string>
     <string name="settings_label_backend_url">Backend URL</string>
     <string name="settings_label_licenses">Biometric Licenses</string>
@@ -392,6 +394,10 @@
     <string name="participant_registration_details_label_select_child_category">Select child category</string>
     <string name="participant_registration_details_label_preferred_call_language">Call Language</string>
     <string name="participant_registration_details_hint_preferred_call_language">Select preferred language for call reminders</string>
+    <string name="participant_registration_details_label_attached_clinic">Attached Clinic</string>
+    <string name="participant_registration_details_hint_attached_clinic">Select attached clinic</string>
+    <string name="visit_dosing_label_attached_clinic">Attached clinic</string>
+    <string name="visit_dosing_hint_attached_clinic">Select attached clinic</string>
     <string name="participant_registration_details_label_date_of_birth">Date of birth</string>
     <string name="participant_registration_details_birth_date_hint">Enter the child\'s date of birth</string>
     <string name="participant_registration_details_action_set_birth_date">Set date of birth</string>
@@ -558,6 +564,9 @@
     <string name="download_excel">Download Excel</string>
     <string name="registered_children">Registered Children</string>
     <string name="registered_children_search_hint">Search by ID, child or mother name</string>
+    <string name="filter_facility_hint">Facility</string>
+    <string name="filter_all_clinics">All Clinics</string>
+    <string name="filter_parent_facility">Parent Facility</string>
     <string name="children_overview_total_children_count_label">Total Children Count: %1$d</string>
     <string name="children_overview_client_birthdate_column_label">Date of Birth</string>
     <string name="children_overview_client_registration_date_column_label">Registration Date</string>

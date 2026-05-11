@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -39,6 +38,7 @@ class LoginActivity : BaseActivity() {
         private const val TAG_SETTINGS_DIALOG = "SettingsDialog"
         private const val TAG_UPDATE_DIALOG = "UpdateDialog"
         private const val KEY_SELECTED_VISIT_PLACE = "selectedVisitPlace"
+        private const val KEY_SELECTED_ATTACHED_CLINIC = "selectedAttachedClinic"
 
         fun create(context: Context): Intent {
             return Intent(context, LoginActivity::class.java)
@@ -53,6 +53,7 @@ class LoginActivity : BaseActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private var selectedVisitPlace: String? = null
+    private var selectedAttachedClinic: String? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +65,7 @@ class LoginActivity : BaseActivity() {
 
         if (savedInstanceState != null) {
             selectedVisitPlace = savedInstanceState.getString(KEY_SELECTED_VISIT_PLACE)
+            selectedAttachedClinic = savedInstanceState.getString(KEY_SELECTED_ATTACHED_CLINIC)
         }
 
         binding.btnLogin.setOnClickListener { login() }
@@ -78,10 +80,8 @@ class LoginActivity : BaseActivity() {
 
         val textInputPasswordLayout = findViewById<TextInputLayout>(R.id.textInputPassword)
         val editPassword = findViewById<TextInputEditText>(R.id.edit_password)
-        val textInputOutreachName = findViewById<TextInputLayout>(R.id.textInputOutreachName)
-        val visitPlaceIcon = findViewById<ImageView>(R.id.img_location_name)
-        textInputOutreachName.visibility = View.GONE
-        visitPlaceIcon.visibility = View.GONE
+        binding.inputGroupOutreachLocationName.visibility = View.GONE
+        binding.inputGroupLoginAttachedClinic.visibility = View.GONE
 
         textInputPasswordLayout.setEndIconOnClickListener {
             if (editPassword.inputType == (android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
@@ -98,23 +98,37 @@ class LoginActivity : BaseActivity() {
             Constants.VISIT_PLACE_OUTREACH,
             Constants.VISIT_PLACE_SCHOOL
         )
-        val adapter = ArrayAdapter(
-            this,
-            R.layout.item_dropdown,
-            visitPlaces
-        )
+        val adapter = ArrayAdapter(this, R.layout.item_dropdown, visitPlaces)
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
         binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
             selectedVisitPlace = visitPlaces[position]
             Log.e("Selected Visit Place", "Selected Visit Place: $selectedVisitPlace")
             if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
-                textInputOutreachName.visibility = View.VISIBLE
-                visitPlaceIcon.visibility = View.VISIBLE
+                binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
+                binding.inputGroupOutreachLocationName.visibility =
+                    if (selectedAttachedClinic.isNullOrEmpty()) View.VISIBLE else View.GONE
                 binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
             } else {
-                textInputOutreachName.visibility = View.GONE
-                visitPlaceIcon.visibility = View.GONE
+                binding.inputGroupOutreachLocationName.visibility = View.GONE
+                binding.inputGroupLoginAttachedClinic.visibility = View.GONE
+                binding.dropdownLoginAttachedClinic.setText("", false)
+                selectedAttachedClinic = null
+                binding.editOutreachName.setText("")
                 binding.root.setBackgroundColor(getColor(R.color.white))
+            }
+        }
+
+        viewModel.attachedClinics.observe(this) { clinics ->
+            val clinicNames = clinics?.map { it.name } ?: emptyList()
+            val attachedClinicAdapter = ArrayAdapter(this, R.layout.item_dropdown, clinicNames)
+            binding.dropdownLoginAttachedClinic.setAdapter(attachedClinicAdapter)
+        }
+        binding.dropdownLoginAttachedClinic.setOnItemClickListener { _, _, position, _ ->
+            val clinics = viewModel.attachedClinics.value ?: emptyList()
+            if (position < clinics.size) {
+                selectedAttachedClinic = clinics[position].name
+                binding.inputGroupOutreachLocationName.visibility = View.GONE
+                binding.editOutreachName.setText("")
             }
         }
 
@@ -124,11 +138,15 @@ class LoginActivity : BaseActivity() {
             if (index >= 0) {
                 binding.dropdownLoginVisitPlace.setText(visitPlaces[index], false)
                 if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
-                    textInputOutreachName.visibility = View.VISIBLE
-                    visitPlaceIcon.visibility = View.VISIBLE
+                    binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
                     binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
+                    binding.inputGroupOutreachLocationName.visibility =
+                        if (selectedAttachedClinic.isNullOrEmpty()) View.VISIBLE else View.GONE
                 }
             }
+        }
+        if (!selectedAttachedClinic.isNullOrEmpty()) {
+            binding.dropdownLoginAttachedClinic.setText(selectedAttachedClinic, false)
         }
 
         binding.root.setOnClickListener { hideKeyboard() }
@@ -139,6 +157,7 @@ class LoginActivity : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(KEY_SELECTED_VISIT_PLACE, selectedVisitPlace)
+        outState.putString(KEY_SELECTED_ATTACHED_CLINIC, selectedAttachedClinic)
     }
 
     override val syncBanner: SyncBanner
@@ -193,21 +212,28 @@ class LoginActivity : BaseActivity() {
         val username = binding.editUsername.text.toString()
         val password = binding.editPassword.text.toString()
         val visitPlace = binding.dropdownLoginVisitPlace.text.toString()
-        val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
-            binding.editOutreachName.text.toString().trim().uppercase()
+
+        val attachedClinic = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
+            selectedAttachedClinic ?: ""
         } else {
-            null
+            ""
         }
 
-        if ((visitPlace == Constants.VISIT_PLACE_OUTREACH) && (outreachName.isNullOrBlank())) {
+        val outreachName: String? = when {
+            visitPlace != Constants.VISIT_PLACE_OUTREACH -> null
+            attachedClinic.isNotEmpty() -> attachedClinic  // clinic name serves as outreach name
+            else -> binding.editOutreachName.text.toString().trim().uppercase()
+        }
+
+        if (visitPlace == Constants.VISIT_PLACE_OUTREACH && outreachName.isNullOrBlank()) {
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
             return
-        } else {
-            showConfirmVisitPlaceDialog(username, password, visitPlace, outreachName)
         }
+
+        showConfirmVisitPlaceDialog(username, password, visitPlace, attachedClinic, outreachName)
     }
 
-    private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, outreachName: String?) {
+    private fun showConfirmVisitPlaceDialog(username: String, password: String, visitPlace: String, attachedClinic: String, outreachName: String?) {
         val message = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
             getString(R.string.confirm_visit_place_message_with_outreach, visitPlace, outreachName ?: "")
         } else {
@@ -219,7 +245,7 @@ class LoginActivity : BaseActivity() {
             .setMessage(message)
             .setPositiveButton(R.string.confirm) { _, _ ->
                 saveVisitPlaceToMemory(visitPlace, outreachName)
-                viewModel.login(username, password, visitPlace)
+                viewModel.login(username, password, visitPlace, attachedClinic)
             }
             .setNegativeButton(R.string.cancel, null)
             .setCancelable(false)
@@ -243,6 +269,11 @@ class LoginActivity : BaseActivity() {
             editor.putString(Constants.OUTREACH_NAME, outreachName)
         } else {
             editor.remove(Constants.OUTREACH_NAME)
+        }
+        if (!selectedAttachedClinic.isNullOrEmpty()) {
+            editor.putString(Constants.ATTACHED_CLINIC_FILE_KEY, selectedAttachedClinic)
+        } else {
+            editor.remove(Constants.ATTACHED_CLINIC_FILE_KEY)
         }
         editor.apply()
     }

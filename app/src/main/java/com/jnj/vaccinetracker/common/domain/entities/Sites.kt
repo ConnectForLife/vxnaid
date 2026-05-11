@@ -14,9 +14,10 @@ data class Site(
     val uuid: String,
     val name: String,
     val country: String,
-    val cluster: String,
-    val countryCode: String,
-    val siteCode: String,
+    val cluster: String = "",
+    val countryCode: String = "",
+    val siteCode: String = "",
+    val parentLocationUuid: String? = null,
 ) {
     override fun toString() = name
 }

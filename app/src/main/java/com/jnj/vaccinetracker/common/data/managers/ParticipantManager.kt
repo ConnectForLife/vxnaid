@@ -10,6 +10,7 @@ import com.jnj.vaccinetracker.common.domain.usecases.RegisterParticipantUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateParticipantUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
+import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.soywiz.klock.DateTime
 import javax.inject.Inject
@@ -28,7 +29,8 @@ class ParticipantManager @Inject constructor(
     private val updateParticipantUseCase: UpdateParticipantUseCase,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
-    ) {
+    private val configurationManager: ConfigurationManager,
+) {
 
     /**
      * Match participant based on the authentication criteria.
@@ -75,7 +77,7 @@ class ParticipantManager @Inject constructor(
 
     }
 
-    private fun getParticipantAttributes(
+    private suspend fun getParticipantAttributes(
         birthWeight: String?,
         bestContactTime: String?,
         telephone: String?,
@@ -86,6 +88,7 @@ class ParticipantManager @Inject constructor(
         motherFirstName: String,
         motherLastName: String,
         childCategory: String?,
+        attachedClinic: String?,
     ): MutableMap<String, String> {
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register participant without stored operator uuid")
 
@@ -95,6 +98,19 @@ class ParticipantManager @Inject constructor(
             Constants.ATTRIBUTE_MOTHER_FIRST_NAME to motherFirstName,
             Constants.ATTRIBUTE_MOTHER_LAST_NAME to motherLastName
         )
+
+        // Add site location attributes
+        try {
+            val sites = configurationManager.getSites()
+            val currentSite = sites.find { it.uuid == siteUuid }
+            currentSite?.let { site ->
+                site.parentLocationUuid?.let { parentLocationUuid ->
+                    personAttributes[Constants.ATTRIBUTE_PARENT_LOCATION_UUID] = parentLocationUuid
+                }
+            }
+        } catch (e: Exception) {
+            logInfo("ParticipantManager.getParticipantAttributes() - Failed to fetch site location data: ${e.message}")
+        }
 
         if (telephone != null) {
             personAttributes[Constants.ATTRIBUTE_TELEPHONE] = telephone
@@ -122,6 +138,9 @@ class ParticipantManager @Inject constructor(
         if (language != null) {
             personAttributes[Constants.ATTRIBUTE_LANGUAGE] = language
         }
+        if (attachedClinic != null) {
+            personAttributes[Constants.ATTRIBUTE_ATTACHED_CLINIC] = attachedClinic
+        }
         return personAttributes
     }
 
@@ -147,11 +166,12 @@ class ParticipantManager @Inject constructor(
         val childFirstName: String?,
         val childLastName: String?,
         val childCategory: String?,
-        val dateCreated: Long?
+        val dateCreated: Long?,
+        val attachedClinic: String? = null,
     )
 
     @SuppressWarnings("LongParameterList")
-    fun getRegisterParticipant(
+    suspend fun getRegisterParticipant(
         registerDetails: RegisterDetails
     ): RegisterParticipant {
 
@@ -165,7 +185,8 @@ class ParticipantManager @Inject constructor(
             fatherLastName = registerDetails.fatherLastName,
             motherFirstName = registerDetails.motherFirstName,
             motherLastName = registerDetails.motherLastName,
-            childCategory = registerDetails.childCategory
+            childCategory = registerDetails.childCategory,
+            attachedClinic = registerDetails.attachedClinic
         )
 
         return RegisterParticipant(

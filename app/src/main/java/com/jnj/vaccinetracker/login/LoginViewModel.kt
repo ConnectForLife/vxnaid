@@ -3,15 +3,19 @@ package com.jnj.vaccinetracker.login
 import com.jnj.vaccinetracker.BuildConfig
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.LicenseManager
 import com.jnj.vaccinetracker.common.data.managers.LoginManager
 import com.jnj.vaccinetracker.common.data.managers.UpdateManager
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
+import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.exceptions.OperatorAuthenticationException
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.isManualFlavor
 import com.jnj.vaccinetracker.common.helpers.logError
+import com.jnj.vaccinetracker.common.helpers.logInfo
 import com.jnj.vaccinetracker.common.helpers.rethrowIfFatal
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
@@ -34,6 +38,7 @@ class LoginViewModel @Inject constructor(
     private val syncSettingsRepository: SyncSettingsRepository,
     private val licenseManager: LicenseManager,
     private val updateManager: UpdateManager,
+    private val configurationManager: ConfigurationManager,
     override val dispatchers: AppCoroutineDispatchers,
     private val resourcesWrapper: ResourcesWrapper,
 ) : ViewModelBase() {
@@ -42,12 +47,15 @@ class LoginViewModel @Inject constructor(
     val usernameValidationMessage = mutableLiveData<String>()
     val passwordValidationMessage = mutableLiveData<String>()
     val visitPlaceValidationMessage = mutableLiveData<String>()
+    val attachedClinicValidationMessage = mutableLiveData<String>()
     val errorMessage = mutableLiveData<String>()
     val prefillUsername = mutableLiveData<String>()
     val versionNumber = mutableLiveData<String>()
     val deviceName = mutableLiveData<String>()
     val latestVersion = mutableLiveBoolean(true)
+    val attachedClinics = mutableLiveData<List<Site>>(emptyList())
     private val prefillBackendUrl = mutableLiveData<String>()
+    private var allSites = emptyList<Site>()
 
     val loginCompleted = eventFlow<Unit>()
 
@@ -68,6 +76,59 @@ class LoginViewModel @Inject constructor(
         syncSettingsRepository.observeBackendUrl()
             .onEach { prefillBackendUrl.set(it) }
             .launchIn(scope)
+        scope.launch {
+            loadSitesFromConfiguration()
+            val selectedSiteUuid = syncSettingsRepository.getSiteUuid()
+            if (selectedSiteUuid != null) {
+                val selectedSite = allSites.find { it.uuid == selectedSiteUuid }
+                if (selectedSite != null) {
+                    filterAttachedClinicsByParent(selectedSite.name)
+                } else {
+                    logInfo("Configured site UUID not found in loaded sites")
+                }
+            } else {
+                logInfo("No configured site UUID")
+            }
+        }
+    }
+
+    private suspend fun loadSitesFromConfiguration() {
+        try {
+            allSites = configurationManager.getSites()
+        } catch (ex: Throwable) {
+            yield()
+            ex.rethrowIfFatal()
+            logError("Failed to load sites from configuration: ", ex)
+        }
+    }
+
+    fun filterAttachedClinicsByParent(selectedSiteName: String?) {
+        if (selectedSiteName.isNullOrEmpty()) {
+            attachedClinics.value = emptyList()
+            return
+        }
+
+        val selectedSite = allSites.find { it.name == selectedSiteName }
+        if (selectedSite == null) {
+            attachedClinics.value = emptyList()
+            return
+        }
+
+        val childSites = allSites.filter { it.parentLocationUuid == selectedSite.uuid }
+        if (childSites.isNotEmpty()) {
+            attachedClinics.value = childSites
+            return
+        }
+
+        val parentUuid = selectedSite.parentLocationUuid
+        if (parentUuid != null) {
+            val siblingClinics = allSites.filter { site ->
+                site.parentLocationUuid == parentUuid && site.name != selectedSiteName
+            }
+            attachedClinics.value = siblingClinics
+            return
+        }
+        attachedClinics.value = emptyList()
     }
 
     private suspend fun doLogin(
@@ -108,8 +169,9 @@ class LoginViewModel @Inject constructor(
         username: String,
         password: String,
         visitPlace: String,
+        attachedClinic: String = "",
     ) {
-        if (!validateInput(username, password, visitPlace)) return
+        if (!validateInput(username, password, visitPlace, attachedClinic)) return
         scope.launch {
             doLogin(username, password)
         }
@@ -133,7 +195,6 @@ class LoginViewModel @Inject constructor(
                     ex.rethrowIfFatal()
                     logError("Something went wrong retrieving the latest version: ", ex)
                 }
-
             }
         }
     }
@@ -154,10 +215,13 @@ class LoginViewModel @Inject constructor(
         username: String,
         password: String,
         visitPlace: String,
+        attachedClinic: String = "",
     ): Boolean {
         var validated = true
         usernameValidationMessage.set(null)
         passwordValidationMessage.set(null)
+        visitPlaceValidationMessage.set(null)
+        attachedClinicValidationMessage.set(null)
 
         if (username.isEmpty()) {
             validated = false

@@ -1,19 +1,67 @@
 {
   "results": [
     {
-      "uuid": "42655fae-3b09-4b15-bb4b-296311546be4",
-      "name": "Bangalore clinic",
-      "country": "India"
+      "uuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f",
+      "name": "CFL Clinic",
+      "country": "",
+      "cluster": "Uganda",
+      "siteCode": "BEL1",
+      "countryCode": "BEL",
+      "parentLocationUuid": null
     },
     {
-      "uuid": "1424ae66-aaa6-4c33-b2b1-9789df1dba64",
-      "name": "Mumbai clinic",
-      "country": "India"
+      "uuid": "f029baba-e1a3-4e59-a40a-11517f0d25bb",
+      "name": "Academy1",
+      "country": "Uganda",
+      "cluster": "Uganda",
+      "siteCode": "256",
+      "countryCode": "UGA",
+      "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
     },
     {
-      "uuid": "3ca102e5-2900-438b-9959-d34c079b71bf",
-      "name": "New Delhi hospital",
-      "country": "India"
+      "uuid": "6f63c332-cca9-4282-a57b-07d92718a9a9",
+      "name": "ActiveLife",
+      "country": "Uganda",
+      "cluster": "Uganda",
+      "siteCode": "256",
+      "countryCode": "UGA",
+      "parentLocationUuid": null
+    },
+    {
+      "uuid": "cf724edd-7307-4010-bd90-2242bf9e0fc2",
+      "name": "A",
+      "country": "Uganda",
+      "cluster": "Uganda",
+      "siteCode": "256",
+      "countryCode": "UGA",
+      "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
+    },
+    {
+      "uuid": "126b85a7-43e3-4833-b7c5-0443fff0b976",
+      "name": "A1",
+      "country": "Uganda",
+      "cluster": "Uganda",
+      "siteCode": "256",
+      "countryCode": "UGA",
+      "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
+    },
+    {
+      "uuid": "fed2b80f-36e4-4ffd-9f1f-deef87dd731b",
+      "name": "A2",
+      "country": "Uganda",
+      "cluster": "Uganda",
+      "siteCode": "256",
+      "countryCode": "UGA",
+      "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
+    },
+    {
+      "uuid": "4776a548-c21c-440a-93d3-923cc5e411f1",
+      "name": "A3",
+      "country": "Uganda",
+      "cluster": "Uganda",
+      "siteCode": "256",
+      "countryCode": "UGA",
+      "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
     }
   ]
 }

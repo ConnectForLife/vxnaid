@@ -109,12 +109,39 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/clinic_filter_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/filterContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/filter_facility_hint">
+
+                <AutoCompleteTextView
+                    android:id="@+id/dropdown_clinic_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/selectedVaccinesContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            app:layout_constraintTop_toBottomOf="@id/filterContainer"
+            app:layout_constraintTop_toBottomOf="@id/clinic_filter_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 

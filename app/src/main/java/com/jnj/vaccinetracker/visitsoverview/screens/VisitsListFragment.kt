@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.ArrayAdapter
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -48,6 +49,7 @@ class VisitsListFragment : BaseFragment(),
         private const val ARG_VISITS_KEY = "arg_visits_key"
         private const val STATE_START_DATE_MILLIS = "state_start_date_millis"
         private const val STATE_END_DATE_MILLIS = "state_end_date_millis"
+        private const val PARENT_CLINIC_FILTER = "__PARENT__"
 
         fun newInstance(visitsKey: String): VisitsListFragment {
             return VisitsListFragment().apply {
@@ -63,6 +65,7 @@ class VisitsListFragment : BaseFragment(),
     private val visitsListViewModel: VisitsListViewModel by viewModels { viewModelFactory }
     private var selectedStartDate: DateTime? = null
     private var selectedEndDate: DateTime? = null
+    private var selectedClinic: String? = null
     private var visitsKey: String = Constants.VISITS_OVERVIEW_SCHEDULED_VISITS_KEY
 
     @Inject lateinit var configurationManager: ConfigurationManager
@@ -100,6 +103,7 @@ class VisitsListFragment : BaseFragment(),
         setupRecyclerView()
         setupObservers()
         setupFilterButtons()
+        setupClinicFilter()
         setupDownloadButtons()
 
         if (selectedStartDate != null) {
@@ -204,6 +208,31 @@ class VisitsListFragment : BaseFragment(),
         }
     }
 
+    private fun setupClinicFilter() {
+        visitsListViewModel.loadAttachedClinics()
+        visitsListViewModel.attachedClinics.observe(viewLifecycleOwner) { clinics ->
+            if (clinics.isNullOrEmpty()) {
+                binding.clinicFilterContainer.visibility = View.GONE
+                return@observe
+            }
+            binding.clinicFilterContainer.visibility = View.VISIBLE
+            val parentName = visitsListViewModel.parentSiteName.value
+                ?: getString(R.string.filter_parent_facility)
+            val options = listOf(getString(R.string.filter_all_clinics), parentName) + clinics
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
+            binding.dropdownClinicFilter.setAdapter(adapter)
+            binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
+            binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
+                selectedClinic = when (position) {
+                    0 -> null
+                    1 -> PARENT_CLINIC_FILTER
+                    else -> clinics[position - 2]
+                }
+                applyFilters()
+            }
+        }
+    }
+
     private fun setupDownloadButtons() {
         binding.btnDownloadExcel.setOnClickListener {
             exportToExcel(visitsAdapter.currentList)
@@ -298,7 +327,14 @@ class VisitsListFragment : BaseFragment(),
                         visit.participant.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
                         visit.participant.motherName.lowercase(Locale.getDefault()).contains(searchText)
 
-            dateMatches && textSearchMatches
+            val clinicMatches = when (selectedClinic) {
+                null -> true
+                PARENT_CLINIC_FILTER -> visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC].isNullOrBlank()
+                else -> visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
+                    ?.equals(selectedClinic, ignoreCase = true) == true
+            }
+
+            dateMatches && textSearchMatches && clinicMatches
         }
 
         binding.totalVisitCount.text =

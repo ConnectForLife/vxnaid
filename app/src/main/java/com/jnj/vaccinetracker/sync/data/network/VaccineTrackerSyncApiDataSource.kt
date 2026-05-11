@@ -182,7 +182,8 @@ class VaccineTrackerSyncApiDataSourceDefault @Inject constructor(
     }
 
     override suspend fun getSites() = webCallSync(callName = "getSites") {
-        apiService.getSites()
+        val sitesDto = apiService.getSites()
+        sitesDto
     }
 
     override suspend fun getCountryAddressHierarchy(): AddressHierarchyDto = webCallSync(callName = "getCountryAddressHierarchy") {

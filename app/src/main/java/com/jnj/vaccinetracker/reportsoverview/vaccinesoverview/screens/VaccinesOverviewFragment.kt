@@ -49,6 +49,7 @@ class VaccinesOverviewFragment : BaseFragment(),
     companion object {
         private const val START_DATE_PICKER_DIALOG_TAG = "startDatePicker"
         private const val END_DATE_PICKER_DIALOG_TAG = "endDatePicker"
+        private const val PARENT_CLINIC_FILTER = "__PARENT__"
     }
 
     private lateinit var binding: FragmentVaccinesOverviewBinding
@@ -59,6 +60,7 @@ class VaccinesOverviewFragment : BaseFragment(),
     private var selectedEndDate: DateTime? = null
     private var selectedLocation: String? = Constants.ALL_STRING
     private var selectedAgeGroup: String? = Constants.ALL_STRING
+    private var selectedClinic: String? = null
 
     @Inject
     lateinit var configurationManager: ConfigurationManager
@@ -78,6 +80,7 @@ class VaccinesOverviewFragment : BaseFragment(),
         setupRecyclerView()
         initializeDefaultDates()
         setupFilterFields()
+        setupClinicFilter()
         loadVaccinesData()
         setupObservers()
         setupDownloadButtons()
@@ -278,6 +281,31 @@ class VaccinesOverviewFragment : BaseFragment(),
         }
     }
 
+    private fun setupClinicFilter() {
+        vaccinesOverviewViewModel.loadAttachedClinics()
+        vaccinesOverviewViewModel.attachedClinics.observe(viewLifecycleOwner) { clinics ->
+            if (clinics.isNullOrEmpty()) {
+                binding.clinicFilterContainer.visibility = View.GONE
+                return@observe
+            }
+            binding.clinicFilterContainer.visibility = View.VISIBLE
+            val parentName = vaccinesOverviewViewModel.parentSiteName.value
+                ?: getString(R.string.filter_parent_facility)
+            val options = listOf(getString(R.string.filter_all_clinics), parentName) + clinics
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
+            binding.dropdownClinicFilter.setAdapter(adapter)
+            binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
+            binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
+                selectedClinic = when (position) {
+                    0 -> null
+                    1 -> PARENT_CLINIC_FILTER
+                    else -> clinics[position - 2]
+                }
+                applyFilters()
+            }
+        }
+    }
+
     private fun setupAgeGroupDropdown() {
         val ageGroups = listOf(
             Constants.ALL_STRING,
@@ -361,7 +389,14 @@ class VaccinesOverviewFragment : BaseFragment(),
 
             val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                     observation.ageGroup == selectedAgeGroup
-            dateMatches && vaccineMatches && locationMatches && ageGroupMatches
+
+            val clinicMatches = when (selectedClinic) {
+                null -> true
+                PARENT_CLINIC_FILTER -> observation.attachedClinic.isNullOrBlank()
+                else -> observation.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+            }
+
+            dateMatches && vaccineMatches && locationMatches && ageGroupMatches && clinicMatches
         }
 
         // Count entries for each location type
@@ -509,7 +544,14 @@ class VaccinesOverviewFragment : BaseFragment(),
 
                 val ageGroupMatches = selectedAgeGroup == Constants.ALL_STRING ||
                         observation.ageGroup == selectedAgeGroup
-                dateMatches && vaccineMatches && locationMatches && ageGroupMatches
+
+                val clinicMatches = when (selectedClinic) {
+                    null -> true
+                    PARENT_CLINIC_FILTER -> observation.attachedClinic.isNullOrBlank()
+                    else -> observation.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+                }
+
+                dateMatches && vaccineMatches && locationMatches && ageGroupMatches && clinicMatches
             }
 
             val filteredAndGroupedData = filteredData.groupBy { it.vaccineName }
