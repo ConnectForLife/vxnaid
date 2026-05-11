@@ -88,6 +88,7 @@ class LoginActivity : BaseActivity() {
             } else {
                 editPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
             }
+
             editPassword.setSelection(editPassword.text?.length ?: 0)
         }
 
@@ -100,6 +101,7 @@ class LoginActivity : BaseActivity() {
         binding.dropdownLoginVisitPlace.setAdapter(adapter)
         binding.dropdownLoginVisitPlace.setOnItemClickListener { _, _, position, _ ->
             selectedVisitPlace = visitPlaces[position]
+            Log.e("Selected Visit Place", "Selected Visit Place: $selectedVisitPlace")
             if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
                 binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
                 binding.inputGroupOutreachLocationName.visibility =
