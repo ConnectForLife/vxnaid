@@ -600,7 +600,7 @@ class RegisterParticipantParticipantDetailsFragment : BaseFragment(),
     }
 
     private fun submitRegistration() {
-        viewModel.submitRegistration(flowViewModel.participantPicture.value)
+        viewModel.submitRegistration(flowViewModel.participantPicture.value, flowViewModel.attachedClinic.value)
     }
 
     private fun updateGender() {

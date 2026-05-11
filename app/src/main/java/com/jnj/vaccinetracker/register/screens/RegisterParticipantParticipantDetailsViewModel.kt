@@ -357,14 +357,16 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     @SuppressWarnings("LongParameterList", "LongMethod")
     fun submitRegistration(
             picture: ParticipantImageUiModel?,
+            attachedClinic: String? = null,
     ) {
         scope.launch {
-            doRegistration(picture)
+            doRegistration(picture, attachedClinic)
         }
     }
 
     private suspend fun doRegistration(
             picture: ParticipantImageUiModel?,
+            attachedClinic: String? = null,
     ) {
         val siteUuid = syncSettingsRepository.getSiteUuid()
                 ?: return logWarn("Cannot submit registration: no site UUID known")
@@ -441,7 +443,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
                 childFirstName = childFirstName,
                 childLastName = childLastName,
                 childCategory = childCategoryValue,
-                dateCreated = dateNow().time
+                dateCreated = dateNow().time,
+                attachedClinic = attachedClinic
             )
             val registerRequest = participantManager.getRegisterParticipant(registerDetails)
 

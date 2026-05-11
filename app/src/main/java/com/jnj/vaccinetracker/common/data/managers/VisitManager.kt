@@ -33,7 +33,6 @@ class VisitManager @Inject constructor(
     private val getParticipantVisitDetailsUseCase: GetParticipantVisitDetailsUseCase,
     private val updateVisitUseCase: UpdateVisitUseCase,
     private val getUpcomingVisitUseCase: GetUpcomingVisitUseCase,
-    private val configurationManager: ConfigurationManager,
 ) {
 
     suspend fun getVisitsForParticipant(participantUuid: String): List<VisitDetail> = getParticipantVisitDetailsUseCase.getParticipantVisitDetails(participantUuid)
@@ -57,7 +56,7 @@ class VisitManager @Inject constructor(
         val operatorUuid = userRepository.getUser()?.uuid
             ?: throw OperatorUuidNotAvailableException("Trying to register dosing visit without stored operator UUID")
 
-        val attributes = buildVisitAttributes(operatorUuid, dosingNumber, visitLocation, visitOutreachName, visitTypeVxnaid, locationUuid)
+        val attributes = buildVisitAttributes(operatorUuid, dosingNumber, visitLocation, visitOutreachName, visitTypeVxnaid, locationUuid, attachedClinic)
 
         var observations = buildObservations(
             substanceObservations = substanceObservations,
@@ -81,26 +80,21 @@ class VisitManager @Inject constructor(
         updateVisitUseCase.updateVisit(request)
     }
 
-    private suspend fun buildVisitAttributes(operatorUuid: String, dosingNumber: Int, visitLocation: String?, visitOutreachName: String?, visitTypeVxnaid: String?, locationUuid: String): Map<String, String> {
+    private fun buildVisitAttributes(operatorUuid: String, dosingNumber: Int, visitLocation: String?, visitOutreachName: String?, visitTypeVxnaid: String?, locationUuid: String, attachedClinic: String?): Map<String, String> {
         val attributes = mutableMapOf(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
             Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to dosingNumber.toString(),
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitTypeVxnaid.toString()
         )
-        try {
-            val sites = configurationManager.getSites()
-            val currentSite = sites.find { it.uuid == locationUuid }
-            currentSite?.let { site ->
-            }
-        } catch (e: Exception) {
-            logInfo("VisitManager.buildVisitAttributes() - Failed to fetch site location data: ${e.message}")
-        }
         if (visitLocation != null) {
             attributes[Constants.ATTRIBUTE_VISIT_LOCATION] = visitLocation
         }
         if (visitOutreachName != null) {
             attributes[Constants.ATTRIBUTE_VISIT_OUTREACH_NAME] = visitOutreachName
+        }
+        if (attachedClinic != null) {
+            attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC] = attachedClinic
         }
         return attributes
     }

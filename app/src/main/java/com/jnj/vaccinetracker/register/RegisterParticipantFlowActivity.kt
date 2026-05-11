@@ -76,6 +76,8 @@ class RegisterParticipantFlowActivity : BaseActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val prefs = getSharedPreferences(com.jnj.vaccinetracker.common.data.models.Constants.USER_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE)
+        val attachedClinic = prefs.getString(com.jnj.vaccinetracker.common.data.models.Constants.ATTACHED_CLINIC_FILE_KEY, null)
         lifecycleScope.launch {
             viewModel.setArguments(
                 intent.getStringExtra(EXTRA_PARTICIPANT_ID),
@@ -85,7 +87,8 @@ class RegisterParticipantFlowActivity : BaseActivity(),
                 phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER),
                 isManualEnteredId = intent.getBooleanExtra(EXTRA_MANUAL_ID, false),
                 participantUuid = intent.getStringExtra(EXTRA_PARTICIPANT_UUID),
-                duplicateError = intent.getStringExtra(EXTRA_DUPLICATE_ERROR_TYPE)
+                duplicateError = intent.getStringExtra(EXTRA_DUPLICATE_ERROR_TYPE),
+                attachedClinic = attachedClinic
             )
         }
         binding = DataBindingUtil.setContentView(this, R.layout.activity_register_participant_flow)
