@@ -198,18 +198,6 @@ class VisitActivity :
         viewModel.visitTypes.observe(this) { visitTypes ->
             onVisitTypesChanged(visitTypes)
         }
-        viewModel.allLocations.observe(this) { locations ->
-            setupAttachedClinicDropdown(locations)
-        }
-    }
-
-    private fun setupAttachedClinicDropdown(locations: List<com.jnj.vaccinetracker.common.domain.entities.Site>) {
-        val siteNames = locations.map { it.name }
-        val adapter = ArrayAdapter(this, R.layout.item_dropdown, siteNames)
-        binding.dropdownAttachedClinic.setAdapter(adapter)
-        binding.dropdownAttachedClinic.setOnItemClickListener { _, _, position, _ ->
-            viewModel.selectedAttachedClinic.value = locations[position]
-        }
     }
 
     private fun onVisitTypesChanged(visitTypes: List<String>?) {
@@ -347,14 +335,12 @@ class VisitActivity :
             Constants.VISIT_PLACE_STATIC
         )
         val outreachName = if (visitPlace == Constants.VISIT_PLACE_OUTREACH) {
-            sharedPreferences.getString(
-                Constants.OUTREACH_NAME,
-                null
-            )
+            sharedPreferences.getString(Constants.OUTREACH_NAME, null)
         } else {
             null
         }
-        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations, outreachName)
+        val attachedClinic = sharedPreferences.getString(Constants.ATTACHED_CLINIC_FILE_KEY, null)
+        viewModel.submitDosingVisit(missingSubstanceVisitDate, visitPlace, referralObservations, outreachName, attachedClinic)
     }
 
     override fun onReferralAfterContraindicationsPageFinish(finish: Boolean, referralObservations: Map<String, String>) {

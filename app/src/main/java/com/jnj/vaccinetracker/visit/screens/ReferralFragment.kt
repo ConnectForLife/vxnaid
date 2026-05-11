@@ -79,8 +79,6 @@ class ReferralFragment : BaseFragment() {
         setupListeners()
         setupReferralWithinFacilityDropdown()
 
-        viewModel.fetchAllLocations()
-
         lifecycleScope.launch {
             getVisitsForParticipant()
         }

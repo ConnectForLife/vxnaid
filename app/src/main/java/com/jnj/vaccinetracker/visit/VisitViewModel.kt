@@ -14,7 +14,6 @@ import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
-import com.jnj.vaccinetracker.common.domain.entities.Site
 import com.jnj.vaccinetracker.common.domain.entities.VisitDetail
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
@@ -97,9 +96,6 @@ class VisitViewModel @Inject constructor(
     var missingSubstancesVisitDate = MutableLiveData<Date>(null)
     var contraindicationsRescheduleDate = MutableLiveData<DateTime>(null)
     var contraindicationsRescheduleReasonText = MutableLiveData<String>(null)
-
-    var allLocations = MutableLiveData<List<Site>>(listOf())
-    var selectedAttachedClinic = MutableLiveData<Site?>(null)
 
     val selectedVisitDate = MutableLiveData(Date())
 
@@ -194,7 +190,6 @@ class VisitViewModel @Inject constructor(
         }.launchIn(scope)
 
         retryClickEvents.tryEmit(Unit)
-        fetchAllLocations()
     }
 
     fun setArguments(participant: ParticipantSummaryUiModel) {
@@ -251,7 +246,8 @@ class VisitViewModel @Inject constructor(
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun submitDosingVisit(newVisitDate: Date? = null, visitPlace: String? = null,
-                          referralObservations: Map<String, String> = emptyMap(), outreachName: String? = null) {
+                          referralObservations: Map<String, String> = emptyMap(), outreachName: String? = null,
+                          attachedClinic: String? = null) {
         val participant = participant.get()
         val dosingVisit = dosingVisit.get()
         val visitsCounter = visitsCounter.value
@@ -280,7 +276,7 @@ class VisitViewModel @Inject constructor(
                     visitTypeVxnaid = selectedVisitType,
                     referralObservations = referralObservations,
                     visitOutreachName = outreachName,
-                    attachedClinic = selectedAttachedClinic.value?.uuid,
+                    attachedClinic = attachedClinic,
                 )
 
                 if (newVisitDate != null) {
@@ -538,17 +534,6 @@ class VisitViewModel @Inject constructor(
                 Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
             )
         )
-    }
-
-    fun fetchAllLocations() {
-        viewModelScope.launch {
-            try {
-                allLocations.value = configurationManager.getSites()
-            } catch (e: Exception) {
-                Log.e("VisitViewModel", "Failed to fetch locations", e)
-                allLocations.value = emptyList()
-            }
-        }
     }
 
     private fun formatDateForDisplay(date: Date): String {

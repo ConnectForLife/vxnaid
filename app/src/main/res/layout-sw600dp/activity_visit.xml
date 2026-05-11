@@ -245,28 +245,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_group_attached_clinic"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_8"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="32dp"
-            android:hint="@string/visit_dosing_label_attached_clinic"
-            app:layout_constraintEnd_toEndOf="@id/input_group_visit_type"
-            app:layout_constraintStart_toStartOf="@id/input_group_visit_type"
-            app:layout_constraintTop_toBottomOf="@id/input_group_visit_type">
-
-            <AutoCompleteTextView
-                android:id="@+id/dropdown_attached_clinic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/visit_dosing_hint_attached_clinic"
-                android:inputType="none" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="0dp"
@@ -275,9 +253,9 @@
             android:layout_marginEnd="32dp"
             android:background="@drawable/white_with_stroke"
             android:backgroundTint="@color/colorAccent"
-            app:layout_constraintEnd_toEndOf="@id/input_group_attached_clinic"
-            app:layout_constraintStart_toStartOf="@id/input_group_attached_clinic"
-            app:layout_constraintTop_toBottomOf="@id/input_group_attached_clinic"
+            app:layout_constraintEnd_toEndOf="@id/input_group_visit_type"
+            app:layout_constraintStart_toStartOf="@id/input_group_visit_type"
+            app:layout_constraintTop_toBottomOf="@id/input_group_visit_type"
             app:tabGravity="fill"
             app:tabIndicatorColor="@color/colorAccent"
             app:tabIndicatorHeight="3dp"
