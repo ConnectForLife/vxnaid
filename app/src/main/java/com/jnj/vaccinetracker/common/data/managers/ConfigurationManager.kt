@@ -57,7 +57,6 @@ class ConfigurationManager @Inject constructor(
     }
 
     suspend fun refreshSites(): List<com.jnj.vaccinetracker.common.domain.entities.Site> {
-        logInfo("📍 ConfigurationManager.refreshSites() - Force refreshing sites from API")
         return getSitesUseCase.refreshFromRemote().results
     }
 

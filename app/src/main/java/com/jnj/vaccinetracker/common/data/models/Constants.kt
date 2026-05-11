@@ -13,8 +13,6 @@ object Constants {
 
     // Participant
     const val ATTRIBUTE_LOCATION = "LocationAttribute"
-    const val ATTRIBUTE_LOCATION_ID = "LocationId"
-    const val ATTRIBUTE_PARENT_LOCATION_ID = "ParentLocationId"
     const val ATTRIBUTE_PARENT_LOCATION_UUID = "ParentLocationUuid"
     const val ATTRIBUTE_LANGUAGE = "personLanguage"
     const val ATTRIBUTE_TELEPHONE = "Telephone Number"

@@ -108,7 +108,7 @@ class ParticipantManager @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            logInfo("⚠️ ParticipantManager.getParticipantAttributes() - Failed to fetch site location data: ${e.message}")
+            logInfo("ParticipantManager.getParticipantAttributes() - Failed to fetch site location data: ${e.message}")
         }
 
         if (telephone != null) {

@@ -102,7 +102,6 @@ class LoginActivity : BaseActivity() {
             selectedVisitPlace = visitPlaces[position]
             if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
                 binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
-                // Show outreach name only when no clinic is selected
                 binding.inputGroupOutreachLocationName.visibility =
                     if (selectedAttachedClinic.isNullOrEmpty()) View.VISIBLE else View.GONE
                 binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
@@ -116,7 +115,6 @@ class LoginActivity : BaseActivity() {
             }
         }
 
-        // Setup attached clinic dropdown
         viewModel.attachedClinics.observe(this) { clinics ->
             val clinicNames = clinics?.map { it.name } ?: emptyList()
             val attachedClinicAdapter = ArrayAdapter(this, R.layout.item_dropdown, clinicNames)
@@ -126,7 +124,6 @@ class LoginActivity : BaseActivity() {
             val clinics = viewModel.attachedClinics.value ?: emptyList()
             if (position < clinics.size) {
                 selectedAttachedClinic = clinics[position].name
-                // Clinic selected — hide outreach name field; clinic name will be used as outreach name
                 binding.inputGroupOutreachLocationName.visibility = View.GONE
                 binding.editOutreachName.setText("")
             }
@@ -140,7 +137,6 @@ class LoginActivity : BaseActivity() {
                 if (selectedVisitPlace == Constants.VISIT_PLACE_OUTREACH) {
                     binding.inputGroupLoginAttachedClinic.visibility = View.VISIBLE
                     binding.root.setBackgroundColor(getColor(R.color.outreach_bg_color))
-                    // Outreach name only shown when no clinic is selected
                     binding.inputGroupOutreachLocationName.visibility =
                         if (selectedAttachedClinic.isNullOrEmpty()) View.VISIBLE else View.GONE
                 }
@@ -227,7 +223,6 @@ class LoginActivity : BaseActivity() {
         }
 
         if (visitPlace == Constants.VISIT_PLACE_OUTREACH && outreachName.isNullOrBlank()) {
-            // No clinic selected AND no outreach name entered
             binding.editOutreachName.error = resourcesWrapper.getString(R.string.login_label_validation_no_outreach_name)
             return
         }

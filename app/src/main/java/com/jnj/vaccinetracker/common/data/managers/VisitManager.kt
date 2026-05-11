@@ -88,14 +88,13 @@ class VisitManager @Inject constructor(
             Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to dosingNumber.toString(),
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitTypeVxnaid.toString()
         )
-        // Add visit location attributes
         try {
             val sites = configurationManager.getSites()
             val currentSite = sites.find { it.uuid == locationUuid }
             currentSite?.let { site ->
             }
         } catch (e: Exception) {
-            logInfo("⚠️ VisitManager.buildVisitAttributes() - Failed to fetch site location data: ${e.message}")
+            logInfo("VisitManager.buildVisitAttributes() - Failed to fetch site location data: ${e.message}")
         }
         if (visitLocation != null) {
             attributes[Constants.ATTRIBUTE_VISIT_LOCATION] = visitLocation

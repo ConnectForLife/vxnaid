@@ -166,6 +166,7 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     val childCategory = mutableLiveData<DisplayValue>()
     val childCategoryValidationMessage = mutableLiveData<String>()
     val childCategoryNames = mutableLiveData<List<DisplayValue>>()
+
     val birthDate = mutableLiveData<DateTime>()
     val birthDateText = mutableLiveData<String>()
     val birthDateValidationMessage = mutableLiveData<String>()

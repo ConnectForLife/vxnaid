@@ -183,10 +183,6 @@ class VaccineTrackerSyncApiDataSourceDefault @Inject constructor(
 
     override suspend fun getSites() = webCallSync(callName = "getSites") {
         val sitesDto = apiService.getSites()
-        logInfo("🌐 VaccineTrackerSyncApiDataSource.getSites() - Retrieved ${sitesDto.results.size} sites from API")
-        sitesDto.results.forEach { site ->
-            logInfo("🌐 API Site: name=${site.name}, uuid=${site.uuid}, parentLocationUuid=${site.parentLocationUuid}")
-        }
         sitesDto
     }
 

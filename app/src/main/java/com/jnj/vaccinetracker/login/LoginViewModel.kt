@@ -95,7 +95,6 @@ class LoginViewModel @Inject constructor(
     private suspend fun loadSitesFromConfiguration() {
         try {
             allSites = configurationManager.getSites()
-            logInfo("Loaded ${allSites.size} sites")
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()
@@ -104,42 +103,31 @@ class LoginViewModel @Inject constructor(
     }
 
     fun filterAttachedClinicsByParent(selectedSiteName: String?) {
-        logInfo("filterAttachedClinicsByParent called with: $selectedSiteName")
         if (selectedSiteName.isNullOrEmpty()) {
-            logInfo("selectedSiteName is empty, returning no clinics")
             attachedClinics.value = emptyList()
             return
         }
 
         val selectedSite = allSites.find { it.name == selectedSiteName }
         if (selectedSite == null) {
-            logError("Selected site not found: $selectedSiteName")
-            logInfo("Available sites: ${allSites.map { it.name }}")
             attachedClinics.value = emptyList()
             return
         }
 
-        logInfo("Selected site found: uuid=${selectedSite.uuid}, parentLocationUuid=${selectedSite.parentLocationUuid}")
-
         val childSites = allSites.filter { it.parentLocationUuid == selectedSite.uuid }
         if (childSites.isNotEmpty()) {
-            logInfo("Found ${childSites.size} child clinics: ${childSites.map { it.name }}")
             attachedClinics.value = childSites
             return
         }
 
         val parentUuid = selectedSite.parentLocationUuid
         if (parentUuid != null) {
-            logInfo("Selected site is a child (parentLocationUuid=$parentUuid), finding siblings")
             val siblingClinics = allSites.filter { site ->
                 site.parentLocationUuid == parentUuid && site.name != selectedSiteName
             }
-            logInfo("Found ${siblingClinics.size} sibling clinics: ${siblingClinics.map { it.name }}")
             attachedClinics.value = siblingClinics
             return
         }
-
-        logInfo("Site has no location hierarchy — no attached clinics for this site")
         attachedClinics.value = emptyList()
     }
 
@@ -174,6 +162,9 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Log in using username and password. backendUrl will be updated if its value is not null (useful for refreshing a login without replacing the backend url)
+     */
     fun login(
         username: String,
         password: String,
@@ -186,11 +177,17 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Check for the latest version of the application
+     * if this app is being manually installed/updated (manual flavor)
+     */
     private fun checkVersion() {
         versionNumber.set(BuildConfig.VERSION_NAME)
         if (isManualFlavor) {
             scope.launch {
                 try {
+                    // On the login screen we always want to call the API to check for update,
+                    // so we clear any cache present first
                     updateManager.clearLatestVersionCache()
                     latestVersion.set(updateManager.isLatestVersion())
                 } catch (ex: Throwable) {
@@ -202,6 +199,9 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * get the device name from the user repository
+     */
     private fun getDeviceName() {
         println("get device name: ${userRepository.getDeviceName()}")
         deviceName.set(userRepository.getDeviceName())
