@@ -137,7 +137,6 @@ class ParticipantManager @Inject constructor(
         if (language != null) {
             personAttributes[Constants.ATTRIBUTE_LANGUAGE] = language
         }
-
         return personAttributes
     }
 
@@ -181,7 +180,7 @@ class ParticipantManager @Inject constructor(
             fatherLastName = registerDetails.fatherLastName,
             motherFirstName = registerDetails.motherFirstName,
             motherLastName = registerDetails.motherLastName,
-            childCategory = registerDetails.childCategory,
+            childCategory = registerDetails.childCategory
         )
 
         return RegisterParticipant(
