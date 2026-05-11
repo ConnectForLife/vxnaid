@@ -7,8 +7,6 @@
       "cluster": "Uganda",
       "siteCode": "BEL1",
       "countryCode": "BEL",
-      "locationId": 1,
-      "parentLocationId": null,
       "parentLocationUuid": null
     },
     {
@@ -18,8 +16,6 @@
       "cluster": "Uganda",
       "siteCode": "256",
       "countryCode": "UGA",
-      "locationId": 2,
-      "parentLocationId": 1,
       "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
     },
     {
@@ -29,8 +25,6 @@
       "cluster": "Uganda",
       "siteCode": "256",
       "countryCode": "UGA",
-      "locationId": 6,
-      "parentLocationId": null,
       "parentLocationUuid": null
     },
     {
@@ -40,8 +34,6 @@
       "cluster": "Uganda",
       "siteCode": "256",
       "countryCode": "UGA",
-      "locationId": 28,
-      "parentLocationId": null,
       "parentLocationUuid": null
     },
     {
@@ -51,8 +43,6 @@
       "cluster": "Uganda",
       "siteCode": "256",
       "countryCode": "UGA",
-      "locationId": 44,
-      "parentLocationId": null,
       "parentLocationUuid": null
     },
     {
@@ -62,8 +52,6 @@
       "cluster": "Uganda",
       "siteCode": "256",
       "countryCode": "UGA",
-      "locationId": 138,
-      "parentLocationId": 1,
       "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
     },
     {
@@ -73,8 +61,6 @@
       "cluster": "Uganda",
       "siteCode": "256",
       "countryCode": "UGA",
-      "locationId": 139,
-      "parentLocationId": 1,
       "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
     },
     {
@@ -84,8 +70,6 @@
       "cluster": "Uganda",
       "siteCode": "256",
       "countryCode": "UGA",
-      "locationId": 140,
-      "parentLocationId": 1,
       "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
     },
     {
@@ -95,8 +79,6 @@
       "cluster": "Uganda",
       "siteCode": "256",
       "countryCode": "UGA",
-      "locationId": 141,
-      "parentLocationId": 1,
       "parentLocationUuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
     }
   ]

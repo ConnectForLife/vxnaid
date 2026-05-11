@@ -93,12 +93,6 @@ class VisitManager @Inject constructor(
             val sites = configurationManager.getSites()
             val currentSite = sites.find { it.uuid == locationUuid }
             currentSite?.let { site ->
-                site.locationId?.let { locationId ->
-                    attributes[Constants.ATTRIBUTE_VISIT_LOCATION_ID] = locationId.toString()
-                }
-                site.parentLocationId?.let { parentLocationId ->
-                    attributes[Constants.ATTRIBUTE_VISIT_PARENT_LOCATION_ID] = parentLocationId.toString()
-                }
             }
         } catch (e: Exception) {
             logInfo("⚠️ VisitManager.buildVisitAttributes() - Failed to fetch site location data: ${e.message}")

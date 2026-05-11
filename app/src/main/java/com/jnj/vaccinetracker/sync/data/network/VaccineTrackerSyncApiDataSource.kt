@@ -185,7 +185,7 @@ class VaccineTrackerSyncApiDataSourceDefault @Inject constructor(
         val sitesDto = apiService.getSites()
         logInfo("🌐 VaccineTrackerSyncApiDataSource.getSites() - Retrieved ${sitesDto.results.size} sites from API")
         sitesDto.results.forEach { site ->
-            logInfo("🌐 API Site: name=${site.name}, uuid=${site.uuid}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}, parentLocationUuid=${site.parentLocationUuid}")
+            logInfo("🌐 API Site: name=${site.name}, uuid=${site.uuid}, parentLocationUuid=${site.parentLocationUuid}")
         }
         sitesDto
     }

@@ -103,12 +103,6 @@ class ParticipantManager @Inject constructor(
             val sites = configurationManager.getSites()
             val currentSite = sites.find { it.uuid == siteUuid }
             currentSite?.let { site ->
-                site.locationId?.let { locationId ->
-                    personAttributes[Constants.ATTRIBUTE_LOCATION_ID] = locationId.toString()
-                }
-                site.parentLocationId?.let { parentLocationId ->
-                    personAttributes[Constants.ATTRIBUTE_PARENT_LOCATION_ID] = parentLocationId.toString()
-                }
                 site.parentLocationUuid?.let { parentLocationUuid ->
                     personAttributes[Constants.ATTRIBUTE_PARENT_LOCATION_UUID] = parentLocationUuid
                 }

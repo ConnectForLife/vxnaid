@@ -28,9 +28,9 @@ class GetSitesUseCase @Inject constructor(
         get() = MasterDataFile.SITES
 
     override suspend fun SitesDto.toDomain(): Sites {
-        logInfo("🌍 GetSitesUseCase.toDomain() - Converting ${this.results.size} sites from DTO to domain")
+        logInfo("GetSitesUseCase.toDomain() - Converting ${this.results.size} sites from DTO to domain")
         this.results.forEach { site ->
-            logInfo("🌍 Site DTO: name=${site.name}, uuid=${site.uuid}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}, parentLocationUuid=${site.parentLocationUuid}")
+            logInfo("Site DTO: name=${site.name}, uuid=${site.uuid}, parentLocationUuid=${site.parentLocationUuid}")
         }
         return this
     }
@@ -38,16 +38,16 @@ class GetSitesUseCase @Inject constructor(
     override suspend fun getMasterDataPersistedCache(): Sites {
         val sites = masterDataRepository.readSites()
         val siteCount = sites?.results?.size ?: 0
-        logInfo("🌍 GetSitesUseCase.getMasterDataPersistedCache() - Read $siteCount sites from cache")
+        logInfo("GetSitesUseCase.getMasterDataPersistedCache() - Read $siteCount sites from cache")
         return sites ?: Sites(emptyList())
     }
 
     override suspend fun getMasterDataRemote(): Sites {
-        logInfo("🌍 GetSitesUseCase.getMasterDataRemote() - Fetching sites from API")
+        logInfo("GetSitesUseCase.getMasterDataRemote() - Fetching sites from API")
         val sites = vaccineTrackerApiDataSource.getSites()
-        logInfo("🌍 GetSitesUseCase.getMasterDataRemote() - Retrieved ${sites.results.size} sites from API")
+        logInfo("GetSitesUseCase.getMasterDataRemote() - Retrieved ${sites.results.size} sites from API")
         sites.results.forEach { site ->
-            logInfo("🌍 Remote Site: name=${site.name}, uuid=${site.uuid}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}, parentLocationUuid=${site.parentLocationUuid}")
+            logInfo("Remote Site: name=${site.name}, uuid=${site.uuid}, parentLocationUuid=${site.parentLocationUuid}")
         }
         return sites
     }
@@ -61,7 +61,7 @@ class GetSitesUseCase @Inject constructor(
     }
 
     suspend fun refreshFromRemote(): Sites {
-        logInfo("🌍 GetSitesUseCase.refreshFromRemote() - Force fetching sites from API")
+        logInfo("GetSitesUseCase.refreshFromRemote() - Force fetching sites from API")
         return getMasterDataRemote().also { setMemoryCache(it) }
     }
 }

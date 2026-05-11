@@ -424,7 +424,6 @@
 
                 </LinearLayout>
 
-
                 <LinearLayout
                     android:id="@+id/input_group_home_location"
                     android:layout_width="match_parent"

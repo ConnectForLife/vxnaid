@@ -39,12 +39,7 @@ class ConfigurationManager @Inject constructor(
     suspend fun getConfiguration() = getConfigurationUseCase.getMasterData()
 
     suspend fun getSites(): List<com.jnj.vaccinetracker.common.domain.entities.Site> {
-        logInfo("📍 ConfigurationManager.getSites() - Fetching sites")
         val sites = getSitesUseCase.getMasterData().results
-        logInfo("📍 ConfigurationManager.getSites() - Retrieved ${sites.size} sites")
-        sites.forEach { site ->
-            logInfo("📍 ConfigurationManager Site: name=${site.name}, uuid=${site.uuid}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}")
-        }
         return sites
     }
 

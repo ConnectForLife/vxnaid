@@ -84,10 +84,10 @@ class LoginViewModel @Inject constructor(
                 if (selectedSite != null) {
                     filterAttachedClinicsByParent(selectedSite.name)
                 } else {
-                    logInfo("📍 Configured site UUID not found in loaded sites")
+                    logInfo("Configured site UUID not found in loaded sites")
                 }
             } else {
-                logInfo("📍 No configured site UUID")
+                logInfo("No configured site UUID")
             }
         }
     }
@@ -95,22 +95,7 @@ class LoginViewModel @Inject constructor(
     private suspend fun loadSitesFromConfiguration() {
         try {
             allSites = configurationManager.getSites()
-            // If cached data has no location hierarchy (stale cache from before backend update),
-            // force a fresh fetch from the API to get the correct data
-            if (allSites.isNotEmpty() && allSites.none { it.locationId != null }) {
-                logInfo("📍 Cached sites have no location hierarchy — refreshing from API")
-                try {
-                    allSites = configurationManager.refreshSites()
-                } catch (ex: Throwable) {
-                    yield()
-                    ex.rethrowIfFatal()
-                    logError("Failed to refresh sites from API: ", ex)
-                }
-            }
-            logInfo("📍 Loaded ${allSites.size} sites")
-            allSites.forEach { site ->
-                logInfo("📍 Site: name=${site.name}, locationId=${site.locationId}, parentLocationId=${site.parentLocationId}")
-            }
+            logInfo("Loaded ${allSites.size} sites")
         } catch (ex: Throwable) {
             yield()
             ex.rethrowIfFatal()
@@ -119,45 +104,43 @@ class LoginViewModel @Inject constructor(
     }
 
     fun filterAttachedClinicsByParent(selectedSiteName: String?) {
-        logInfo("🔍 filterAttachedClinicsByParent called with: $selectedSiteName")
+        logInfo("filterAttachedClinicsByParent called with: $selectedSiteName")
         if (selectedSiteName.isNullOrEmpty()) {
-            logInfo("🔍 selectedSiteName is empty, returning no clinics")
+            logInfo("selectedSiteName is empty, returning no clinics")
             attachedClinics.value = emptyList()
             return
         }
 
         val selectedSite = allSites.find { it.name == selectedSiteName }
         if (selectedSite == null) {
-            logError("🔍 Selected site not found: $selectedSiteName")
-            logInfo("🔍 Available sites: ${allSites.map { it.name }}")
+            logError("Selected site not found: $selectedSiteName")
+            logInfo("Available sites: ${allSites.map { it.name }}")
             attachedClinics.value = emptyList()
             return
         }
 
-        logInfo("🔍 Selected site found: uuid=${selectedSite.uuid}, locationId=${selectedSite.locationId}, parentLocationId=${selectedSite.parentLocationId}")
+        logInfo("Selected site found: uuid=${selectedSite.uuid}, parentLocationUuid=${selectedSite.parentLocationUuid}")
 
-        val parentLocationIdToMatch = selectedSite.locationId
-
-        if (parentLocationIdToMatch == null) {
-            if (selectedSite.parentLocationId != null) {
-                logInfo("🔍 Selected site is a child (parentLocationId=${selectedSite.parentLocationId}), finding siblings")
-                val siblingClinics = allSites.filter { site ->
-                    site.parentLocationId == selectedSite.parentLocationId && site.name != selectedSiteName
-                }
-                logInfo("🔍 Found ${siblingClinics.size} sibling clinics: ${siblingClinics.map { it.name }}")
-                attachedClinics.value = siblingClinics
-            } else {
-                logInfo("🔍 Site has no locationId — no attached clinics for this site")
-                attachedClinics.value = emptyList()
-            }
-        } else {
-            logInfo("🔍 Looking for sites with parentLocationId=$parentLocationIdToMatch")
-            val filteredClinics = allSites.filter { site ->
-                site.parentLocationId == parentLocationIdToMatch
-            }
-            logInfo("🔍 Found ${filteredClinics.size} child clinics: ${filteredClinics.map { it.name }}")
-            attachedClinics.value = filteredClinics
+        val childSites = allSites.filter { it.parentLocationUuid == selectedSite.uuid }
+        if (childSites.isNotEmpty()) {
+            logInfo("Found ${childSites.size} child clinics: ${childSites.map { it.name }}")
+            attachedClinics.value = childSites
+            return
         }
+
+        val parentUuid = selectedSite.parentLocationUuid
+        if (parentUuid != null) {
+            logInfo("Selected site is a child (parentLocationUuid=$parentUuid), finding siblings")
+            val siblingClinics = allSites.filter { site ->
+                site.parentLocationUuid == parentUuid && site.name != selectedSiteName
+            }
+            logInfo("Found ${siblingClinics.size} sibling clinics: ${siblingClinics.map { it.name }}")
+            attachedClinics.value = siblingClinics
+            return
+        }
+
+        logInfo("Site has no location hierarchy — no attached clinics for this site")
+        attachedClinics.value = emptyList()
     }
 
     private suspend fun doLogin(
