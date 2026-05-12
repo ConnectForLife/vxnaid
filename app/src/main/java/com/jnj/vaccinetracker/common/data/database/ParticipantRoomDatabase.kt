@@ -12,6 +12,7 @@ import com.jnj.vaccinetracker.common.data.database.daos.draft.*
 import com.jnj.vaccinetracker.common.data.database.entities.*
 import com.jnj.vaccinetracker.common.data.database.entities.draft.*
 import com.jnj.vaccinetracker.common.data.database.migrations.ParticipantAutoMigrationSpec12to13
+import com.jnj.vaccinetracker.common.data.database.migrations.ParticipantAutoMigrationSpec16to17
 import com.jnj.vaccinetracker.common.data.database.openhelpers.SwappableOpenHelperFactory
 import com.jnj.vaccinetracker.common.data.database.openhelpers.helpers.onAutoCloseCallbackReflection
 import com.jnj.vaccinetracker.common.data.repositories.EncryptionKeyRepository
@@ -33,7 +34,7 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 object ParticipantRoomDatabaseConfig {
-    const val CURRENT_VERSION = 16
+    const val CURRENT_VERSION = 17
     const val FILE_NAME = "participants.db"
 }
 
@@ -71,9 +72,6 @@ object ParticipantRoomDatabaseConfig {
         SyncScopeEntity::class,
         OperatorCredentialsEntity::class,
         SyncErrorEntity::class,
-        //CHILD HEALTH+
-        DraftChildHealthPlusEntity::class,
-        DraftChildHealthPlusServiceEntity::class,
     ],
     version = ParticipantRoomDatabaseConfig.CURRENT_VERSION,
     exportSchema = true,
@@ -86,7 +84,8 @@ object ParticipantRoomDatabaseConfig {
         AutoMigration(from = 12, to = 13,spec = ParticipantAutoMigrationSpec12to13::class),
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
-        AutoMigration(from = 15, to = 16),
+
+
     ]
 )
 @TypeConverters(
@@ -127,7 +126,6 @@ abstract class ParticipantRoomDatabase : RoomDatabase() {
     abstract fun draftVisitEncounterDao(): DraftVisitEncounterDao
     abstract fun draftVisitEncounterObservationDao(): DraftVisitEncounterObservationDao
     abstract fun draftVisitEncounterAttributeDao(): DraftVisitEncounterAttributeDao
-    abstract fun draftChildHealthPlusDao(): DraftChildHealthPlusDao
 
     //MISC
     abstract fun syncScopeDao(): SyncScopeDao

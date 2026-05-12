@@ -54,40 +54,4 @@ data class SelectedService(
     val uuid: String = UUID.randomUUID().toString()
 )
 
-/**
- * Represents a Child Health+ client record
- */
-data class ChildHealthPlusData(
-    val uuid: String = UUID.randomUUID().toString(),
-    val participantUuid: String? = null,
-    val childFirstName: String,
-    val childLastName: String,
-    val dateOfBirth: Date,
-    val sex: String, // "M" or "F"
-    val telephone: String?,
-    val phoneCountryCode: String?,
-    val motherFirstName: String?,
-    val motherLastName: String?,
-    val language: String?,
-    val bestContactTime: String?,
-    val services: List<SelectedService> = emptyList(),
-    val isPregnantWoman: Boolean = false,
-    val locationUuid: String? = null,
-    val operatorUuid: String? = null,
-    val dateCreated: Date = Date(),
-    val dateModified: Date = Date()
-) {
-    val ageMonths: Int
-        get() {
-            val calendar = Calendar.getInstance()
-            val age = calendar.get(Calendar.YEAR) - getYearOfBirth()
-            return age * 12
-        }
-
-    private fun getYearOfBirth(): Int {
-        val calendar = Calendar.getInstance()
-        calendar.time = dateOfBirth
-        return calendar.get(Calendar.YEAR)
-    }
-}
 

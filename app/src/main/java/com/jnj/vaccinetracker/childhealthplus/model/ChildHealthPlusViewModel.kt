@@ -1,9 +1,7 @@
 package com.jnj.vaccinetracker.childhealthplus.model
 
 import com.jnj.vaccinetracker.R
-import com.jnj.vaccinetracker.common.data.database.repositories.DraftChildHealthPlusRepository
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
-import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusData
 import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.DoseNumber
@@ -18,7 +16,7 @@ import com.jnj.vaccinetracker.common.domain.entities.ScheduleFirstVisit
 import com.jnj.vaccinetracker.common.domain.entities.UpdateVisit
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateVisitUseCase
-import kotlin.random.Random
+import com.jnj.vaccinetracker.common.domain.usecases.GenerateUniqueParticipantIdUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
@@ -33,12 +31,12 @@ import java.util.*
 import javax.inject.Inject
 
 class ChildHealthPlusViewModel @Inject constructor(
-    private val repository: DraftChildHealthPlusRepository,
     private val participantManager: ParticipantManager,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
     private val createVisitUseCase: CreateVisitUseCase,
     private val updateVisitUseCase: UpdateVisitUseCase,
+    private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
     override val dispatchers: AppCoroutineDispatchers,
     private val resourcesWrapper: ResourcesWrapper,
 ) : ViewModelBase() {
@@ -84,21 +82,27 @@ class ChildHealthPlusViewModel @Inject constructor(
     val administrationDate = mutableLiveData<Date?>()
     val nextVisitDate = mutableLiveData<Date?>()
 
-    val submitSuccessEvent = eventFlow<ChildHealthPlusData>()
+    val submitSuccessEvent = eventFlow<Unit>()
     val submitFailedEvent = eventFlow<String>()
     val navigationEvent = eventFlow<WorkflowStage>()
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-    fun generateChildId(): String {
-        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return (1..8).map { chars[Random.nextInt(chars.length)] }.joinToString("")
+    init {
+        generateParticipantIdIfNeeded()
     }
 
-    fun onGenerateQrCode(): String {
-        val id = generateChildId()
-        generatedChildId.value = id
-        return id
+    private fun generateParticipantIdIfNeeded() {
+        if (!generatedChildId.value.isNullOrBlank()) return
+
+        scope.launch {
+            try {
+                generatedChildId.value = generateUniqueParticipantIdUseCase.generateUniqueParticipantId()
+            } catch (t: Throwable) {
+                yield()
+                logError("Failed to generate participant id for Child Health+", t)
+            }
+        }
     }
 
     fun proceedToServiceSelection() {
@@ -272,28 +276,9 @@ class ChildHealthPlusViewModel @Inject constructor(
                     )
                 }
 
-                val childHealthPlusData = ChildHealthPlusData(
-                    childFirstName = firstName,
-                    childLastName = lastName,
-                    dateOfBirth = dob,
-                    sex = sex,
-                    telephone = phone,
-                    phoneCountryCode = countryCode,
-                    motherFirstName = motherFirstName.value,
-                    motherLastName = motherLastName.value,
-                    language = language.value,
-                    bestContactTime = bestContactTime.value,
-                    services = services,
-                    isPregnantWoman = isPregnantWoman.get(),
-                    operatorUuid = operatorUuid,
-                    participantUuid = participantUuid,
-                    locationUuid = siteUuid
-                )
-                repository.save(childHealthPlusData)
-
                 loading.set(false)
                 currentStage.value = WorkflowStage.SUCCESS
-                submitSuccessEvent.tryEmit(childHealthPlusData)
+                submitSuccessEvent.tryEmit(Unit)
 
             } catch (ex: OperatorUuidNotAvailableException) {
                 yield()

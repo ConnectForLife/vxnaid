@@ -111,7 +111,7 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
 
     private fun setupQrCodeButton() {
         binding.btnGenerateQrCode.setOnClickListener {
-            val id = viewModel.onGenerateQrCode()
+            val id = viewModel.generatedChildId.value ?: return@setOnClickListener
             QrCodeGeneratorDialog(id).show(parentFragmentManager, "QrCodeGeneratorDialog")
         }
     }
