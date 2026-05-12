@@ -12,7 +12,6 @@ import com.jnj.vaccinetracker.common.data.database.daos.draft.*
 import com.jnj.vaccinetracker.common.data.database.entities.*
 import com.jnj.vaccinetracker.common.data.database.entities.draft.*
 import com.jnj.vaccinetracker.common.data.database.migrations.ParticipantAutoMigrationSpec12to13
-import com.jnj.vaccinetracker.common.data.database.migrations.ParticipantAutoMigrationSpec16to17
 import com.jnj.vaccinetracker.common.data.database.openhelpers.SwappableOpenHelperFactory
 import com.jnj.vaccinetracker.common.data.database.openhelpers.helpers.onAutoCloseCallbackReflection
 import com.jnj.vaccinetracker.common.data.repositories.EncryptionKeyRepository
