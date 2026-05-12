@@ -13,7 +13,6 @@ import com.jnj.vaccinetracker.common.data.models.SelectedService
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusSuccessBinding
 import com.jnj.vaccinetracker.databinding.ListItemChildHealthPlusServiceBinding
-import com.jnj.vaccinetracker.register.dialogs.QrCodeGeneratorDialog
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -39,14 +38,6 @@ class ChildHealthPlusSuccessFragment : BaseFragment() {
 
         viewModel.generatedChildId.observe(viewLifecycleOwner) { childId ->
             binding.tvChildId.text = childId.orEmpty()
-        }
-
-        binding.btnGenerateQrCode.setOnClickListener {
-            val childId = viewModel.generatedChildId.value?.takeIf { it.isNotBlank() }
-                ?: viewModel.generateChildId().also { viewModel.generatedChildId.value = it }
-            if (childId.isNotBlank()) {
-                QrCodeGeneratorDialog(childId).show(parentFragmentManager, "QrCodeGeneratorDialog")
-            }
         }
 
         viewModel.selectedServices.observe(viewLifecycleOwner) { services ->

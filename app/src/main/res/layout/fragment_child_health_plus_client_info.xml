@@ -36,31 +36,33 @@
                     android:textAppearance="@style/ScreenTitle"
                     android:textSize="@dimen/page_title_18_64" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_16_32"
+                android:orientation="horizontal">
+
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginTop="@dimen/margin_8_16"
                     android:text="@string/participant_flow_participant_id_title"
                     android:textAppearance="@style/LabelText" />
 
                 <TextView
                     android:id="@+id/tv_generated_child_id"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginTop="@dimen/margin_4"
                     android:text="@{viewModel.generatedChildId}"
                     android:textAlignment="center"
                     android:textSize="@dimen/complete_input_text_size_18_24"
                     android:textStyle="bold" />
 
-                <Button
-                    android:id="@+id/btn_generate_qr_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/margin_8_16"
-                    android:text="@string/generate_Qr_code"
-                    android:textAppearance="@style/ButtonTextStyling" />
+            </LinearLayout>
+
 
                 <!-- Child First Name + Last Name -->
                 <LinearLayout
@@ -297,6 +299,28 @@
                         android:backgroundTint="@color/colorPrimary"
                         android:text="@string/label_select_best_contact_time"
                         android:textAppearance="@style/ButtonTextStyling" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <CheckBox
+                        android:id="@+id/pregnant_woman_checkbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="@={viewModel.isPregnantWoman}" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/margin_8_16"
+                        android:text="@string/child_health_plus_pregnant_woman_label" />
 
                 </LinearLayout>
 

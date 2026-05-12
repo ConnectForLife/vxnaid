@@ -641,7 +641,7 @@
     <string name="child_health_plus_success_services_header">Services Given</string>
     <string name="child_health_plus_success_name_label">Name:</string>
     <string name="child_health_plus_success_dob_label">Date of Birth:</string>
-    <string name="child_health_plus_success_sex_label">Sex:</string>
+    <string name="child_health_plus_success_sex_label">Gender:</string>
     <string name="child_health_plus_child_id_label">Child ID:</string>
     <string name="child_health_plus_qr_code_description">QR code for this client</string>
     <string name="child_health_plus_qr_hint">Scan at the next visit to look up this client</string>

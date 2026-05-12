@@ -15,7 +15,6 @@ import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusClientInfoBinding
 import com.jnj.vaccinetracker.register.dialogs.BestContactTimePickerDialog
-import com.jnj.vaccinetracker.register.dialogs.QrCodeGeneratorDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,7 +39,7 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
         setupPhoneInput()
         setupLanguageDropdown()
         setupBestContactTime()
-        setupQrCodeButton()
+        viewModel.ensureGeneratedChildId()
         setupNavigationButtons()
 
         return binding.root
@@ -109,16 +108,6 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
         }
     }
 
-    private fun setupQrCodeButton() {
-        binding.btnGenerateQrCode.setOnClickListener {
-            val childId = viewModel.generateChildId().also {
-                viewModel.generatedChildId.value = it
-            }
-            if (childId.isNotBlank()) {
-                QrCodeGeneratorDialog(childId).show(parentFragmentManager, "QrCodeGeneratorDialog")
-            }
-        }
-    }
 
     private fun setupNavigationButtons() {
         binding.btnCancel.setOnClickListener {

@@ -98,12 +98,20 @@ class ChildHealthPlusViewModel @Inject constructor(
             .joinToString("")
     }
 
+    fun ensureGeneratedChildId(): String {
+        val currentId = generatedChildId.value
+        if (!currentId.isNullOrBlank()) return currentId
+
+        return generateChildId().also { generatedChildId.value = it }
+    }
+
     fun proceedToServiceSelection() {
         val errors = validateClientInfo()
         if (errors.isNotEmpty()) {
             errorMessage.value = errors.joinToString(", ")
             return
         }
+        ensureGeneratedChildId()
         currentStage.value = WorkflowStage.SERVICE_SELECTION
     }
 
