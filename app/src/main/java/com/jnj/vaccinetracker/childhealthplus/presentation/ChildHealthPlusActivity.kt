@@ -2,10 +2,8 @@ package com.jnj.vaccinetracker.childhealthplus.presentation
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +15,7 @@ import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPl
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusAdministrationDateFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusNextVisitDateFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusServiceSelectionFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusSuccessFragment
 import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.SyncBanner
 import com.jnj.vaccinetracker.databinding.ActivityChildHealthPlusBinding
@@ -28,7 +27,6 @@ import kotlinx.coroutines.launch
  * Activity that hosts the Child Health+ workflow
  * Manages the flow of simplified client registration and service documentation
  */
-@RequiresApi(Build.VERSION_CODES.O)
 class ChildHealthPlusActivity : BaseActivity() {
 
     companion object {
@@ -55,9 +53,6 @@ class ChildHealthPlusActivity : BaseActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        // Load participant if available
-        val participant = intent.getParcelableExtra<ParticipantSummaryUiModel>(EXTRA_PARTICIPANT)
-
         // Setup initial fragment
         if (savedInstanceState == null) {
             showFragment(ChildHealthPlusClientInfoFragment())
@@ -78,35 +73,17 @@ class ChildHealthPlusActivity : BaseActivity() {
                     showFragment(ChildHealthPlusNextVisitDateFragment())
                 ChildHealthPlusViewModel.WorkflowStage.CONFIRMATION ->
                     showFragment(ChildHealthPlusConfirmationFragment())
-                ChildHealthPlusViewModel.WorkflowStage.COMPLETED -> {
-                    // Return to home
+                ChildHealthPlusViewModel.WorkflowStage.SUCCESS ->
+                    showFragment(ChildHealthPlusSuccessFragment())
+                ChildHealthPlusViewModel.WorkflowStage.COMPLETED ->
                     finish()
-                }
-                null -> {
-                    // Do nothing if stage is null
-                }
-            }
-        }
-
-        // Observe submission success
-        lifecycleScope.launch {
-            viewModel.submitSuccessEvent.asFlow().collect { data ->
-                // Show success message
-                Snackbar.make(binding.root, R.string.child_health_plus_success, Snackbar.LENGTH_SHORT)
-                    .show()
-                // Return to home
-                val intent = Intent().apply {
-                    putExtra("child_health_plus_data", data.toString())
-                }
-                setResult(RESULT_OK, intent)
-                finish()
+                null -> Unit
             }
         }
 
         // Observe submission failed
         lifecycleScope.launch {
             viewModel.submitFailedEvent.asFlow().collect { error ->
-                // Show error message to user
                 Snackbar.make(binding.root, error, Snackbar.LENGTH_LONG).show()
             }
         }
@@ -120,10 +97,10 @@ class ChildHealthPlusActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        viewModel.goBack()
         if (viewModel.currentStage.value == ChildHealthPlusViewModel.WorkflowStage.CLIENT_INFO) {
             super.onBackPressed()
+            return
         }
+        viewModel.goBack()
     }
 }
-

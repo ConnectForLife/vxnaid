@@ -152,4 +152,6 @@ object Constants {
     const val POLIO_0_VACCINE_CONCEPT_NAME = "Polio 0 Vxnaid"
     const val PERSONAL_LANGUAGE_ENGLISH = "English"
     const val PERSONAL_LANGUAGE_LUGANDA = "Luganda"
+
+    const val ATTRIBUTE_MOTHER_NAME = "Mother"
 }

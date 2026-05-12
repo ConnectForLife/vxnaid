@@ -36,21 +36,54 @@
                     android:textAppearance="@style/ScreenTitle"
                     android:textSize="@dimen/page_title_18_64" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <Button
+                    android:id="@+id/btn_generate_qr_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_8_16"
+                    android:text="@string/child_health_plus_generate_qr_code" />
+
+                <!-- Child First Name + Last Name -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32">
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/client_name"
-                        android:layout_width="match_parent"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:hint="@string/child_health_plus_client_name_label"
-                        android:inputType="text"
-                        android:text="@={viewModel.clientName}" />
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_8_16">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_child_first_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/child_health_plus_child_first_name_hint"
+                            android:inputType="textPersonName"
+                            android:text="@={viewModel.childFirstName}" />
 
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_child_last_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/child_health_plus_child_last_name_hint"
+                            android:inputType="textPersonName"
+                            android:text="@={viewModel.childLastName}" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <!-- Date of Birth -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -62,54 +95,193 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/child_health_plus_client_dob_label"
                         android:inputType="date"
-                        android:text="@={viewModel.dateOfBirth}" />
+                        android:focusable="false" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
+                <!-- Gender -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32">
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/sex"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="@string/child_health_plus_client_sex_label"
-                        android:text="@={viewModel.sex}" />
+                        android:text="@string/child_health_plus_client_sex_label"
+                        android:textAppearance="@style/LabelText" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                    <RadioGroup
+                        android:id="@+id/radiogroup_sex"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_16_32"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputLayout
+                        <RadioButton
+                            android:id="@+id/rb_sex_male"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/gender_male"
+                            android:textSize="18sp" />
+
+                        <RadioButton
+                            android:id="@+id/rb_sex_female"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/gender_female"
+                            android:textSize="18sp" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <!-- Mobile Number with CountryCodePicker -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32">
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/contact_info"
+                    <com.hbb20.CountryCodePicker
+                        android:id="@+id/country_code_picker_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:ccp_clickable="false"
+                        app:ccp_countryPreference="UG"
+                        app:ccp_defaultNameCode="UG"
+                        app:ccp_showArrow="false" />
+
+                    <EditText
+                        android:id="@+id/edit_telephone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/child_health_plus_client_contact_label"
+                        android:hint="@string/child_health_plus_phone_hint"
                         android:inputType="phone"
-                        android:text="@={viewModel.contactInfo}" />
+                        android:textSize="18sp" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
+                <!-- Call Language dropdown -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32">
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/mother_name"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        android:hint="@string/child_health_plus_mother_name_label"
-                        android:inputType="text"
-                        android:text="@={viewModel.mothersName}" />
+                        android:maxLines="2"
+                        android:text="@string/child_health_plus_language_hint"
+                        android:textAppearance="@style/LabelText" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
 
+                        <AutoCompleteTextView
+                            android:id="@+id/dropdown_language"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/child_health_plus_language_hint"
+                            android:inputType="none" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <!-- Best Contact Time -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:text="@string/child_health_plus_best_contact_time_label"
+                        android:textAppearance="@style/LabelText" />
+
+                    <EditText
+                        android:id="@+id/tv_best_contact_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_4"
+                        android:layout_marginEnd="@dimen/margin_4"
+                        android:layout_weight="1"
+                        android:hint="@string/child_health_plus_best_contact_time_label"
+                        android:minHeight="48dp"
+                        android:textAlignment="center"
+                        android:textSize="@dimen/text_16"
+                        android:text="@{viewModel.bestContactTime}"
+                        android:focusable="false" />
+
+                    <Button
+                        android:id="@+id/btn_select_best_contact_time"
+                        style="@style/Widget.AppCompat.Button.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:layout_weight="0"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:text="@string/label_select_best_contact_time"
+                        android:textAppearance="@style/ButtonTextStyling" />
+
+                </LinearLayout>
+
+                <!-- Mother First Name + Last Name -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_8_16">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_mother_first_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/child_health_plus_mother_first_name_hint"
+                            android:inputType="textPersonName"
+                            android:text="@={viewModel.motherFirstName}" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_mother_last_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/child_health_plus_mother_last_name_hint"
+                            android:inputType="textPersonName"
+                            android:text="@={viewModel.motherLastName}" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <!-- Pregnant Woman checkbox -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -176,4 +348,3 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
-

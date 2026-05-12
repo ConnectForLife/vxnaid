@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.common.di
 import com.jnj.vaccinetracker.common.data.database.ParticipantRoomDatabase
 import com.jnj.vaccinetracker.common.data.database.daos.*
 import com.jnj.vaccinetracker.common.data.database.daos.draft.*
+import com.jnj.vaccinetracker.common.data.database.repositories.DraftChildHealthPlusRepository
 import com.jnj.vaccinetracker.common.data.database.transaction.ParticipantDbTransactionRunner
 import com.jnj.vaccinetracker.common.data.database.transaction.ParticipantRoomDbTransactionRunnerImpl
 import dagger.Module
@@ -114,4 +115,7 @@ class DatabaseModule {
 
     @Provides
     fun provideDraftChildHealthPlusDao(db: ParticipantRoomDatabase): DraftChildHealthPlusDao = db.draftChildHealthPlusDao()
+    
+    @Provides
+    fun provideDraftChildHealthPlusRepository(dao: DraftChildHealthPlusDao): DraftChildHealthPlusRepository = DraftChildHealthPlusRepository(dao)
 }

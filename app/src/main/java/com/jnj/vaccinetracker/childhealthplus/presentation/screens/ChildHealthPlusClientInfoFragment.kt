@@ -1,27 +1,26 @@
 package com.jnj.vaccinetracker.childhealthplus.presentation.screens
 
 import android.app.DatePickerDialog
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.core.widget.doAfterTextChanged
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusClientInfoBinding
+import com.jnj.vaccinetracker.register.dialogs.BestContactTimePickerDialog
+import com.jnj.vaccinetracker.register.dialogs.QrCodeGeneratorDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Fragment for capturing Child Health+ client basic information
- */
-@RequiresApi(Build.VERSION_CODES.O)
-class ChildHealthPlusClientInfoFragment : BaseFragment() {
+class ChildHealthPlusClientInfoFragment : BaseFragment(),
+    BestContactTimePickerDialog.BestContactTimePickerListener {
 
     private val viewModel: ChildHealthPlusViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: FragmentChildHealthPlusClientInfoBinding
@@ -36,28 +35,101 @@ class ChildHealthPlusClientInfoFragment : BaseFragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        // Setup sex spinner
-        val sexOptions = listOf("M", "F")
-        val sexAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, sexOptions)
+        setupSexRadioButtons()
+        setupDatePicker()
+        setupPhoneInput()
+        setupLanguageDropdown()
+        setupBestContactTime()
+        setupQrCodeButton()
+        setupNavigationButtons()
 
-        // Date picker for DOB
+        return binding.root
+    }
+
+    private fun setupSexRadioButtons() {
+        binding.radiogroupSex.setOnCheckedChangeListener { _, checkedId ->
+            val sex = when (checkedId) {
+                binding.rbSexMale.id -> "M"
+                binding.rbSexFemale.id -> "F"
+                else -> null
+            }
+            sex?.let { viewModel.sex.value = it }
+        }
+        viewModel.sex.value?.let {
+            when (it) {
+                "M" -> binding.rbSexMale.isChecked = true
+                "F" -> binding.rbSexFemale.isChecked = true
+            }
+        }
+    }
+
+    private fun setupDatePicker() {
+        viewModel.dateOfBirth.value?.let { binding.dateOfBirth.setText(dateFormat.format(it)) }
+
         binding.dateOfBirth.setOnClickListener {
             showDatePicker { selectedDate ->
                 viewModel.dateOfBirth.value = selectedDate
                 binding.dateOfBirth.setText(dateFormat.format(selectedDate))
             }
         }
+    }
 
-        // Buttons
+    private fun setupPhoneInput() {
+        binding.countryCodePickerPhone.registerCarrierNumberEditText(binding.editTelephone)
+        binding.countryCodePickerPhone.setOnCountryChangeListener {
+            viewModel.phoneCountryCode.value = binding.countryCodePickerPhone.selectedCountryCode
+        }
+        viewModel.phoneCountryCode.value = binding.countryCodePickerPhone.selectedCountryCode
+
+        binding.editTelephone.setText(viewModel.telephone.value.orEmpty())
+        binding.editTelephone.doAfterTextChanged { text ->
+            viewModel.telephone.value = text?.toString()
+        }
+    }
+
+    private fun setupLanguageDropdown() {
+        val languages = listOf(Constants.PERSONAL_LANGUAGE_ENGLISH, Constants.PERSONAL_LANGUAGE_LUGANDA)
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, languages)
+        binding.dropdownLanguage.setAdapter(adapter)
+
+        viewModel.language.value?.let { binding.dropdownLanguage.setText(it, false) }
+
+        binding.dropdownLanguage.setOnItemClickListener { _, _, position, _ ->
+            viewModel.language.value = languages[position]
+        }
+    }
+
+    private fun setupBestContactTime() {
+        viewModel.bestContactTime.value?.let { binding.tvBestContactTime.setText(it) }
+
+        binding.btnSelectBestContactTime.setOnClickListener {
+            val dialog = BestContactTimePickerDialog(viewModel.bestContactTime.value)
+            dialog.setListener(this)
+            dialog.show(childFragmentManager, "BestContactTimePicker")
+        }
+    }
+
+    private fun setupQrCodeButton() {
+        binding.btnGenerateQrCode.setOnClickListener {
+            val id = viewModel.onGenerateQrCode()
+            QrCodeGeneratorDialog(id).show(parentFragmentManager, "QrCodeGeneratorDialog")
+        }
+    }
+
+    private fun setupNavigationButtons() {
         binding.btnCancel.setOnClickListener {
             requireActivity().finish()
         }
-
         binding.btnNext.setOnClickListener {
+            viewModel.telephone.value = binding.editTelephone.text?.toString()
+            viewModel.phoneCountryCode.value = binding.countryCodePickerPhone.selectedCountryCode
             viewModel.proceedToServiceSelection()
         }
+    }
 
-        return binding.root
+    override fun onBestContactTimePicked(time: String) {
+        viewModel.bestContactTime.value = time
+        binding.tvBestContactTime.setText(time)
     }
 
     private fun showDatePicker(onDateSelected: (Date) -> Unit) {
@@ -72,7 +144,8 @@ class ChildHealthPlusClientInfoFragment : BaseFragment() {
             val selectedCalendar = Calendar.getInstance()
             selectedCalendar.set(selectedYear, selectedMonth, selectedDay)
             onDateSelected(selectedCalendar.time)
-        }, year, month, day).show()
+        }, year, month, day).apply {
+            datePicker.maxDate = System.currentTimeMillis()
+        }.show()
     }
 }
-

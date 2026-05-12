@@ -10,6 +10,7 @@
     <string name="general_label_back" translatable="false">Back</string>
     <string name="general_label_submit">Submit</string>
     <string name="general_label_cancel">Cancel</string>
+    <string name="general_label_done">Done</string>
     <string name="general_label_confirm">Confirm</string>
     <string name="general_label_continue">Continue</string>
     <string name="general_label_save">Save</string>
@@ -597,10 +598,10 @@
     <string name="child_health_plus_label">Child Health+</string>
     <string name="child_health_plus_title">Child Health+ Services</string>
     <string name="child_health_plus_description">Simplified registration and service documentation for clients without full immunization history</string>
-    <string name="child_health_plus_client_info_title">Client Information</string>
-    <string name="child_health_plus_client_name_label">Client Name</string>
+    <string name="child_health_plus_client_info_title">Child Information</string>
+    <string name="child_health_plus_client_name_label">Child Name</string>
     <string name="child_health_plus_client_dob_label">Date of Birth</string>
-    <string name="child_health_plus_client_sex_label">Sex</string>
+    <string name="child_health_plus_client_sex_label">Gender</string>
     <string name="child_health_plus_client_contact_label">Contact Information</string>
     <string name="child_health_plus_mother_name_label">Mother\'s Name</string>
     <string name="child_health_plus_pregnant_woman_label">Is Pregnant Woman</string>
@@ -613,9 +614,11 @@
     <string name="child_health_plus_next_visit_title">Next Visit Date</string>
     <string name="child_health_plus_next_visit_description">Schedule next visit date (optional)</string>
     <string name="child_health_plus_next_visit_hint">Leave blank if no follow-up needed</string>
+    <string name="child_health_plus_next_visit_invalid">Next visit date must be on or after administration date</string>
     <string name="child_health_plus_confirmation_title">Review Services</string>
     <string name="child_health_plus_confirmation_description">Please review the services before submitting</string>
     <string name="child_health_plus_no_services_selected">Please select at least one service</string>
+    <string name="child_health_plus_id_required">Please generate a child ID before submitting</string>
     <string name="child_health_plus_validation_error">Please complete all required fields</string>
     <string name="child_health_plus_name_required">Client name is required</string>
     <string name="child_health_plus_dob_required">Date of birth is required</string>
@@ -632,4 +635,29 @@
     <string name="child_health_plus_hepb">Hepatitis B</string>
     <string name="child_health_plus_hpv">HPV</string>
     <string name="child_health_plus_td">Tetanus/Diphtheria</string>
+    <string name="child_health_plus_success_title">Registration Successful</string>
+    <string name="child_health_plus_success_description">Child registered successfully. Use the child ID at future visits.</string>
+    <string name="child_health_plus_success_child_details_header">Child Details</string>
+    <string name="child_health_plus_success_services_header">Services Given</string>
+    <string name="child_health_plus_success_name_label">Name:</string>
+    <string name="child_health_plus_success_dob_label">Date of Birth:</string>
+    <string name="child_health_plus_success_sex_label">Sex:</string>
+    <string name="child_health_plus_child_id_label">Child ID:</string>
+    <string name="child_health_plus_qr_code_description">QR code for this client</string>
+    <string name="child_health_plus_qr_hint">Scan at the next visit to look up this client</string>
+    <string name="child_health_plus_child_first_name_hint">First Name *</string>
+    <string name="child_health_plus_child_last_name_hint">Last Name *</string>
+    <string name="child_health_plus_mother_first_name_hint">Mother\'s First Name</string>
+    <string name="child_health_plus_mother_last_name_hint">Mother\'s Last Name</string>
+    <string name="child_health_plus_phone_hint">Mobile Number</string>
+    <string name="child_health_plus_language_hint">Call Language</string>
+    <string name="child_health_plus_best_contact_time_label">Best Contact Time</string>
+    <string name="label_select_best_contact_time">Select</string>
+    <string name="child_health_plus_generate_qr_code">Generate QR Code</string>
+    <string name="child_health_plus_first_name_required">First name is required</string>
+    <string name="child_health_plus_last_name_required">Last name is required</string>
+    <string name="child_health_plus_client_information">Client Information</string>
+    <string name="child_health_plus_name_label">Name:</string>
+    <string name="child_health_plus_mother_label">Mother:</string>
+    <string name="child_health_plus_selected_services">Selected Services:</string>
 </resources>

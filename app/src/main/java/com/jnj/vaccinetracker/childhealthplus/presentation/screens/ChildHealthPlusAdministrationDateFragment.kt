@@ -1,12 +1,10 @@
 package com.jnj.vaccinetracker.childhealthplus.presentation.screens
 
 import android.app.DatePickerDialog
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.jnj.vaccinetracker.R
@@ -19,7 +17,6 @@ import java.util.*
 /**
  * Fragment for selecting administration date in Child Health+ workflow
  */
-@RequiresApi(Build.VERSION_CODES.O)
 class ChildHealthPlusAdministrationDateFragment : BaseFragment() {
 
     private val viewModel: ChildHealthPlusViewModel by activityViewModels { viewModelFactory }
@@ -39,6 +36,10 @@ class ChildHealthPlusAdministrationDateFragment : BaseFragment() {
         )
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
+
+        viewModel.administrationDate.value?.let {
+            binding.administrationDate.setText(dateFormat.format(it))
+        }
 
         binding.administrationDate.setOnClickListener {
             showDatePicker { selectedDate ->
@@ -75,4 +76,3 @@ class ChildHealthPlusAdministrationDateFragment : BaseFragment() {
         }, year, month, day).show()
     }
 }
-

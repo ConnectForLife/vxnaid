@@ -40,15 +40,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_16_32"
-                    android:text="@{String.format(@string/child_health_plus_dose_selection_description, viewModel.currentService.displayName)}"
+                    android:text="@string/child_health_plus_dose_selection_description"
                     android:textSize="@dimen/text_16" />
 
-                <androidx.recyclerview.widget.RecyclerView
+                <LinearLayout
                     android:id="@+id/doses_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32"
-                    tools:listitem="@layout/list_item_dose_option" />
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/margin_16_32" />
 
             </LinearLayout>
 

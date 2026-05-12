@@ -12,17 +12,16 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
 import com.jnj.vaccinetracker.common.data.models.SelectedService
 import com.jnj.vaccinetracker.common.ui.BaseFragment
-import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusConfirmationBinding
+import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusSuccessBinding
 import com.jnj.vaccinetracker.databinding.ListItemChildHealthPlusServiceBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-/**
- * Fragment for reviewing and confirming Child Health+ submission
- */
-class ChildHealthPlusConfirmationFragment : BaseFragment() {
+class ChildHealthPlusSuccessFragment : BaseFragment() {
 
     private val viewModel: ChildHealthPlusViewModel by activityViewModels { viewModelFactory }
-    private lateinit var binding: FragmentChildHealthPlusConfirmationBinding
-    private var servicesAdapter: ServicesAdapter? = null
+    private lateinit var binding: FragmentChildHealthPlusSuccessBinding
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,58 +30,62 @@ class ChildHealthPlusConfirmationFragment : BaseFragment() {
     ): View {
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.fragment_child_health_plus_confirmation,
+            R.layout.fragment_child_health_plus_success,
             container,
             false
         )
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        // Setup services adapter
-        servicesAdapter = ServicesAdapter(viewModel.selectedServices.value.orEmpty()) { serviceUuid ->
-            viewModel.removeService(serviceUuid)
-        }
+        val adapter = SuccessServicesAdapter(viewModel.selectedServices.value.orEmpty(), dateFormat)
+        binding.rvServices.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvServices.adapter = adapter
 
-        binding.servicesList.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = servicesAdapter
-        }
-
-        // Observe service changes
         viewModel.selectedServices.observe(viewLifecycleOwner) { services ->
-            servicesAdapter?.updateServices(services.orEmpty())
+            adapter.updateServices(services.orEmpty())
         }
 
-        binding.btnBack.setOnClickListener {
-            viewModel.goBack()
+        viewModel.childFirstName.observe(viewLifecycleOwner) {
+            binding.tvName.text = "${viewModel.childFirstName.value.orEmpty()} ${viewModel.childLastName.value.orEmpty()}".trim()
+        }
+        viewModel.childLastName.observe(viewLifecycleOwner) {
+            binding.tvName.text = "${viewModel.childFirstName.value.orEmpty()} ${viewModel.childLastName.value.orEmpty()}".trim()
+        }
+        viewModel.dateOfBirth.observe(viewLifecycleOwner) { dob ->
+            binding.tvDob.text = dob?.let { dateFormat.format(it) } ?: ""
+        }
+        viewModel.sex.observe(viewLifecycleOwner) { sex ->
+            binding.tvSex.text = when (sex) {
+                "M" -> "Male"
+                "F" -> "Female"
+                else -> sex ?: ""
+            }
         }
 
-        binding.btnSubmit.setOnClickListener {
-            viewModel.submitChildHealthPlus()
+        binding.btnDone.setOnClickListener {
+            viewModel.onSuccessDismissed()
         }
 
         return binding.root
     }
 
-    inner class ServicesAdapter(
+    inner class SuccessServicesAdapter(
         private var services: List<SelectedService>,
-        private val onDelete: (String) -> Unit
-    ) : RecyclerView.Adapter<ServicesAdapter.ViewHolder>() {
+        private val dateFormat: SimpleDateFormat
+    ) : RecyclerView.Adapter<SuccessServicesAdapter.ViewHolder>() {
 
         inner class ViewHolder(val binding: ListItemChildHealthPlusServiceBinding) :
             RecyclerView.ViewHolder(binding.root) {
             fun bind(service: SelectedService) {
                 binding.service = service
-                binding.onDelete = View.OnClickListener { onDelete(service.uuid) }
+                binding.onDelete = null
                 binding.executePendingBindings()
             }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val binding = ListItemChildHealthPlusServiceBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
             return ViewHolder(binding)
         }
@@ -94,7 +97,7 @@ class ChildHealthPlusConfirmationFragment : BaseFragment() {
         override fun getItemCount() = services.size
 
         fun updateServices(newServices: List<SelectedService>) {
-            this.services = newServices
+            services = newServices
             notifyDataSetChanged()
         }
     }

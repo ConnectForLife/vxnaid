@@ -53,7 +53,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/general_label_close"
-                    android:onClick="@{onDelete}" />
+                    android:onClick="@{onDelete}"
+                    android:visibility="@{onDelete != null ? android.view.View.VISIBLE : android.view.View.GONE}" />
 
             </LinearLayout>
 

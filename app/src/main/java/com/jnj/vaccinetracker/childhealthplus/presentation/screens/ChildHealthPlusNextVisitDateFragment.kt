@@ -1,12 +1,10 @@
 package com.jnj.vaccinetracker.childhealthplus.presentation.screens
 
 import android.app.DatePickerDialog
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.jnj.vaccinetracker.R
@@ -19,7 +17,6 @@ import java.util.*
 /**
  * Fragment for setting next visit date in Child Health+ workflow
  */
-@RequiresApi(Build.VERSION_CODES.O)
 class ChildHealthPlusNextVisitDateFragment : BaseFragment() {
 
     private val viewModel: ChildHealthPlusViewModel by activityViewModels { viewModelFactory }
@@ -39,6 +36,10 @@ class ChildHealthPlusNextVisitDateFragment : BaseFragment() {
         )
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
+
+        viewModel.nextVisitDate.value?.let {
+            binding.nextVisitDate.setText(dateFormat.format(it))
+        }
 
         binding.nextVisitDate.setOnClickListener {
             showDatePicker { selectedDate ->
@@ -77,4 +78,3 @@ class ChildHealthPlusNextVisitDateFragment : BaseFragment() {
         }, year, month, day).show()
     }
 }
-

@@ -60,7 +60,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Client Information"
+                            android:text="@string/child_health_plus_client_information"
                             android:textSize="@dimen/text_14"
                             android:textStyle="bold" />
 
@@ -74,14 +74,14 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Name:"
+                                android:text="@string/child_health_plus_name_label"
                                 android:textSize="@dimen/text_12" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="@{viewModel.clientName}"
+                                android:text="@{viewModel.childFirstName + ` ` + viewModel.childLastName}"
                                 android:textSize="@dimen/text_12" />
 
                         </LinearLayout>
@@ -96,14 +96,14 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Mother:"
+                                android:text="@string/child_health_plus_mother_label"
                                 android:textSize="@dimen/text_12" />
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="@{viewModel.mothersName}"
+                                android:text="@{viewModel.motherFirstName + ` ` + viewModel.motherLastName}"
                                 android:textSize="@dimen/text_12" />
 
                         </LinearLayout>
@@ -155,4 +155,3 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
-

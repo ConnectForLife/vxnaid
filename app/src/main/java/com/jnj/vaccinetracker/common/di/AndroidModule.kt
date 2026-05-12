@@ -8,6 +8,7 @@ import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPl
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusDoseSelectionFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusNextVisitDateFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusServiceSelectionFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusSuccessFragment
 import com.jnj.vaccinetracker.common.ui.dialog.SuccessDialog
 import com.jnj.vaccinetracker.common.ui.dialog.SyncErrorDialog
 import com.jnj.vaccinetracker.irisscanner.ScannerConnectedActivity
@@ -349,5 +350,8 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindChildHealthPlusConfirmationFragment(): ChildHealthPlusConfirmationFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusSuccessFragment(): ChildHealthPlusSuccessFragment
 
 }

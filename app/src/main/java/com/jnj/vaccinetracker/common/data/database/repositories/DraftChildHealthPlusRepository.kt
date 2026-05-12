@@ -22,11 +22,11 @@ class DraftChildHealthPlusRepository @Inject constructor(
         val entity = DraftChildHealthPlusEntity(
             uuid = data.uuid,
             participantUuid = data.participantUuid,
-            clientName = data.clientName,
+            clientName = "${data.childFirstName} ${data.childLastName}".trim(),
             dateOfBirth = data.dateOfBirth,
             sex = data.sex,
-            contactInfo = data.contactInfo,
-            mothersName = data.mothersName,
+            contactInfo = "${data.phoneCountryCode ?: ""}${data.telephone ?: ""}",
+            mothersName = "${data.motherFirstName ?: ""} ${data.motherLastName ?: ""}".trim(),
             isPregnantWoman = data.isPregnantWoman,
             locationUuid = data.locationUuid,
             operatorUuid = data.operatorUuid,
@@ -85,11 +85,11 @@ class DraftChildHealthPlusRepository @Inject constructor(
         val entity = DraftChildHealthPlusEntity(
             uuid = data.uuid,
             participantUuid = data.participantUuid,
-            clientName = data.clientName,
+            clientName = "${data.childFirstName} ${data.childLastName}".trim(),
             dateOfBirth = data.dateOfBirth,
             sex = data.sex,
-            contactInfo = data.contactInfo,
-            mothersName = data.mothersName,
+            contactInfo = "${data.phoneCountryCode ?: ""}${data.telephone ?: ""}",
+            mothersName = "${data.motherFirstName ?: ""} ${data.motherLastName ?: ""}".trim(),
             isPregnantWoman = data.isPregnantWoman,
             locationUuid = data.locationUuid,
             operatorUuid = data.operatorUuid,
@@ -120,14 +120,21 @@ class DraftChildHealthPlusRepository @Inject constructor(
     }
     
     private fun DraftChildHealthPlusEntity.toDomain(services: List<SelectedService> = emptyList()): ChildHealthPlusData {
+        val nameParts = clientName.trim().split(" ", limit = 2)
+        val motherParts = mothersName.trim().split(" ", limit = 2)
         return ChildHealthPlusData(
             uuid = uuid,
             participantUuid = participantUuid,
-            clientName = clientName,
+            childFirstName = nameParts[0],
+            childLastName = nameParts.getOrElse(1) { "" },
             dateOfBirth = dateOfBirth,
             sex = sex,
-            contactInfo = contactInfo,
-            mothersName = mothersName,
+            telephone = contactInfo.ifBlank { null },
+            phoneCountryCode = null,
+            motherFirstName = motherParts[0].ifBlank { null },
+            motherLastName = motherParts.getOrNull(1)?.ifBlank { null },
+            language = null,
+            bestContactTime = null,
             services = services,
             isPregnantWoman = isPregnantWoman,
             locationUuid = locationUuid,
