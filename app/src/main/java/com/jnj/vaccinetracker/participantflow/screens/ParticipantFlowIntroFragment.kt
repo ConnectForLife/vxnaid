@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.childhealthplus.presentation.ChildHealthPlusActivity
+import com.jnj.vaccinetracker.common.ui.BaseActivity
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentParticipantFlowIntroBinding
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
@@ -40,6 +42,10 @@ class ParticipantFlowIntroFragment : BaseFragment() {
         }
         binding.btnChildIdNumber.setOnClickListener {
             viewModel.currentScreen.value = ParticipantFlowViewModel.Screen.PARTICIPANT_ID
+        }
+        binding.btnChildHealthPlus.setOnClickListener {
+            startActivity(ChildHealthPlusActivity.create(requireContext()))
+            (requireActivity() as BaseActivity).setForwardAnimation()
         }
 
         setHasOptionsMenu(true)

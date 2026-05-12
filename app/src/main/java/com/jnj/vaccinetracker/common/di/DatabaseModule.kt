@@ -111,4 +111,7 @@ class DatabaseModule {
 
     @Provides
     fun provideDeletedVisitDao(db: ParticipantRoomDatabase): DeletedVisitDao = db.deletedVisitDownloadDao()
+
+    @Provides
+    fun provideDraftChildHealthPlusDao(db: ParticipantRoomDatabase): DraftChildHealthPlusDao = db.draftChildHealthPlusDao()
 }

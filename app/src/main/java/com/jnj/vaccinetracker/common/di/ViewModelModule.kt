@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.common.di
 
 import androidx.lifecycle.ViewModel
 import com.jnj.vaccinetracker.barcode.ScanBarcodeViewModel
+import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
 import com.jnj.vaccinetracker.common.ui.BaseActivityViewModel
 import com.jnj.vaccinetracker.common.ui.dialog.SyncErrorViewModel
 import com.jnj.vaccinetracker.irisscanner.ScannerConnectedViewModel
@@ -220,4 +221,9 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(Hmis105ViewModel::class)
     fun bindHmis105ViewModel(model: Hmis105ViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChildHealthPlusViewModel::class)
+    fun bindChildHealthPlusViewModel(model: ChildHealthPlusViewModel): ViewModel
 }

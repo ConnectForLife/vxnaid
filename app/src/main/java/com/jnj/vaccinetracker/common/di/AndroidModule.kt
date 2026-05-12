@@ -1,6 +1,13 @@
 package com.jnj.vaccinetracker.common.di
 
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
+import com.jnj.vaccinetracker.childhealthplus.presentation.ChildHealthPlusActivity
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusAdministrationDateFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusClientInfoFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusConfirmationFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusDoseSelectionFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusNextVisitDateFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusServiceSelectionFragment
 import com.jnj.vaccinetracker.common.ui.dialog.SuccessDialog
 import com.jnj.vaccinetracker.common.ui.dialog.SyncErrorDialog
 import com.jnj.vaccinetracker.irisscanner.ScannerConnectedActivity
@@ -321,5 +328,26 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindHmis105ReportFragment(): Hmis105ReportFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusActivity(): ChildHealthPlusActivity
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusClientInfoFragment(): ChildHealthPlusClientInfoFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusServiceSelectionFragment(): ChildHealthPlusServiceSelectionFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusDoseSelectionFragment(): ChildHealthPlusDoseSelectionFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusAdministrationDateFragment(): ChildHealthPlusAdministrationDateFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusNextVisitDateFragment(): ChildHealthPlusNextVisitDateFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusConfirmationFragment(): ChildHealthPlusConfirmationFragment
 
 }

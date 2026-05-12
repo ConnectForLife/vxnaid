@@ -52,6 +52,12 @@ object Constants {
     const val RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME = "Reschedule Visit Reason"
     const val ADVERSE_EFFECTS_OBSERVATION = "Adverse Effects Vxnaid"
 
+    // Child Health+ attributes
+    const val ATTRIBUTE_CHILD_HEALTH_PLUS = "ChildHealthPlus"
+    const val ATTRIBUTE_CHILD_HEALTH_PLUS_SERVICE = "ChildHealthPlusService"
+    const val ATTRIBUTE_CHILD_HEALTH_PLUS_DOSE = "ChildHealthPlusDose"
+    const val VISIT_TYPE_CHILD_HEALTH_PLUS = "Child Health+"
+
     // common attributes
     const val ATTRIBUTE_OPERATOR = "operatorUuid"
 

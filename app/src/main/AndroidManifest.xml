@@ -65,6 +65,9 @@
             android:name="com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.jnj.vaccinetracker.visit.VisitActivity" />
+        <activity
+            android:name="com.jnj.vaccinetracker.childhealthplus.presentation.ChildHealthPlusActivity"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name="com.jnj.vaccinetracker.visitsoverview.activity.VisitsOverviewFlowActivity"

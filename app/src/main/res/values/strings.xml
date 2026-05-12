@@ -11,6 +11,7 @@
     <string name="general_label_submit">Submit</string>
     <string name="general_label_cancel">Cancel</string>
     <string name="general_label_confirm">Confirm</string>
+    <string name="general_label_continue">Continue</string>
     <string name="general_label_save">Save</string>
     <string name="general_label_restart_workflow">Restart Workflow</string>
     <string name="general_label_ok">OK</string>
@@ -591,4 +592,44 @@
     <string name="age_5_14_yrs_static">5-14 Yrs Static</string>
     <string name="age_5_14_yrs_outreach">5-14 Yrs Outreach</string>
     <string name="total">Total</string>
+
+    <!-- Child Health+ Strings -->
+    <string name="child_health_plus_label">Child Health+</string>
+    <string name="child_health_plus_title">Child Health+ Services</string>
+    <string name="child_health_plus_description">Simplified registration and service documentation for clients without full immunization history</string>
+    <string name="child_health_plus_client_info_title">Client Information</string>
+    <string name="child_health_plus_client_name_label">Client Name</string>
+    <string name="child_health_plus_client_dob_label">Date of Birth</string>
+    <string name="child_health_plus_client_sex_label">Sex</string>
+    <string name="child_health_plus_client_contact_label">Contact Information</string>
+    <string name="child_health_plus_mother_name_label">Mother\'s Name</string>
+    <string name="child_health_plus_pregnant_woman_label">Is Pregnant Woman</string>
+    <string name="child_health_plus_service_selection_title">Select Services</string>
+    <string name="child_health_plus_service_selection_description">Select one or more services for this client</string>
+    <string name="child_health_plus_dose_selection_title">Select Dose</string>
+    <string name="child_health_plus_dose_selection_description">Which dose are you administering?</string>
+    <string name="child_health_plus_administration_date_title">Administration Date</string>
+    <string name="child_health_plus_administration_date_description">When was this service administered?</string>
+    <string name="child_health_plus_next_visit_title">Next Visit Date</string>
+    <string name="child_health_plus_next_visit_description">Schedule next visit date (optional)</string>
+    <string name="child_health_plus_next_visit_hint">Leave blank if no follow-up needed</string>
+    <string name="child_health_plus_confirmation_title">Review Services</string>
+    <string name="child_health_plus_confirmation_description">Please review the services before submitting</string>
+    <string name="child_health_plus_no_services_selected">Please select at least one service</string>
+    <string name="child_health_plus_validation_error">Please complete all required fields</string>
+    <string name="child_health_plus_name_required">Client name is required</string>
+    <string name="child_health_plus_dob_required">Date of birth is required</string>
+    <string name="child_health_plus_sex_required">Sex is required</string>
+    <string name="child_health_plus_contact_required">Contact information is required</string>
+    <string name="child_health_plus_mother_required">Mother\'s name is required</string>
+    <string name="child_health_plus_add_another_service">Add Another Service</string>
+    <string name="child_health_plus_submit">Submit Services</string>
+    <string name="child_health_plus_success">Services recorded successfully</string>
+    <string name="child_health_plus_error">Failed to record services</string>
+    <string name="child_health_plus_vit_a">Vitamin A</string>
+    <string name="child_health_plus_deworming">Deworming</string>
+    <string name="child_health_plus_mr1">MR1</string>
+    <string name="child_health_plus_hepb">Hepatitis B</string>
+    <string name="child_health_plus_hpv">HPV</string>
+    <string name="child_health_plus_td">Tetanus/Diphtheria</string>
 </resources>

@@ -84,4 +84,8 @@
     <!-- Visits -->
     <dimen name="visit_list_item_text_12_16">12sp</dimen>
     <dimen name="eye_icon">20dp</dimen>
+
+    <!-- Cards -->
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
 </resources>
