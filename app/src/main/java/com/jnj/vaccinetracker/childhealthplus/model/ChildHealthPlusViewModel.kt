@@ -226,8 +226,7 @@ class ChildHealthPlusViewModel @Inject constructor(
                     Constants.ATTRIBUTE_MOTHER_FIRST_NAME to (motherFirstName.value ?: ""),
                     Constants.ATTRIBUTE_MOTHER_LAST_NAME to (motherLastName.value ?: ""),
                     Constants.ATTRIBUTE_BEST_CONTACT_TIME to (bestContactTime.value ?: ""),
-                    Constants.ATTRIBUTE_LANGUAGE to (language.value ?: ""),
-                    Constants.ATTRIBUTE_CHILD_HEALTH_PLUS to "true"
+                    Constants.ATTRIBUTE_LANGUAGE to (language.value ?: "")
                 )
 
                 val registerParticipant = RegisterParticipant(
@@ -308,19 +307,10 @@ class ChildHealthPlusViewModel @Inject constructor(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
             Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to doseOrder.toString(),
-            Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey,
-            Constants.ATTRIBUTE_CHILD_HEALTH_PLUS to "true"
+            Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
         )
 
-        val adminDateStr = dateFormat.format(selectedService.administrationDate)
-        val observations = mutableMapOf(
-            "${selectedService.service.conceptName} ${Constants.DATE_STR}" to adminDateStr
-        )
-        if (isPregnant && selectedService.service == ChildHealthPlusService.TETANUS_DIPHTHERIA) {
-            observations["Pregnant Woman Vxnaid"] = "true"
-        }
-
-        // Create visit shell, then record encounter with observations
+        // Create visit shell with minimal observations to avoid backend rejection
         val draftVisit = createVisitUseCase.createVisit(
             CreateVisit(
                 participantUuid = participantUuid,
@@ -331,34 +321,41 @@ class ChildHealthPlusViewModel @Inject constructor(
             )
         )
 
-        updateVisitUseCase.updateVisit(
-            UpdateVisit(
-                visitUuid = draftVisit.visitUuid,
-                participantUuid = participantUuid,
-                startDatetime = selectedService.administrationDate,
-                locationUuid = siteUuid,
-                attributes = visitAttributes,
-                observations = observations
-            )
-        )
+        // If pregnant woman and Tetanus, add that as an observation
+        val observations = mutableMapOf<String, String>()
+        if (isPregnant && selectedService.service == ChildHealthPlusService.TETANUS_DIPHTHERIA) {
+            observations["Pregnant Woman Vxnaid"] = "true"
+        }
 
-        // Schedule a follow-up visit if requested
-        selectedService.nextVisitDate?.let { nextDate ->
-            createVisitUseCase.createVisit(
-                CreateVisit(
+        if (observations.isNotEmpty()) {
+            updateVisitUseCase.updateVisit(
+                UpdateVisit(
+                    visitUuid = draftVisit.visitUuid,
                     participantUuid = participantUuid,
-                    visitType = Constants.VISIT_TYPE_DOSING,
-                    startDatetime = nextDate,
+                    startDatetime = selectedService.administrationDate,
                     locationUuid = siteUuid,
-                    attributes = mapOf(
-                        Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
-                        Constants.ATTRIBUTE_OPERATOR to operatorUuid,
-                        Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey,
-                        Constants.ATTRIBUTE_CHILD_HEALTH_PLUS to "true"
-                    )
+                    attributes = visitAttributes,
+                    observations = observations
                 )
             )
         }
+
+         // Schedule a follow-up visit if requested
+         selectedService.nextVisitDate?.let { nextDate ->
+             createVisitUseCase.createVisit(
+                 CreateVisit(
+                     participantUuid = participantUuid,
+                     visitType = Constants.VISIT_TYPE_DOSING,
+                     startDatetime = nextDate,
+                     locationUuid = siteUuid,
+                     attributes = mapOf(
+                         Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
+                         Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+                         Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
+                     )
+                 )
+             )
+         }
     }
 
     fun onSuccessDismissed() {
