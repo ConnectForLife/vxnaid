@@ -34,7 +34,7 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 object ParticipantRoomDatabaseConfig {
-    const val CURRENT_VERSION = 17
+    const val CURRENT_VERSION = 15
     const val FILE_NAME = "participants.db"
 }
 
