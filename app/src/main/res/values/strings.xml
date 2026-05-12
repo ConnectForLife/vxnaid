@@ -645,8 +645,8 @@
     <string name="child_health_plus_child_id_label">Child ID:</string>
     <string name="child_health_plus_qr_code_description">QR code for this client</string>
     <string name="child_health_plus_qr_hint">Scan at the next visit to look up this client</string>
-    <string name="child_health_plus_child_first_name_hint">First Name *</string>
-    <string name="child_health_plus_child_last_name_hint">Last Name *</string>
+    <string name="child_health_plus_child_first_name_hint">Child\'s First Name *</string>
+    <string name="child_health_plus_child_last_name_hint">Child\'s Last Name *</string>
     <string name="child_health_plus_mother_first_name_hint">Mother\'s First Name</string>
     <string name="child_health_plus_mother_last_name_hint">Mother\'s Last Name</string>
     <string name="child_health_plus_phone_hint">Mobile Number</string>

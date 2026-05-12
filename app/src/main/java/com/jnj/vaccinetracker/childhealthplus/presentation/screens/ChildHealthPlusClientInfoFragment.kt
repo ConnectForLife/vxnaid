@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
-import androidx.core.widget.doAfterTextChanged
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
 import com.jnj.vaccinetracker.common.data.models.Constants
@@ -111,8 +111,12 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
 
     private fun setupQrCodeButton() {
         binding.btnGenerateQrCode.setOnClickListener {
-            val id = viewModel.generatedChildId.value ?: return@setOnClickListener
-            QrCodeGeneratorDialog(id).show(parentFragmentManager, "QrCodeGeneratorDialog")
+            val childId = viewModel.generateChildId().also {
+                viewModel.generatedChildId.value = it
+            }
+            if (childId.isNotBlank()) {
+                QrCodeGeneratorDialog(childId).show(parentFragmentManager, "QrCodeGeneratorDialog")
+            }
         }
     }
 

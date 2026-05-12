@@ -16,7 +16,6 @@ import com.jnj.vaccinetracker.common.domain.entities.ScheduleFirstVisit
 import com.jnj.vaccinetracker.common.domain.entities.UpdateVisit
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateVisitUseCase
-import com.jnj.vaccinetracker.common.domain.usecases.GenerateUniqueParticipantIdUseCase
 import com.jnj.vaccinetracker.common.exceptions.NoSiteUuidAvailableException
 import com.jnj.vaccinetracker.common.exceptions.OperatorUuidNotAvailableException
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
@@ -28,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.random.Random
 import javax.inject.Inject
 
 class ChildHealthPlusViewModel @Inject constructor(
@@ -36,7 +36,6 @@ class ChildHealthPlusViewModel @Inject constructor(
     private val syncSettingsRepository: SyncSettingsRepository,
     private val createVisitUseCase: CreateVisitUseCase,
     private val updateVisitUseCase: UpdateVisitUseCase,
-    private val generateUniqueParticipantIdUseCase: GenerateUniqueParticipantIdUseCase,
     override val dispatchers: AppCoroutineDispatchers,
     private val resourcesWrapper: ResourcesWrapper,
 ) : ViewModelBase() {
@@ -89,20 +88,14 @@ class ChildHealthPlusViewModel @Inject constructor(
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     init {
-        generateParticipantIdIfNeeded()
     }
 
-    private fun generateParticipantIdIfNeeded() {
-        if (!generatedChildId.value.isNullOrBlank()) return
-
-        scope.launch {
-            try {
-                generatedChildId.value = generateUniqueParticipantIdUseCase.generateUniqueParticipantId()
-            } catch (t: Throwable) {
-                yield()
-                logError("Failed to generate participant id for Child Health+", t)
-            }
-        }
+    fun generateChildId(): String {
+        val identifierLength = 8
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return (1..identifierLength)
+            .map { chars[Random.nextInt(chars.length)] }
+            .joinToString("")
     }
 
     fun proceedToServiceSelection() {

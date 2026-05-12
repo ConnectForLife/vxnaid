@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
@@ -14,6 +13,7 @@ import com.jnj.vaccinetracker.common.data.models.SelectedService
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusSuccessBinding
 import com.jnj.vaccinetracker.databinding.ListItemChildHealthPlusServiceBinding
+import com.jnj.vaccinetracker.register.dialogs.QrCodeGeneratorDialog
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -37,12 +37,20 @@ class ChildHealthPlusSuccessFragment : BaseFragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        val adapter = SuccessServicesAdapter(viewModel.selectedServices.value.orEmpty(), dateFormat)
-        binding.rvServices.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvServices.adapter = adapter
+        viewModel.generatedChildId.observe(viewLifecycleOwner) { childId ->
+            binding.tvChildId.text = childId.orEmpty()
+        }
+
+        binding.btnGenerateQrCode.setOnClickListener {
+            val childId = viewModel.generatedChildId.value?.takeIf { it.isNotBlank() }
+                ?: viewModel.generateChildId().also { viewModel.generatedChildId.value = it }
+            if (childId.isNotBlank()) {
+                QrCodeGeneratorDialog(childId).show(parentFragmentManager, "QrCodeGeneratorDialog")
+            }
+        }
 
         viewModel.selectedServices.observe(viewLifecycleOwner) { services ->
-            adapter.updateServices(services.orEmpty())
+            binding.rvServices.adapter = SuccessServicesAdapter(services.orEmpty(), dateFormat)
         }
 
         viewModel.childFirstName.observe(viewLifecycleOwner) {
@@ -78,7 +86,7 @@ class ChildHealthPlusSuccessFragment : BaseFragment() {
             RecyclerView.ViewHolder(binding.root) {
             fun bind(service: SelectedService) {
                 binding.service = service
-                binding.onDelete = null
+                binding.onDelete = View.OnClickListener { }
                 binding.executePendingBindings()
             }
         }
