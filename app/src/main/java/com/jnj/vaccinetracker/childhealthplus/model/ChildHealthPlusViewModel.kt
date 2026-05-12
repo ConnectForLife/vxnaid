@@ -8,11 +8,8 @@ import com.jnj.vaccinetracker.common.data.models.DoseNumber
 import com.jnj.vaccinetracker.common.data.models.SelectedService
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.Address
-import com.jnj.vaccinetracker.common.domain.entities.BirthDate
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
 import com.jnj.vaccinetracker.common.domain.entities.Gender
-import com.jnj.vaccinetracker.common.domain.entities.RegisterParticipant
-import com.jnj.vaccinetracker.common.domain.entities.ScheduleFirstVisit
 import com.jnj.vaccinetracker.common.domain.entities.UpdateVisit
 import com.jnj.vaccinetracker.common.domain.usecases.CreateVisitUseCase
 import com.jnj.vaccinetracker.common.domain.usecases.UpdateVisitUseCase
@@ -23,6 +20,7 @@ import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import java.text.SimpleDateFormat
@@ -81,6 +79,10 @@ class ChildHealthPlusViewModel @Inject constructor(
     val administrationDate = mutableLiveData<Date?>()
     val nextVisitDate = mutableLiveData<Date?>()
 
+    private var visitPlace: String? = null
+    private var outreachName: String? = null
+    private var attachedClinic: String? = null
+
     val submitSuccessEvent = eventFlow<Unit>()
     val submitFailedEvent = eventFlow<String>()
     val navigationEvent = eventFlow<WorkflowStage>()
@@ -103,6 +105,12 @@ class ChildHealthPlusViewModel @Inject constructor(
         if (!currentId.isNullOrBlank()) return currentId
 
         return generateChildId().also { generatedChildId.value = it }
+    }
+
+    fun setVisitContext(visitPlace: String?, outreachName: String?, attachedClinic: String?) {
+        this.visitPlace = visitPlace?.takeIf { it.isNotBlank() }
+        this.outreachName = outreachName?.takeIf { it.isNotBlank() }
+        this.attachedClinic = attachedClinic?.takeIf { it.isNotBlank() }
     }
 
     fun proceedToServiceSelection() {
@@ -225,44 +233,39 @@ class ChildHealthPlusViewModel @Inject constructor(
                     else -> Gender.OTHERS
                 }
 
-                val fullPhone = if (!phone.isNullOrBlank()) "${countryCode ?: ""}$phone" else ""
+                val fullPhone = phone?.takeIf { it.isNotBlank() }?.let { "${countryCode ?: ""}$it" }
 
-                val personAttributes = mutableMapOf(
-                    Constants.ATTRIBUTE_LOCATION to siteUuid,
-                    Constants.ATTRIBUTE_OPERATOR to operatorUuid,
-                    Constants.ATTRIBUTE_TELEPHONE to fullPhone,
-                    Constants.ATTRIBUTE_MOTHER_FIRST_NAME to (motherFirstName.value ?: ""),
-                    Constants.ATTRIBUTE_MOTHER_LAST_NAME to (motherLastName.value ?: ""),
-                    Constants.ATTRIBUTE_BEST_CONTACT_TIME to (bestContactTime.value ?: ""),
-                    Constants.ATTRIBUTE_LANGUAGE to (language.value ?: "")
+                val registerRequest = participantManager.getRegisterParticipant(
+                    ParticipantManager.RegisterDetails(
+                        participantId = childHealthPlusId,
+                        nin = null,
+                        childNumber = null,
+                        birthWeight = null,
+                        bestContactTime = bestContactTime.value,
+                        gender = genderEnum,
+                        birthDate = com.soywiz.klock.DateTime.fromUnix(dob.time),
+                        isBirthDateEstimated = false,
+                        telephone = fullPhone,
+                        siteUuid = siteUuid,
+                        language = language.value,
+                        address = Address("", "", "", "", "", "", ""),
+                        picture = null,
+                        biometricsTemplateBytes = null,
+                        motherFirstName = motherFirstName.value ?: "",
+                        motherLastName = motherLastName.value ?: "",
+                        fatherFirstName = null,
+                        fatherLastName = null,
+                        childFirstName = firstName,
+                        childLastName = lastName,
+                        childCategory = null,
+                        dateCreated = dateNow().time,
+                        attachedClinic = attachedClinic,
+                        visitPlace = visitPlace,
+                        visitOutreachName = outreachName
+                    )
                 )
 
-                val registerParticipant = RegisterParticipant(
-                    participantId = childHealthPlusId,
-                    nin = null,
-                    childNumber = null,
-                    gender = genderEnum,
-                    isBirthDateEstimated = false,
-                    birthDate = BirthDate(dob.time),
-                    address = Address("", "", "", "", "", "", ""),
-                    attributes = personAttributes,
-                    image = null,
-                    biometricsTemplate = null,
-                    scheduleFirstVisit = ScheduleFirstVisit(
-                        visitType = Constants.VISIT_TYPE_DOSING,
-                        startDatetime = Date(),
-                        locationUuid = siteUuid,
-                        attributes = mapOf(
-                            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
-                            Constants.ATTRIBUTE_OPERATOR to operatorUuid
-                        )
-                    ),
-                    childFirstName = firstName,
-                    childLastName = lastName,
-                    dateCreated = null
-                )
-
-                val draftParticipant = participantManager.registerParticipant(registerParticipant)
+                val draftParticipant = participantManager.registerParticipant(registerRequest)
                 val participantUuid = draftParticipant.participantUuid
 
                 // Create an OCCURRED dosing visit for each selected service
@@ -316,7 +319,7 @@ class ChildHealthPlusViewModel @Inject constructor(
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
             Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to doseOrder.toString(),
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
-        )
+        ) + visitContextAttributes()
 
         // Create visit shell with minimal observations to avoid backend rejection
         val draftVisit = createVisitUseCase.createVisit(
@@ -348,22 +351,30 @@ class ChildHealthPlusViewModel @Inject constructor(
             )
         }
 
-         // Schedule a follow-up visit if requested
-         selectedService.nextVisitDate?.let { nextDate ->
-             createVisitUseCase.createVisit(
-                 CreateVisit(
-                     participantUuid = participantUuid,
-                     visitType = Constants.VISIT_TYPE_DOSING,
-                     startDatetime = nextDate,
-                     locationUuid = siteUuid,
-                     attributes = mapOf(
-                         Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
-                         Constants.ATTRIBUTE_OPERATOR to operatorUuid,
-                         Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
-                     )
-                 )
-             )
-         }
+        // Schedule a follow-up visit if requested
+        selectedService.nextVisitDate?.let { nextDate ->
+            createVisitUseCase.createVisit(
+                CreateVisit(
+                    participantUuid = participantUuid,
+                    visitType = Constants.VISIT_TYPE_DOSING,
+                    startDatetime = nextDate,
+                    locationUuid = siteUuid,
+                    attributes = mapOf(
+                        Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
+                        Constants.ATTRIBUTE_OPERATOR to operatorUuid,
+                        Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
+                    ) + visitContextAttributes()
+                )
+            )
+        }
+    }
+
+    private fun visitContextAttributes(): Map<String, String> {
+        val attributes = mutableMapOf<String, String>()
+        visitPlace?.let { attributes[Constants.ATTRIBUTE_VISIT_LOCATION] = it }
+        outreachName?.let { attributes[Constants.ATTRIBUTE_VISIT_OUTREACH_NAME] = it }
+        attachedClinic?.let { attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC] = it }
+        return attributes
     }
 
     fun onSuccessDismissed() {

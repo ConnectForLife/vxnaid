@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
+import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusClientInfoFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusConfirmationFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusDoseSelectionFragment
@@ -49,9 +50,16 @@ class ChildHealthPlusActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPreferences = getSharedPreferences(Constants.USER_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE)
+        val visitPlace = sharedPreferences.getString(Constants.VISIT_PLACE_FILE_KEY, null)
+        val outreachName = sharedPreferences.getString(Constants.OUTREACH_NAME, null)
+        val attachedClinic = sharedPreferences.getString(Constants.ATTACHED_CLINIC_FILE_KEY, null)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_child_health_plus)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+
+        viewModel.setVisitContext(visitPlace, outreachName, attachedClinic)
 
         // Setup initial fragment
         if (savedInstanceState == null) {
