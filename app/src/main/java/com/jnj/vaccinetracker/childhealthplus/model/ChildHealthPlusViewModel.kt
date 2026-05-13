@@ -335,7 +335,7 @@ class ChildHealthPlusViewModel @Inject constructor(
         val administrationDateStr = dateFormat.format(selectedService.administrationDate)
         observations["${selectedService.service.conceptName} ${Constants.DATE_STR}"] = administrationDateStr
 
-        if (isPregnant && selectedService.service == ChildHealthPlusService.TETANUS_DIPHTHERIA) {
+        if (isPregnant && selectedService.service == ChildHealthPlusService.TETANUS) {
             observations["Pregnant Woman Vxnaid"] = "true"
         }
 
@@ -430,7 +430,7 @@ class ChildHealthPlusViewModel @Inject constructor(
         return when (service) {
             ChildHealthPlusService.VITAMIN_A, ChildHealthPlusService.DEWORMING ->
                 listOf(DoseNumber.DOSE_1, DoseNumber.DOSE_2)
-            ChildHealthPlusService.TETANUS_DIPHTHERIA ->
+            ChildHealthPlusService.TETANUS ->
                 listOf(DoseNumber.TD_1, DoseNumber.TD_2, DoseNumber.TD_3, DoseNumber.TD_4, DoseNumber.TD_5)
             ChildHealthPlusService.HEPATITIS_B ->
                 listOf(DoseNumber.HEPB_1, DoseNumber.HEPB_2, DoseNumber.HEPB_3)

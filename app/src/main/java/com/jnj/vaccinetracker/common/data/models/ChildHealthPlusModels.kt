@@ -16,10 +16,10 @@ enum class ChildHealthPlusService(
     MR2("MR2", "MR2", "Measles Rubella 2 (MR2) Vxnaid"),
     HEPATITIS_B("Hepatitis B (HepB)", "HEPB", "HepB Vxnaid"),
     HPV("Human Papillomavirus (HPV)", "HPV", "HPV Vxnaid"),
-    TETANUS_DIPHTHERIA("Tetanus/Diphtheria (Td)", "TD", "Td Vxnaid");
+    TETANUS("Tetanus (Td)", "TD", "Td Vxnaid");
 
     fun requiresNextVisitScheduling(): Boolean =
-        this == VITAMIN_A || this == DEWORMING || this == TETANUS_DIPHTHERIA
+        this == VITAMIN_A || this == DEWORMING || this == TETANUS
 }
 
 /**

@@ -65,7 +65,7 @@ class ChildHealthPlusServiceSelectionFragment : BaseFragment() {
     }
 
     private fun onServiceSelected(service: ChildHealthPlusService) {
-        if (service == ChildHealthPlusService.TETANUS_DIPHTHERIA && viewModel.gender.value == "F") {
+        if (service == ChildHealthPlusService.TETANUS && viewModel.gender.value == "F") {
             AlertDialog.Builder(requireContext())
                 .setMessage(R.string.child_health_plus_pregnant_woman_dialog_message)
                 .setPositiveButton(R.string.general_label_yes) { _, _ ->

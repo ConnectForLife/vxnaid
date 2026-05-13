@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.common.util.DateUtil
@@ -191,17 +192,20 @@ class VaccinesOverviewFragment : BaseFragment(),
             vaccinesOverviewViewModel.substancesConfig.value =
                 vaccinesOverviewViewModel.getSubstancesConfig()
 
+            val childHealthLabels = ChildHealthPlusService.values().map { it.displayName }.sorted()
+            val childHealthConceptNames = ChildHealthPlusService.values().map { it.conceptName }.sorted()
+
             val vaccineLabels =
                 listOf(Constants.ALL_STRING) + vaccinesOverviewViewModel.substancesConfig.value!!
                     .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
                     .map { it.label }
-                    .sorted()
+                    .sorted() + childHealthLabels
 
             val vaccineConceptNames =
                 listOf(Constants.EMPTY_STRING_VALUE) + vaccinesOverviewViewModel.substancesConfig.value!!
                     .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
                     .map { it.conceptName }
-                    .sorted()
+                    .sorted() + childHealthConceptNames
 
             val vaccinesAdapter = VaccineDropdownItemAdapter(
                 requireContext(),
@@ -452,6 +456,7 @@ class VaccinesOverviewFragment : BaseFragment(),
 
     private fun findVaccineLabel(vaccineConceptName: String): String {
         return vaccinesOverviewViewModel.substancesConfig.value?.find { it.conceptName == vaccineConceptName }?.label
+            ?: ChildHealthPlusService.values().find { it.conceptName == vaccineConceptName }?.displayName
             ?: vaccineConceptName
     }
 
