@@ -15,6 +15,7 @@ import com.jnj.vaccinetracker.irisscanner.ScannerConnectedActivity
 import com.jnj.vaccinetracker.login.LoginActivity
 import com.jnj.vaccinetracker.login.RefreshSessionDialog
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
+import com.jnj.vaccinetracker.participantflow.reportsmenu.ReportsMenuActivity
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowCancelWorkflowDialog
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowMandatoryIrisDialog
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowMissingIdentifiersDialog
@@ -329,6 +330,9 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindHmis105ReportFragment(): Hmis105ReportFragment
+
+    @ContributesAndroidInjector
+    fun bindReportsMenuActivity(): ReportsMenuActivity
 
     @ContributesAndroidInjector
     fun bindChildHealthPlusActivity(): ChildHealthPlusActivity

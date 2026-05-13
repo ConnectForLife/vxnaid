@@ -86,21 +86,6 @@
                 android:textStyle="bold"
                 app:cornerRadius="@dimen/button_corner_radius" />
 
-            <Button
-                android:id="@+id/btn_child_health_plus"
-                android:layout_width="@dimen/button_width"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/return_visit_guide_btn_margin_54_40_20"
-                android:paddingVertical="@dimen/return_visit_guide_btn_padding_32_70_32"
-                android:backgroundTint="@color/colorSecondary"
-                android:text="@string/child_health_plus_label"
-                android:textAppearance="@style/ButtonTextStyling"
-                android:textColor="@color/colorTextOnSecondary"
-                android:textSize="@dimen/btn_text_size_18_32"
-                android:textStyle="bold"
-                app:cornerRadius="@dimen/button_corner_radius" />
-
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

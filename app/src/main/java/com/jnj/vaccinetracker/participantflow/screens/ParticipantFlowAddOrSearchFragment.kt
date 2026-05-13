@@ -24,12 +24,10 @@ import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowViewModel
 import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
-import com.jnj.vaccinetracker.reportsoverview.childrenoverview.activity.ReportsOverviewFlowActivity
-import com.jnj.vaccinetracker.reportsoverview.childrenoverview.model.ReportsOverviewViewModel
+import com.jnj.vaccinetracker.childhealthplus.presentation.ChildHealthPlusActivity
+import com.jnj.vaccinetracker.participantflow.reportsmenu.ReportsMenuActivity
 import com.jnj.vaccinetracker.update.UpdateDialog
 import com.jnj.vaccinetracker.visit.VisitActivity
-import com.jnj.vaccinetracker.visitsoverview.activity.VisitsOverviewFlowActivity
-import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
@@ -42,8 +40,6 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
 
    private val viewModel: ParticipantFlowViewModel by activityViewModels { viewModelFactory }
    private val viewModelParticipantFlow: ParticipantFlowMatchingViewModel by viewModels { viewModelFactory }
-   private val visitsOverviewViewModel: VisitsOverviewViewModel by viewModels { viewModelFactory }
-   private val reportsOverviewViewModel: ReportsOverviewViewModel by viewModels { viewModelFactory }
 
    private lateinit var binding: FragmentParticipantAddOrSearchBinding
 
@@ -60,13 +56,15 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
          viewModel.onSearchParticipant()
       }
 
-      binding.btnVisitsOverview.setOnClickListener {
-         visitsOverviewViewModel.onVisitsOverviewClick()
-      }
+       binding.btnChildHealthPlus.setOnClickListener {
+           startActivity(ChildHealthPlusActivity.create(requireContext()))
+           (requireActivity() as BaseActivity).setForwardAnimation()
+       }
 
-      binding.btnReportsOverview.setOnClickListener {
-         reportsOverviewViewModel.onReportsOverviewClick()
-      }
+       binding.btnReports.setOnClickListener {
+          startActivity(ReportsMenuActivity.create(requireContext()))
+          (requireActivity() as BaseActivity).setForwardAnimation()
+       }
 
       setHasOptionsMenu(true)
       (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
@@ -95,22 +93,6 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
                phoneNumber = null
             ), Constants.REQ_REGISTER_PARTICIPANT
          )
-         (requireActivity() as BaseActivity).setForwardAnimation()
-      }.launchIn(lifecycleOwner)
-
-      visitsOverviewViewModel.launchVisitsOverviewFragmentFlowEvent.asFlow().onEach {
-         startActivityForResult(
-            VisitsOverviewFlowActivity.create(
-            context = requireContext()
-         ), Constants.REQ_VISITS_OVERVIEW)
-         (requireActivity() as BaseActivity).setForwardAnimation()
-      }.launchIn(lifecycleOwner)
-
-      reportsOverviewViewModel.launchReportsOverviewFragmentFlowEvent.asFlow().onEach {
-         startActivityForResult(
-            ReportsOverviewFlowActivity.create(
-            context = requireContext()
-         ), Constants.REQ_REPORTS_OVERVIEW)
          (requireActivity() as BaseActivity).setForwardAnimation()
       }.launchIn(lifecycleOwner)
    }
@@ -144,14 +126,6 @@ class ParticipantFlowAddOrSearchFragment: BaseFragment() {
                startActivity(ParticipantFlowActivity.create(requireContext()))
                startParticipantVisitContraindications(participant)
             }
-         }
-
-         Constants.REQ_VISITS_OVERVIEW -> {
-            startActivity(VisitsOverviewFlowActivity.create(requireContext()))
-         }
-
-         Constants.REQ_REPORTS_OVERVIEW -> {
-            startActivity(ReportsOverviewFlowActivity.create(requireContext()))
          }
 
          Constants.REQ_VISIT -> {

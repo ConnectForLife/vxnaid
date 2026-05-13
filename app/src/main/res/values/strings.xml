@@ -597,6 +597,8 @@
     <!-- Child Health+ Strings -->
     <string name="child_health_plus_label">Child Health+</string>
     <string name="child_health_plus_title">Child Health+ Services</string>
+    <string name="reports_label">Reports</string>
+    <string name="reports_menu_description">Choose which report view you want to open.</string>
     <string name="child_health_plus_description">Simplified registration and service documentation for clients without full immunization history</string>
     <string name="child_health_plus_client_info_title">Client Details</string>
     <string name="child_health_plus_client_name_label">Client Name</string>

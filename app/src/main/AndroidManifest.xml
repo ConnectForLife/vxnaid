@@ -70,6 +70,10 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name="com.jnj.vaccinetracker.participantflow.reportsmenu.ReportsMenuActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name="com.jnj.vaccinetracker.visitsoverview.activity.VisitsOverviewFlowActivity"
             android:windowSoftInputMode="adjustResize" />
 
