@@ -34,7 +34,9 @@
                     android:layout_height="wrap_content"
                     android:text="@string/child_health_plus_service_selection_title"
                     android:textAppearance="@style/ScreenTitle"
-                    android:textSize="@dimen/page_title_18_64" />
+                    android:textSize="@dimen/page_title_18_32"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center" />
 
                 <TextView
                     android:layout_width="match_parent"

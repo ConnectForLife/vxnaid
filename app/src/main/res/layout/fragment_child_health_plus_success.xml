@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/child_health_plus_success_title"
                     android:textAppearance="@style/ScreenTitle"
-                    android:textSize="@dimen/page_title_18_64"
+                    android:textSize="@dimen/page_title_18_32"
                     android:textColor="@color/colorPrimary"
                     android:gravity="center" />
 
