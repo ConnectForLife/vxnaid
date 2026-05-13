@@ -321,7 +321,6 @@ class ChildHealthPlusViewModel @Inject constructor(
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
         ) + visitContextAttributes()
 
-        // Create visit shell with minimal observations to avoid backend rejection
         val draftVisit = createVisitUseCase.createVisit(
             CreateVisit(
                 participantUuid = participantUuid,
@@ -332,24 +331,24 @@ class ChildHealthPlusViewModel @Inject constructor(
             )
         )
 
-        // If pregnant woman and Tetanus, add that as an observation
         val observations = mutableMapOf<String, String>()
+        val administrationDateStr = dateFormat.format(selectedService.administrationDate)
+        observations["${selectedService.service.conceptName} ${Constants.DATE_STR}"] = administrationDateStr
+
         if (isPregnant && selectedService.service == ChildHealthPlusService.TETANUS_DIPHTHERIA) {
             observations["Pregnant Woman Vxnaid"] = "true"
         }
 
-        if (observations.isNotEmpty()) {
-            updateVisitUseCase.updateVisit(
-                UpdateVisit(
-                    visitUuid = draftVisit.visitUuid,
-                    participantUuid = participantUuid,
-                    startDatetime = selectedService.administrationDate,
-                    locationUuid = siteUuid,
-                    attributes = visitAttributes,
-                    observations = observations
-                )
+        updateVisitUseCase.updateVisit(
+            UpdateVisit(
+                visitUuid = draftVisit.visitUuid,
+                participantUuid = participantUuid,
+                startDatetime = selectedService.administrationDate,
+                locationUuid = siteUuid,
+                attributes = visitAttributes,
+                observations = observations
             )
-        }
+        )
 
         // Schedule a follow-up visit if requested
         selectedService.nextVisitDate?.let { nextDate ->

@@ -11,9 +11,9 @@ enum class ChildHealthPlusService(
     val serviceKey: String,
     val conceptName: String,
 ) {
-    VITAMIN_A("Vitamin A (Vit A)", "VIT_A", "Vit A Vxnaid"),
+    VITAMIN_A("Vitamin A (Vit A)", "VIT_A", "Vitamin A Vxnaid"),
     DEWORMING("Deworming", "DEWORMING", "Deworming Vxnaid"),
-    MR1("MR1", "MR1", "MR1 Vxnaid"),
+    MR1("MR1", "MR1", "Measles Rubella 1 (MR1) Vxnaid"),
     HEPATITIS_B("Hepatitis B (HepB)", "HEPB", "HepB Vxnaid"),
     HPV("Human Papillomavirus (HPV)", "HPV", "HPV Vxnaid"),
     TETANUS_DIPHTHERIA("Tetanus/Diphtheria (Td)", "TD", "Td Vxnaid");
