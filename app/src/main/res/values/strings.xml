@@ -607,6 +607,7 @@
     <string name="child_health_plus_client_contact_label">Contact Information</string>
     <string name="child_health_plus_mother_name_label">Mother\'s Name</string>
     <string name="child_health_plus_pregnant_woman_label">Is Pregnant Woman</string>
+    <string name="child_health_plus_pregnant_woman_dialog_message">Is this client a pregnant woman?</string>
     <string name="child_health_plus_service_selection_title">Select Services</string>
     <string name="child_health_plus_service_selection_description">Select one or more services for this client</string>
     <string name="child_health_plus_dose_selection_title">Select Dose</string>

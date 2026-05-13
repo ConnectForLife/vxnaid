@@ -34,7 +34,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/child_health_plus_client_info_title"
                     android:textAppearance="@style/ScreenTitle"
-                    android:textSize="@dimen/page_title_18_64" />
+                    android:textSize="@dimen/page_title_18_32" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,6 +48,7 @@
                     android:layout_marginTop="@dimen/margin_8_16"
                     android:layout_weight="1"
                     android:text="@string/child_health_plus_child_id_label"
+                    android:textSize="@dimen/complete_input_text_size_18_24"
                     android:textAppearance="@style/LabelText" />
 
                 <TextView
@@ -299,29 +300,6 @@
                         android:backgroundTint="@color/colorPrimary"
                         android:text="@string/label_select_best_contact_time"
                         android:textAppearance="@style/ButtonTextStyling" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <CheckBox
-                        android:id="@+id/pregnant_woman_checkbox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="@={viewModel.isPregnantWoman}" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="@dimen/margin_8_16"
-                        android:text="@string/child_health_plus_pregnant_woman_label"
-                        android:textSize="18sp"/>
 
                 </LinearLayout>
 

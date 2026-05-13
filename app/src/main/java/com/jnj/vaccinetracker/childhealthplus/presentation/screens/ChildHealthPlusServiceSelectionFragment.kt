@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.childhealthplus.presentation.screens
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
+import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import com.jnj.vaccinetracker.common.data.models.SelectedService
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusServiceSelectionBinding
@@ -56,9 +58,27 @@ class ChildHealthPlusServiceSelectionFragment : BaseFragment() {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                setOnClickListener { viewModel.addService(service) }
+                setOnClickListener { onServiceSelected(service) }
             }
             binding.servicesContainer.addView(button)
+        }
+    }
+
+    private fun onServiceSelected(service: ChildHealthPlusService) {
+        if (service == ChildHealthPlusService.TETANUS_DIPHTHERIA && viewModel.gender.value == "F") {
+            AlertDialog.Builder(requireContext())
+                .setMessage(R.string.child_health_plus_pregnant_woman_dialog_message)
+                .setPositiveButton(R.string.general_label_yes) { _, _ ->
+                    viewModel.isPregnantWoman.set(true)
+                    viewModel.addService(service)
+                }
+                .setNegativeButton(R.string.general_label_no) { _, _ ->
+                    viewModel.isPregnantWoman.set(false)
+                    viewModel.addService(service)
+                }
+                .show()
+        } else {
+            viewModel.addService(service)
         }
     }
 
