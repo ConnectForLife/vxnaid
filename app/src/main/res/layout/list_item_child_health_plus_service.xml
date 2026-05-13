@@ -36,7 +36,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@{service.service.displayName}"
-                        android:textSize="@dimen/text_14"
+                        android:textSize="@dimen/text_16"
                         android:textStyle="bold" />
 
                     <TextView
@@ -44,7 +44,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/margin_4_8"
                         android:text="@{service.dose != null ? service.dose.label : ``}"
-                        android:textSize="@dimen/text_12" />
+                        android:textSize="@dimen/text_16" />
 
                 </LinearLayout>
 

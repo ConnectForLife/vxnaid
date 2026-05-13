@@ -42,7 +42,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_16_32"
                     android:text="@string/child_health_plus_administration_date_description"
-                    android:textSize="@dimen/text_16" />
+                    android:textSize="@dimen/text_16"
+                    android:gravity="center"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
