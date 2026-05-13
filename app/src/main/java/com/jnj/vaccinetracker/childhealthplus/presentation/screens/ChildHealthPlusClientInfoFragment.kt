@@ -52,9 +52,9 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
                 binding.rbSexFemale.id -> "F"
                 else -> null
             }
-            sex?.let { viewModel.sex.value = it }
+            sex?.let { viewModel.gender.value = it }
         }
-        viewModel.sex.value?.let {
+        viewModel.gender.value?.let {
             when (it) {
                 "M" -> binding.rbSexMale.isChecked = true
                 "F" -> binding.rbSexFemale.isChecked = true

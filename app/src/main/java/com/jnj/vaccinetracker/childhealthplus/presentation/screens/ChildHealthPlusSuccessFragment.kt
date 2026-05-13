@@ -53,11 +53,11 @@ class ChildHealthPlusSuccessFragment : BaseFragment() {
         viewModel.dateOfBirth.observe(viewLifecycleOwner) { dob ->
             binding.tvDob.text = dob?.let { dateFormat.format(it) } ?: ""
         }
-        viewModel.sex.observe(viewLifecycleOwner) { sex ->
-            binding.tvSex.text = when (sex) {
+        viewModel.gender.observe(viewLifecycleOwner) { gender ->
+            binding.tvSex.text = when (gender) {
                 "M" -> "Male"
                 "F" -> "Female"
-                else -> sex ?: ""
+                else -> gender ?: ""
             }
         }
 

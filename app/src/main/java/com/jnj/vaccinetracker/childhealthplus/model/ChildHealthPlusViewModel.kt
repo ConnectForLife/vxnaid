@@ -58,7 +58,7 @@ class ChildHealthPlusViewModel @Inject constructor(
     val childFirstName = mutableLiveData<String>()
     val childLastName = mutableLiveData<String>()
     val dateOfBirth = mutableLiveData<Date>()
-    val sex = mutableLiveData<String>()
+    val gender = mutableLiveData<String>()
     val telephone = mutableLiveData<String>()
     val phoneCountryCode = mutableLiveData<String>()
     val motherFirstName = mutableLiveData<String>()
@@ -191,15 +191,15 @@ class ChildHealthPlusViewModel @Inject constructor(
     }
 
     fun submitChildHealthPlus() {
-        val firstName = childFirstName.value
-        val lastName = childLastName.value
+        val chlidFirstName = childFirstName.value
+        val childLastName = this@ChildHealthPlusViewModel.childLastName.value
         val dob = dateOfBirth.value
-        val sex = this.sex.value
+        val gender = this.gender.value
         val phone = telephone.value
         val countryCode = phoneCountryCode.value
         val services = selectedServices.value.orEmpty()
 
-        if (firstName.isNullOrBlank() || lastName.isNullOrBlank() || dob == null || sex.isNullOrBlank()) {
+        if (chlidFirstName.isNullOrBlank() || childLastName.isNullOrBlank() || dob == null || gender.isNullOrBlank()) {
             errorMessage.value = resourcesWrapper.getString(R.string.child_health_plus_validation_error)
             submitFailedEvent.tryEmit(errorMessage.value ?: "Validation failed")
             return
@@ -227,7 +227,7 @@ class ChildHealthPlusViewModel @Inject constructor(
                 val siteUuid = syncSettingsRepository.getSiteUuid()
                     ?: throw NoSiteUuidAvailableException("Site UUID not available")
 
-                val genderEnum = when (sex) {
+                val genderEnum = when (gender) {
                     "M" -> Gender.MALE
                     "F" -> Gender.FEMALE
                     else -> Gender.OTHERS
@@ -255,8 +255,8 @@ class ChildHealthPlusViewModel @Inject constructor(
                         motherLastName = motherLastName.value ?: "",
                         fatherFirstName = null,
                         fatherLastName = null,
-                        childFirstName = firstName,
-                        childLastName = lastName,
+                        childFirstName = chlidFirstName,
+                        childLastName = childLastName,
                         childCategory = null,
                         dateCreated = dateNow().time,
                         attachedClinic = attachedClinic,
@@ -448,7 +448,7 @@ class ChildHealthPlusViewModel @Inject constructor(
             errors.add(resourcesWrapper.getString(R.string.child_health_plus_last_name_required))
         if (dateOfBirth.value == null)
             errors.add(resourcesWrapper.getString(R.string.child_health_plus_dob_required))
-        if (sex.value.isNullOrBlank())
+        if (gender.value.isNullOrBlank())
             errors.add(resourcesWrapper.getString(R.string.child_health_plus_sex_required))
         return errors
     }

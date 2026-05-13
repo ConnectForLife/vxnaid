@@ -45,9 +45,9 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginTop="@dimen/margin_8_16"
-                    android:text="@string/participant_flow_participant_id_title"
+                    android:layout_weight="1"
+                    android:text="@string/child_health_plus_child_id_label"
                     android:textAppearance="@style/LabelText" />
 
                 <TextView
@@ -320,7 +320,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="@dimen/margin_8_16"
-                        android:text="@string/child_health_plus_pregnant_woman_label" />
+                        android:text="@string/child_health_plus_pregnant_woman_label"
+                        android:textSize="18sp"/>
 
                 </LinearLayout>
 
