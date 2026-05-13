@@ -28,6 +28,7 @@ import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.register.RegisterParticipantFlowActivity
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
+import com.jnj.vaccinetracker.childhealthplus.presentation.ChildHealthPlusActivity
 import com.jnj.vaccinetracker.visit.VisitActivity
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -201,7 +202,11 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
     }
 
     private fun startParticipantVisitContraindications(participant: ParticipantSummaryUiModel, newRegisteredParticipant: Boolean) {
-        startActivity(VisitActivity.create(requireContext(), participant, newRegisteredParticipant))
+        if (participant.isChildHealthPlus) {
+            startActivity(ChildHealthPlusActivity.create(requireContext(), participant))
+        } else {
+            startActivity(VisitActivity.create(requireContext(), participant, newRegisteredParticipant))
+        }
         (requireActivity() as BaseActivity).setForwardAnimation()
     }
 

@@ -16,7 +16,8 @@ data class ParticipantUiModel(
     val siteUUID: String?,
     val motherFirstName: String?,
     val motherLastName: String?,
-    val childNumber: String?
+    val childNumber: String?,
+    val isChildHealthPlus: Boolean = false,
 ) {
 
     constructor(

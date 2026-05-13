@@ -16,4 +16,5 @@ data class ParticipantSummaryUiModel(
     // todo can be removed
     val vaccine: DisplayValue?,
     val participantPicture: ParticipantImageUiModel?,
+    val isChildHealthPlus: Boolean = false,
 ) : Parcelable

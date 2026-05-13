@@ -179,6 +179,7 @@ class ParticipantManager @Inject constructor(
         val attachedClinic: String? = null,
         val visitPlace: String? = null,
         val visitOutreachName: String? = null,
+        val isChildHealthPlus: Boolean = false,
     )
 
     @SuppressWarnings("LongParameterList")
@@ -199,6 +200,10 @@ class ParticipantManager @Inject constructor(
             childCategory = registerDetails.childCategory,
             attachedClinic = registerDetails.attachedClinic
         )
+
+        if (registerDetails.isChildHealthPlus) {
+            personAttributes[Constants.ATTRIBUTE_CHILD_HEALTH_PLUS] = "true"
+        }
 
         return RegisterParticipant(
             participantId = registerDetails.participantId,

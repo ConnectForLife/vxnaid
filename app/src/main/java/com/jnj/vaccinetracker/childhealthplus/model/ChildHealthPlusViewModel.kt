@@ -19,6 +19,7 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.helpers.logError
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelBase
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
+import com.jnj.vaccinetracker.participantflow.model.ParticipantSummaryUiModel
 import com.jnj.vaccinetracker.sync.data.repositories.SyncSettingsRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.dateNow
 import kotlinx.coroutines.launch
@@ -82,6 +83,8 @@ class ChildHealthPlusViewModel @Inject constructor(
     private var visitPlace: String? = null
     private var outreachName: String? = null
     private var attachedClinic: String? = null
+    private var returnVisitParticipantUuid: String? = null
+    val isReturnVisit = mutableLiveBoolean(false)
 
     val submitSuccessEvent = eventFlow<Unit>()
     val submitFailedEvent = eventFlow<String>()
@@ -105,6 +108,18 @@ class ChildHealthPlusViewModel @Inject constructor(
         if (!currentId.isNullOrBlank()) return currentId
 
         return generateChildId().also { generatedChildId.value = it }
+    }
+
+    fun initReturnVisit(participant: ParticipantSummaryUiModel) {
+        returnVisitParticipantUuid = participant.participantUuid
+        generatedChildId.value = participant.participantId
+        gender.value = when (participant.gender) {
+            com.jnj.vaccinetracker.common.domain.entities.Gender.MALE -> "M"
+            com.jnj.vaccinetracker.common.domain.entities.Gender.FEMALE -> "F"
+            else -> "O"
+        }
+        isReturnVisit.set(true)
+        currentStage.value = WorkflowStage.SERVICE_SELECTION
     }
 
     fun setVisitContext(visitPlace: String?, outreachName: String?, attachedClinic: String?) {
@@ -191,6 +206,11 @@ class ChildHealthPlusViewModel @Inject constructor(
     }
 
     fun submitChildHealthPlus() {
+        val existingUuid = returnVisitParticipantUuid
+        if (existingUuid != null) {
+            submitReturnVisit(existingUuid)
+            return
+        }
         val chlidFirstName = childFirstName.value
         val childLastName = this@ChildHealthPlusViewModel.childLastName.value
         val dob = dateOfBirth.value
@@ -261,7 +281,8 @@ class ChildHealthPlusViewModel @Inject constructor(
                         dateCreated = dateNow().time,
                         attachedClinic = attachedClinic,
                         visitPlace = visitPlace,
-                        visitOutreachName = outreachName
+                        visitOutreachName = outreachName,
+                        isChildHealthPlus = true,
                     )
                 )
 
@@ -302,6 +323,56 @@ class ChildHealthPlusViewModel @Inject constructor(
                 errorMessage.value = throwable.message
                 submitFailedEvent.tryEmit(throwable.message ?: "Submission failed")
                 logError("Failed to submit Child Health+ data: ", throwable)
+            }
+        }
+    }
+
+    private fun submitReturnVisit(participantUuid: String) {
+        val services = selectedServices.value.orEmpty()
+        if (services.isEmpty()) {
+            errorMessage.value = resourcesWrapper.getString(R.string.child_health_plus_no_services_selected)
+            submitFailedEvent.tryEmit(errorMessage.value ?: "No services selected")
+            return
+        }
+        loading.set(true)
+        scope.launch {
+            try {
+                val operatorUuid = userRepository.getUser()?.uuid
+                    ?: throw OperatorUuidNotAvailableException("Operator UUID not available")
+                val siteUuid = syncSettingsRepository.getSiteUuid()
+                    ?: throw NoSiteUuidAvailableException("Site UUID not available")
+
+                services.forEach { selectedService ->
+                    createServiceVisit(
+                        participantUuid = participantUuid,
+                        selectedService = selectedService,
+                        siteUuid = siteUuid,
+                        operatorUuid = operatorUuid,
+                        isPregnant = isPregnantWoman.get()
+                    )
+                }
+                loading.set(false)
+                currentStage.value = WorkflowStage.SUCCESS
+                submitSuccessEvent.tryEmit(Unit)
+            } catch (ex: OperatorUuidNotAvailableException) {
+                yield()
+                loading.set(false)
+                errorMessage.value = ex.message
+                submitFailedEvent.tryEmit(ex.message ?: "Session expired")
+                logError("Failed to submit return visit: operator UUID not available", ex)
+            } catch (ex: NoSiteUuidAvailableException) {
+                yield()
+                loading.set(false)
+                errorMessage.value = ex.message
+                submitFailedEvent.tryEmit(ex.message ?: "No site selected")
+                logError("Failed to submit return visit: site UUID not available", ex)
+            } catch (throwable: Throwable) {
+                yield()
+                throwable.printStackTrace()
+                loading.set(false)
+                errorMessage.value = throwable.message
+                submitFailedEvent.tryEmit(throwable.message ?: "Submission failed")
+                logError("Failed to submit return visit: ", throwable)
             }
         }
     }
@@ -384,7 +455,12 @@ class ChildHealthPlusViewModel @Inject constructor(
         val stage = currentStage.value ?: return
         val previousStage = when (stage) {
             WorkflowStage.CLIENT_INFO -> return
-            WorkflowStage.SERVICE_SELECTION -> WorkflowStage.CLIENT_INFO
+            WorkflowStage.SERVICE_SELECTION -> if (isReturnVisit.get()) {
+                currentStage.value = WorkflowStage.COMPLETED
+                return
+            } else {
+                WorkflowStage.CLIENT_INFO
+            }
             WorkflowStage.DOSE_SELECTION -> WorkflowStage.SERVICE_SELECTION
             WorkflowStage.ADMINISTRATION_DATE -> {
                 val service = currentService.value

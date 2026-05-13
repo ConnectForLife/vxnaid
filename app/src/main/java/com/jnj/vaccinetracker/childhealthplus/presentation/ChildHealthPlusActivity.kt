@@ -2,8 +2,10 @@ package com.jnj.vaccinetracker.childhealthplus.presentation
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +30,7 @@ import kotlinx.coroutines.launch
  * Activity that hosts the Child Health+ workflow
  * Manages the flow of simplified client registration and service documentation
  */
+@RequiresApi(Build.VERSION_CODES.O)
 class ChildHealthPlusActivity : BaseActivity() {
 
     companion object {
@@ -60,6 +63,17 @@ class ChildHealthPlusActivity : BaseActivity() {
         binding.lifecycleOwner = this
 
         viewModel.setVisitContext(visitPlace, outreachName, attachedClinic)
+
+        // If a participant is provided, this is a return visit — skip client info
+        val returnParticipant = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(EXTRA_PARTICIPANT, ParticipantSummaryUiModel::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(EXTRA_PARTICIPANT)
+        }
+        if (returnParticipant != null) {
+            viewModel.initReturnVisit(returnParticipant)
+        }
 
         // Setup initial fragment
         if (savedInstanceState == null) {
