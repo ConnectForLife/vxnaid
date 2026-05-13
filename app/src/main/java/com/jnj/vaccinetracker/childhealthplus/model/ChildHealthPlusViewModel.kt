@@ -434,7 +434,7 @@ class ChildHealthPlusViewModel @Inject constructor(
                 listOf(DoseNumber.TD_1, DoseNumber.TD_2, DoseNumber.TD_3, DoseNumber.TD_4, DoseNumber.TD_5)
             ChildHealthPlusService.HEPATITIS_B ->
                 listOf(DoseNumber.HEPB_1, DoseNumber.HEPB_2, DoseNumber.HEPB_3)
-            ChildHealthPlusService.MR1, ChildHealthPlusService.HPV ->
+            ChildHealthPlusService.MR2, ChildHealthPlusService.HPV ->
                 emptyList()
         }
     }
