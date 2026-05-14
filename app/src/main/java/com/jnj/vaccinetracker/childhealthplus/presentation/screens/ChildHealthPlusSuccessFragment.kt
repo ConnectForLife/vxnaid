@@ -80,7 +80,7 @@ class ChildHealthPlusSuccessFragment : BaseFragment() {
             RecyclerView.ViewHolder(binding.root) {
             fun bind(service: SelectedService) {
                 binding.service = service
-                binding.onDelete = View.OnClickListener { }
+                binding.onDelete = null
                 binding.executePendingBindings()
             }
         }
