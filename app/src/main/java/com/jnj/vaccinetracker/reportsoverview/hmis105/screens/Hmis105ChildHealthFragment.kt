@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -41,6 +42,7 @@ class Hmis105ChildHealthFragment : BaseFragment(),
         private const val TAG = "Hmis105ChildHealthFrag"
         private const val START_DATE_TAG = "startDateCHP"
         private const val END_DATE_TAG   = "endDateCHP"
+        private const val PARENT_CLINIC_FILTER = "__PARENT__"
 
         private val ALL_DOSES = listOf(
             "CH01 Vitamin A (Dose 1)",
@@ -58,6 +60,7 @@ class Hmis105ChildHealthFragment : BaseFragment(),
     private lateinit var binding: FragmentHmis105ChildHealthReportBinding
     private lateinit var adapter: Hmis105ChildHealthAdapter
     private val viewModel: Hmis105ChildHealthViewModel by viewModels { viewModelFactory }
+    private var selectedClinic: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,6 +83,7 @@ class Hmis105ChildHealthFragment : BaseFragment(),
             }
             setupDateButtons()
             setupDownloadButton()
+            setupClinicFilter()
         } catch (ex: Exception) {
             Log.e(TAG, "Setup error", ex)
             Toast.makeText(requireContext(), getString(R.string.hmis105_child_health_initialization_error), Toast.LENGTH_LONG).show()
@@ -96,6 +100,7 @@ class Hmis105ChildHealthFragment : BaseFragment(),
                 setDisplayHomeAsUpEnabled(true)
                 setHomeButtonEnabled(true)
             }
+            viewModel.loadAttachedClinics()
             viewModel.getChildHealthData()
         } catch (ex: Exception) {
             Log.e(TAG, "onViewCreated error", ex)
@@ -171,6 +176,30 @@ class Hmis105ChildHealthFragment : BaseFragment(),
         }
     }
 
+    private fun setupClinicFilter() {
+        viewModel.attachedClinics.observe(viewLifecycleOwner) { clinics ->
+            if (clinics.isNullOrEmpty()) {
+                binding.clinicFilterContainer.visibility = View.GONE
+                return@observe
+            }
+            binding.clinicFilterContainer.visibility = View.VISIBLE
+            val parentName = viewModel.parentSiteName.value
+                ?: getString(R.string.filter_parent_facility)
+            val options = listOf(getString(R.string.filter_all_clinics), parentName) + clinics
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
+            binding.dropdownClinicFilter.setAdapter(adapter)
+            binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
+            binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
+                selectedClinic = when (position) {
+                    0 -> null
+                    1 -> PARENT_CLINIC_FILTER
+                    else -> clinics[position - 2]
+                }
+                applyFilters()
+            }
+        }
+    }
+
     // ── Core logic ────────────────────────────────────────────────────────────
 
     private fun applyFilters(
@@ -184,8 +213,14 @@ class Hmis105ChildHealthFragment : BaseFragment(),
             val adminDate = DateUtil.convertStringToDate(
                 dto.administerDate, DateFormat.FORMAT_DATE.toString()
             ) ?: return@filter false
-            (startDate == null || adminDate >= startDate) &&
-            (endDate   == null || adminDate <= endDate)
+            val dateMatches = (startDate == null || adminDate >= startDate) &&
+                              (endDate   == null || adminDate <= endDate)
+            val clinicMatches = when (selectedClinic) {
+                null -> true
+                PARENT_CLINIC_FILTER -> dto.attachedClinic.isNullOrBlank()
+                else -> dto.attachedClinic?.equals(selectedClinic, ignoreCase = true) == true
+            }
+            dateMatches && clinicMatches
         }
 
         adapter.submitList(aggregateToRows(filtered))

@@ -7,5 +7,6 @@ data class Hmis105ChildHealthObservationDTO(
     val administerDate: String,
     val visitLocation: String,
     val ageGroup: String,
-    val gender: Gender
+    val gender: Gender,
+    val attachedClinic: String? = null
 )

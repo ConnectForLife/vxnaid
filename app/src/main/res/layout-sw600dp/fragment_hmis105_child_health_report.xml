@@ -9,6 +9,31 @@
         android:paddingHorizontal="@dimen/padding_16"
         android:paddingVertical="@dimen/padding_8">
 
+        <!-- Clinic Filter -->
+        <LinearLayout
+            android:id="@+id/clinic_filter_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_4_8"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/filter_facility_hint">
+
+                <AutoCompleteTextView
+                    android:id="@+id/dropdown_clinic_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
         <!-- Date Filter Section — side by side on tablet -->
         <LinearLayout
             android:layout_width="match_parent"

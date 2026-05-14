@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.models.Constants
@@ -33,6 +34,7 @@ class Hmis105ChildHealthViewModel @Inject constructor(
     private val visitRepository: VisitRepository,
     private val draftVisitEncounterRepository: DraftVisitEncounterRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+    private val configurationManager: ConfigurationManager,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
 
@@ -41,6 +43,8 @@ class Hmis105ChildHealthViewModel @Inject constructor(
     val currentScreen = mutableLiveData<Screen>()
     val selectedStartDate = MutableLiveData<DateTime?>(null)
     val selectedEndDate = MutableLiveData<DateTime?>(null)
+    val attachedClinics = MutableLiveData<List<String>>(emptyList())
+    val parentSiteName = MutableLiveData<String?>(null)
     var navigationDirection = NavigationDirection.NONE
 
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
@@ -64,6 +68,22 @@ class Hmis105ChildHealthViewModel @Inject constructor(
     init {
         val screens = listOf(Screen.HMIS105_CHILD_HEALTH)
         if (currentScreen.get() == null) currentScreen.set(screens.firstOrNull())
+    }
+
+    fun loadAttachedClinics() {
+        viewModelScope.launch {
+            try {
+                val allSites = configurationManager.getSites()
+                parentSiteName.value = allSites.find { it.uuid == currentLocationUuid }?.name
+                val clinicNames = allSites
+                    .filter { it.parentLocationUuid == currentLocationUuid }
+                    .map { it.name }
+                attachedClinics.value = clinicNames
+            } catch (e: Exception) {
+                Log.e("Hmis105ChildHealthVM", "Failed to load attached clinics", e)
+                attachedClinics.value = emptyList()
+            }
+        }
     }
 
     fun getChildHealthData() {
@@ -104,7 +124,7 @@ class Hmis105ChildHealthViewModel @Inject constructor(
                             val dose = when {
                                 key == KEY_VITAMIN_A && ageInMonths in 0..11  -> DOSE_CH01
                                 key == KEY_VITAMIN_A && ageInMonths in 12..59 -> DOSE_CH02
-                                key == KEY_DEWORMING && ageInMonths in 12..59 -> DOSE_CH03
+                                key == KEY_DEWORMING && ageInMonths in 0..59 -> DOSE_CH03
                                 key == KEY_DEWORMING && ageInYears  in 5..14  -> DOSE_CH04
                                 else -> continue
                             }
@@ -118,7 +138,8 @@ class Hmis105ChildHealthViewModel @Inject constructor(
                                 administerDate = obsValue.value,
                                 visitLocation  = visitLocation,
                                 ageGroup       = ageGroup,
-                                gender         = participant.gender
+                                gender         = participant.gender,
+                                attachedClinic = visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
                             )
                             if (!dtos.contains(dto)) dtos.add(dto)
                         }
