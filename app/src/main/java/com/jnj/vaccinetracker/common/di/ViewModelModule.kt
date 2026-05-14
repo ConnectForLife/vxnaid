@@ -36,6 +36,7 @@ import com.jnj.vaccinetracker.visitsoverview.model.VisitsOverviewViewModel
 import com.jnj.vaccinetracker.reportsoverview.childrenoverview.model.RegisteredParticipantsViewModel
 import com.jnj.vaccinetracker.reportsoverview.childrenoverview.model.ReportsOverviewViewModel
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.model.VaccinesOverviewViewModel
+import com.jnj.vaccinetracker.reportsoverview.hmis105.model.Hmis105ChildHealthViewModel
 import com.jnj.vaccinetracker.reportsoverview.hmis105.model.Hmis105ViewModel
 import dagger.Binds
 import dagger.Module
@@ -221,6 +222,11 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(Hmis105ViewModel::class)
     fun bindHmis105ViewModel(model: Hmis105ViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(Hmis105ChildHealthViewModel::class)
+    fun bindHmis105ChildHealthViewModel(model: Hmis105ChildHealthViewModel): ViewModel
 
     @Binds
     @IntoMap

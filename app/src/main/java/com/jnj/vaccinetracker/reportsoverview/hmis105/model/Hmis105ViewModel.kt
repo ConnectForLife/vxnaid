@@ -63,16 +63,8 @@ class Hmis105ViewModel @Inject constructor(
             "Rota 2 Vxnaid Date"                   to "CL17. Rota 2",
             "Rota 3 Vxnaid Date"                   to "CL18. Rota 3",
             "Yellow Fever Vxnaid Date"             to "CL22. Yellow Fever",
-            "Measles Rubella 1 (MR1) Vxnaid Date" to "CL23. Measles Rubella 1 (MR1)",
-            // Child Health+ services
-            "Vitamin A Vxnaid Date"                to "CH01. Vitamin A",
-            "Deworming Vxnaid Date"                to "CH02. Deworming",
-            "HepB Vxnaid Date"                     to "CH03. Hepatitis B",
-            "HPV Vxnaid Date"                      to "CH04. HPV",
-            "Td Vxnaid Date"                       to "CH05. Tetanus (Td)"
+            "Measles Rubella 1 (MR1) Vxnaid Date" to "CL23. Measles Rubella 1 (MR1)"
         )
-
-        private const val SECTION_CHILD_HEALTH = "CHILD HEALTH SERVICES"
 
         private const val KEY_MR1          = "Measles Rubella 1 (MR1) Vxnaid Date"
         private const val KEY_MR2          = "Measles Rubella 2 (MR2) Vxnaid Date"
@@ -125,8 +117,7 @@ class Hmis105ViewModel @Inject constructor(
                         reportData.add(Hmis105ReportDTO(doses = "SECOND YEAR OF LIFE"))
                         reportData.add(createMR2Report(allVisits, participantsMap, start, end))
                         reportData.add(createFullyImmunized2Years(allVisits, participantsMap, start, end))
-                        reportData.add(Hmis105ReportDTO(doses = SECTION_CHILD_HEALTH))
-                        
+
                         reportData.sortWith { a, b ->
                             val aOrder = getSortOrder(a.doses)
                             val bOrder = getSortOrder(b.doses)
@@ -168,20 +159,16 @@ class Hmis105ViewModel @Inject constructor(
     private fun getSortOrder(doses: String): Pair<Int, Int> {
         return when {
             doses == "SECOND YEAR OF LIFE" -> Pair(3, 0)
-            doses == SECTION_CHILD_HEALTH  -> Pair(6, 0)
             else -> {
                 val clMatch = Regex("CL(\\d+)").find(doses)
                 val clNumber = clMatch?.groupValues?.get(1)?.toIntOrNull()
-                val chMatch = Regex("CH(\\d+)").find(doses)
-                val chNumber = chMatch?.groupValues?.get(1)?.toIntOrNull()
                 when {
                     clNumber != null && clNumber in 1..23 -> Pair(0, clNumber)
                     clNumber == 24 -> Pair(1, 24)
                     clNumber == 25 -> Pair(2, 25)
                     clNumber == 27 -> Pair(4, 27)
                     clNumber == 28 -> Pair(5, 28)
-                    chNumber != null -> Pair(7, chNumber)   // Child Health+ rows after section header
-                    else -> Pair(8, 999)
+                    else -> Pair(6, 999)
                 }
             }
         }
@@ -525,7 +512,7 @@ class Hmis105ViewModel @Inject constructor(
     }
 
     private fun createScreens(): List<Screen> {
-        return mutableListOf(Screen.HMIS105_REPORT)
+        return mutableListOf(Screen.HMIS105_VACCINES_REPORT)
     }
 
     private fun setInitialScreen() {
@@ -535,7 +522,7 @@ class Hmis105ViewModel @Inject constructor(
     }
 
     enum class Screen(@StringRes val label: Int) {
-        HMIS105_REPORT(R.string.hmis105_report_title)
+        HMIS105_VACCINES_REPORT(R.string.hmis105_report_title)
     }
 
     override fun saveInstanceState(outState: Bundle) {

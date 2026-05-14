@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentReportsOverviewBinding
+import com.jnj.vaccinetracker.reportsoverview.hmis105.activity.Hmis105ChildHealthFlowActivity
 import com.jnj.vaccinetracker.reportsoverview.hmis105.activity.Hmis105FlowActivity
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.screens.VaccinesOverviewFragment
 
@@ -35,6 +36,10 @@ class ReportsOverviewFragment : BaseFragment() {
 
         binding.btnHmis105Report.setOnClickListener {
             navigateToHmis105Report()
+        }
+
+        binding.btnHmis105ChildHealthReport.setOnClickListener {
+            navigateToHmis105ChildHealthReport()
         }
 
         return binding.root
@@ -80,5 +85,10 @@ class ReportsOverviewFragment : BaseFragment() {
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun navigateToHmis105Report() {
         startActivity(Hmis105FlowActivity.create(requireContext()))
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun navigateToHmis105ChildHealthReport() {
+        startActivity(Hmis105ChildHealthFlowActivity.create(requireContext()))
     }
 }

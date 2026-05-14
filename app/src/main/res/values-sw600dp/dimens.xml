@@ -55,6 +55,7 @@
 
     <!-- Reports Overview -->
     <dimen name="report_overview_btn_padding_70_100_50">100dp</dimen>
+    <dimen name="report_overview_btn_padding_30_60_20">60dp</dimen>
 
     <!-- contraindications  -->
     <dimen name="contraindications_text_size">50sp</dimen>

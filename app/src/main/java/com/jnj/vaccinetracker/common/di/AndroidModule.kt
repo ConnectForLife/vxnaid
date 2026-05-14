@@ -59,7 +59,9 @@ import com.jnj.vaccinetracker.register.dialogs.MultipleVisitsDialog
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
 import com.jnj.vaccinetracker.reportsoverview.childrenoverview.activity.ReportsOverviewFlowActivity
+import com.jnj.vaccinetracker.reportsoverview.hmis105.activity.Hmis105ChildHealthFlowActivity
 import com.jnj.vaccinetracker.reportsoverview.hmis105.activity.Hmis105FlowActivity
+import com.jnj.vaccinetracker.reportsoverview.hmis105.screens.Hmis105ChildHealthFragment
 import com.jnj.vaccinetracker.reportsoverview.hmis105.screens.Hmis105ReportFragment
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.activity.VaccinesOverviewFlowActivity
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.screens.VaccinesOverviewFragment
@@ -328,6 +330,12 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindHmis105ReportFragment(): Hmis105ReportFragment
+
+    @ContributesAndroidInjector
+    fun bindHmis105ChildHealthFlowActivity(): Hmis105ChildHealthFlowActivity
+
+    @ContributesAndroidInjector
+    fun bindHmis105ChildHealthFragment(): Hmis105ChildHealthFragment
 
     @ContributesAndroidInjector
     fun bindReportsMenuActivity(): ReportsMenuActivity
