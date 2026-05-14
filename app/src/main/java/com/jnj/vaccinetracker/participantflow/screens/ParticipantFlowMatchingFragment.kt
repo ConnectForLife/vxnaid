@@ -157,10 +157,10 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
     }
 
     private fun setButtonsVisibility(visible: Boolean) {
-        val visibility = if (visible) View.VISIBLE else View.GONE
-        binding.btnNewParticipant.visibility = visibility
-        binding.btnMatchParticipant.visibility = visibility
-        binding.btnReportAdverseEffects.visibility = visibility
+        val isChp = viewModel.selectedParticipant.get()?.isChildHealthPlus == true
+        binding.btnMatchParticipant.visibility = if (visible) View.VISIBLE else View.GONE
+        binding.btnNewParticipant.visibility = if (visible && !isChp) View.VISIBLE else View.GONE
+        binding.btnReportAdverseEffects.visibility = if (visible && !isChp) View.VISIBLE else View.GONE
 
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(!visible)
     }

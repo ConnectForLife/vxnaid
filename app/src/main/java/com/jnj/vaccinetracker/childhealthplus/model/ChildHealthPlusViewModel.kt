@@ -3,6 +3,7 @@ package com.jnj.vaccinetracker.childhealthplus.model
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
 import com.jnj.vaccinetracker.common.data.managers.VisitManager
+import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.PastServiceItem
@@ -33,6 +34,7 @@ import javax.inject.Inject
 class ChildHealthPlusViewModel @Inject constructor(
     private val participantManager: ParticipantManager,
     private val visitManager: VisitManager,
+    private val findParticipantByUuidUseCase: FindParticipantByParticipantUuidUseCase,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
     private val createVisitUseCase: CreateVisitUseCase,
@@ -127,6 +129,14 @@ class ChildHealthPlusViewModel @Inject constructor(
         pastServicesLoading.set(true)
         scope.launch {
             try {
+                val participant = findParticipantByUuidUseCase.findByParticipantUuid(participantUuid)
+                if (participant != null) {
+                    childFirstName.value = participant.childFirstName
+                    childLastName.value = participant.childLastName
+                    motherFirstName.value = participant.motherFirstName
+                    motherLastName.value = participant.motherLastName
+                }
+
                 val servicesByKey = ChildHealthPlusService.values().associateBy { it.serviceKey }
                 val items = visitManager.getVisitsForParticipant(participantUuid)
                     .filter {
@@ -143,7 +153,7 @@ class ChildHealthPlusViewModel @Inject constructor(
                     }
                 pastServices.value = items
             } catch (throwable: Throwable) {
-                logError("Failed to load past services for participant", throwable)
+                logError("Failed to load return visit data", throwable)
             } finally {
                 yield()
                 pastServicesLoading.set(false)
@@ -416,7 +426,7 @@ class ChildHealthPlusViewModel @Inject constructor(
 
     private fun visitContextAttributes(): Map<String, String> {
         val attributes = mutableMapOf<String, String>()
-        visitPlace?.let { attributes[Constants.ATTRIBUTE_VISIT_LOCATION] = it }
+        attributes[Constants.ATTRIBUTE_VISIT_LOCATION] = visitPlace ?: attachedClinic ?: "CHP"
         outreachName?.let { attributes[Constants.ATTRIBUTE_VISIT_OUTREACH_NAME] = it }
         attachedClinic?.let { attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC] = it }
         return attributes
