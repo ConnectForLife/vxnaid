@@ -41,7 +41,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_8_16"
                     android:text="@string/child_health_plus_success_description"
-                    android:textSize="@dimen/text_16"
+                    android:textSize="@dimen/chp_text_body"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:gravity="center" />
 
                 <!-- Child Details Card -->
@@ -51,7 +52,8 @@
                     android:layout_marginTop="@dimen/margin_16_32"
                     android:text="@string/child_health_plus_success_child_details_header"
                     android:textStyle="bold"
-                    android:textSize="@dimen/text_16" />
+                    android:textSize="@dimen/chp_text_section_header"
+                    android:textColor="?android:attr/textColorPrimary" />
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -78,7 +80,8 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/child_health_plus_child_id_label"
                                 android:textStyle="bold"
-                                android:textSize="@dimen/text_16" />
+                                android:textSize="@dimen/chp_text_label"
+                                android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
                                 android:id="@+id/tv_child_id"
@@ -87,7 +90,7 @@
                                 android:layout_weight="1"
                                 android:layout_marginStart="@dimen/margin_8_16"
                                 android:text="@{viewModel.generatedChildId}"
-                                android:textSize="@dimen/text_16"
+                                android:textSize="@dimen/chp_text_label"
                                 android:textStyle="bold"
                                 android:textIsSelectable="true"
                                 android:textColor="@color/colorPrimary" />
@@ -106,7 +109,8 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/child_health_plus_success_name_label"
                                 android:textStyle="bold"
-                                android:textSize="@dimen/text_16" />
+                                android:textSize="@dimen/chp_text_label"
+                                android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
                                 android:id="@+id/tv_name"
@@ -114,7 +118,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_marginStart="@dimen/margin_8_16"
-                                android:textSize="@dimen/text_16" />
+                                android:textSize="@dimen/chp_text_label"
+                                android:textColor="?android:attr/textColorPrimary" />
 
                         </LinearLayout>
 
@@ -130,7 +135,8 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/child_health_plus_success_dob_label"
                                 android:textStyle="bold"
-                                android:textSize="@dimen/text_16" />
+                                android:textSize="@dimen/chp_text_label"
+                                android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
                                 android:id="@+id/tv_dob"
@@ -138,7 +144,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_marginStart="@dimen/margin_8_16"
-                                android:textSize="@dimen/text_16" />
+                                android:textSize="@dimen/chp_text_label"
+                                android:textColor="?android:attr/textColorPrimary" />
 
                         </LinearLayout>
 
@@ -153,7 +160,8 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/child_health_plus_success_sex_label"
                                 android:textStyle="bold"
-                                android:textSize="@dimen/text_16" />
+                                android:textSize="@dimen/chp_text_label"
+                                android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
                                 android:id="@+id/tv_sex"
@@ -161,7 +169,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_marginStart="@dimen/margin_8_16"
-                                android:textSize="@dimen/text_16" />
+                                android:textSize="@dimen/chp_text_label"
+                                android:textColor="?android:attr/textColorPrimary" />
 
                         </LinearLayout>
 
@@ -176,7 +185,8 @@
                     android:layout_marginTop="@dimen/margin_16_32"
                     android:text="@string/child_health_plus_success_services_header"
                     android:textStyle="bold"
-                    android:textSize="@dimen/text_14" />
+                    android:textSize="@dimen/chp_text_section_header"
+                    android:textColor="?android:attr/textColorPrimary" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_services"

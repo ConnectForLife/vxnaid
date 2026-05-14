@@ -43,7 +43,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_16_32"
                     android:text="@string/child_health_plus_service_selection_description"
-                    android:textSize="@dimen/text_16"
+                    android:textSize="@dimen/chp_text_body"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:gravity="center"/>
 
                 <!-- Past services section — visible for return visits only -->
@@ -54,7 +55,8 @@
                     android:layout_marginTop="@dimen/margin_16_32"
                     android:text="@string/child_health_plus_past_services_header"
                     android:textStyle="bold"
-                    android:textSize="@dimen/text_14"
+                    android:textSize="@dimen/chp_text_section_header"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:visibility="gone" />
 
                 <ProgressBar
@@ -79,7 +81,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_4_8"
                     android:text="@string/child_health_plus_past_services_none"
-                    android:textSize="@dimen/text_14"
+                    android:textSize="@dimen/chp_text_body"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:visibility="gone" />
 
                 <LinearLayout
@@ -95,7 +98,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_16_32"
                     android:text="@string/child_health_plus_selected_services"
-                    android:textSize="@dimen/text_14"
+                    android:textSize="@dimen/chp_text_section_header"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView

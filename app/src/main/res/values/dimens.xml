@@ -88,4 +88,11 @@
     <!-- Cards -->
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
+
+    <!-- Child Health Plus -->
+    <dimen name="chp_text_body">16sp</dimen>
+    <dimen name="chp_text_label">16sp</dimen>
+    <dimen name="chp_text_section_header">16sp</dimen>
+    <dimen name="chp_text_list_item">16sp</dimen>
+    <dimen name="chp_text_input">18sp</dimen>
 </resources>

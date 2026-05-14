@@ -62,4 +62,11 @@
     <!-- Visits -->
     <dimen name="visit_list_item_text_12_16">16sp</dimen>
     <dimen name="eye_icon">30dp</dimen>
+
+    <!-- Child Health Plus -->
+    <dimen name="chp_text_body">20sp</dimen>
+    <dimen name="chp_text_label">20sp</dimen>
+    <dimen name="chp_text_section_header">20sp</dimen>
+    <dimen name="chp_text_list_item">20sp</dimen>
+    <dimen name="chp_text_input">24sp</dimen>
 </resources>
