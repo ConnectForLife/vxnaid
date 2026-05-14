@@ -377,11 +377,9 @@ class ChildHealthPlusViewModel @Inject constructor(
         operatorUuid: String,
         isPregnant: Boolean,
     ) {
-        val doseOrder = selectedService.dose?.order ?: 1
         val visitAttributes = mapOf(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
-            Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to doseOrder.toString(),
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
         ) + visitContextAttributes()
 
