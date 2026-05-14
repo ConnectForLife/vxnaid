@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
@@ -35,6 +36,8 @@ class ChildHealthPlusSuccessFragment : BaseFragment() {
         )
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
+
+        binding.rvServices.layoutManager = LinearLayoutManager(requireContext())
 
         viewModel.generatedChildId.observe(viewLifecycleOwner) { childId ->
             binding.tvChildId.text = childId.orEmpty()

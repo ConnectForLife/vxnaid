@@ -43,7 +43,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/margin_4_8"
-                        android:text="@{service.dose != null ? service.dose.label : ``}"
+                        android:text="@{service.formattedAdministrationDate}"
                         android:textSize="@dimen/text_16" />
 
                 </LinearLayout>

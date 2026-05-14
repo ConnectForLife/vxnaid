@@ -46,6 +46,42 @@
                     android:textSize="@dimen/text_16"
                     android:gravity="center"/>
 
+                <!-- Past services section — visible for return visits only -->
+                <TextView
+                    android:id="@+id/tv_past_services_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:text="@string/child_health_plus_past_services_header"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_14"
+                    android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/pb_past_services"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_8_16"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_past_services"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_4_8"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tv_past_services_none"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_4_8"
+                    android:text="@string/child_health_plus_past_services_none"
+                    android:textSize="@dimen/text_14"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:id="@+id/services_container"
                     android:layout_width="match_parent"

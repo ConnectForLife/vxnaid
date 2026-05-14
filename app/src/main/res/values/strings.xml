@@ -663,4 +663,7 @@
     <string name="child_health_plus_name_label">Name:</string>
     <string name="child_health_plus_mother_label">Mother:</string>
     <string name="child_health_plus_selected_services">Selected Services:</string>
+    <string name="child_health_plus_past_services_header">Services Already Received</string>
+    <string name="child_health_plus_past_services_loading">Loading past services…</string>
+    <string name="child_health_plus_past_services_none">No previous services recorded</string>
 </resources>

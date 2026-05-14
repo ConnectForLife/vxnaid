@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
 import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
+import com.jnj.vaccinetracker.common.data.models.PastServiceItem
 import com.jnj.vaccinetracker.common.data.models.SelectedService
 import com.jnj.vaccinetracker.common.ui.BaseFragment
 import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusServiceSelectionBinding
@@ -23,6 +25,7 @@ class ChildHealthPlusServiceSelectionFragment : BaseFragment() {
     private val viewModel: ChildHealthPlusViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: FragmentChildHealthPlusServiceSelectionBinding
     private val selectedServicesAdapter = SelectedServicesAdapter()
+    private val pastServicesAdapter = PastServicesAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,10 +43,10 @@ class ChildHealthPlusServiceSelectionFragment : BaseFragment() {
 
         setupServiceButtons()
         setupSelectedServicesList()
+        setupPastServicesList()
 
         binding.btnBack.setOnClickListener { viewModel.goBack() }
         binding.btnConfirm.setOnClickListener { viewModel.proceedToConfirmation() }
-        // "Add another service" button is redundant — the service buttons above already do this
         binding.btnAddService.visibility = View.GONE
 
         return binding.root
@@ -82,6 +85,32 @@ class ChildHealthPlusServiceSelectionFragment : BaseFragment() {
         }
     }
 
+    private fun setupPastServicesList() {
+        if (!viewModel.isReturnVisit.get()) return
+
+        binding.tvPastServicesHeader.visibility = View.VISIBLE
+        binding.rvPastServices.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = pastServicesAdapter
+        }
+
+        viewModel.pastServicesLoading.observe(viewLifecycleOwner) { loading ->
+            binding.pbPastServices.visibility = if (loading) View.VISIBLE else View.GONE
+            updatePastServicesEmptyState(loading, viewModel.pastServices.value)
+        }
+
+        viewModel.pastServices.observe(viewLifecycleOwner) { items ->
+            pastServicesAdapter.submitList(items.orEmpty())
+            binding.rvPastServices.visibility = if (items.isNullOrEmpty()) View.GONE else View.VISIBLE
+            updatePastServicesEmptyState(viewModel.pastServicesLoading.get(), items)
+        }
+    }
+
+    private fun updatePastServicesEmptyState(loading: Boolean?, items: List<PastServiceItem>?) {
+        binding.tvPastServicesNone.visibility =
+            if (loading != true && items.isNullOrEmpty()) View.VISIBLE else View.GONE
+    }
+
     private fun setupSelectedServicesList() {
         binding.selectedServicesList.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -93,6 +122,32 @@ class ChildHealthPlusServiceSelectionFragment : BaseFragment() {
             binding.selectedServicesTitle.visibility =
                 if (services.isNullOrEmpty()) View.GONE else View.VISIBLE
         }
+    }
+
+    inner class PastServicesAdapter : RecyclerView.Adapter<PastServicesAdapter.ViewHolder>() {
+
+        private var items: List<PastServiceItem> = emptyList()
+
+        fun submitList(list: List<PastServiceItem>) {
+            items = list
+            notifyDataSetChanged()
+        }
+
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val tvName: TextView = view.findViewById(R.id.tv_service_name)
+            val tvDate: TextView = view.findViewById(R.id.tv_service_date)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_item_past_service, parent, false))
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val item = items[position]
+            holder.tvName.text = item.displayName
+            holder.tvDate.text = item.date
+        }
+
+        override fun getItemCount() = items.size
     }
 
     inner class SelectedServicesAdapter :

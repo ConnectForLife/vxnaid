@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.common.data.models
 
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -17,9 +18,6 @@ enum class ChildHealthPlusService(
     HEPATITIS_B("Hepatitis B (HepB)", "HEPB", "HepB Vxnaid"),
     HPV("Human Papillomavirus (HPV)", "HPV", "HPV Vxnaid"),
     TETANUS("Tetanus (Td)", "TD", "Td Vxnaid");
-
-    fun requiresNextVisitScheduling(): Boolean =
-        this == VITAMIN_A || this == DEWORMING || this == TETANUS
 }
 
 /**
@@ -52,6 +50,14 @@ data class SelectedService(
     val administrationDate: Date,
     val nextVisitDate: Date? = null,
     val uuid: String = UUID.randomUUID().toString()
+) {
+    val formattedAdministrationDate: String
+        get() = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(administrationDate)
+}
+
+data class PastServiceItem(
+    val displayName: String,
+    val date: String,
 )
 
 

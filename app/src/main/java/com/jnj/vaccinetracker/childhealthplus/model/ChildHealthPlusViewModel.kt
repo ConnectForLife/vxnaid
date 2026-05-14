@@ -2,9 +2,10 @@ package com.jnj.vaccinetracker.childhealthplus.model
 
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
+import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import com.jnj.vaccinetracker.common.data.models.Constants
-import com.jnj.vaccinetracker.common.data.models.DoseNumber
+import com.jnj.vaccinetracker.common.data.models.PastServiceItem
 import com.jnj.vaccinetracker.common.data.models.SelectedService
 import com.jnj.vaccinetracker.common.di.ResourcesWrapper
 import com.jnj.vaccinetracker.common.domain.entities.Address
@@ -31,6 +32,7 @@ import javax.inject.Inject
 
 class ChildHealthPlusViewModel @Inject constructor(
     private val participantManager: ParticipantManager,
+    private val visitManager: VisitManager,
     private val userRepository: UserRepository,
     private val syncSettingsRepository: SyncSettingsRepository,
     private val createVisitUseCase: CreateVisitUseCase,
@@ -42,9 +44,7 @@ class ChildHealthPlusViewModel @Inject constructor(
     enum class WorkflowStage {
         CLIENT_INFO,
         SERVICE_SELECTION,
-        DOSE_SELECTION,
         ADMINISTRATION_DATE,
-        NEXT_VISIT_DATE,
         CONFIRMATION,
         SUCCESS,
         COMPLETED
@@ -74,11 +74,11 @@ class ChildHealthPlusViewModel @Inject constructor(
     val selectedServices = mutableLiveData<List<SelectedService>>(emptyList())
 
     val currentService = mutableLiveData<ChildHealthPlusService?>()
-    val availableDoses = mutableLiveData<List<DoseNumber>>(emptyList())
-    val selectedDose = mutableLiveData<DoseNumber?>()
 
     val administrationDate = mutableLiveData<Date?>()
-    val nextVisitDate = mutableLiveData<Date?>()
+
+    val pastServices = mutableLiveData<List<PastServiceItem>>(emptyList())
+    val pastServicesLoading = mutableLiveBoolean(false)
 
     private var visitPlace: String? = null
     private var outreachName: String? = null
@@ -120,6 +120,35 @@ class ChildHealthPlusViewModel @Inject constructor(
         }
         isReturnVisit.set(true)
         currentStage.value = WorkflowStage.SERVICE_SELECTION
+        loadPastServices(participant.participantUuid)
+    }
+
+    private fun loadPastServices(participantUuid: String) {
+        pastServicesLoading.set(true)
+        scope.launch {
+            try {
+                val servicesByKey = ChildHealthPlusService.values().associateBy { it.serviceKey }
+                val items = visitManager.getVisitsForParticipant(participantUuid)
+                    .filter {
+                        it.visitStatus == Constants.VISIT_STATUS_OCCURRED &&
+                        it.visitType == Constants.VISIT_TYPE_DOSING
+                    }
+                    .sortedByDescending { it.visitDate }
+                    .mapNotNull { visit ->
+                        val service = servicesByKey[visit.visitTypeVxnaid] ?: return@mapNotNull null
+                        PastServiceItem(
+                            displayName = service.displayName,
+                            date = dateFormat.format(visit.visitDate)
+                        )
+                    }
+                pastServices.value = items
+            } catch (throwable: Throwable) {
+                logError("Failed to load past services for participant", throwable)
+            } finally {
+                yield()
+                pastServicesLoading.set(false)
+            }
+        }
     }
 
     fun setVisitContext(visitPlace: String?, outreachName: String?, attachedClinic: String?) {
@@ -140,17 +169,6 @@ class ChildHealthPlusViewModel @Inject constructor(
 
     fun addService(service: ChildHealthPlusService) {
         currentService.value = service
-        val doses = getAvailableDoses(service)
-        if (doses.isEmpty()) {
-            currentStage.value = WorkflowStage.ADMINISTRATION_DATE
-        } else {
-            availableDoses.value = doses
-            currentStage.value = WorkflowStage.DOSE_SELECTION
-        }
-    }
-
-    fun selectDose(dose: DoseNumber) {
-        selectedDose.value = dose
         currentStage.value = WorkflowStage.ADMINISTRATION_DATE
     }
 
@@ -160,35 +178,10 @@ class ChildHealthPlusViewModel @Inject constructor(
             return
         }
 
-        administrationDate.value = date
         val service = currentService.value ?: return
-
-        if (service.requiresNextVisitScheduling()) {
-            currentStage.value = WorkflowStage.NEXT_VISIT_DATE
-        } else {
-            // No follow-up scheduling needed — save service and return to selection
-            addSelectedService(service, selectedDose.value, date, null)
-            resetServiceSelection()
-            currentStage.value = WorkflowStage.SERVICE_SELECTION
-        }
-    }
-
-    fun setNextVisitDate(date: Date?) {
-        val service = currentService.value
-        val adminDate = administrationDate.value
-
-        if (date != null && adminDate != null && date.before(adminDate)) {
-            errorMessage.value = resourcesWrapper.getString(R.string.child_health_plus_next_visit_invalid)
-            return
-        }
-
-        nextVisitDate.value = date
-
-        if (service != null && adminDate != null) {
-            addSelectedService(service, selectedDose.value, adminDate, date)
-            resetServiceSelection()
-            currentStage.value = WorkflowStage.SERVICE_SELECTION
-        }
+        addSelectedService(service, date)
+        resetServiceSelection()
+        currentStage.value = WorkflowStage.SERVICE_SELECTION
     }
 
     fun removeService(serviceUuid: String) {
@@ -421,22 +414,6 @@ class ChildHealthPlusViewModel @Inject constructor(
             )
         )
 
-        // Schedule a follow-up visit if requested
-        selectedService.nextVisitDate?.let { nextDate ->
-            createVisitUseCase.createVisit(
-                CreateVisit(
-                    participantUuid = participantUuid,
-                    visitType = Constants.VISIT_TYPE_DOSING,
-                    startDatetime = nextDate,
-                    locationUuid = siteUuid,
-                    attributes = mapOf(
-                        Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
-                        Constants.ATTRIBUTE_OPERATOR to operatorUuid,
-                        Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
-                    ) + visitContextAttributes()
-                )
-            )
-        }
     }
 
     private fun visitContextAttributes(): Map<String, String> {
@@ -461,34 +438,15 @@ class ChildHealthPlusViewModel @Inject constructor(
             } else {
                 WorkflowStage.CLIENT_INFO
             }
-            WorkflowStage.DOSE_SELECTION -> WorkflowStage.SERVICE_SELECTION
-            WorkflowStage.ADMINISTRATION_DATE -> {
-                val service = currentService.value
-                if (service != null && getAvailableDoses(service).isNotEmpty()) {
-                    WorkflowStage.DOSE_SELECTION
-                } else {
-                    WorkflowStage.SERVICE_SELECTION
-                }
-            }
-            WorkflowStage.NEXT_VISIT_DATE -> WorkflowStage.ADMINISTRATION_DATE
+            WorkflowStage.ADMINISTRATION_DATE -> WorkflowStage.SERVICE_SELECTION
             WorkflowStage.CONFIRMATION -> WorkflowStage.SERVICE_SELECTION
             WorkflowStage.SUCCESS, WorkflowStage.COMPLETED -> return
         }
         currentStage.value = previousStage
     }
 
-    private fun addSelectedService(
-        service: ChildHealthPlusService,
-        dose: DoseNumber?,
-        adminDate: Date,
-        nextVisit: Date?,
-    ) {
-        val newService = SelectedService(
-            service = service,
-            dose = dose,
-            administrationDate = adminDate,
-            nextVisitDate = nextVisit
-        )
+    private fun addSelectedService(service: ChildHealthPlusService, adminDate: Date) {
+        val newService = SelectedService(service = service, administrationDate = adminDate)
         val current = selectedServices.value.orEmpty().toMutableList()
         current.add(newService)
         selectedServices.value = current
@@ -496,23 +454,7 @@ class ChildHealthPlusViewModel @Inject constructor(
 
     private fun resetServiceSelection() {
         currentService.value = null
-        selectedDose.value = null
         administrationDate.value = null
-        nextVisitDate.value = null
-        availableDoses.value = emptyList()
-    }
-
-    private fun getAvailableDoses(service: ChildHealthPlusService): List<DoseNumber> {
-        return when (service) {
-            ChildHealthPlusService.VITAMIN_A, ChildHealthPlusService.DEWORMING ->
-                listOf(DoseNumber.DOSE_1, DoseNumber.DOSE_2)
-            ChildHealthPlusService.TETANUS ->
-                listOf(DoseNumber.TD_1, DoseNumber.TD_2, DoseNumber.TD_3, DoseNumber.TD_4, DoseNumber.TD_5)
-            ChildHealthPlusService.HEPATITIS_B ->
-                listOf(DoseNumber.HEPB_1, DoseNumber.HEPB_2, DoseNumber.HEPB_3)
-            ChildHealthPlusService.MR2, ChildHealthPlusService.HPV ->
-                emptyList()
-        }
     }
 
     private fun validateClientInfo(): List<String> {

@@ -14,9 +14,7 @@ import com.jnj.vaccinetracker.childhealthplus.model.ChildHealthPlusViewModel
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusClientInfoFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusConfirmationFragment
-import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusDoseSelectionFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusAdministrationDateFragment
-import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusNextVisitDateFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusServiceSelectionFragment
 import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusSuccessFragment
 import com.jnj.vaccinetracker.common.ui.BaseActivity
@@ -64,7 +62,6 @@ class ChildHealthPlusActivity : BaseActivity() {
 
         viewModel.setVisitContext(visitPlace, outreachName, attachedClinic)
 
-        // If a participant is provided, this is a return visit — skip client info
         val returnParticipant = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(EXTRA_PARTICIPANT, ParticipantSummaryUiModel::class.java)
         } else {
@@ -75,24 +72,18 @@ class ChildHealthPlusActivity : BaseActivity() {
             viewModel.initReturnVisit(returnParticipant)
         }
 
-        // Setup initial fragment
         if (savedInstanceState == null) {
             showFragment(ChildHealthPlusClientInfoFragment())
         }
 
-        // Observe view model stage changes to navigate between fragments
         viewModel.currentStage.observe(this) { stage ->
             when (stage) {
                 ChildHealthPlusViewModel.WorkflowStage.CLIENT_INFO ->
                     showFragment(ChildHealthPlusClientInfoFragment())
                 ChildHealthPlusViewModel.WorkflowStage.SERVICE_SELECTION ->
                     showFragment(ChildHealthPlusServiceSelectionFragment())
-                ChildHealthPlusViewModel.WorkflowStage.DOSE_SELECTION ->
-                    showFragment(ChildHealthPlusDoseSelectionFragment())
                 ChildHealthPlusViewModel.WorkflowStage.ADMINISTRATION_DATE ->
                     showFragment(ChildHealthPlusAdministrationDateFragment())
-                ChildHealthPlusViewModel.WorkflowStage.NEXT_VISIT_DATE ->
-                    showFragment(ChildHealthPlusNextVisitDateFragment())
                 ChildHealthPlusViewModel.WorkflowStage.CONFIRMATION ->
                     showFragment(ChildHealthPlusConfirmationFragment())
                 ChildHealthPlusViewModel.WorkflowStage.SUCCESS ->
@@ -103,7 +94,6 @@ class ChildHealthPlusActivity : BaseActivity() {
             }
         }
 
-        // Observe submission failed
         lifecycleScope.launch {
             viewModel.submitFailedEvent.asFlow().collect { error ->
                 Snackbar.make(binding.root, error, Snackbar.LENGTH_LONG).show()
