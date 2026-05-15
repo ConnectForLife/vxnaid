@@ -449,27 +449,25 @@ class HistoricalDataForVisitTypeFragment :
       val date = viewModel.visitDate.value!!.toDate()
       val visit = createVisitForNewVisit(date)
 
-      lifecycleScope.launch {
-         try {
-            visitManager.registerDosingVisit(
-               encounterDatetime = Date(),
-               visitUuid = visit.uuid,
-               participantUuid = flowViewModel.participant.value!!.participantUuid,
-               dosingNumber = visit.dosingNumber ?: 0,
-               substanceObservations = getObservationsForVisitEncounter(),
-               otherSubstanceObservations = viewModel.otherSubstancesAndValues.value
-                  ?: mutableMapOf(),
-               visitTypeVxnaid = visitTypeName
-            )
-            showSuccessDialog()
-         } catch (ex: OperatorUuidNotAvailableException) {
-            sessionExpiryObserver.notifySessionExpired()
-         } catch (throwable: Throwable) {
-            throwable.rethrowIfFatal()
-            logError("Failed to register dosing visit: ", throwable)
-         } finally {
-            viewModel.loading.value = false
-         }
+      try {
+         visitManager.registerDosingVisit(
+            encounterDatetime = Date(),
+            visitUuid = visit.uuid,
+            participantUuid = flowViewModel.participant.value!!.participantUuid,
+            dosingNumber = visit.dosingNumber ?: 0,
+            substanceObservations = getObservationsForVisitEncounter(),
+            otherSubstanceObservations = viewModel.otherSubstancesAndValues.value
+               ?: mutableMapOf(),
+            visitTypeVxnaid = visitTypeName
+         )
+         showSuccessDialog()
+      } catch (ex: OperatorUuidNotAvailableException) {
+         sessionExpiryObserver.notifySessionExpired()
+      } catch (throwable: Throwable) {
+         throwable.rethrowIfFatal()
+         logError("Failed to register dosing visit: ", throwable)
+      } finally {
+         viewModel.loading.value = false
       }
    }
 

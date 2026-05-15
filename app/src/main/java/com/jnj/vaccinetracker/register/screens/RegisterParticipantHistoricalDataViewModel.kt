@@ -204,25 +204,23 @@ class RegisterParticipantHistoricalDataViewModel @Inject constructor(
 
       loading.set(true)
 
-      scope.launch {
-         try {
-            visitManager.registerDosingVisit(
-               encounterDatetime = visitDate,
-               visitUuid = visitUuid,
-               participantUuid = participant.participantUuid,
-               dosingNumber = dosingVisit.dosingNumber ?: 0,
-               substanceObservations = substanceObservations,
-               otherSubstanceObservations = otherSubstancesAndValues,
-               visitTypeVxnaid = visitType
-            )
-         } catch (ex: OperatorUuidNotAvailableException) {
-            sessionExpiryObserver.notifySessionExpired()
-         } catch (throwable: Throwable) {
-            throwable.rethrowIfFatal()
-            logError("Failed to register dosing visit: ", throwable)
-         } finally {
-            loading.set(false)
-         }
+      try {
+         visitManager.registerDosingVisit(
+            encounterDatetime = visitDate,
+            visitUuid = visitUuid,
+            participantUuid = participant.participantUuid,
+            dosingNumber = dosingVisit.dosingNumber ?: 0,
+            substanceObservations = substanceObservations,
+            otherSubstanceObservations = otherSubstancesAndValues,
+            visitTypeVxnaid = visitType
+         )
+      } catch (ex: OperatorUuidNotAvailableException) {
+         sessionExpiryObserver.notifySessionExpired()
+      } catch (throwable: Throwable) {
+         throwable.rethrowIfFatal()
+         logError("Failed to register dosing visit: ", throwable)
+      } finally {
+         loading.set(false)
       }
    }
 

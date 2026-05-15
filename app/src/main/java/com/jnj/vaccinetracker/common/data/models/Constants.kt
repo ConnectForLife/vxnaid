@@ -54,9 +54,6 @@ object Constants {
 
     // Child Health+ attributes
     const val ATTRIBUTE_CHILD_HEALTH_PLUS = "ChildHealthPlus"
-    const val ATTRIBUTE_CHILD_HEALTH_PLUS_SERVICE = "ChildHealthPlusService"
-    const val ATTRIBUTE_CHILD_HEALTH_PLUS_DOSE = "ChildHealthPlusDose"
-    const val VISIT_TYPE_CHILD_HEALTH_PLUS = "Child Health+"
 
     // common attributes
     const val ATTRIBUTE_OPERATOR = "operatorUuid"
@@ -123,7 +120,6 @@ object Constants {
     const val VISITS_OVERVIEW_SCHEDULED_VISITS_KEY = "Scheduled Visits"
     const val VISITS_OVERVIEW_HISTORICAL_VISITS_KEY = "Visit History"
     const val VISITS_OVERVIEW_MISSED_VISITS_KEY = "Missed Visits"
-    const val REGISTERED_PARTICIPANT = "Registered Children"
 
     const val VISIT_DATE_FILE_COLUMN_HEADER = "Visit Date"
     const val CLIENT_ID_FILE_COLUMN_HEADER = "Client ID"
@@ -152,6 +148,4 @@ object Constants {
     const val POLIO_0_VACCINE_CONCEPT_NAME = "Polio 0 Vxnaid"
     const val PERSONAL_LANGUAGE_ENGLISH = "English"
     const val PERSONAL_LANGUAGE_LUGANDA = "Luganda"
-
-    const val ATTRIBUTE_MOTHER_NAME = "Mother"
 }
