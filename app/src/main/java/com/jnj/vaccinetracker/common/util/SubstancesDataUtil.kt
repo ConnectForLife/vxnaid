@@ -133,9 +133,6 @@ class SubstancesDataUtil {
             val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
             val hasEverBeenVaccinated = isAnySubstanceApplied(participantVisits)
 
-            // Only return At Birth for very young children who have never been vaccinated.
-            // If at-birth vaccines were already recorded as a past visit, fall through to the
-            // last-visit logic below so the correct next visit type is suggested.
             if (childAgeInWeeks < 6 && !hasEverBeenVaccinated) {
                 return visitTypesOrdered[0] // At Birth
             }
@@ -150,17 +147,12 @@ class SubstancesDataUtil {
                 .maxByOrNull { it.visitDate }
 
             return if (lastVisit != null) {
-                // Prefer the stored visitTypeVxnaid attribute; it is always correct and avoids
-                // misidentifying multi-visit substances like Vitamin A (which appears in multiple
-                // visit types — inferring from observations would return the earliest visit type).
                 val lastVisitType = lastVisit.visitTypeVxnaid
                     ?: getVisitTypeFromLastVisit(lastVisit, allSubstancesConfig)
                 val lastVisitIndex = visitTypesOrdered.indexOf(lastVisitType)
                 when {
                     lastVisitIndex >= 0 && lastVisitIndex < visitTypesOrdered.size - 1 ->
                         visitTypesOrdered[lastVisitIndex + 1]
-                    // indexOf returns -1 when lastVisitType is empty or unrecognised; fall back to
-                    // age-based lookup rather than accidentally returning visitTypesOrdered[0].
                     lastVisitIndex < 0 ->
                         findVisitTypeByChildAge(childAgeInWeeks, allSubstancesConfig)
                     else -> "No visit scheduled"
