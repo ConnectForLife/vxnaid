@@ -9,6 +9,7 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
@@ -32,6 +33,7 @@ class Hmis105ViewModel @Inject constructor(
     userRepository: UserRepository,
     private val visitRepository: VisitRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+    private val configurationManager: ConfigurationManager,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
 
@@ -40,12 +42,16 @@ class Hmis105ViewModel @Inject constructor(
     val currentScreen = mutableLiveData<Screen>()
     val selectedStartDate = MutableLiveData<DateTime?>(null)
     val selectedEndDate = MutableLiveData<DateTime?>(null)
+    val attachedClinics = MutableLiveData<List<String>>(emptyList())
+    val parentSiteName = MutableLiveData<String?>(null)
     var navigationDirection = NavigationDirection.NONE
 
     private var screens = listOf<Screen>()
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
     companion object {
+        const val PARENT_CLINIC_FILTER = "__PARENT__"
+
         private val HMIS105_VACCINES = mapOf(
             "BCG Vxnaid Date"                      to "CL01. BCG",
             "Hep B BD Vxnaid Date"                 to "CL02. Hep B BD",
@@ -81,7 +87,22 @@ class Hmis105ViewModel @Inject constructor(
         initScreens()
     }
 
-    fun getHMIS105Data(startDate: DateTime?, endDate: DateTime?) {
+    fun loadAttachedClinics() {
+        viewModelScope.launch {
+            try {
+                val allSites = configurationManager.getSites()
+                parentSiteName.value = allSites.find { it.uuid == currentLocationUuid }?.name
+                attachedClinics.value = allSites
+                    .filter { it.parentLocationUuid == currentLocationUuid }
+                    .map { it.name }
+            } catch (e: Exception) {
+                Log.e("Hmis105ViewModel", "Failed to load attached clinics", e)
+                attachedClinics.value = emptyList()
+            }
+        }
+    }
+
+    fun getHMIS105Data(startDate: DateTime?, endDate: DateTime?, selectedClinic: String? = null) {
         Log.d("Hmis105ViewModel", "getHMIS105Data called")
         isLoading.value = true
         viewModelScope.launch {
@@ -105,6 +126,13 @@ class Hmis105ViewModel @Inject constructor(
                             .toMap()
                         val candidateVisits = occurredVisits.filter { visit ->
                             participantsMap[visit.participantUuid]?.locationUuid == currentLocationUuid
+                        }.filter { visit ->
+                            when (selectedClinic) {
+                                null -> true
+                                PARENT_CLINIC_FILTER -> visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC].isNullOrBlank()
+                                else -> visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
+                                    ?.equals(selectedClinic, ignoreCase = true) == true
+                            }
                         }
                         val allVisits = candidateVisits.filter { visit ->
                             visit.observations.values.any { obsValue ->
@@ -204,7 +232,8 @@ class Hmis105ViewModel @Inject constructor(
         endDate: Date
     ): List<Hmis105ReportDTO> {
 
-        val reportRowsMap = mutableMapOf<String, Hmis105ReportDTO>()
+        val reportRowsMap = HMIS105_VACCINES.values
+            .associateWithTo(mutableMapOf()) { label -> Hmis105ReportDTO(doses = label) }
         val nowDateTime = DateTime.now()
         for (visit in visits) {
             val participant   = participantsMap[visit.participantUuid] ?: continue

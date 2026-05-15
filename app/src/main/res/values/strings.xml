@@ -663,8 +663,8 @@
     <string name="child_health_plus_qr_hint">Scan at the next visit to look up this client</string>
     <string name="child_health_plus_child_first_name_hint">Client\'s First Name *</string>
     <string name="child_health_plus_child_last_name_hint">Client\'s Last Name *</string>
-    <string name="child_health_plus_mother_first_name_hint">Mother\'s First Name</string>
-    <string name="child_health_plus_mother_last_name_hint">Mother\'s Last Name</string>
+    <string name="child_health_plus_mother_first_name_hint">Mother\'s First Name *</string>
+    <string name="child_health_plus_mother_last_name_hint">Mother\'s Last Name *</string>
     <string name="child_health_plus_phone_hint">Mobile Number</string>
     <string name="child_health_plus_language_hint">Call Language</string>
     <string name="child_health_plus_best_contact_time_label">Best Contact Time</string>

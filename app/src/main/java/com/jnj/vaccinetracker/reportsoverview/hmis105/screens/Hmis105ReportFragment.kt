@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -43,6 +44,7 @@ class Hmis105ReportFragment : BaseFragment(),
      private lateinit var binding: FragmentHmis105ReportBinding
      private lateinit var adapter: Hmis105Adapter
      private val viewModel: Hmis105ViewModel by viewModels { viewModelFactory }
+     private var selectedClinic: String? = null
 
        override fun onCreateView(
            inflater: LayoutInflater,
@@ -69,6 +71,7 @@ class Hmis105ReportFragment : BaseFragment(),
                }
                setupDateButtons()
                setupDownloadButton()
+               setupClinicFilter()
                Log.d(TAG, "Fragment setup completed successfully")
            } catch (ex: Exception) {
                Log.e(TAG, "Error during fragment setup", ex)
@@ -88,6 +91,7 @@ class Hmis105ReportFragment : BaseFragment(),
                     setDisplayHomeAsUpEnabled(true)
                     setHomeButtonEnabled(true)
                 }
+                viewModel.loadAttachedClinics()
                 if (viewModel.reportDTOs.value.isNullOrEmpty() &&
                     viewModel.selectedStartDate.value != null && 
                     viewModel.selectedEndDate.value != null) {
@@ -200,9 +204,33 @@ class Hmis105ReportFragment : BaseFragment(),
          }
      }
 
+    private fun setupClinicFilter() {
+        viewModel.attachedClinics.observe(viewLifecycleOwner) { clinics ->
+            if (clinics.isNullOrEmpty()) {
+                binding.clinicFilterContainer.visibility = View.GONE
+                return@observe
+            }
+            binding.clinicFilterContainer.visibility = View.VISIBLE
+            val parentName = viewModel.parentSiteName.value
+                ?: getString(R.string.filter_parent_facility)
+            val options = listOf(getString(R.string.filter_all_clinics), parentName) + clinics
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, options)
+            binding.dropdownClinicFilter.setAdapter(adapter)
+            binding.dropdownClinicFilter.setText(getString(R.string.filter_all_clinics), false)
+            binding.dropdownClinicFilter.setOnItemClickListener { _, _, position, _ ->
+                selectedClinic = when (position) {
+                    0 -> null
+                    1 -> Hmis105ViewModel.PARENT_CLINIC_FILTER
+                    else -> clinics[position - 2]
+                }
+                loadReportData()
+            }
+        }
+    }
+
       private fun loadReportData() {
           Log.d(TAG, "loadReportData called")
-          viewModel.getHMIS105Data(viewModel.selectedStartDate.value, viewModel.selectedEndDate.value)
+          viewModel.getHMIS105Data(viewModel.selectedStartDate.value, viewModel.selectedEndDate.value, selectedClinic)
       }
 
 

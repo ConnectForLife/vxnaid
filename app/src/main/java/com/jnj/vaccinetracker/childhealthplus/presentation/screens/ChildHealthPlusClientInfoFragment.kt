@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -41,6 +42,7 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
         setupBestContactTime()
         viewModel.ensureGeneratedChildId()
         setupNavigationButtons()
+        observeErrors()
 
         return binding.root
     }
@@ -108,6 +110,15 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
         }
     }
 
+
+    private fun observeErrors() {
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrBlank()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                viewModel.errorMessage.value = null
+            }
+        }
+    }
 
     private fun setupNavigationButtons() {
         binding.btnCancel.setOnClickListener {
