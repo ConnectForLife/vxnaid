@@ -61,6 +61,40 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Next visit date — visible only for services requiring follow-up -->
+                <LinearLayout
+                    android:id="@+id/next_visit_date_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_16_32"
+                        android:text="@string/child_health_plus_next_visit_description"
+                        android:textSize="@dimen/chp_text_body"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:gravity="center"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_8_16">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/next_visit_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/child_health_plus_next_visit_hint"
+                            android:inputType="date"
+                            android:focusable="false" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </ScrollView>
@@ -96,4 +130,3 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
-

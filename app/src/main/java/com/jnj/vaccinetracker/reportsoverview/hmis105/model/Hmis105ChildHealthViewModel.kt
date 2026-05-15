@@ -53,6 +53,7 @@ class Hmis105ChildHealthViewModel @Inject constructor(
     companion object {
         private const val KEY_VITAMIN_A = "Vitamin A Vxnaid Date"
         private const val KEY_DEWORMING = "Deworming Vxnaid Date"
+        private const val KEY_DOSE_NUMBER = Constants.OBSERVATION_DOSE_NUMBER_VXNAID
 
         private const val DOSE_CH01 = "CH01 Vitamin A (Dose 1)"
         private const val DOSE_CH02 = "CH02 Vitamin A (Dose 2)"
@@ -123,13 +124,21 @@ class Hmis105ChildHealthViewModel @Inject constructor(
                         val visitLocation = visit.visitLocation.takeIf { it in ALL_LOCATIONS }
                             ?: Constants.VISIT_PLACE_STATIC
 
+                        val explicitDose = visit.observations[KEY_DOSE_NUMBER]?.value
+
                         for ((key, obsValue) in visit.observations) {
+                            if (key == KEY_DOSE_NUMBER) continue
+
                             val visitObsKey = visit.visitUuid to key
                             if (!seenVisitObservations.add(visitObsKey)) continue
 
                             val dose = when {
+                                key == KEY_VITAMIN_A && explicitDose == "Dose 1" -> DOSE_CH01
+                                key == KEY_VITAMIN_A && explicitDose == "Dose 2" -> DOSE_CH02
                                 key == KEY_VITAMIN_A && ageInMonths in 0..11  -> DOSE_CH01
                                 key == KEY_VITAMIN_A && ageInMonths in 12..59 -> DOSE_CH02
+                                key == KEY_DEWORMING && explicitDose == "Dose 1" -> DOSE_CH03
+                                key == KEY_DEWORMING && explicitDose == "Dose 2" -> DOSE_CH04
                                 key == KEY_DEWORMING && ageInMonths in 0..59  -> DOSE_CH03
                                 key == KEY_DEWORMING && ageInYears  in 5..14  -> DOSE_CH04
                                 else -> continue

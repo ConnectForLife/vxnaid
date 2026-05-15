@@ -54,6 +54,8 @@ object Constants {
 
     // Child Health+ attributes
     const val ATTRIBUTE_CHILD_HEALTH_PLUS = "ChildHealthPlus"
+    const val OBSERVATION_DOSE_NUMBER_VXNAID = "Dose Number Vxnaid"
+    const val OBSERVATION_NEXT_VISIT_DATE_VXNAID = "Next Visit Date Vxnaid"
 
     // common attributes
     const val ATTRIBUTE_OPERATOR = "operatorUuid"

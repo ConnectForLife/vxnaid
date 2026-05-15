@@ -68,7 +68,6 @@ class ChildHealthPlusViewModel @Inject constructor(
     val motherLastName = mutableLiveData<String>()
     val language = mutableLiveData<String?>()
     val bestContactTime = mutableLiveData<String?>()
-    val isPregnantWoman = mutableLiveBoolean()
 
     val availableServices = mutableLiveData<List<ChildHealthPlusService>>(
         ChildHealthPlusService.values().toList()
@@ -76,8 +75,11 @@ class ChildHealthPlusViewModel @Inject constructor(
     val selectedServices = mutableLiveData<List<SelectedService>>(emptyList())
 
     val currentService = mutableLiveData<ChildHealthPlusService?>()
+    val currentDose = mutableLiveData<String?>()
+    private var currentIsPregnant = false
 
     val administrationDate = mutableLiveData<Date?>()
+    val nextVisitDate = mutableLiveData<Date?>()
 
     val pastServices = mutableLiveData<List<PastServiceItem>>(emptyList())
     val pastServicesLoading = mutableLiveBoolean(false)
@@ -177,19 +179,25 @@ class ChildHealthPlusViewModel @Inject constructor(
         currentStage.value = WorkflowStage.SERVICE_SELECTION
     }
 
-    fun addService(service: ChildHealthPlusService) {
+    fun addService(service: ChildHealthPlusService, dose: String? = null, isPregnant: Boolean = false) {
         currentService.value = service
+        currentDose.value = dose
+        currentIsPregnant = isPregnant
         currentStage.value = WorkflowStage.ADMINISTRATION_DATE
     }
 
-    fun setAdministrationDate(date: Date) {
+    fun setAdministrationDate(date: Date, nextVisit: Date? = null) {
         if (date.after(Date())) {
             errorMessage.value = resourcesWrapper.getString(R.string.visit_error_date_future)
             return
         }
+        if (nextVisit != null && nextVisit.before(date)) {
+            errorMessage.value = resourcesWrapper.getString(R.string.child_health_plus_next_visit_invalid)
+            return
+        }
 
         val service = currentService.value ?: return
-        addSelectedService(service, date)
+        addSelectedService(service, date, currentDose.value, currentIsPregnant, nextVisit)
         resetServiceSelection()
         currentStage.value = WorkflowStage.SERVICE_SELECTION
     }
@@ -299,7 +307,6 @@ class ChildHealthPlusViewModel @Inject constructor(
                         selectedService = selectedService,
                         siteUuid = siteUuid,
                         operatorUuid = operatorUuid,
-                        isPregnant = isPregnantWoman.get()
                     )
                 }
 
@@ -351,7 +358,6 @@ class ChildHealthPlusViewModel @Inject constructor(
                         selectedService = selectedService,
                         siteUuid = siteUuid,
                         operatorUuid = operatorUuid,
-                        isPregnant = isPregnantWoman.get()
                     )
                 }
                 loading.set(false)
@@ -385,7 +391,6 @@ class ChildHealthPlusViewModel @Inject constructor(
         selectedService: SelectedService,
         siteUuid: String,
         operatorUuid: String,
-        isPregnant: Boolean,
     ) {
         val visitAttributes = mapOf(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
@@ -407,8 +412,16 @@ class ChildHealthPlusViewModel @Inject constructor(
         val administrationDateStr = dateFormat.format(selectedService.administrationDate)
         observations["${selectedService.service.conceptName} ${Constants.DATE_STR}"] = administrationDateStr
 
-        if (isPregnant && selectedService.service == ChildHealthPlusService.TETANUS) {
+        selectedService.dose?.let { dose ->
+            observations[Constants.OBSERVATION_DOSE_NUMBER_VXNAID] = dose
+        }
+
+        if (selectedService.isPregnantWoman && selectedService.service == ChildHealthPlusService.TETANUS) {
             observations["Pregnant Woman Vxnaid"] = "true"
+        }
+
+        selectedService.nextVisitDate?.let { nextVisit ->
+            observations[Constants.OBSERVATION_NEXT_VISIT_DATE_VXNAID] = dateFormat.format(nextVisit)
         }
 
         updateVisitUseCase.updateVisit(
@@ -453,8 +466,20 @@ class ChildHealthPlusViewModel @Inject constructor(
         currentStage.value = previousStage
     }
 
-    private fun addSelectedService(service: ChildHealthPlusService, adminDate: Date) {
-        val newService = SelectedService(service = service, administrationDate = adminDate)
+    private fun addSelectedService(
+        service: ChildHealthPlusService,
+        adminDate: Date,
+        dose: String?,
+        isPregnant: Boolean,
+        nextVisit: Date?,
+    ) {
+        val newService = SelectedService(
+            service = service,
+            administrationDate = adminDate,
+            dose = dose,
+            isPregnantWoman = isPregnant,
+            nextVisitDate = nextVisit,
+        )
         val current = selectedServices.value.orEmpty().toMutableList()
         current.add(newService)
         selectedServices.value = current
@@ -462,7 +487,10 @@ class ChildHealthPlusViewModel @Inject constructor(
 
     private fun resetServiceSelection() {
         currentService.value = null
+        currentDose.value = null
+        currentIsPregnant = false
         administrationDate.value = null
+        nextVisitDate.value = null
     }
 
     private fun validateClientInfo(): List<String> {

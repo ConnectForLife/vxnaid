@@ -68,20 +68,38 @@ class ChildHealthPlusServiceSelectionFragment : BaseFragment() {
     }
 
     private fun onServiceSelected(service: ChildHealthPlusService) {
+        if (service.hasDoseSelection) {
+            showDoseDialog(service)
+        } else {
+            askPregnancyIfNeeded(service, dose = null)
+        }
+    }
+
+    private fun showDoseDialog(service: ChildHealthPlusService) {
+        val doses = service.availableDoses.toTypedArray()
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.child_health_plus_dose_selection_title)
+            .setItems(doses) { _, which ->
+                val selectedDose = doses[which]
+                askPregnancyIfNeeded(service, dose = selectedDose)
+            }
+            .setNegativeButton(R.string.general_label_cancel, null)
+            .show()
+    }
+
+    private fun askPregnancyIfNeeded(service: ChildHealthPlusService, dose: String?) {
         if (service == ChildHealthPlusService.TETANUS && viewModel.gender.value == "F") {
             AlertDialog.Builder(requireContext())
                 .setMessage(R.string.child_health_plus_pregnant_woman_dialog_message)
                 .setPositiveButton(R.string.general_label_yes) { _, _ ->
-                    viewModel.isPregnantWoman.set(true)
-                    viewModel.addService(service)
+                    viewModel.addService(service, dose, isPregnant = true)
                 }
                 .setNegativeButton(R.string.general_label_no) { _, _ ->
-                    viewModel.isPregnantWoman.set(false)
-                    viewModel.addService(service)
+                    viewModel.addService(service, dose, isPregnant = false)
                 }
                 .show()
         } else {
-            viewModel.addService(service)
+            viewModel.addService(service, dose)
         }
     }
 

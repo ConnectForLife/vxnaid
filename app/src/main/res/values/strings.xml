@@ -647,10 +647,10 @@
     <string name="child_health_plus_error">Failed to record services</string>
     <string name="child_health_plus_vit_a">Vitamin A</string>
     <string name="child_health_plus_deworming">Deworming</string>
-    <string name="child_health_plus_mr1">MR2</string>
+    <string name="child_health_plus_mr2">MR2</string>
     <string name="child_health_plus_hepb">Hepatitis B</string>
     <string name="child_health_plus_hpv">HPV</string>
-    <string name="child_health_plus_td">Tetanus</string>
+    <string name="child_health_plus_td">Td</string>
     <string name="child_health_plus_success_title">Registration Successful</string>
     <string name="child_health_plus_success_description">Client registered successfully. Use the Client ID at future visits.</string>
     <string name="child_health_plus_success_child_details_header">Client Details</string>

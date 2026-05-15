@@ -14,9 +14,6 @@ import com.jnj.vaccinetracker.databinding.FragmentChildHealthPlusAdministrationD
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Fragment for selecting administration date in Child Health+ workflow
- */
 class ChildHealthPlusAdministrationDateFragment : BaseFragment() {
 
     private val viewModel: ChildHealthPlusViewModel by activityViewModels { viewModelFactory }
@@ -40,11 +37,24 @@ class ChildHealthPlusAdministrationDateFragment : BaseFragment() {
         viewModel.administrationDate.value?.let {
             binding.administrationDate.setText(dateFormat.format(it))
         }
+        viewModel.nextVisitDate.value?.let {
+            binding.nextVisitDate.setText(dateFormat.format(it))
+        }
 
         binding.administrationDate.setOnClickListener {
-            showDatePicker { selectedDate ->
+            showDatePicker(viewModel.administrationDate.value) { selectedDate ->
                 viewModel.administrationDate.value = selectedDate
                 binding.administrationDate.setText(dateFormat.format(selectedDate))
+            }
+        }
+
+        val requiresFollowUp = viewModel.currentService.value?.requiresFollowUp == true
+        binding.nextVisitDateContainer.visibility = if (requiresFollowUp) View.VISIBLE else View.GONE
+
+        binding.nextVisitDate.setOnClickListener {
+            showDatePicker(viewModel.nextVisitDate.value) { selectedDate ->
+                viewModel.nextVisitDate.value = selectedDate
+                binding.nextVisitDate.setText(dateFormat.format(selectedDate))
             }
         }
 
@@ -53,17 +63,19 @@ class ChildHealthPlusAdministrationDateFragment : BaseFragment() {
         }
 
         binding.btnNext.setOnClickListener {
-            viewModel.administrationDate.value?.let {
-                viewModel.setAdministrationDate(it)
+            val adminDate = viewModel.administrationDate.value ?: run {
+                viewModel.errorMessage.value = getString(R.string.child_health_plus_administration_date_title)
+                return@setOnClickListener
             }
+            viewModel.setAdministrationDate(adminDate, viewModel.nextVisitDate.value)
         }
 
         return binding.root
     }
 
-    private fun showDatePicker(onDateSelected: (Date) -> Unit) {
+    private fun showDatePicker(initialDate: Date?, onDateSelected: (Date) -> Unit) {
         val calendar = Calendar.getInstance()
-        viewModel.administrationDate.value?.let { calendar.time = it }
+        initialDate?.let { calendar.time = it }
 
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
