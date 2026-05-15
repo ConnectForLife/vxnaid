@@ -139,6 +139,7 @@
     <string name="participant_matching_description">Please select a matching Child</string>
     <string name="participant_matching_btn_new_participant">Register a new child</string>
     <string name="participant_matching_btn_match_selected">Vaccinate Child</string>
+    <string name="participant_matching_btn_vaccinate_client">Vaccinate Client</string>
     <string name="participant_matching_label_no_results_this_site">No match found within your site.</string>
     <string name="participant_matching_label_other_results">The following matches were found outside your site:</string>
     <string name="participant_matching_label_empty_other_results_warning_msg">If you expect any participants from other sites, make sure you have an Internet connection to search for them.</string>

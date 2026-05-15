@@ -114,7 +114,7 @@
                 android:text="@string/participant_matching_btn_report_adverse_effects"
                 android:textSize="@dimen/text_size_12_16"
                 android:textColor="@color/colorTextOnSecondary"
-                android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}" />
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btn_new_participant"
@@ -126,7 +126,7 @@
                 android:text="@string/participant_matching_btn_edit_participant"
                 android:textSize="@dimen/text_size_12_16"
                 android:textColor="@color/colorTextOnSecondary"
-                android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}" />
+                android:visibility="gone" />
 
         </LinearLayout>
 

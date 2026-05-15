@@ -110,7 +110,7 @@
             android:text="@string/participant_matching_btn_edit_participant"
             android:textAppearance="@style/ButtonTextStyling"
             android:textColor="@color/colorTextOnSecondary"
-            android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -123,7 +123,7 @@
             android:text="@string/participant_matching_btn_report_adverse_effects"
             android:textAppearance="@style/ButtonTextStyling"
             android:textColor="@color/colorTextOnSecondary"
-            android:visibility="@{viewModel.selectedParticipant == null ? View.GONE : View.VISIBLE}"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_new_participant"
             app:layout_constraintStart_toEndOf="@+id/btn_match_participant" />

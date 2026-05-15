@@ -159,6 +159,10 @@ class ParticipantFlowMatchingFragment : BaseFragment() {
     private fun setButtonsVisibility(visible: Boolean) {
         val isChp = viewModel.selectedParticipant.get()?.isChildHealthPlus == true
         binding.btnMatchParticipant.visibility = if (visible) View.VISIBLE else View.GONE
+        binding.btnMatchParticipant.setText(
+            if (isChp) R.string.participant_matching_btn_vaccinate_client
+            else R.string.participant_matching_btn_match_selected
+        )
         binding.btnNewParticipant.visibility = if (visible && !isChp) View.VISIBLE else View.GONE
         binding.btnReportAdverseEffects.visibility = if (visible && !isChp) View.VISIBLE else View.GONE
 
