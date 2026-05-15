@@ -13,7 +13,6 @@ import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.BirthDate
-import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
@@ -21,6 +20,8 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.reportsoverview.hmis105.dto.Hmis105ReportDTO
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -94,7 +95,11 @@ class Hmis105ViewModel @Inject constructor(
                                 Constants.ATTRIBUTE_VISIT_STATUS,
                                 Constants.VISIT_STATUS_OCCURRED
                             )
-                        val participantsMap = buildParticipantsMap(occurredVisits)
+                        val participantUuids = occurredVisits.mapTo(mutableSetOf()) { it.participantUuid }
+                        val participantsMap = participantUuids
+                            .map { uuid -> async { uuid to findParticipantByParticipantUuidUseCase.findByParticipantUuid(uuid) } }
+                            .awaitAll()
+                            .toMap()
                         val candidateVisits = occurredVisits.filter { visit ->
                             participantsMap[visit.participantUuid]?.locationUuid == currentLocationUuid
                         }
@@ -143,17 +148,6 @@ class Hmis105ViewModel @Inject constructor(
                 isLoading.value = false
             }
         }
-    }
-
-    private suspend fun buildParticipantsMap(visits: List<Visit>): Map<String, ParticipantBase?> {
-        val map = mutableMapOf<String, ParticipantBase?>()
-        for (visit in visits) {
-            if (!map.containsKey(visit.participantUuid)) {
-                map[visit.participantUuid] =
-                    findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-            }
-        }
-        return map
     }
 
     private fun getSortOrder(doses: String): Pair<Int, Int> {

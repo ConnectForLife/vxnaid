@@ -200,8 +200,6 @@ class Hmis105ChildHealthFragment : BaseFragment(),
         }
     }
 
-    // ── Core logic ────────────────────────────────────────────────────────────
-
     private fun applyFilters(
         dtos: List<Hmis105ChildHealthObservationDTO> = viewModel.observationDTOs.value ?: emptyList()
     ) {
@@ -283,8 +281,6 @@ class Hmis105ChildHealthFragment : BaseFragment(),
 
         return rows
     }
-
-    // ── Export ────────────────────────────────────────────────────────────────
 
     @SuppressLint("SimpleDateFormat")
     private fun exportToExcel() {

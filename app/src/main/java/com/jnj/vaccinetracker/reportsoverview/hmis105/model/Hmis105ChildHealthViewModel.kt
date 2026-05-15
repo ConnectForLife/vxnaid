@@ -17,13 +17,14 @@ import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.BirthDate
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
-import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.reportsoverview.hmis105.dto.Hmis105ChildHealthObservationDTO
 import com.soywiz.klock.DateTime
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -91,24 +92,26 @@ class Hmis105ChildHealthViewModel @Inject constructor(
         viewModelScope.launch {
             val result = withContext(dispatchers.io) {
                 try {
-                    val syncedVisits = visitRepository.findAllVisitsByAttributeTypeAndValue(
-                        Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED
-                    )
-                    val draftVisits = draftVisitEncounterRepository
-                        .findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                        .map { convertDraftVisitEncounterToVisit(it) }
-
-                    val allVisits = syncedVisits + draftVisits
-
-                    val participantsMap = mutableMapOf<String, ParticipantBase?>()
-                    for (visit in allVisits) {
-                        if (!participantsMap.containsKey(visit.participantUuid)) {
-                            participantsMap[visit.participantUuid] =
-                                findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-                        }
+                    val syncedDeferred = async {
+                        visitRepository.findAllVisitsByAttributeTypeAndValue(
+                            Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED
+                        )
                     }
+                    val draftDeferred = async {
+                        draftVisitEncounterRepository
+                            .findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+                            .map { convertDraftVisitEncounterToVisit(it) }
+                    }
+                    val allVisits = syncedDeferred.await() + draftDeferred.await()
+
+                    val participantUuids = allVisits.mapTo(mutableSetOf()) { it.participantUuid }
+                    val participantsMap = participantUuids
+                        .map { uuid -> async { uuid to findParticipantByParticipantUuidUseCase.findByParticipantUuid(uuid) } }
+                        .awaitAll()
+                        .toMap()
 
                     val dtos = mutableListOf<Hmis105ChildHealthObservationDTO>()
+                    val seenVisitObservations = mutableSetOf<Pair<String, String>>()
                     val nowDateTime = DateTime.now()
 
                     for (visit in allVisits) {
@@ -121,10 +124,13 @@ class Hmis105ChildHealthViewModel @Inject constructor(
                             ?: Constants.VISIT_PLACE_STATIC
 
                         for ((key, obsValue) in visit.observations) {
+                            val visitObsKey = visit.visitUuid to key
+                            if (!seenVisitObservations.add(visitObsKey)) continue
+
                             val dose = when {
                                 key == KEY_VITAMIN_A && ageInMonths in 0..11  -> DOSE_CH01
                                 key == KEY_VITAMIN_A && ageInMonths in 12..59 -> DOSE_CH02
-                                key == KEY_DEWORMING && ageInMonths in 0..59 -> DOSE_CH03
+                                key == KEY_DEWORMING && ageInMonths in 0..59  -> DOSE_CH03
                                 key == KEY_DEWORMING && ageInYears  in 5..14  -> DOSE_CH04
                                 else -> continue
                             }
@@ -133,15 +139,14 @@ class Hmis105ChildHealthViewModel @Inject constructor(
                                 ageInMonths in 12..59 -> Constants.GROUP_AGE_SECOND
                                 else                  -> Constants.GROUP_AGE_THIRD
                             }
-                            val dto = Hmis105ChildHealthObservationDTO(
-                                dose          = dose,
+                            dtos.add(Hmis105ChildHealthObservationDTO(
+                                dose           = dose,
                                 administerDate = obsValue.value,
                                 visitLocation  = visitLocation,
                                 ageGroup       = ageGroup,
                                 gender         = participant.gender,
                                 attachedClinic = visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
-                            )
-                            if (!dtos.contains(dto)) dtos.add(dto)
+                            ))
                         }
                     }
                     dtos
