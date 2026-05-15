@@ -19,13 +19,14 @@ import com.jnj.vaccinetracker.common.domain.entities.BirthDate
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
 import com.jnj.vaccinetracker.common.domain.entities.SubstancesConfig
-import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
 import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto.VaccineObservationDTO
 import com.soywiz.klock.DateTime
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -81,38 +82,40 @@ class VaccinesOverviewViewModel @Inject constructor(
                 val conceptDateNames = config
                     .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
                     .map { it.conceptName } + ChildHealthPlusService.values().map { it.conceptName }
-                val occurredVisits = visitRepository.findAllVisitsByAttributeTypeAndValue(
-                    Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED
-                )
-                val draftVisits = draftVisitEncounterRepository
-                    .findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-                    .map { convertDraftVisitEncounterToVisit(it) }
 
-                val allVisits = occurredVisits + draftVisits
-
-                val participantsMap = mutableMapOf<String, ParticipantBase?>()
-                for (visit in allVisits) {
-                    if (!participantsMap.containsKey(visit.participantUuid)) {
-                        participantsMap[visit.participantUuid] =
-                            findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-                    }
+                val syncedDeferred = async {
+                    visitRepository.findAllVisitsByAttributeTypeAndValue(
+                        Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED
+                    )
                 }
+                val draftDeferred = async {
+                    draftVisitEncounterRepository
+                        .findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+                        .map { convertDraftVisitEncounterToVisit(it) }
+                }
+                val allVisits = syncedDeferred.await() + draftDeferred.await()
 
-                // Single pass: filter by location + build DTOs
+                val participantUuids = allVisits.mapTo(mutableSetOf()) { it.participantUuid }
+                val participantsMap = participantUuids
+                    .map { uuid -> async { uuid to findParticipantByParticipantUuidUseCase.findByParticipantUuid(uuid) } }
+                    .awaitAll()
+                    .toMap()
+
                 val dtos = mutableListOf<VaccineObservationDTO>()
+                val seenVisitObservations = mutableSetOf<Pair<String, String>>()
                 for (visit in allVisits) {
                     val participant = participantsMap[visit.participantUuid] ?: continue
                     if (participant.locationUuid != currentLocationUuid) continue
                     for ((key, observation) in visit.observations) {
+                        if (!seenVisitObservations.add(visit.visitUuid to key)) continue
                         val conceptName = conceptDateNames.find { key == "$it ${Constants.DATE_STR}" } ?: continue
-                        val dto = VaccineObservationDTO(
+                        dtos.add(VaccineObservationDTO(
                             vaccineName    = conceptName,
                             administerDate = observation.value,
                             visitLocation  = visit.visitLocation ?: Constants.ALL_STRING,
                             ageGroup       = calculateChildAgeGroup(participant.birthDate),
                             attachedClinic = visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
-                        )
-                        if (!dtos.contains(dto)) dtos.add(dto)
+                        ))
                     }
                 }
                 dtos
