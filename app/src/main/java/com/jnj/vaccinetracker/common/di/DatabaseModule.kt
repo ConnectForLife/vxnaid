@@ -111,5 +111,4 @@ class DatabaseModule {
 
     @Provides
     fun provideDeletedVisitDao(db: ParticipantRoomDatabase): DeletedVisitDao = db.deletedVisitDownloadDao()
-
 }

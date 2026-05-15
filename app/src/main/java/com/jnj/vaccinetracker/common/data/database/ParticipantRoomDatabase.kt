@@ -83,6 +83,8 @@ object ParticipantRoomDatabaseConfig {
         AutoMigration(from = 12, to = 13,spec = ParticipantAutoMigrationSpec12to13::class),
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
+
+
     ]
 )
 @TypeConverters(

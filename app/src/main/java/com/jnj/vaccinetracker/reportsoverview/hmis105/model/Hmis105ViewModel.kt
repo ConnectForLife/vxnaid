@@ -73,10 +73,6 @@ class Hmis105ViewModel @Inject constructor(
         private const val KEY_YELLOW_FEVER = "Yellow Fever Vxnaid Date"
         private const val UUID_LLINS = "6de53ec6-bf3f-41fe-bf2e-e61447a6557a"
         private const val UUID_PAB = "b8ca722b-9731-4e50-8081-ac9131230718"
-
-        // All observation keys a child must have received to be considered fully immunized.
-        // First year: every vaccine in the standard schedule up to and including MR1.
-        // Second year: first-year set + MR2.
         private val REQUIRED_VACCINES_FIRST_YEAR: Set<String> = HMIS105_VACCINES.keys
         private val REQUIRED_VACCINES_SECOND_YEAR: Set<String> = HMIS105_VACCINES.keys + KEY_MR2
     }
@@ -121,8 +117,6 @@ class Hmis105ViewModel @Inject constructor(
                         val allKeys = allVisits.flatMap { it.observations.keys }.toSet()
                         Log.d("Hmis105ViewModel", "All obs keys in filtered visits: $allKeys")
 
-                        // Full lifetime vaccine history per participant (across ALL their visits,
-                        // not just those in the reporting period) — needed for fully-immunized checks.
                         val allObsKeysByParticipant: Map<String, Set<String>> = candidateVisits
                             .groupBy { it.participantUuid }
                             .mapValues { (_, visits) -> visits.flatMap { it.observations.keys }.toSet() }
@@ -246,21 +240,18 @@ class Hmis105ViewModel @Inject constructor(
             val participantUuid = visit.participantUuid
             if (participantUuid in counted) continue
 
-            // The visit must include MR1 administered within the reporting period.
             val mr1Obs = visit.observations[KEY_MR1]?.takeIf {
                 it.dateTime.time in startDate.time until endDate.time
             } ?: continue
 
             val participant = participantsMap[participantUuid] ?: continue
 
-            // MR1 should have been given within the first year of life.
             val ageAtMR1 = calculateAgeInMonthsAt(participant.birthDate, DateTime(mr1Obs.dateTime.time))
             if (ageAtMR1 !in 8..12) {
                 Log.d("Hmis105ViewModel", "CL24 skip $participantUuid — age at MR1 was $ageAtMR1 months")
                 continue
             }
 
-            // Participant must have received every required first-year vaccine (lifetime history).
             val receivedKeys = allObsKeysByParticipant[participantUuid] ?: emptySet()
             val missingVaccines = REQUIRED_VACCINES_FIRST_YEAR - receivedKeys
             if (missingVaccines.isNotEmpty()) {
@@ -441,14 +432,12 @@ class Hmis105ViewModel @Inject constructor(
 
             val participant = participantsMap[participantUuid] ?: continue
 
-            // MR2 should have been given within the second year of life.
             val ageAtMR2 = calculateAgeInMonthsAt(participant.birthDate, DateTime(mr2Obs.dateTime.time))
             if (ageAtMR2 !in 17..24) {
                 Log.d("Hmis105ViewModel", "CL28 skip $participantUuid — age at MR2 was $ageAtMR2 months")
                 continue
             }
 
-            // Participant must have received every required vaccine up to 2 years (lifetime history).
             val receivedKeys = allObsKeysByParticipant[participantUuid] ?: emptySet()
             val missingVaccines = REQUIRED_VACCINES_SECOND_YEAR - receivedKeys
             if (missingVaccines.isNotEmpty()) {
