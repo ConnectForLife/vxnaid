@@ -1,0 +1,209 @@
+package com.jnj.vaccinetracker.reportsoverview.hmis105.model
+
+import android.os.Bundle
+import android.util.Log
+import androidx.annotation.StringRes
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.jnj.vaccinetracker.R
+import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
+import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
+import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
+import com.jnj.vaccinetracker.common.data.models.Constants
+import com.jnj.vaccinetracker.common.data.models.NavigationDirection
+import com.jnj.vaccinetracker.common.data.repositories.UserRepository
+import com.jnj.vaccinetracker.common.domain.entities.BirthDate
+import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
+import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
+import com.jnj.vaccinetracker.common.domain.entities.Visit
+import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
+import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
+import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
+import com.jnj.vaccinetracker.reportsoverview.hmis105.dto.Hmis105ChildHealthObservationDTO
+import com.soywiz.klock.DateTime
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Date
+import javax.inject.Inject
+
+class Hmis105ChildHealthViewModel @Inject constructor(
+    userRepository: UserRepository,
+    private val visitRepository: VisitRepository,
+    private val draftVisitEncounterRepository: DraftVisitEncounterRepository,
+    private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+    private val configurationManager: ConfigurationManager,
+    override val dispatchers: AppCoroutineDispatchers
+) : ViewModelWithState() {
+
+    val observationDTOs = mutableLiveData<List<Hmis105ChildHealthObservationDTO>>(emptyList())
+    val isLoading = mutableLiveData<Boolean>(false)
+    val currentScreen = mutableLiveData<Screen>()
+    val selectedStartDate = MutableLiveData<DateTime?>(null)
+    val selectedEndDate = MutableLiveData<DateTime?>(null)
+    val attachedClinics = MutableLiveData<List<String>>(emptyList())
+    val parentSiteName = MutableLiveData<String?>(null)
+    var navigationDirection = NavigationDirection.NONE
+
+    private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
+
+    companion object {
+        private const val KEY_VITAMIN_A = "Vitamin A Vxnaid Date"
+        private const val KEY_DEWORMING = "Deworming Vxnaid Date"
+        private const val KEY_DOSE_NUMBER = Constants.OBSERVATION_DOSE_NUMBER_VXNAID
+
+        private const val DOSE_CH01 = "CH01 Vitamin A (Dose 1)"
+        private const val DOSE_CH02 = "CH02 Vitamin A (Dose 2)"
+        private const val DOSE_CH03 = "CH03 Dewormed (Dose 1)"
+        private const val DOSE_CH04 = "CH04 Dewormed (Dose 2)"
+
+        private val ALL_LOCATIONS = listOf(
+            Constants.VISIT_PLACE_STATIC,
+            Constants.VISIT_PLACE_OUTREACH,
+            Constants.VISIT_PLACE_SCHOOL
+        )
+    }
+
+    init {
+        val screens = listOf(Screen.HMIS105_CHILD_HEALTH)
+        if (currentScreen.get() == null) currentScreen.set(screens.firstOrNull())
+    }
+
+    fun loadAttachedClinics() {
+        viewModelScope.launch {
+            try {
+                val allSites = configurationManager.getSites()
+                parentSiteName.value = allSites.find { it.uuid == currentLocationUuid }?.name
+                val clinicNames = allSites
+                    .filter { it.parentLocationUuid == currentLocationUuid }
+                    .map { it.name }
+                attachedClinics.value = clinicNames
+            } catch (e: Exception) {
+                Log.e("Hmis105ChildHealthVM", "Failed to load attached clinics", e)
+                attachedClinics.value = emptyList()
+            }
+        }
+    }
+
+    fun getChildHealthData() {
+        isLoading.value = true
+        viewModelScope.launch {
+            val result = withContext(dispatchers.io) {
+                try {
+                    val syncedDeferred = async {
+                        visitRepository.findAllVisitsByAttributeTypeAndValue(
+                            Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED
+                        )
+                    }
+                    val draftDeferred = async {
+                        draftVisitEncounterRepository
+                            .findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+                            .map { convertDraftVisitEncounterToVisit(it) }
+                    }
+                    val allVisits = syncedDeferred.await() + draftDeferred.await()
+
+                    val participantUuids = allVisits.mapTo(mutableSetOf()) { it.participantUuid }
+                    val participantsMap = participantUuids
+                        .map { uuid -> async { uuid to findParticipantByParticipantUuidUseCase.findByParticipantUuid(uuid) } }
+                        .awaitAll()
+                        .toMap()
+
+                    val dtos = mutableListOf<Hmis105ChildHealthObservationDTO>()
+                    val seenVisitObservations = mutableSetOf<Pair<String, String>>()
+                    val nowDateTime = DateTime.now()
+
+                    for (visit in allVisits) {
+                        val participant = participantsMap[visit.participantUuid] ?: continue
+                        if (participant.locationUuid != currentLocationUuid) continue
+
+                        val ageInMonths = calculateAgeInMonths(participant.birthDate, nowDateTime)
+                        val ageInYears = ageInMonths / 12
+                        val visitLocation = visit.visitLocation.takeIf { it in ALL_LOCATIONS }
+                            ?: Constants.VISIT_PLACE_STATIC
+
+                        val explicitDose = visit.observations[KEY_DOSE_NUMBER]?.value
+
+                        for ((key, obsValue) in visit.observations) {
+                            if (key == KEY_DOSE_NUMBER) continue
+
+                            val visitObsKey = visit.visitUuid to key
+                            if (!seenVisitObservations.add(visitObsKey)) continue
+
+                            val dose = when {
+                                key == KEY_VITAMIN_A && explicitDose == "Dose 1" -> DOSE_CH01
+                                key == KEY_VITAMIN_A && explicitDose == "Dose 2" -> DOSE_CH02
+                                key == KEY_VITAMIN_A && ageInMonths in 0..11  -> DOSE_CH01
+                                key == KEY_VITAMIN_A && ageInMonths in 12..59 -> DOSE_CH02
+                                key == KEY_DEWORMING && explicitDose == "Dose 1" -> DOSE_CH03
+                                key == KEY_DEWORMING && explicitDose == "Dose 2" -> DOSE_CH04
+                                key == KEY_DEWORMING && ageInMonths in 0..59  -> DOSE_CH03
+                                key == KEY_DEWORMING && ageInYears  in 5..14  -> DOSE_CH04
+                                else -> continue
+                            }
+                            val ageGroup = when {
+                                ageInMonths in 0..11  -> Constants.GROUP_AGE_FIRST
+                                ageInMonths in 12..59 -> Constants.GROUP_AGE_SECOND
+                                else                  -> Constants.GROUP_AGE_THIRD
+                            }
+                            dtos.add(Hmis105ChildHealthObservationDTO(
+                                dose           = dose,
+                                administerDate = obsValue.value,
+                                visitLocation  = visitLocation,
+                                ageGroup       = ageGroup,
+                                gender         = participant.gender,
+                                attachedClinic = visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
+                            ))
+                        }
+                    }
+                    dtos
+                } catch (ex: Exception) {
+                    Log.e("Hmis105ChildHealthVM", "Error loading data", ex)
+                    emptyList()
+                }
+            }
+            observationDTOs.value = result
+            isLoading.value = false
+        }
+    }
+
+    private fun convertDraftVisitEncounterToVisit(draft: DraftVisitEncounter): Visit {
+        return Visit(
+            visitUuid       = draft.visitUuid,
+            startDatetime   = draft.startDatetime,
+            visitType       = draft.visitType,
+            participantUuid = draft.participantUuid,
+            attributes      = draft.attributes,
+            observations    = draft.observations.mapValues { (_, v) ->
+                ObservationValue(v, draft.startDatetime)
+            },
+            dateModified    = Date(System.currentTimeMillis())
+        )
+    }
+
+    private fun calculateAgeInMonths(birthDate: BirthDate, referenceDate: DateTime): Int {
+        val birth = birthDate.toDateTime()
+        return (referenceDate.yearInt - birth.yearInt) * 12 +
+                (referenceDate.month0 - birth.month0)
+    }
+
+    enum class Screen(@StringRes val label: Int) {
+        HMIS105_CHILD_HEALTH(R.string.hmis105_child_health_report_title)
+    }
+
+    override fun saveInstanceState(outState: Bundle) {
+        selectedStartDate.value?.let { outState.putString("selectedStartDate", it.toString()) }
+        selectedEndDate.value?.let   { outState.putString("selectedEndDate",   it.toString()) }
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.getString("selectedStartDate")?.let {
+            try { selectedStartDate.value = DateTime.parse(it).local } catch (_: Exception) {}
+        }
+        savedInstanceState.getString("selectedEndDate")?.let {
+            try { selectedEndDate.value = DateTime.parse(it).local } catch (_: Exception) {}
+        }
+    }
+}

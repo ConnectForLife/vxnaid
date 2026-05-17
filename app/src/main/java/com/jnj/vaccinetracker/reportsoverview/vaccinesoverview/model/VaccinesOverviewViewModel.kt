@@ -11,13 +11,13 @@ import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.BirthDate
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
-import com.jnj.vaccinetracker.common.domain.entities.ParticipantBase
 import com.jnj.vaccinetracker.common.domain.entities.SubstancesConfig
 import com.jnj.vaccinetracker.common.domain.entities.Visit
 import com.jnj.vaccinetracker.common.domain.usecases.FindParticipantByParticipantUuidUseCase
@@ -25,7 +25,10 @@ import com.jnj.vaccinetracker.common.helpers.AppCoroutineDispatchers
 import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.dto.VaccineObservationDTO
 import com.soywiz.klock.DateTime
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
 
@@ -74,13 +77,50 @@ class VaccinesOverviewViewModel @Inject constructor(
     fun getVaccinesData() {
         isLoading.value = true
         viewModelScope.launch {
-            val occurredVisits = visitRepository.findAllVisitsByAttributeTypeAndValue(Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED).filter { participantFromCurrentLocation(it, currentLocationUuid) }
+            val result = withContext(dispatchers.io) {
+                val config = configurationManager.getSubstancesConfig()
+                val conceptDateNames = config
+                    .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
+                    .map { it.conceptName } + ChildHealthPlusService.values().map { it.conceptName }
 
-            val draftVisitEncounters = draftVisitEncounterRepository.findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
-            val draftVisitEncountersAsVisits = draftVisitEncounters.map { convertDraftVisitEncounterToVisit(it) }
+                val syncedDeferred = async {
+                    visitRepository.findAllVisitsByAttributeTypeAndValue(
+                        Constants.ATTRIBUTE_VISIT_STATUS, Constants.VISIT_STATUS_OCCURRED
+                    )
+                }
+                val draftDeferred = async {
+                    draftVisitEncounterRepository
+                        .findVisitsBeforeDate(addDaysToDate(getTodayMidnight(), 1))
+                        .map { convertDraftVisitEncounterToVisit(it) }
+                }
+                val allVisits = syncedDeferred.await() + draftDeferred.await()
 
-            val allVisits = occurredVisits + draftVisitEncountersAsVisits
-            vaccineDTOs.value = createVaccineObservationDTOList(allVisits)
+                val participantUuids = allVisits.mapTo(mutableSetOf()) { it.participantUuid }
+                val participantsMap = participantUuids
+                    .map { uuid -> async { uuid to findParticipantByParticipantUuidUseCase.findByParticipantUuid(uuid) } }
+                    .awaitAll()
+                    .toMap()
+
+                val dtos = mutableListOf<VaccineObservationDTO>()
+                val seenVisitObservations = mutableSetOf<Pair<String, String>>()
+                for (visit in allVisits) {
+                    val participant = participantsMap[visit.participantUuid] ?: continue
+                    if (participant.locationUuid != currentLocationUuid) continue
+                    for ((key, observation) in visit.observations) {
+                        if (!seenVisitObservations.add(visit.visitUuid to key)) continue
+                        val conceptName = conceptDateNames.find { key == "$it ${Constants.DATE_STR}" } ?: continue
+                        dtos.add(VaccineObservationDTO(
+                            vaccineName    = conceptName,
+                            administerDate = observation.value,
+                            visitLocation  = visit.visitLocation ?: Constants.ALL_STRING,
+                            ageGroup       = calculateChildAgeGroup(participant.birthDate),
+                            attachedClinic = visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
+                        ))
+                    }
+                }
+                dtos
+            }
+            vaccineDTOs.value = result
             isLoading.value = false
         }
     }
@@ -97,42 +137,6 @@ class VaccinesOverviewViewModel @Inject constructor(
             },
             dateModified = Date(System.currentTimeMillis())
         )
-    }
-
-    private suspend fun createVaccineObservationDTOList(visits: List<Visit>): List<VaccineObservationDTO> {
-        val vaccineObservationDTOList: MutableList<VaccineObservationDTO> = mutableListOf()
-        val participantsMap = mutableMapOf<String, ParticipantBase?>()
-
-        visits.forEach { visit ->
-            if (!participantsMap.containsKey(visit.participantUuid)) {
-                val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-                participantsMap[visit.participantUuid] = participant
-            }
-        }
-
-        val vaccineConceptDateNames = substancesConfig.value!!
-            .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
-            .map { it.conceptName }
-
-        for (visit in visits) {
-            val participant = participantsMap[visit.participantUuid]
-            if (participant != null) {
-                for ((key, observation) in visit.observations) {
-                    val vaccineConceptName = vaccineConceptDateNames.find { key == "$it ${Constants.DATE_STR}" }
-                    if (vaccineConceptName != null) {
-                        val ageGroup = calculateChildAgeGroup(participant.birthDate)
-                        val visitLocation = visit.visitLocation ?: Constants.ALL_STRING
-                        val attachedClinic = visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
-                        val dto = VaccineObservationDTO(vaccineConceptName, observation.value, visitLocation, ageGroup, attachedClinic)
-                        if (!vaccineObservationDTOList.contains(dto)) { // Avoid duplicates
-                            vaccineObservationDTOList.add(dto)
-                        }
-                    }
-                }
-            }
-        }
-
-        return vaccineObservationDTOList
     }
 
     private fun calculateChildAgeGroup(birthDate: BirthDate): String {
@@ -163,17 +167,6 @@ class VaccinesOverviewViewModel @Inject constructor(
         if (currentScreen.get() == null) {
             val screen = screens.firstOrNull()
             currentScreen.set(screen)
-        }
-    }
-
-    private suspend fun participantFromCurrentLocation(visit: Visit, locationUuid: String?): Boolean {
-        val participant = findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-        return if (participant == null) {
-            Log.w("VaccinesiewModel", "Participant not found")
-            false
-        } else {
-            Log.d("VaccinesViewModel", "Participant found")
-            participant.locationUuid == locationUuid
         }
     }
 

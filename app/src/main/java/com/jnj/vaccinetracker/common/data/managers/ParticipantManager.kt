@@ -61,18 +61,27 @@ class ParticipantManager @Inject constructor(
         return getPersonImageUseCase.getPersonImage(personUuid) ?: error("couldn't find person image for person $personUuid")
     }
 
-    private fun createScheduleFirstVisit(): ScheduleFirstVisit {
+    private fun createScheduleFirstVisit(
+        visitPlace: String? = null,
+        visitOutreachName: String? = null,
+        attachedClinic: String? = null,
+    ): ScheduleFirstVisit {
         val locationUuid = syncSettingsRepository.getSiteUuid() ?: throw NoSiteUuidAvailableException("Trying to register scheduled visit without a selected site")
         val operatorUUid = userRepository.getUser()?.uuid ?: throw OperatorUuidNotAvailableException("trying to register scheduled visit without stored operator uuid")
+        val attributes = mutableMapOf(
+            Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
+            Constants.ATTRIBUTE_OPERATOR to operatorUUid,
+            Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to "1"
+        )
+        visitPlace?.let { attributes[Constants.ATTRIBUTE_VISIT_LOCATION] = it }
+        visitOutreachName?.let { attributes[Constants.ATTRIBUTE_VISIT_OUTREACH_NAME] = it }
+        attachedClinic?.let { attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC] = it }
+
         return ScheduleFirstVisit(
             visitType = Constants.VISIT_TYPE_DOSING,
             startDatetime = dateNow(),
             locationUuid = locationUuid,
-            attributes = mapOf(
-                Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
-                Constants.ATTRIBUTE_OPERATOR to operatorUUid,
-                Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to "1"
-            )
+            attributes = attributes
         )
 
     }
@@ -168,6 +177,9 @@ class ParticipantManager @Inject constructor(
         val childCategory: String?,
         val dateCreated: Long?,
         val attachedClinic: String? = null,
+        val visitPlace: String? = null,
+        val visitOutreachName: String? = null,
+        val isChildHealthPlus: Boolean = false,
     )
 
     @SuppressWarnings("LongParameterList")
@@ -189,6 +201,10 @@ class ParticipantManager @Inject constructor(
             attachedClinic = registerDetails.attachedClinic
         )
 
+        if (registerDetails.isChildHealthPlus) {
+            personAttributes[Constants.ATTRIBUTE_CHILD_HEALTH_PLUS] = "true"
+        }
+
         return RegisterParticipant(
             participantId = registerDetails.participantId,
             nin = registerDetails.nin,
@@ -200,7 +216,11 @@ class ParticipantManager @Inject constructor(
             attributes = personAttributes,
             image = registerDetails.picture,
             biometricsTemplate = registerDetails.biometricsTemplateBytes,
-            scheduleFirstVisit = createScheduleFirstVisit(),
+            scheduleFirstVisit = createScheduleFirstVisit(
+                visitPlace = registerDetails.visitPlace,
+                visitOutreachName = registerDetails.visitOutreachName,
+                attachedClinic = registerDetails.attachedClinic,
+            ),
             childFirstName = registerDetails.childFirstName,
             childLastName = registerDetails.childLastName,
             dateCreated = registerDetails.dateCreated
@@ -219,7 +239,7 @@ class ParticipantManager @Inject constructor(
                 address = registerRequest.address,
                 attributes = registerRequest.attributes,
                 image = registerRequest.image,
-                scheduleFirstVisit = createScheduleFirstVisit(),
+                scheduleFirstVisit = registerRequest.scheduleFirstVisit,
                 childFirstName = registerRequest.childFirstName,
                 childLastName = registerRequest.childLastName,
                 dateCreated = registerRequest.dateCreated

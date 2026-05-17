@@ -73,14 +73,14 @@
                 app:cornerRadius="@dimen/button_corner_radius" />
 
             <Button
-                android:id="@+id/btn_visits_overview"
+                android:id="@+id/btn_child_health_plus"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/btn_margin_32_32_16"
                 android:paddingVertical="@dimen/btn_padding_32_64_20"
-                android:backgroundTint="@color/alertLight"
-                android:text="@string/visits_overview_title"
+                android:layout_marginBottom="@dimen/btn_margin_32_32_16"
+                android:backgroundTint="@color/colorSecondary"
+                android:text="@string/child_health_plus_label"
                 android:textAppearance="@style/ButtonTextStyling"
                 android:textColor="@color/colorTextOnSecondary"
                 android:textSize="@dimen/btn_text_size_18_32"
@@ -88,13 +88,13 @@
                 app:cornerRadius="@dimen/button_corner_radius" />
 
             <Button
-                android:id="@+id/btn_reports_overview"
+                android:id="@+id/btn_reports"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:paddingVertical="@dimen/btn_padding_32_64_20"
                 android:backgroundTint="@color/sync_offline"
-                android:text="@string/reports_overview_title"
+                android:text="@string/reports_label"
                 android:textAppearance="@style/ButtonTextStyling"
                 android:textColor="@color/colorTextOnSecondary"
                 android:textSize="@dimen/btn_text_size_18_32"

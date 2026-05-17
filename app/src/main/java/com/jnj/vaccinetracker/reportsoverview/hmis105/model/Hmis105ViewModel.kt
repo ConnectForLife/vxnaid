@@ -9,6 +9,7 @@ import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
+import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.models.NavigationDirection
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
@@ -21,6 +22,8 @@ import com.jnj.vaccinetracker.common.viewmodel.ViewModelWithState
 import com.jnj.vaccinetracker.reportsoverview.hmis105.dto.Hmis105ReportDTO
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -30,6 +33,7 @@ class Hmis105ViewModel @Inject constructor(
     userRepository: UserRepository,
     private val visitRepository: VisitRepository,
     private val findParticipantByParticipantUuidUseCase: FindParticipantByParticipantUuidUseCase,
+    private val configurationManager: ConfigurationManager,
     override val dispatchers: AppCoroutineDispatchers
 ) : ViewModelWithState() {
 
@@ -38,12 +42,16 @@ class Hmis105ViewModel @Inject constructor(
     val currentScreen = mutableLiveData<Screen>()
     val selectedStartDate = MutableLiveData<DateTime?>(null)
     val selectedEndDate = MutableLiveData<DateTime?>(null)
+    val attachedClinics = MutableLiveData<List<String>>(emptyList())
+    val parentSiteName = MutableLiveData<String?>(null)
     var navigationDirection = NavigationDirection.NONE
 
     private var screens = listOf<Screen>()
     private val currentLocationUuid = userRepository.getDeviceNameSiteUuid()
 
     companion object {
+        const val PARENT_CLINIC_FILTER = "__PARENT__"
+
         private val HMIS105_VACCINES = mapOf(
             "BCG Vxnaid Date"                      to "CL01. BCG",
             "Hep B BD Vxnaid Date"                 to "CL02. Hep B BD",
@@ -71,13 +79,30 @@ class Hmis105ViewModel @Inject constructor(
         private const val KEY_YELLOW_FEVER = "Yellow Fever Vxnaid Date"
         private const val UUID_LLINS = "6de53ec6-bf3f-41fe-bf2e-e61447a6557a"
         private const val UUID_PAB = "b8ca722b-9731-4e50-8081-ac9131230718"
+        private val REQUIRED_VACCINES_FIRST_YEAR: Set<String> = HMIS105_VACCINES.keys
+        private val REQUIRED_VACCINES_SECOND_YEAR: Set<String> = HMIS105_VACCINES.keys + KEY_MR2
     }
 
     init {
         initScreens()
     }
 
-    fun getHMIS105Data(startDate: DateTime?, endDate: DateTime?) {
+    fun loadAttachedClinics() {
+        viewModelScope.launch {
+            try {
+                val allSites = configurationManager.getSites()
+                parentSiteName.value = allSites.find { it.uuid == currentLocationUuid }?.name
+                attachedClinics.value = allSites
+                    .filter { it.parentLocationUuid == currentLocationUuid }
+                    .map { it.name }
+            } catch (e: Exception) {
+                Log.e("Hmis105ViewModel", "Failed to load attached clinics", e)
+                attachedClinics.value = emptyList()
+            }
+        }
+    }
+
+    fun getHMIS105Data(startDate: DateTime?, endDate: DateTime?, selectedClinic: String? = null) {
         Log.d("Hmis105ViewModel", "getHMIS105Data called")
         isLoading.value = true
         viewModelScope.launch {
@@ -94,9 +119,20 @@ class Hmis105ViewModel @Inject constructor(
                                 Constants.ATTRIBUTE_VISIT_STATUS,
                                 Constants.VISIT_STATUS_OCCURRED
                             )
-                        val participantsMap = buildParticipantsMap(occurredVisits)
+                        val participantUuids = occurredVisits.mapTo(mutableSetOf()) { it.participantUuid }
+                        val participantsMap = participantUuids
+                            .map { uuid -> async { uuid to findParticipantByParticipantUuidUseCase.findByParticipantUuid(uuid) } }
+                            .awaitAll()
+                            .toMap()
                         val candidateVisits = occurredVisits.filter { visit ->
                             participantsMap[visit.participantUuid]?.locationUuid == currentLocationUuid
+                        }.filter { visit ->
+                            when (selectedClinic) {
+                                null -> true
+                                PARENT_CLINIC_FILTER -> visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC].isNullOrBlank()
+                                else -> visit.attributes[Constants.ATTRIBUTE_VISIT_ATTACHED_CLINIC]
+                                    ?.equals(selectedClinic, ignoreCase = true) == true
+                            }
                         }
                         val allVisits = candidateVisits.filter { visit ->
                             visit.observations.values.any { obsValue ->
@@ -108,16 +144,21 @@ class Hmis105ViewModel @Inject constructor(
 
                         val allKeys = allVisits.flatMap { it.observations.keys }.toSet()
                         Log.d("Hmis105ViewModel", "All obs keys in filtered visits: $allKeys")
+
+                        val allObsKeysByParticipant: Map<String, Set<String>> = candidateVisits
+                            .groupBy { it.participantUuid }
+                            .mapValues { (_, visits) -> visits.flatMap { it.observations.keys }.toSet() }
+
                         val reportData = mutableListOf<Hmis105ReportDTO>()
 
                         reportData.addAll(createHmis105ReportDTOList(allVisits, participantsMap, start, end))
                         reportData.add(createPABReport(allVisits, participantsMap, start, end))
-                        reportData.add(createFullyImmunized1Year(allVisits, participantsMap, start, end))
+                        reportData.add(createFullyImmunized1Year(allVisits, allObsKeysByParticipant, participantsMap, start, end))
                         reportData.add(createLLINSReport(allVisits, participantsMap, start, end))
                         reportData.add(Hmis105ReportDTO(doses = "SECOND YEAR OF LIFE"))
                         reportData.add(createMR2Report(allVisits, participantsMap, start, end))
-                        reportData.add(createFullyImmunized2Years(allVisits, participantsMap, start, end))
-                        
+                        reportData.add(createFullyImmunized2Years(allVisits, allObsKeysByParticipant, participantsMap, start, end))
+
                         reportData.sortWith { a, b ->
                             val aOrder = getSortOrder(a.doses)
                             val bOrder = getSortOrder(b.doses)
@@ -145,30 +186,19 @@ class Hmis105ViewModel @Inject constructor(
         }
     }
 
-    private suspend fun buildParticipantsMap(visits: List<Visit>): Map<String, ParticipantBase?> {
-        val map = mutableMapOf<String, ParticipantBase?>()
-        for (visit in visits) {
-            if (!map.containsKey(visit.participantUuid)) {
-                map[visit.participantUuid] =
-                    findParticipantByParticipantUuidUseCase.findByParticipantUuid(visit.participantUuid)
-            }
-        }
-        return map
-    }
-
     private fun getSortOrder(doses: String): Pair<Int, Int> {
         return when {
             doses == "SECOND YEAR OF LIFE" -> Pair(3, 0)
             else -> {
                 val clMatch = Regex("CL(\\d+)").find(doses)
-                val clNumber = clMatch?.groupValues?.get(1)?.toIntOrNull() ?: 999
+                val clNumber = clMatch?.groupValues?.get(1)?.toIntOrNull()
                 when {
-                    clNumber in 1..23 -> Pair(0, clNumber)    // Individual vaccines (sorted by CL number)
-                    clNumber == 24 -> Pair(1, 24)             // Fully immunized by 1 year
-                    clNumber == 25 -> Pair(2, 25)             // LLINs
-                    clNumber == 27 -> Pair(4, 27)             // MR2
-                    clNumber == 28 -> Pair(5, 28)             // Fully immunized by 2 years
-                    else -> Pair(6, 999)                      // Unknown items at the end
+                    clNumber != null && clNumber in 1..23 -> Pair(0, clNumber)
+                    clNumber == 24 -> Pair(1, 24)
+                    clNumber == 25 -> Pair(2, 25)
+                    clNumber == 27 -> Pair(4, 27)
+                    clNumber == 28 -> Pair(5, 28)
+                    else -> Pair(6, 999)
                 }
             }
         }
@@ -202,7 +232,8 @@ class Hmis105ViewModel @Inject constructor(
         endDate: Date
     ): List<Hmis105ReportDTO> {
 
-        val reportRowsMap = mutableMapOf<String, Hmis105ReportDTO>()
+        val reportRowsMap = HMIS105_VACCINES.values
+            .associateWithTo(mutableMapOf()) { label -> Hmis105ReportDTO(doses = label) }
         val nowDateTime = DateTime.now()
         for (visit in visits) {
             val participant   = participantsMap[visit.participantUuid] ?: continue
@@ -223,59 +254,42 @@ class Hmis105ViewModel @Inject constructor(
         return reportRowsMap.values.toList().sortedBy { it.doses }
     }
     private fun createFullyImmunized1Year(
-        visits: List<Visit>,
+        periodVisits: List<Visit>,
+        allObsKeysByParticipant: Map<String, Set<String>>,
         participantsMap: Map<String, ParticipantBase?>,
         startDate: Date,
         endDate: Date
     ): Hmis105ReportDTO {
 
-        val yellowFeverRecipients = visits
-            .filter { visit ->
-                visit.observations.any { (key, obsValue) ->
-                    key == KEY_YELLOW_FEVER && obsValue.dateTime.time in startDate.time until endDate.time
-                }
-            }
-            .map { it.participantUuid }
-            .toSet()
-
-        val mr1Recipients = visits
-            .filter { visit ->
-                visit.observations.any { (key, obsValue) ->
-                    key == KEY_MR1 && obsValue.dateTime.time in startDate.time until endDate.time
-                }
-            }
-            .map { it.participantUuid }
-            .toSet()
-
-        Log.d("Hmis105ViewModel", "CL24 Yellow Fever recipients: ${yellowFeverRecipients.size}")
-        Log.d("Hmis105ViewModel", "CL24 MR1 recipients: ${mr1Recipients.size}")
-
-        val bothVaccinesUuids = yellowFeverRecipients.intersect(mr1Recipients)
-        Log.d("Hmis105ViewModel", "CL24 received both YF + MR1: ${bothVaccinesUuids.size}")
-
         var under1Static   = 0
         var under1Outreach = 0
+        val counted = mutableSetOf<String>()
 
-        for (participantUuid in bothVaccinesUuids) {
-            val participant = participantsMap[participantUuid] ?: continue
+        for (visit in periodVisits) {
+            val participantUuid = visit.participantUuid
+            if (participantUuid in counted) continue
 
-            val mr1Visit = visits.firstOrNull { visit ->
-                visit.participantUuid == participantUuid &&
-                        visit.observations.any { (key, obsValue) ->
-                            key == KEY_MR1 && obsValue.dateTime.time in startDate.time until endDate.time
-                        }
+            val mr1Obs = visit.observations[KEY_MR1]?.takeIf {
+                it.dateTime.time in startDate.time until endDate.time
             } ?: continue
 
-            val mr1ObsValue = mr1Visit.observations[KEY_MR1] ?: continue
-            val visitDateTime = DateTime(mr1ObsValue.dateTime.time)
-            val ageAtMR1      = calculateAgeInMonthsAt(participant.birthDate, visitDateTime)
+            val participant = participantsMap[participantUuid] ?: continue
 
+            val ageAtMR1 = calculateAgeInMonthsAt(participant.birthDate, DateTime(mr1Obs.dateTime.time))
             if (ageAtMR1 !in 8..12) {
                 Log.d("Hmis105ViewModel", "CL24 skip $participantUuid — age at MR1 was $ageAtMR1 months")
                 continue
             }
 
-            when (mr1Visit.visitLocation) {
+            val receivedKeys = allObsKeysByParticipant[participantUuid] ?: emptySet()
+            val missingVaccines = REQUIRED_VACCINES_FIRST_YEAR - receivedKeys
+            if (missingVaccines.isNotEmpty()) {
+                Log.d("Hmis105ViewModel", "CL24 skip $participantUuid — missing: $missingVaccines")
+                continue
+            }
+
+            counted.add(participantUuid)
+            when (visit.visitLocation) {
                 Constants.VISIT_PLACE_STATIC   -> under1Static++
                 Constants.VISIT_PLACE_OUTREACH,
                 Constants.VISIT_PLACE_SCHOOL   -> under1Outreach++
@@ -425,7 +439,8 @@ class Hmis105ViewModel @Inject constructor(
     }
 
     private fun createFullyImmunized2Years(
-        visits: List<Visit>,
+        periodVisits: List<Visit>,
+        allObsKeysByParticipant: Map<String, Set<String>>,
         participantsMap: Map<String, ParticipantBase?>,
         startDate: Date,
         endDate: Date
@@ -433,20 +448,33 @@ class Hmis105ViewModel @Inject constructor(
 
         var age1to4Static   = 0
         var age1to4Outreach = 0
+        val counted = mutableSetOf<String>()
 
-        for (visit in visits) {
+        for (visit in periodVisits) {
+            val participantUuid = visit.participantUuid
+            if (participantUuid in counted) continue
+
+            // The visit must include MR2 administered within the reporting period.
             val mr2Obs = visit.observations[KEY_MR2]?.takeIf {
                 it.dateTime.time in startDate.time until endDate.time
             } ?: continue
-            val participant   = participantsMap[visit.participantUuid] ?: continue
-            val mr2DateTime = DateTime(mr2Obs.dateTime.time)
-            val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, mr2DateTime)
 
-            if (ageInMonths !in 17..24) {
-                Log.d("Hmis105ViewModel", "CL28 skip ${visit.participantUuid} — age at MR2 was $ageInMonths months")
+            val participant = participantsMap[participantUuid] ?: continue
+
+            val ageAtMR2 = calculateAgeInMonthsAt(participant.birthDate, DateTime(mr2Obs.dateTime.time))
+            if (ageAtMR2 !in 17..24) {
+                Log.d("Hmis105ViewModel", "CL28 skip $participantUuid — age at MR2 was $ageAtMR2 months")
                 continue
             }
 
+            val receivedKeys = allObsKeysByParticipant[participantUuid] ?: emptySet()
+            val missingVaccines = REQUIRED_VACCINES_SECOND_YEAR - receivedKeys
+            if (missingVaccines.isNotEmpty()) {
+                Log.d("Hmis105ViewModel", "CL28 skip $participantUuid — missing: $missingVaccines")
+                continue
+            }
+
+            counted.add(participantUuid)
             when (visit.visitLocation) {
                 Constants.VISIT_PLACE_STATIC   -> age1to4Static++
                 Constants.VISIT_PLACE_OUTREACH,
@@ -512,7 +540,7 @@ class Hmis105ViewModel @Inject constructor(
     }
 
     private fun createScreens(): List<Screen> {
-        return mutableListOf(Screen.HMIS105_REPORT)
+        return mutableListOf(Screen.HMIS105_VACCINES_REPORT)
     }
 
     private fun setInitialScreen() {
@@ -522,7 +550,7 @@ class Hmis105ViewModel @Inject constructor(
     }
 
     enum class Screen(@StringRes val label: Int) {
-        HMIS105_REPORT(R.string.hmis105_report_title)
+        HMIS105_VACCINES_REPORT(R.string.hmis105_report_title)
     }
 
     override fun saveInstanceState(outState: Bundle) {

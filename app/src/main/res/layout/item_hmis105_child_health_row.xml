@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/row_even_background">
+
+        <TextView
+            android:id="@+id/tv_dose"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_6_11_male"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_6_11_female"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_12_59_male"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_12_59_female"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_5_14_male"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_5_14_female"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4_8"
+            android:textSize="@dimen/text_12"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+</layout>

@@ -77,6 +77,7 @@
 
     <!-- Reports Overview -->
     <dimen name="report_overview_btn_padding_70_100_50">70dp</dimen>
+    <dimen name="report_overview_btn_padding_30_60_20">30dp</dimen>
 
     <!-- contraindications  -->
     <dimen name="contraindications_text_size">25sp</dimen>
@@ -84,4 +85,15 @@
     <!-- Visits -->
     <dimen name="visit_list_item_text_12_16">12sp</dimen>
     <dimen name="eye_icon">20dp</dimen>
+
+    <!-- Cards -->
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+
+    <!-- Child Health Plus -->
+    <dimen name="chp_text_body">16sp</dimen>
+    <dimen name="chp_text_label">16sp</dimen>
+    <dimen name="chp_text_section_header">16sp</dimen>
+    <dimen name="chp_text_list_item">16sp</dimen>
+    <dimen name="chp_text_input">18sp</dimen>
 </resources>

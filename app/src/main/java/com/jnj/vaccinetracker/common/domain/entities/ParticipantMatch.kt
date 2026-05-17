@@ -35,6 +35,9 @@ data class ParticipantMatch(
     val motherLastName: String?
         get() = attributes[Constants.ATTRIBUTE_MOTHER_LAST_NAME]
 
+    val isChildHealthPlus: Boolean
+        get() = attributes[Constants.ATTRIBUTE_CHILD_HEALTH_PLUS] == "true"
+
     val yearOfBirth: Int = birthDate.year
 
     fun isBiometricsMatch(biometricsTemplateBytes: BiometricsTemplateBytes?) = biometricsTemplateBytes != null && (matchingScore ?: 0) > 0

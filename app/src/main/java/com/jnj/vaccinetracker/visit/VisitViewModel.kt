@@ -440,13 +440,31 @@ class VisitViewModel @Inject constructor(
     }
 
     suspend fun onVisitTypeDropdownChange() {
-        selectedSubstancesData.value = SubstancesDataUtil.getSubstancesDataForVisitType(
-            selectedVisitType.value ?: "",
+        val selectedType = selectedVisitType.value ?: ""
+        val substancesForVisitType = SubstancesDataUtil.getSubstancesDataForVisitType(
+            selectedType,
             configurationManager
         )
 
+        val birthDate = participant.value?.birthDateText
+        selectedSubstancesData.value = if (birthDate != null) {
+            val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(birthDate)
+            val substancesConfig = configurationManager.getSubstancesConfig()
+            val substancesGroupConfig = configurationManager.getSubstancesGroupConfig()
+            val ageFiltered = substancesForVisitType.filter { substance ->
+                val config = substancesConfig.find { it.conceptName == substance.conceptName }
+                config == null || childAgeInWeeks >= (config.weeksAfterBirth - config.weeksAfterBirthLowWindow)
+            }
+            SubstancesDataUtil.applyVaccinesCatchUpSchedule(
+                ageFiltered, childAgeInWeeks, patientVisits.value ?: emptyList(),
+                substancesGroupConfig, substancesConfig
+            )
+        } else {
+            substancesForVisitType
+        }
+
         val otherSubstancesList = SubstancesDataUtil.getOtherSubstancesDataForVisitType(
-            selectedVisitType.value ?: "",
+            selectedType,
             configurationManager
         )
         val filteredOtherSubstancesList = filterOtherSubstancesByLLIN(otherSubstancesList)

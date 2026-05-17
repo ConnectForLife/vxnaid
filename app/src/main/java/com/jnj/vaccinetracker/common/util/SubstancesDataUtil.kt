@@ -133,7 +133,7 @@ class SubstancesDataUtil {
             val childAgeInWeeks = DateUtil.getFullWeeksBetweenDateAndToday(participantBirthDate)
             val hasEverBeenVaccinated = isAnySubstanceApplied(participantVisits)
 
-            if (childAgeInWeeks < 6) {
+            if (childAgeInWeeks < 6 && !hasEverBeenVaccinated) {
                 return visitTypesOrdered[0] // At Birth
             }
 
@@ -141,18 +141,21 @@ class SubstancesDataUtil {
                 return visitTypesOrdered[1] // 6 weeks
             }
 
-            // If the child has been vaccinated, determine the next visit based on the last visit
+            // Determine the next visit based on the most recent occurred visit
             val lastVisit = participantVisits
                 .filter { it.visitStatus == Constants.VISIT_STATUS_OCCURRED }
                 .maxByOrNull { it.visitDate }
 
             return if (lastVisit != null) {
-                val lastVisitType = getVisitTypeFromLastVisit(lastVisit, allSubstancesConfig)
+                val lastVisitType = lastVisit.visitTypeVxnaid
+                    ?: getVisitTypeFromLastVisit(lastVisit, allSubstancesConfig)
                 val lastVisitIndex = visitTypesOrdered.indexOf(lastVisitType)
-                if (lastVisitIndex < visitTypesOrdered.size - 1) {
-                    visitTypesOrdered[lastVisitIndex + 1]
-                } else {
-                    "No visit scheduled"
+                when {
+                    lastVisitIndex >= 0 && lastVisitIndex < visitTypesOrdered.size - 1 ->
+                        visitTypesOrdered[lastVisitIndex + 1]
+                    lastVisitIndex < 0 ->
+                        findVisitTypeByChildAge(childAgeInWeeks, allSubstancesConfig)
+                    else -> "No visit scheduled"
                 }
             } else {
                 findVisitTypeByChildAge(childAgeInWeeks, allSubstancesConfig)
@@ -183,12 +186,17 @@ class SubstancesDataUtil {
                 .maxByOrNull { it.visitDate }
 
             return if (lastVisit != null) {
-                val lastVisitType = getVisitTypeFromLastVisit(lastVisit, allSubstancesConfig)
+                val lastVisitType = lastVisit.visitTypeVxnaid
+                    ?: getVisitTypeFromLastVisit(lastVisit, allSubstancesConfig)
                 val lastVisitIndex = visitTypesOrdered.indexOf(lastVisitType)
-                if (lastVisitIndex < visitTypesOrdered.size - 1) {
-                    visitTypesOrdered[lastVisitIndex + 1]
-                } else {
-                    "No visit scheduled"
+                when {
+                    lastVisitIndex >= 0 && lastVisitIndex < visitTypesOrdered.size - 1 ->
+                        visitTypesOrdered[lastVisitIndex + 1]
+                    lastVisitIndex < 0 -> {
+                        val weeksNumberBetweenBirthdateAndVisit = DateUtil.getFullWeeksBetweenDates(participantBirthDate, visitDate)
+                        findVisitTypeByChildAge(weeksNumberBetweenBirthdateAndVisit, allSubstancesConfig)
+                    }
+                    else -> "No visit scheduled"
                 }
             } else {
                 // If there is no last visit, determine the visit type based on the visit date

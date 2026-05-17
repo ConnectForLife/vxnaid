@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin_8_16"
+    android:padding="@dimen/padding_8_16">
+
+        <TextView
+            android:id="@+id/label_reports_menu"
+            style="@style/CustomAutoSizeText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_16_32"
+            android:text="@string/reports_label"
+            android:textAppearance="@style/ScreenTitle"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Reports" />
+
+        <TextView
+            android:id="@+id/label_reports_menu_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_16_32"
+            android:text="@string/reports_menu_description"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_16_20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_reports_menu"
+            tools:text="Choose which report view you want to open." />
+
+        <LinearLayout
+            android:id="@+id/reports_buttons_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="@dimen/padding_8_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_reports_menu_description">
+
+            <Button
+                android:id="@+id/btn_visits_overview"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/btn_margin_32_32_16"
+                android:backgroundTint="@color/alertLight"
+                android:paddingVertical="@dimen/btn_padding_32_64_20"
+                android:text="@string/visits_overview_title"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:textColor="@color/colorTextOnSecondary"
+                android:textSize="@dimen/btn_text_size_18_32"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/button_corner_radius" />
+
+            <Button
+                android:id="@+id/btn_reports_overview"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/sync_offline"
+                android:paddingVertical="@dimen/btn_padding_32_64_20"
+                android:text="@string/reports_overview_title"
+                android:textAppearance="@style/ButtonTextStyling"
+                android:textColor="@color/colorTextOnSecondary"
+                android:textSize="@dimen/btn_text_size_18_32"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/button_corner_radius" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

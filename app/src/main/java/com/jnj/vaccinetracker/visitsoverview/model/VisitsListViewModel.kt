@@ -11,8 +11,11 @@ import com.jnj.vaccinetracker.common.data.database.repositories.VisitRepository
 import com.jnj.vaccinetracker.common.data.database.typealiases.addDaysToDate
 import com.jnj.vaccinetracker.common.data.database.typealiases.getTodayMidnight
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
+import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
+import com.jnj.vaccinetracker.common.util.DateUtil
+import com.soywiz.klock.DateFormat
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
 import com.jnj.vaccinetracker.common.domain.entities.ObservationValue
@@ -167,25 +170,75 @@ class VisitsListViewModel @Inject constructor(
     }
 
     private suspend fun createVisitDTOList(visits: List<Visit>): List<VisitDataDTO> {
-        val visitDataDTOList: MutableList<VisitDataDTO> = mutableListOf()
-        val participantsMap =
-            findParticipantByParticipantUuidUseCase.findByParticipantUuids(visits.map { it.participantUuid }
-                .toSet()).groupBy { it.participantUuid }
+        val visitDataDTOList = mutableListOf<VisitDataDTO>()
+        val participantsMap = findParticipantByParticipantUuidUseCase
+            .findByParticipantUuids(visits.map { it.participantUuid }.toSet())
+            .groupBy { it.participantUuid }
 
-        visits.forEach { visit ->
-            val participant = participantsMap[visit.participantUuid]?.getOrNull(0)
-            if (participant != null) {
-                val visitDataDTO = VisitDataDTO(
-                    visitUuid = visit.visitUuid,
-                    startDatetime = visit.startDatetime,
-                    attributes = visit.attributes,
-                    observations = visit.observations,
-                    visitType = visit.visitType,
-                    participant = participant
-                )
-                visitDataDTOList.add(visitDataDTO)
+        val chpServiceKeyToDisplay = ChildHealthPlusService.values()
+            .associate { it.serviceKey to it.displayName }
+
+        val chpVisits = mutableListOf<Visit>()
+        val regularVisits = mutableListOf<Visit>()
+        for (visit in visits) {
+            val serviceKey = visit.attributes[Constants.ATTRIBUTE_VISIT_TYPE_VXNAID]
+            if (serviceKey != null && serviceKey in chpServiceKeyToDisplay) {
+                chpVisits.add(visit)
+            } else {
+                regularVisits.add(visit)
             }
         }
+
+        // Regular visits: one row per visit, unchanged behaviour.
+        for (visit in regularVisits) {
+            val participant = participantsMap[visit.participantUuid]?.getOrNull(0) ?: continue
+            visitDataDTOList.add(VisitDataDTO(
+                visitUuid      = visit.visitUuid,
+                startDatetime  = visit.startDatetime,
+                attributes     = visit.attributes,
+                observations   = visit.observations,
+                visitType      = visit.visitType,
+                participant    = participant
+            ))
+        }
+
+        // CHP visits: group by participant + date so that multiple services recorded
+        // on the same day appear as a single row with all service names combined.
+        chpVisits
+            .groupBy { visit ->
+                val dateStr = DateUtil.convertDateToString(
+                    visit.startDatetime, DateFormat.FORMAT_DATE.toString()
+                )
+                "${visit.participantUuid}_$dateStr"
+            }
+            .forEach { (_, group) ->
+                val first = group.first()
+                val participant = participantsMap[first.participantUuid]?.getOrNull(0) ?: return@forEach
+
+                val combinedServices = group
+                    .mapNotNull { chpServiceKeyToDisplay[it.attributes[Constants.ATTRIBUTE_VISIT_TYPE_VXNAID]] }
+                    .distinct()
+                    .joinToString(", ")
+
+                val mergedAttributes = first.attributes.toMutableMap()
+                    .also { it[Constants.ATTRIBUTE_VISIT_TYPE_VXNAID] = combinedServices }
+
+                val mergedObservations = group.fold(mutableMapOf<String, ObservationValue>()) { acc, v ->
+                    acc.putAll(v.observations)
+                    acc
+                }
+
+                visitDataDTOList.add(VisitDataDTO(
+                    visitUuid     = first.visitUuid,
+                    startDatetime = first.startDatetime,
+                    attributes    = mergedAttributes,
+                    observations  = mergedObservations,
+                    visitType     = first.visitType,
+                    participant   = participant
+                ))
+            }
+
+        visitDataDTOList.sortByDescending { it.startDatetime.time }
         Log.d("VisitsListViewModel", "Visit count: ${visitDataDTOList.size}, Unique participant count: ${participantsMap.size}")
         return visitDataDTOList
     }

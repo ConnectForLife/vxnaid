@@ -1,12 +1,19 @@
 package com.jnj.vaccinetracker.common.di
 
 import com.jnj.vaccinetracker.barcode.ScanBarcodeActivity
+import com.jnj.vaccinetracker.childhealthplus.presentation.ChildHealthPlusActivity
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusAdministrationDateFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusClientInfoFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusConfirmationFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusServiceSelectionFragment
+import com.jnj.vaccinetracker.childhealthplus.presentation.screens.ChildHealthPlusSuccessFragment
 import com.jnj.vaccinetracker.common.ui.dialog.SuccessDialog
 import com.jnj.vaccinetracker.common.ui.dialog.SyncErrorDialog
 import com.jnj.vaccinetracker.irisscanner.ScannerConnectedActivity
 import com.jnj.vaccinetracker.login.LoginActivity
 import com.jnj.vaccinetracker.login.RefreshSessionDialog
 import com.jnj.vaccinetracker.participantflow.ParticipantFlowActivity
+import com.jnj.vaccinetracker.participantflow.reportsmenu.ReportsMenuActivity
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowCancelWorkflowDialog
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowMandatoryIrisDialog
 import com.jnj.vaccinetracker.participantflow.dialogs.ParticipantFlowMissingIdentifiersDialog
@@ -52,7 +59,9 @@ import com.jnj.vaccinetracker.register.dialogs.MultipleVisitsDialog
 import com.jnj.vaccinetracker.register.dialogs.TransferClinicDialog
 import com.jnj.vaccinetracker.register.dialogs.UpdateParticipantSuccessfulDialog
 import com.jnj.vaccinetracker.reportsoverview.childrenoverview.activity.ReportsOverviewFlowActivity
+import com.jnj.vaccinetracker.reportsoverview.hmis105.activity.Hmis105ChildHealthFlowActivity
 import com.jnj.vaccinetracker.reportsoverview.hmis105.activity.Hmis105FlowActivity
+import com.jnj.vaccinetracker.reportsoverview.hmis105.screens.Hmis105ChildHealthFragment
 import com.jnj.vaccinetracker.reportsoverview.hmis105.screens.Hmis105ReportFragment
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.activity.VaccinesOverviewFlowActivity
 import com.jnj.vaccinetracker.reportsoverview.vaccinesoverview.screens.VaccinesOverviewFragment
@@ -321,5 +330,32 @@ interface AndroidModule {
 
     @ContributesAndroidInjector
     fun bindHmis105ReportFragment(): Hmis105ReportFragment
+
+    @ContributesAndroidInjector
+    fun bindHmis105ChildHealthFlowActivity(): Hmis105ChildHealthFlowActivity
+
+    @ContributesAndroidInjector
+    fun bindHmis105ChildHealthFragment(): Hmis105ChildHealthFragment
+
+    @ContributesAndroidInjector
+    fun bindReportsMenuActivity(): ReportsMenuActivity
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusActivity(): ChildHealthPlusActivity
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusClientInfoFragment(): ChildHealthPlusClientInfoFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusServiceSelectionFragment(): ChildHealthPlusServiceSelectionFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusAdministrationDateFragment(): ChildHealthPlusAdministrationDateFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusConfirmationFragment(): ChildHealthPlusConfirmationFragment
+
+    @ContributesAndroidInjector
+    fun bindChildHealthPlusSuccessFragment(): ChildHealthPlusSuccessFragment
 
 }

@@ -52,6 +52,11 @@ object Constants {
     const val RESCHEDULE_VISIT_REASON_ATTRIBUTE_TYPE_NAME = "Reschedule Visit Reason"
     const val ADVERSE_EFFECTS_OBSERVATION = "Adverse Effects Vxnaid"
 
+    // Child Health+ attributes
+    const val ATTRIBUTE_CHILD_HEALTH_PLUS = "ChildHealthPlus"
+    const val OBSERVATION_DOSE_NUMBER_VXNAID = "Dose Number Vxnaid"
+    const val OBSERVATION_NEXT_VISIT_DATE_VXNAID = "Next Visit Date Vxnaid"
+
     // common attributes
     const val ATTRIBUTE_OPERATOR = "operatorUuid"
 
@@ -117,7 +122,6 @@ object Constants {
     const val VISITS_OVERVIEW_SCHEDULED_VISITS_KEY = "Scheduled Visits"
     const val VISITS_OVERVIEW_HISTORICAL_VISITS_KEY = "Visit History"
     const val VISITS_OVERVIEW_MISSED_VISITS_KEY = "Missed Visits"
-    const val REGISTERED_PARTICIPANT = "Registered Children"
 
     const val VISIT_DATE_FILE_COLUMN_HEADER = "Visit Date"
     const val CLIENT_ID_FILE_COLUMN_HEADER = "Client ID"

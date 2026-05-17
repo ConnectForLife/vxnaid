@@ -250,7 +250,8 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                         siteUUID = participantLocationUuid,
                         motherFirstName = participant.motherFirstName,
                         motherLastName = participant.motherLastName,
-                        childNumber = participant.childNumber
+                        childNumber = participant.childNumber,
+                        isChildHealthPlus = participant.isChildHealthPlus,
                     ),
                     picture = null,
                     isCurrentSite = true,
@@ -278,7 +279,8 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                         siteUUID = participantLocationUuid,
                         motherFirstName = participant.motherFirstName,
                         motherLastName = participant.motherLastName,
-                        childNumber = participant.childNumber
+                        childNumber = participant.childNumber,
+                        isChildHealthPlus = participant.isChildHealthPlus,
                     ),
                     isCurrentSite = false,
                     siteName = site
@@ -319,7 +321,8 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
               birthDateText = matchingListItem.participant.birthDateText!!,
               isBirthDateEstimated = matchingListItem.participant.isBirthDateEstimated!!,
               vaccine = null,
-              participantPicture = matchingListItem.picture
+              participantPicture = matchingListItem.picture,
+              isChildHealthPlus = matchingListItem.participant.isChildHealthPlus,
           )
       } else if (matchingListItem is OtherSiteParticipantItem) {
           selectedParticipant.set(matchingListItem.participant)
@@ -330,7 +333,8 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
               birthDateText = matchingListItem.participant.birthDateText!!,
               isBirthDateEstimated = matchingListItem.participant.isBirthDateEstimated!!,
               vaccine = null,
-              participantPicture = null
+              participantPicture = null,
+              isChildHealthPlus = matchingListItem.participant.isChildHealthPlus,
           )
       } else {
           return null
@@ -346,7 +350,8 @@ class ParticipantFlowMatchingViewModel @Inject constructor(
                 birthDateText = it.birthDateText ?: return null,
                 isBirthDateEstimated = it.isBirthDateEstimated ?: return null,
                 vaccine = it.vaccine,
-                participantPicture = selectedParticipantImage.get()
+                participantPicture = selectedParticipantImage.get(),
+                isChildHealthPlus = it.isChildHealthPlus,
             )
         }
     }

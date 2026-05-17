@@ -38,6 +38,7 @@
     <color name="row_odd_background">#FFFFFF</color>
     <color name="outreach_bg_color">#BDBDBD</color>
     <color name="row_outreach_background">#BBDEFB</color>
+    <color name="colorError">#B71C1C</color>
     <drawable name="alert_background">@color/alertLight</drawable>
     <drawable name="error_background">@color/errorLight</drawable>
 </resources>
