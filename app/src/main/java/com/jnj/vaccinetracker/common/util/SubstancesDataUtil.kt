@@ -456,9 +456,8 @@ class SubstancesDataUtil {
 
         private fun isAnySubstanceApplied(visits: List<VisitDetail>): Boolean {
             return visits.any { visit ->
-                visit.observations.keys.any { key ->
-                    key.endsWith(Constants.VXNAID_DATE_SUFFIX)
-                }
+                visit.visitStatus == Constants.VISIT_STATUS_OCCURRED ||
+                visit.observations.keys.any { key -> key.endsWith(Constants.VXNAID_DATE_SUFFIX) }
             }
         }
 

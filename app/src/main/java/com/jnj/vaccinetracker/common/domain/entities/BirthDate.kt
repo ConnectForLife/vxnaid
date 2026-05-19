@@ -2,6 +2,7 @@ package com.jnj.vaccinetracker.common.domain.entities
 
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
+import java.util.Calendar
 
 data class BirthDate(val time: Long) {
     val year: Int
@@ -9,10 +10,11 @@ data class BirthDate(val time: Long) {
     val day: Int
 
     init {
-        val birthDateTime = DateTime(time)
-        year = birthDateTime.yearInt
-        month = birthDateTime.month.index1
-        day = birthDateTime.dayOfMonth
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = time
+        year = cal.get(Calendar.YEAR)
+        month = cal.get(Calendar.MONTH) + 1
+        day = cal.get(Calendar.DAY_OF_MONTH)
     }
 
     fun toDateTime(): DateTime {

@@ -39,6 +39,7 @@ import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.util.CellRangeAddress
 import javax.inject.Inject
@@ -173,9 +174,9 @@ class VaccinesOverviewFragment : BaseFragment(),
     }
 
     private fun initializeDefaultDates() {
-        val now = DateTime.now()
-        val today = DateTime(now.yearInt, now.month1, now.dayOfMonth)
-        val firstDayOfMonth = DateTime(now.yearInt, now.month1, 1)
+        val c = Calendar.getInstance()
+        val today = DateTime(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))
+        val firstDayOfMonth = DateTime(today.yearInt, today.month1, 1)
 
         selectedStartDate = firstDayOfMonth
         selectedEndDate = today

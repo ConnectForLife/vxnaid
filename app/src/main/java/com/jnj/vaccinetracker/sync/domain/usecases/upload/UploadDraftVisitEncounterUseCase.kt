@@ -19,7 +19,7 @@ class UploadDraftVisitEncounterUseCase @Inject constructor(
         startDatetime = startDatetime,
         locationUuid = locationUuid,
         attributes = attributes.map { AttributeDto(it.key, it.value) },
-        observations = observations.map { UpdateVisitObservationDto(it.key, it.value) },
+        observations = observations.filter { it.value.isNotEmpty() }.map { UpdateVisitObservationDto(it.key, it.value) },
     )
 
     private suspend fun updateDraftStates(uploadedDraftVisitEncounter: DraftVisitEncounter) {

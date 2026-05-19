@@ -32,14 +32,16 @@ class ValidateSyncResponseUseCase @Inject constructor(
             val count = draftCount + syncEntityCount
             if (count != totalSyncScopeRecordCount) {
                 throw TotalSyncScopeRecordCountMismatchException(message = """local sync record count is $syncEntityCount including $draftCount uploaded drafts, $deletedCount voided, $failedCount failed.
-                    |But backend totalSyncScopeRecordCount is $totalSyncScopeRecordCount 
+                    |But backend totalSyncScopeRecordCount is $totalSyncScopeRecordCount
                     |of which $ignoredCount are expected to be uploaded drafts
-                    |and $voidedCount are expected to be voided""".trimMargin(), totalSyncScopeRecordCount)
+                    |and $voidedCount are expected to be voided""".trimMargin(),
+                    backendTableCount = totalSyncScopeRecordCount, localCount = syncEntityCount)
             }
         } else if (syncEntityCount != totalSyncScopeRecordCount) {
             throw TotalSyncScopeRecordCountMismatchException(message = """local sync record count is $syncEntityCount including $deletedCount voided, $failedCount failed
                 |but backend totalSyncScopeRecordCount is $totalSyncScopeRecordCount
-                |of which $voidedCount are expected to be voided""".trimMargin(), totalSyncScopeRecordCount)
+                |of which $voidedCount are expected to be voided""".trimMargin(),
+                backendTableCount = totalSyncScopeRecordCount, localCount = syncEntityCount)
         }
     }
 

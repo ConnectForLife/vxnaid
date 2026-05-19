@@ -453,7 +453,10 @@ class VisitViewModel @Inject constructor(
             val substancesGroupConfig = configurationManager.getSubstancesGroupConfig()
             val ageFiltered = substancesForVisitType.filter { substance ->
                 val config = substancesConfig.find { it.conceptName == substance.conceptName }
-                config == null || childAgeInWeeks >= (config.weeksAfterBirth - config.weeksAfterBirthLowWindow)
+                    ?: return@filter true
+                val minWeeks = config.weeksAfterBirth - config.weeksAfterBirthLowWindow
+                val maxWeeks = config.weeksAfterBirth + config.weeksAfterBirthUpWindow
+                childAgeInWeeks in minWeeks..maxWeeks
             }
             SubstancesDataUtil.applyVaccinesCatchUpSchedule(
                 ageFiltered, childAgeInWeeks, patientVisits.value ?: emptyList(),
