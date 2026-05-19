@@ -83,12 +83,13 @@ class VisitsListViewModel @Inject constructor(
             val convertedDraftVisits = draftVisits.map { convertDraftVisitToVisitOffline(it) }
 
             val draftVisitParticipantIds = convertedDraftVisits.map { it.participantUuid }.toSet()
-            val administeredVisitUuids = draftVisitEncounterRepository
-                .findVisitsBeforeDate(tomorrowMidnight)
-                .map { it.visitUuid }.toSet()
+            val administeredDraftEncounters = draftVisitEncounterRepository.findVisitsBeforeDate(tomorrowMidnight)
+            val administeredVisitUuids = administeredDraftEncounters.map { it.visitUuid }.toSet()
+            val administeredParticipantUuids = administeredDraftEncounters.map { it.participantUuid }.toSet()
             val filteredScheduledVisits = uniqueScheduledVisits.filter { scheduledVisit ->
                 !draftVisitParticipantIds.contains(scheduledVisit.participantUuid) &&
-                !administeredVisitUuids.contains(scheduledVisit.visitUuid)
+                !administeredVisitUuids.contains(scheduledVisit.visitUuid) &&
+                !administeredParticipantUuids.contains(scheduledVisit.participantUuid)
             }
 
             val combinedScheduledVisits = convertedDraftVisits + filteredScheduledVisits
@@ -133,14 +134,18 @@ class VisitsListViewModel @Inject constructor(
                 return@launch
             }
             val todayMidnight = getTodayMidnight()
+            val tomorrowMidnight = addDaysToDate(todayMidnight, 1)
 
-            val missedVisits = visitRepository.getMissedVisits(todayMidnight, Constants.VISIT_STATUS_SCHEDULED, currentLocationUuid )
+            val scheduledPastDueVisits = visitRepository.getMissedVisits(todayMidnight, Constants.VISIT_STATUS_SCHEDULED, currentLocationUuid)
+            val markedMissedVisits = visitRepository.getMissedVisits(tomorrowMidnight, Constants.VISIT_STATUS_MISSED, currentLocationUuid)
+            val missedVisits = (scheduledPastDueVisits + markedMissedVisits).distinctBy { it.visitUuid }
             val draftVisits = draftVisitRepository.findVisitsBeforeDate(todayMidnight)
             val convertedDraftVisits = draftVisits.map { draftVisit -> convertDraftVisitToVisitOffline(draftVisit) }
 
-            val combinedMissedVisits =  missedVisits + convertedDraftVisits
+            val combinedMissedVisits = missedVisits + convertedDraftVisits
 
             val draftScheduledVisits = draftVisitRepository.findVisitsAfterDate(todayMidnight)
+                .filter { it.attributes[Constants.ATTRIBUTE_VISIT_STATUS] != Constants.VISIT_STATUS_OCCURRED }
             val filteredMissedVisits = combinedMissedVisits.filter { missedVisit ->
                 missedVisit.participantUuid !in draftScheduledVisits.map { it.participantUuid }
             }
