@@ -83,7 +83,6 @@ class VisitsListViewModel @Inject constructor(
             val convertedDraftVisits = draftVisits.map { convertDraftVisitToVisitOffline(it) }
 
             val draftVisitParticipantIds = convertedDraftVisits.map { it.participantUuid }.toSet()
-            // Also exclude visits that were administered offline (DraftVisitEncounter exists) but not yet synced
             val administeredVisitUuids = draftVisitEncounterRepository
                 .findVisitsBeforeDate(tomorrowMidnight)
                 .map { it.visitUuid }.toSet()

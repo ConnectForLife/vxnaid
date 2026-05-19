@@ -138,8 +138,6 @@ class Hmis105ChildHealthFragment : BaseFragment(),
     }
 
     private fun initializeDefaultDates() {
-        // Use Calendar.getInstance() (local timezone) so "today" reflects the device's local date,
-        // not UTC — devices in UTC+3 would otherwise see yesterday's date as "today" between midnight-3AM.
         val c = Calendar.getInstance()
         val today = DateTime(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))
         viewModel.selectedStartDate.value = DateTime(today.yearInt, today.month1, 1)

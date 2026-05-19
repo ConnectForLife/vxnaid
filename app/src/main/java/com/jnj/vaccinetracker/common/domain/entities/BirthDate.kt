@@ -10,9 +10,6 @@ data class BirthDate(val time: Long) {
     val day: Int
 
     init {
-        // Use device local timezone so that dates returned from OpenMRS (which stores dates in
-        // the facility's local timezone) are interpreted correctly. klock DateTime(time) is UTC-only
-        // and would shift the day back by the UTC offset (e.g. UTC+3 causes -1 day).
         val cal = Calendar.getInstance()
         cal.timeInMillis = time
         year = cal.get(Calendar.YEAR)

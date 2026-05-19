@@ -455,8 +455,6 @@ class SubstancesDataUtil {
         }
 
         private fun isAnySubstanceApplied(visits: List<VisitDetail>): Boolean {
-            // Treat any OCCURRED dosing visit as evidence of prior vaccination, even when
-            // vaccine observations are absent (e.g. past visits entered without specific dates).
             return visits.any { visit ->
                 visit.visitStatus == Constants.VISIT_STATUS_OCCURRED ||
                 visit.observations.keys.any { key -> key.endsWith(Constants.VXNAID_DATE_SUFFIX) }
