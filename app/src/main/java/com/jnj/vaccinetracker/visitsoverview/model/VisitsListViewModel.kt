@@ -83,7 +83,14 @@ class VisitsListViewModel @Inject constructor(
             val convertedDraftVisits = draftVisits.map { convertDraftVisitToVisitOffline(it) }
 
             val draftVisitParticipantIds = convertedDraftVisits.map { it.participantUuid }.toSet()
-            val filteredScheduledVisits = uniqueScheduledVisits.filter { scheduledVisit -> !draftVisitParticipantIds.contains(scheduledVisit.participantUuid)}
+            // Also exclude visits that were administered offline (DraftVisitEncounter exists) but not yet synced
+            val administeredVisitUuids = draftVisitEncounterRepository
+                .findVisitsBeforeDate(tomorrowMidnight)
+                .map { it.visitUuid }.toSet()
+            val filteredScheduledVisits = uniqueScheduledVisits.filter { scheduledVisit ->
+                !draftVisitParticipantIds.contains(scheduledVisit.participantUuid) &&
+                !administeredVisitUuids.contains(scheduledVisit.visitUuid)
+            }
 
             val combinedScheduledVisits = convertedDraftVisits + filteredScheduledVisits
             visitDTOs.value = createVisitDTOList(combinedScheduledVisits)

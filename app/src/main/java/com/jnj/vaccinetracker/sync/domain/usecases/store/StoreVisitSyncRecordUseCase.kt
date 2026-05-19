@@ -44,7 +44,16 @@ class StoreVisitSyncRecordUseCase @Inject constructor(
     }
 
     private suspend fun update(syncRecord: VisitSyncRecord.Update) {
-        val visit = syncRecord.toDomain()
+        var visit = syncRecord.toDomain()
+        // The server retains the original scheduled startDatetime even after a visit is completed.
+        // If we have an uploaded DraftVisitEncounter, use its startDatetime (the actual admin date).
+        val draftState = draftVisitEncounterRepository.findDraftStateByVisitUuid(visit.visitUuid)
+        if (draftState == DraftState.UPLOADED) {
+            val draftEncounter = draftVisitEncounterRepository.findByVisitUuid(visit.visitUuid)
+            if (draftEncounter != null) {
+                visit = visit.copy(startDatetime = draftEncounter.startDatetime)
+            }
+        }
         visitRepository.insert(visit, orReplace = true)
         onInsertSuccess(visit)
     }

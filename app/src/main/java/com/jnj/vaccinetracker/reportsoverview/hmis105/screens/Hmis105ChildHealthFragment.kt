@@ -32,6 +32,7 @@ import com.jnj.vaccinetracker.reportsoverview.hmis105.model.Hmis105ChildHealthVi
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.jvm.toDate
+import java.util.Calendar
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -137,9 +138,12 @@ class Hmis105ChildHealthFragment : BaseFragment(),
     }
 
     private fun initializeDefaultDates() {
-        val today = DateTime.now()
-        viewModel.selectedStartDate.value = DateTime(today.yearInt, today.month, 1)
-        viewModel.selectedEndDate.value   = DateTime(today.yearInt, today.month1, today.dayOfMonth)
+        // Use Calendar.getInstance() (local timezone) so "today" reflects the device's local date,
+        // not UTC — devices in UTC+3 would otherwise see yesterday's date as "today" between midnight-3AM.
+        val c = Calendar.getInstance()
+        val today = DateTime(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))
+        viewModel.selectedStartDate.value = DateTime(today.yearInt, today.month1, 1)
+        viewModel.selectedEndDate.value   = today
         updateDateLabels()
     }
 

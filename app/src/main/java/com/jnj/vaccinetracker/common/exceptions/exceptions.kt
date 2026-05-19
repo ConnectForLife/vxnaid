@@ -155,7 +155,7 @@ class EncryptionException(override val message: String, override val cause: Thro
 
 
 class TotalSyncScopeRecordCountMismatchException(
-    override val message: String, val backendTableCount: Long,
+    override val message: String, val backendTableCount: Long, val localCount: Long,
 ) : AppException()
 
 class ReportSyncCompletedDateException(override val message: String, override val cause: Throwable? = null) : AppException()
