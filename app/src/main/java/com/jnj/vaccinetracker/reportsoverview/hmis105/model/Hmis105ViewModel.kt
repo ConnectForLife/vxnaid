@@ -108,7 +108,7 @@ class Hmis105ViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val start = startDate?.toDate() ?: getTodayMidnight()
-                val end   = endDate?.toDate()   ?: addDaysToDate(getTodayMidnight(), 1)
+                val end   = endDate?.let { addDaysToDate(it.toDate(), 1) } ?: addDaysToDate(getTodayMidnight(), 1)
 
                 Log.d("Hmis105ViewModel", "Loading report data from $start to $end")
 
