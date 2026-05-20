@@ -54,7 +54,7 @@
                     android:id="@+id/btn_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/general_label_close"
+                    android:text="@string/child_health_plus_remove"
                     android:onClick="@{onDelete}"
                     android:visibility="@{onDelete != null ? android.view.View.VISIBLE : android.view.View.GONE}" />
 

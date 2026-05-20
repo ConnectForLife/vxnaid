@@ -615,8 +615,8 @@
     <string name="child_health_plus_description">Simplified registration and service documentation for clients without full immunization history</string>
     <string name="child_health_plus_client_info_title">Client Details</string>
     <string name="child_health_plus_client_name_label">Client Name</string>
-    <string name="child_health_plus_client_dob_label">Date of Birth</string>
-    <string name="child_health_plus_client_sex_label">Gender</string>
+    <string name="child_health_plus_client_dob_label">Date of Birth *</string>
+    <string name="child_health_plus_client_sex_label">Gender *</string>
     <string name="child_health_plus_client_contact_label">Contact Information</string>
     <string name="child_health_plus_mother_name_label">Mother\'s Name</string>
     <string name="child_health_plus_pregnant_woman_label">Is Pregnant Woman</string>
@@ -679,4 +679,5 @@
     <string name="child_health_plus_past_services_header">Services Already Received</string>
     <string name="child_health_plus_past_services_loading">Loading past services…</string>
     <string name="child_health_plus_past_services_none">No previous services recorded</string>
+    <string name="child_health_plus_remove">Remove</string>
 </resources>
