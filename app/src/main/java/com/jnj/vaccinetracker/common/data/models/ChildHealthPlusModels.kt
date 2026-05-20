@@ -51,7 +51,7 @@ enum class ChildHealthPlusService(
         conceptName = "HPV Vxnaid",
     ),
     TETANUS(
-        displayName = "Tetanus",
+        displayName = "Tetanus (Td)",
         serviceKey = "TD",
         conceptName = "Td Vxnaid",
         availableDoses = listOf("Td1", "Td2", "Td3", "Td4", "Td5"),

@@ -679,4 +679,6 @@
     <string name="child_health_plus_past_services_header">Services Already Received</string>
     <string name="child_health_plus_past_services_loading">Loading past services…</string>
     <string name="child_health_plus_past_services_none">No previous services recorded</string>
+    <string name="child_health_plus_remove">Remove</string>
+
 </resources>
