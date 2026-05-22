@@ -10,8 +10,8 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 // Version
 ext.versionMajor = 4
-ext.versionMinor = 3
-ext.versionPatch = 3
+ext.versionMinor = 4
+ext.versionPatch = 0
 
 // Iris scanner variables
 def productRootDir = "./"
