@@ -150,9 +150,6 @@ class Hmis105ViewModel @Inject constructor(
                             .groupBy { it.participantUuid }
                             .mapValues { (_, visits) -> visits.flatMap { it.observations.keys }.toSet() }
 
-                        // PAB visits are filtered by visit startDatetime rather than observation datetime,
-                        // because the PAB observation's datetime in OpenMRS reflects the mother's last Td
-                        // vaccination date (which predates the child's birth), not the encounter date.
                         val pabVisits = candidateVisits.filter { visit ->
                             visit.startDatetime.time in start.time until end.time
                         }
