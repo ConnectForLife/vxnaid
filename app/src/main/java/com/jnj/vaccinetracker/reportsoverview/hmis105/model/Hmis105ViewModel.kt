@@ -79,6 +79,7 @@ class Hmis105ViewModel @Inject constructor(
         private const val KEY_YELLOW_FEVER = "Yellow Fever Vxnaid Date"
         private const val UUID_LLINS = "6de53ec6-bf3f-41fe-bf2e-e61447a6557a"
         private const val UUID_PAB = "b8ca722b-9731-4e50-8081-ac9131230718"
+        private const val CONCEPT_NAME_PAB = "Protection at birth for TT Vxnaid"
         private val REQUIRED_VACCINES_FIRST_YEAR: Set<String> = HMIS105_VACCINES.keys
         private val REQUIRED_VACCINES_SECOND_YEAR: Set<String> = HMIS105_VACCINES.keys + KEY_MR2
     }
@@ -149,10 +150,14 @@ class Hmis105ViewModel @Inject constructor(
                             .groupBy { it.participantUuid }
                             .mapValues { (_, visits) -> visits.flatMap { it.observations.keys }.toSet() }
 
+                        val pabVisits = candidateVisits.filter { visit ->
+                            visit.startDatetime.time in start.time until end.time
+                        }
+
                         val reportData = mutableListOf<Hmis105ReportDTO>()
 
                         reportData.addAll(createHmis105ReportDTOList(allVisits, participantsMap, start, end))
-                        reportData.add(createPABReport(allVisits, participantsMap, start, end))
+                        reportData.add(createPABReport(pabVisits, participantsMap, start, end))
                         reportData.add(createFullyImmunized1Year(allVisits, allObsKeysByParticipant, participantsMap, start, end))
                         reportData.add(createLLINSReport(allVisits, participantsMap, start, end))
                         reportData.add(Hmis105ReportDTO(doses = "SECOND YEAR OF LIFE"))
@@ -356,23 +361,22 @@ class Hmis105ViewModel @Inject constructor(
         var under1Outreach = 0
 
         for (visit in visits) {
-            val participant   = participantsMap[visit.participantUuid] ?: continue
+            val participant = participantsMap[visit.participantUuid] ?: continue
 
-            val pabEntry = visit.observations.entries.firstOrNull { (key, obs) ->
-                (key.contains(UUID_PAB, ignoreCase = true) ||
-                        key.contains("PAB", ignoreCase = true)) &&
-                        obs.value.trim().isNotEmpty() &&
-                        obs.dateTime.time in startDate.time until endDate.time
-            } ?: continue
+            val hasPab = visit.observations.keys.any { key ->
+                key.equals(CONCEPT_NAME_PAB, ignoreCase = true)
+            }
+            if (!hasPab) continue
 
-            val obsDateTime = DateTime(pabEntry.value.dateTime.time)
-            val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, obsDateTime)
+            val visitDateTime = DateTime(visit.startDatetime.time)
+            val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, visitDateTime)
             if (ageInMonths !in 0..11) continue
 
             when (visit.visitLocation) {
                 Constants.VISIT_PLACE_STATIC   -> under1Static++
                 Constants.VISIT_PLACE_OUTREACH,
                 Constants.VISIT_PLACE_SCHOOL   -> under1Outreach++
+                else                           -> under1Static++
             }
         }
 
