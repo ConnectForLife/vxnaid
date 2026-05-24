@@ -368,9 +368,8 @@ class Hmis105ViewModel @Inject constructor(
 
             // Do not filter by obs.dateTime — in OpenMRS the PAB observation's datetime is set to the
             // mother's last Td vaccination date (which predates the child's birth), not the encounter date.
-            val hasPab = visit.observations.entries.any { (key, obs) ->
-                key.equals(CONCEPT_NAME_PAB, ignoreCase = true) &&
-                        obs.value.trim().equals("yes", ignoreCase = true)
+            val hasPab = visit.observations.keys.any { key ->
+                key.equals(CONCEPT_NAME_PAB, ignoreCase = true)
             }
             if (!hasPab) continue
 
