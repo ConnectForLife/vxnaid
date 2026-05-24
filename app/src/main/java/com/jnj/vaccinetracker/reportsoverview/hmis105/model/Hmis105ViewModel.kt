@@ -363,14 +363,11 @@ class Hmis105ViewModel @Inject constructor(
         for (visit in visits) {
             val participant = participantsMap[visit.participantUuid] ?: continue
 
-            // Do not filter by obs.dateTime — in OpenMRS the PAB observation's datetime is set to the
-            // mother's last Td vaccination date (which predates the child's birth), not the encounter date.
             val hasPab = visit.observations.keys.any { key ->
                 key.equals(CONCEPT_NAME_PAB, ignoreCase = true)
             }
             if (!hasPab) continue
 
-            // Use the visit's start date for age, since PAB obs datetime may predate the child's birth.
             val visitDateTime = DateTime(visit.startDatetime.time)
             val ageInMonths = calculateAgeInMonthsAt(participant.birthDate, visitDateTime)
             if (ageInMonths !in 0..11) continue
