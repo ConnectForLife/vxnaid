@@ -145,10 +145,10 @@ class VisitViewModel @Inject constructor(
             suggestedVisitType.value = suggestedVisitTypeFromConfig
             selectedVisitType.value = suggestedVisitTypeFromConfig
 
-            val suggestedSubstancesFromConfig = SubstancesDataUtil.getSubstancesDataForCurrentVisit(
+            val suggestedSubstancesFromConfig = resolveSubstancesForVisit(
                 participantSummary.birthDateText,
                 patientVisits.value!!,
-                configurationManager
+                suggestedVisitTypeFromConfig
             )
             suggestedSubstancesData.value = suggestedSubstancesFromConfig
             selectedSubstancesData.value = suggestedSubstancesFromConfig
@@ -175,6 +175,17 @@ class VisitViewModel @Inject constructor(
         }
 
         loadImage(participantSummary)
+    }
+
+    private suspend fun resolveSubstancesForVisit(
+        birthDate: String,
+        visits: List<VisitDetail>,
+        visitType: String
+    ): List<SubstanceDataModel> {
+        val byAge = SubstancesDataUtil.getSubstancesDataForCurrentVisit(birthDate, visits, configurationManager)
+        val forVisitType = byAge.filter { it.visitType == visitType }
+        if (forVisitType.isNotEmpty()) return forVisitType
+        return SubstancesDataUtil.getSubstancesDataForVisitType(visitType, configurationManager)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -457,11 +468,11 @@ class VisitViewModel @Inject constructor(
                 val minWeeks = config.weeksAfterBirth - config.weeksAfterBirthLowWindow
                 val maxWeeks = config.weeksAfterBirth + config.weeksAfterBirthUpWindow
                 childAgeInWeeks in minWeeks..maxWeeks
-            }
+            }.ifEmpty { substancesForVisitType }
             SubstancesDataUtil.applyVaccinesCatchUpSchedule(
                 ageFiltered, childAgeInWeeks, patientVisits.value ?: emptyList(),
                 substancesGroupConfig, substancesConfig
-            )
+            ).ifEmpty { ageFiltered }
         } else {
             substancesForVisitType
         }
