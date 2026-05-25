@@ -206,7 +206,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(),
       val locationUuid = syncSettingsRepository.getSiteUuid()
          ?: throw NoSiteUuidAvailableException("Location not available")
       val visitType = findVisitType(participant, visitDate)
-        val doseNumber = SubstancesDataUtil.getDoseNumberForVisitType(visitType, configurationManager.getSubstancesConfig())
+      val doseNumber = SubstancesDataUtil.getDoseNumberForVisitType(visitType, configurationManager.getSubstancesConfig())
       return CreateVisit(
          participantUuid = participant.participantUuid,
          visitType = Constants.VISIT_TYPE_DOSING,
@@ -216,7 +216,7 @@ class RescheduleVisitDialog @Inject constructor() : BaseDialogFragment(),
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
-                Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to doseNumber.toString()
+            Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to doseNumber.toString()
          )
       )
    }

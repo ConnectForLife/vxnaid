@@ -664,4 +664,3 @@ class VisitViewModel @Inject constructor(
         return true
     }
 }
-
