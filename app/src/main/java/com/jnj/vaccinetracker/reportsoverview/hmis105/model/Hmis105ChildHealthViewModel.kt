@@ -125,6 +125,8 @@ class Hmis105ChildHealthViewModel @Inject constructor(
                             ?: Constants.VISIT_PLACE_STATIC
 
                         val explicitDose = visit.observations[KEY_DOSE_NUMBER]?.value
+                            ?: visit.attributes[Constants.ATTRIBUTE_VISIT_DOSE_NUMBER]
+                                ?.let { num -> "Dose $num" }
 
                         for ((key, obsValue) in visit.observations) {
                             if (key == KEY_DOSE_NUMBER) continue

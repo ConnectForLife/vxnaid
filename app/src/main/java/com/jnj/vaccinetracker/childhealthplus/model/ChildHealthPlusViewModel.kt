@@ -392,11 +392,15 @@ class ChildHealthPlusViewModel @Inject constructor(
         siteUuid: String,
         operatorUuid: String,
     ) {
-        val visitAttributes = mapOf(
+        val visitAttributes = mutableMapOf(
             Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_OCCURRED,
             Constants.ATTRIBUTE_OPERATOR to operatorUuid,
             Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to selectedService.service.serviceKey
-        ) + visitContextAttributes()
+        ).also { attrs ->
+            selectedService.dose?.removePrefix("Dose ")?.trim()?.let { num ->
+                if (num.isNotEmpty()) attrs[Constants.ATTRIBUTE_VISIT_DOSE_NUMBER] = num
+            }
+        } + visitContextAttributes()
 
         val draftVisit = createVisitUseCase.createVisit(
             CreateVisit(
