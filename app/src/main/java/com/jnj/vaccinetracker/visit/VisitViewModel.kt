@@ -544,6 +544,7 @@ class VisitViewModel @Inject constructor(
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Location not available")
         val visitType = dosingVisit.value?.visitTypeVxnaid ?: findVisitType(participant, visitDate) // it assigns visit type of current visit to new rescheduled one
+        val doseNumber = SubstancesDataUtil.getDoseNumberForVisitType(visitType, configurationManager.getSubstancesConfig())
         return CreateVisit(
             participantUuid = participant.participantUuid,
             visitType = Constants.VISIT_TYPE_DOSING,
@@ -553,6 +554,7 @@ class VisitViewModel @Inject constructor(
                 Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
                 Constants.ATTRIBUTE_OPERATOR to operatorUuid,
                 Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
+                Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to doseNumber.toString()
             )
         )
     }
@@ -662,4 +664,3 @@ class VisitViewModel @Inject constructor(
         return true
     }
 }
-

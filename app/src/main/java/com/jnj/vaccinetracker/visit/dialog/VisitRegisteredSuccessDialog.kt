@@ -19,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import com.jnj.vaccinetracker.R
 import com.jnj.vaccinetracker.common.data.managers.ConfigurationManager
 import com.jnj.vaccinetracker.common.data.managers.ParticipantManager
-import com.jnj.vaccinetracker.common.data.managers.VisitManager
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.domain.entities.CreateVisit
@@ -87,7 +86,6 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
     @Inject lateinit var userRepository: UserRepository
     @Inject lateinit var syncSettingsRepository: SyncSettingsRepository
     @Inject lateinit var configurationManager: ConfigurationManager
-    @Inject lateinit var visitManager: VisitManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,6 +176,7 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
         val locationUuid = syncSettingsRepository.getSiteUuid()
             ?: throw NoSiteUuidAvailableException("Location not available")
         val visitType = findVisitTypeOfNextVisit()
+        val doseNumber = SubstancesDataUtil.getDoseNumberForVisitType(visitType, configurationManager.getSubstancesConfig())
         return CreateVisit(
             participantUuid = participant.participantUuid,
             visitType = Constants.VISIT_TYPE_DOSING,
@@ -187,26 +186,19 @@ class VisitRegisteredSuccessDialog : BaseDialogFragment(), ScheduleVisitDatePick
                 Constants.ATTRIBUTE_VISIT_STATUS to Constants.VISIT_STATUS_SCHEDULED,
                 Constants.ATTRIBUTE_OPERATOR to operatorUuid,
                 Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType,
+                Constants.ATTRIBUTE_VISIT_DOSE_NUMBER to doseNumber.toString()
             )
         )
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun findVisitTypeOfNextVisit(): String {
-        val participantBirthDate = participant!!.birthDateText
-        val participantVisits = visitManager.getVisitsForParticipant(participant!!.participantUuid)
-        val currentVisitType = SubstancesDataUtil.getVisitTypeForCurrentVisit(participantBirthDate, participantVisits, configurationManager)
+        val currentVisitType = viewModel.selectedVisitType.value ?: return ""
         val substancesConfig = configurationManager.getSubstancesConfig()
-        val currentVaccine = substancesConfig.find { it.visitType == currentVisitType }
-        if (currentVaccine == null) {
-            return ""
-        }
-        val nextVaccine = substancesConfig.filter { it.weeksAfterBirth > currentVaccine.weeksAfterBirth }
-            .minByOrNull { it.weeksAfterBirth }
-        if (nextVaccine == null) {
-            return ""
-        }
-
+        val currentVaccine = substancesConfig.find { it.visitType == currentVisitType } ?: return ""
+        val nextVaccine = substancesConfig
+            .filter { it.weeksAfterBirth > currentVaccine.weeksAfterBirth }
+            .minByOrNull { it.weeksAfterBirth } ?: return ""
         return nextVaccine.visitType
     }
 

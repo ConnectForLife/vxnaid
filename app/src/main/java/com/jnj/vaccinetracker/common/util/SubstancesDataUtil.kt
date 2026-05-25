@@ -492,5 +492,28 @@ class SubstancesDataUtil {
                 false
             }
         }
+
+        fun getDoseNumberToVisitTypeMap(substancesConfig: SubstancesConfig): Map<Int, String> {
+            val visitTypesByWeeks = substancesConfig
+                .groupBy { it.weeksAfterBirth }
+                .toSortedMap()
+                .map { it.value.first().visitType }
+
+            return visitTypesByWeeks.mapIndexed { index, visitType ->
+                (index + 1) to visitType
+            }.toMap()
+        }
+
+        fun getVisitTypeForDoseNumber(doseNumber: String, substancesConfig: SubstancesConfig): String {
+            if (doseNumber.isEmpty()) return "Unknown"
+            val doseNum = doseNumber.toIntOrNull() ?: return "Unknown"
+            val doseNumToVisitTypeMap = getDoseNumberToVisitTypeMap(substancesConfig)
+            return doseNumToVisitTypeMap[doseNum] ?: "Unknown"
+        }
+
+        fun getDoseNumberForVisitType(visitType: String, substancesConfig: SubstancesConfig): Int {
+            val index = getVisitTypesInOrder(substancesConfig).indexOf(visitType)
+            return if (index >= 0) index + 1 else 1
+        }
     }
 }
