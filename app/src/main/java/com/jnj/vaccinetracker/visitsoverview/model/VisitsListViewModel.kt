@@ -15,6 +15,7 @@ import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import com.jnj.vaccinetracker.common.data.models.Constants
 import com.jnj.vaccinetracker.common.data.repositories.UserRepository
 import com.jnj.vaccinetracker.common.util.DateUtil
+import com.jnj.vaccinetracker.common.util.SubstancesDataUtil
 import com.soywiz.klock.DateFormat
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisit
 import com.jnj.vaccinetracker.common.domain.entities.DraftVisitEncounter
@@ -186,6 +187,7 @@ class VisitsListViewModel @Inject constructor(
             .findByParticipantUuids(visits.map { it.participantUuid }.toSet())
             .groupBy { it.participantUuid }
 
+        val substancesConfig = configurationManager.getSubstancesConfig()
         val chpServiceKeyToDisplay = ChildHealthPlusService.values()
             .associate { it.serviceKey to it.displayName }
 
@@ -203,10 +205,11 @@ class VisitsListViewModel @Inject constructor(
         // Regular visits: one row per visit, unchanged behaviour.
         for (visit in regularVisits) {
             val participant = participantsMap[visit.participantUuid]?.getOrNull(0) ?: continue
+            val attributes = resolveVisitTypeAttribute(visit.attributes, substancesConfig)
             visitDataDTOList.add(VisitDataDTO(
                 visitUuid      = visit.visitUuid,
                 startDatetime  = visit.startDatetime,
-                attributes     = visit.attributes,
+                attributes     = attributes,
                 observations   = visit.observations,
                 visitType      = visit.visitType,
                 participant    = participant
@@ -252,6 +255,19 @@ class VisitsListViewModel @Inject constructor(
         visitDataDTOList.sortByDescending { it.startDatetime.time }
         Log.d("VisitsListViewModel", "Visit count: ${visitDataDTOList.size}, Unique participant count: ${participantsMap.size}")
         return visitDataDTOList
+    }
+
+    private fun resolveVisitTypeAttribute(
+        attributes: Map<String, String>,
+        substancesConfig: List<com.jnj.vaccinetracker.common.domain.entities.Substance>
+    ): Map<String, String> {
+        if (!attributes[Constants.ATTRIBUTE_VISIT_TYPE_VXNAID].isNullOrEmpty()) return attributes
+        val doseNumber = attributes[Constants.ATTRIBUTE_VISIT_DOSE_NUMBER]
+            ?: attributes["Dose Number"]
+            ?: return attributes
+        val visitType = SubstancesDataUtil.getVisitTypeForDoseNumber(doseNumber, substancesConfig)
+        if (visitType == "Unknown") return attributes
+        return attributes + (Constants.ATTRIBUTE_VISIT_TYPE_VXNAID to visitType)
     }
 
     override fun saveInstanceState(outState: Bundle) {}
