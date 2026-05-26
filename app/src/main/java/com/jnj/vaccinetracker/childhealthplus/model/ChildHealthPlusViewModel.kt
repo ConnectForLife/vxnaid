@@ -420,8 +420,8 @@ class ChildHealthPlusViewModel @Inject constructor(
             observations[Constants.OBSERVATION_DOSE_NUMBER_VXNAID] = dose
         }
 
-        if (selectedService.isPregnantWoman && selectedService.service == ChildHealthPlusService.TETANUS) {
-            observations["Pregnant Woman Vxnaid"] = "true"
+        if (selectedService.service == ChildHealthPlusService.TETANUS) {
+            observations["Pregnant Woman Vxnaid"] = if (selectedService.isPregnantWoman) "true" else "false"
         }
 
         selectedService.nextVisitDate?.let { nextVisit ->
