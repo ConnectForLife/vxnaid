@@ -13,7 +13,7 @@ data class RegisterParticipant(
     val attributes: Map<String, String>,
     val image: ImageBytes?,
     val biometricsTemplate: BiometricsTemplateBytes?,
-    val scheduleFirstVisit: ScheduleFirstVisit,
+    val scheduleFirstVisit: ScheduleFirstVisit?,
     val childFirstName: String?,
     val childLastName: String?,
     val dateCreated: Long?
@@ -30,7 +30,7 @@ data class UpdateParticipant(
     val address: Address,
     val attributes: Map<String, String>,
     val image: ImageBytes?,
-    val scheduleFirstVisit: ScheduleFirstVisit,
+    val scheduleFirstVisit: ScheduleFirstVisit?,
     val childFirstName: String?,
     val childLastName: String?,
     val dateCreated: Long?

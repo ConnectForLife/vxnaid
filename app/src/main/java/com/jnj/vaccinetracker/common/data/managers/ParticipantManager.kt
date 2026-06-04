@@ -216,7 +216,7 @@ class ParticipantManager @Inject constructor(
             attributes = personAttributes,
             image = registerDetails.picture,
             biometricsTemplate = registerDetails.biometricsTemplateBytes,
-            scheduleFirstVisit = createScheduleFirstVisit(
+            scheduleFirstVisit = if (registerDetails.isChildHealthPlus) null else createScheduleFirstVisit(
                 visitPlace = registerDetails.visitPlace,
                 visitOutreachName = registerDetails.visitOutreachName,
                 attachedClinic = registerDetails.attachedClinic,
