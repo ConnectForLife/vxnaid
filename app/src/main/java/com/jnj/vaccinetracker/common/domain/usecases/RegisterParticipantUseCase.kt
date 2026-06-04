@@ -143,8 +143,9 @@ class RegisterParticipantUseCase @Inject constructor(
 
             transactionRunner.withTransaction {
                 draftParticipantRepository.insert(participant, orReplace = false)
-                val createVisit = registerParticipant.scheduleFirstVisit.toCreateVisit(participantUuid)
-                createVisitUseCase.createVisit(createVisit)
+                registerParticipant.scheduleFirstVisit?.let { firstVisit ->
+                    createVisitUseCase.createVisit(firstVisit.toCreateVisit(participantUuid))
+                }
             }
 
             success = true
