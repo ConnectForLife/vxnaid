@@ -616,6 +616,7 @@
     <string name="child_health_plus_client_info_title">Client Details</string>
     <string name="child_health_plus_client_name_label">Client Name</string>
     <string name="child_health_plus_client_dob_label">Date of Birth *</string>
+    <string name="child_health_plus_client_dob_hint">Tap to select date</string>
     <string name="child_health_plus_client_sex_label">Gender *</string>
     <string name="child_health_plus_client_contact_label">Contact Information</string>
     <string name="child_health_plus_mother_name_label">Mother\'s Name</string>
@@ -638,6 +639,9 @@
     <string name="child_health_plus_validation_error">Please complete all required fields</string>
     <string name="child_health_plus_name_required">Client name is required</string>
     <string name="child_health_plus_dob_required">Date of birth is required</string>
+    <string name="child_health_plus_dob_unknown">Date of birth unknown</string>
+    <string name="child_health_plus_age_hint">Age in years *</string>
+    <string name="child_health_plus_age_required">Age is required when date of birth is unknown</string>
     <string name="child_health_plus_sex_required">Gender is required</string>
     <string name="child_health_plus_contact_required">Contact information is required</string>
     <string name="child_health_plus_mother_required">Mother\'s name is required</string>

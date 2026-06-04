@@ -147,21 +147,72 @@
 
                 </LinearLayout>
 
-                <!-- Date of Birth -->
-                <com.google.android.material.textfield.TextInputLayout
+                <!-- Date of Birth section -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_16_32">
+                    android:layout_marginTop="@dimen/margin_16_32"
+                    android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/date_of_birth"
+                    <!-- Label row: "Date of Birth *" + "Date of birth unknown" checkbox -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/child_health_plus_client_dob_label"
-                        android:inputType="date"
-                        android:focusable="false" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/child_health_plus_client_dob_label"
+                            android:textAppearance="@style/LabelText" />
+
+                        <CheckBox
+                            android:id="@+id/checkbox_dob_unknown"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/child_health_plus_dob_unknown"
+                            android:textSize="@dimen/chp_text_input"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                    </LinearLayout>
+
+                    <!-- Date picker input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_date_of_birth"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_8_16">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/date_of_birth"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/child_health_plus_client_dob_hint"
+                            android:inputType="date"
+                            android:focusable="false" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Age input (shown when date of birth is unknown) -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_age_months"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_8_16"
+                        android:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_age_months"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/child_health_plus_age_hint"
+                            android:inputType="number" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
 
                 <!-- Gender -->
                 <LinearLayout

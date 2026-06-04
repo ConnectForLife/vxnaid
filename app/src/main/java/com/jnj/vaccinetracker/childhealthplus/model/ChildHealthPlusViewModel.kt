@@ -61,6 +61,8 @@ class ChildHealthPlusViewModel @Inject constructor(
     val childFirstName = mutableLiveData<String>()
     val childLastName = mutableLiveData<String>()
     val dateOfBirth = mutableLiveData<Date>()
+    val isDobUnknown = mutableLiveBoolean(false)
+    val ageYears = mutableLiveData<String>()
     val gender = mutableLiveData<String>()
     val telephone = mutableLiveData<String>()
     val phoneCountryCode = mutableLiveData<String>()
@@ -175,6 +177,12 @@ class ChildHealthPlusViewModel @Inject constructor(
             errorMessage.value = errors.joinToString(", ")
             return
         }
+        if (isDobUnknown.value == true && dateOfBirth.value == null) {
+            val years = ageYears.value?.trim()?.toIntOrNull() ?: 0
+            val cal = Calendar.getInstance()
+            cal.add(Calendar.YEAR, -years)
+            dateOfBirth.value = cal.time
+        }
         ensureGeneratedChildId()
         currentStage.value = WorkflowStage.SERVICE_SELECTION
     }
@@ -275,7 +283,7 @@ class ChildHealthPlusViewModel @Inject constructor(
                         bestContactTime = bestContactTime.value,
                         gender = genderEnum,
                         birthDate = com.soywiz.klock.DateTime.fromUnix(dob.time),
-                        isBirthDateEstimated = false,
+                        isBirthDateEstimated = isDobUnknown.value == true,
                         telephone = fullPhone,
                         siteUuid = siteUuid,
                         language = language.value,
@@ -503,8 +511,14 @@ class ChildHealthPlusViewModel @Inject constructor(
             errors.add(resourcesWrapper.getString(R.string.child_health_plus_first_name_required))
         if (childLastName.value.isNullOrBlank())
             errors.add(resourcesWrapper.getString(R.string.child_health_plus_last_name_required))
-        if (dateOfBirth.value == null)
-            errors.add(resourcesWrapper.getString(R.string.child_health_plus_dob_required))
+        if (isDobUnknown.value == true) {
+            val years = ageYears.value?.trim()?.toIntOrNull()
+            if (years == null || years <= 0)
+                errors.add(resourcesWrapper.getString(R.string.child_health_plus_age_required))
+        } else {
+            if (dateOfBirth.value == null)
+                errors.add(resourcesWrapper.getString(R.string.child_health_plus_dob_required))
+        }
         if (gender.value.isNullOrBlank())
             errors.add(resourcesWrapper.getString(R.string.child_health_plus_sex_required))
         return errors
