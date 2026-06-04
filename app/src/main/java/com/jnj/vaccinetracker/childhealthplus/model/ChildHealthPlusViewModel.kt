@@ -512,8 +512,8 @@ class ChildHealthPlusViewModel @Inject constructor(
         if (childLastName.value.isNullOrBlank())
             errors.add(resourcesWrapper.getString(R.string.child_health_plus_last_name_required))
         if (isDobUnknown.value == true) {
-            val months = ageYears.value?.trim()?.toIntOrNull()
-            if (months == null || months <= 0)
+            val years = ageYears.value?.trim()?.toIntOrNull()
+            if (years == null || years <= 0)
                 errors.add(resourcesWrapper.getString(R.string.child_health_plus_age_required))
         } else {
             if (dateOfBirth.value == null)

@@ -77,6 +77,12 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
     }
 
     private fun setupDobUnknown() {
+        val isUnknown = viewModel.isDobUnknown.value == true
+        binding.checkboxDobUnknown.isChecked = isUnknown
+        binding.layoutDateOfBirth.visibility = if (isUnknown) View.GONE else View.VISIBLE
+        binding.layoutAgeMonths.visibility = if (isUnknown) View.VISIBLE else View.GONE
+        viewModel.ageYears.value?.let { binding.editAgeMonths.setText(it) }
+
         binding.checkboxDobUnknown.setOnCheckedChangeListener { _, isChecked ->
             viewModel.isDobUnknown.value = isChecked
             binding.layoutDateOfBirth.visibility = if (isChecked) View.GONE else View.VISIBLE
