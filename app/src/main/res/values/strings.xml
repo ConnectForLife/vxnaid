@@ -638,6 +638,9 @@
     <string name="child_health_plus_validation_error">Please complete all required fields</string>
     <string name="child_health_plus_name_required">Client name is required</string>
     <string name="child_health_plus_dob_required">Date of birth is required</string>
+    <string name="child_health_plus_dob_unknown">DOB Unknown</string>
+    <string name="child_health_plus_age_hint">Age (in years) *</string>
+    <string name="child_health_plus_age_required">Age is required when date of birth is unknown</string>
     <string name="child_health_plus_sex_required">Gender is required</string>
     <string name="child_health_plus_contact_required">Contact information is required</string>
     <string name="child_health_plus_mother_required">Mother\'s name is required</string>

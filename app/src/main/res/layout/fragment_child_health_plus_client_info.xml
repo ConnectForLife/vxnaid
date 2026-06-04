@@ -149,6 +149,7 @@
 
                 <!-- Date of Birth -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_date_of_birth"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_16_32">
@@ -160,6 +161,32 @@
                         android:hint="@string/child_health_plus_client_dob_label"
                         android:inputType="date"
                         android:focusable="false" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- DOB Unknown checkbox -->
+                <CheckBox
+                    android:id="@+id/checkbox_dob_unknown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_8_16"
+                    android:text="@string/child_health_plus_dob_unknown"
+                    android:textSize="@dimen/chp_text_input" />
+
+                <!-- Age field (shown when DOB is unknown) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_age_months"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_8_16"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_age_months"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/child_health_plus_age_hint"
+                        android:inputType="number" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

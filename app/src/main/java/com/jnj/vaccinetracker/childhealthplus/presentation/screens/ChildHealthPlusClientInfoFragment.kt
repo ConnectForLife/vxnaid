@@ -37,6 +37,7 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
 
         setupSexRadioButtons()
         setupDatePicker()
+        setupDobUnknown()
         setupPhoneInput()
         setupLanguageDropdown()
         setupBestContactTime()
@@ -72,6 +73,24 @@ class ChildHealthPlusClientInfoFragment : BaseFragment(),
                 viewModel.dateOfBirth.value = selectedDate
                 binding.dateOfBirth.setText(dateFormat.format(selectedDate))
             }
+        }
+    }
+
+    private fun setupDobUnknown() {
+        binding.checkboxDobUnknown.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.isDobUnknown.value = isChecked
+            binding.layoutDateOfBirth.visibility = if (isChecked) View.GONE else View.VISIBLE
+            binding.layoutAgeMonths.visibility = if (isChecked) View.VISIBLE else View.GONE
+            if (isChecked) {
+                viewModel.dateOfBirth.value = null
+                binding.dateOfBirth.setText("")
+            } else {
+                viewModel.ageYears.value = null
+                binding.editAgeMonths.setText("")
+            }
+        }
+        binding.editAgeMonths.doAfterTextChanged { text ->
+            viewModel.ageYears.value = text?.toString()
         }
     }
 
