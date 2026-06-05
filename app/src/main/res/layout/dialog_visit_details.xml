@@ -157,6 +157,28 @@
                     android:textSize="@dimen/text_size_16_20"/>
             </TableRow>
 
+            <TableRow
+                android:id="@+id/tableRow_vaccinesAdministered"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_4_8">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/visits_overview_details_vaccines_administered_label"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_size_16_20"/>
+                <TextView
+                    android:id="@+id/value_vaccines_administered"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@{visitDetails.administeredVaccines}"
+                    android:textSize="@dimen/text_size_16_20"/>
+            </TableRow>
+
         </TableLayout>
 
         <LinearLayout

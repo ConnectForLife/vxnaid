@@ -33,6 +33,7 @@ import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.jvm.toDate
 import kotlinx.coroutines.launch
+import com.jnj.vaccinetracker.common.data.models.ChildHealthPlusService
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import com.soywiz.klock.days
 import java.time.ZoneId
@@ -382,13 +383,22 @@ class VisitsListFragment : BaseFragment(),
             val participant = visitData.participant
             val visitType = visitData.attributes[Constants.ATTRIBUTE_VISIT_TYPE_VXNAID] ?: ""
 
+            val substancesConfig = configurationManager.getSubstancesConfig()
+            val vaccineSubstances = substancesConfig.filter { it.category == Constants.VACCINES_CATEGORY_NAME }
+            val conceptNameToLabel = vaccineSubstances.associate { it.conceptName to it.label } +
+                ChildHealthPlusService.values().associate { it.conceptName to it.displayName }
+            val administeredVaccines = visitData.observations.keys
+                .mapNotNull { key -> conceptNameToLabel.entries.find { key == "${it.key} ${Constants.DATE_STR}" }?.value }
+                .joinToString(", ")
+
             val visitDetails = VisitDetailsDTO(
                 formattedVisitDate = visitData.formattedStartDateTime,
                 visitType = visitType,
                 phoneNumber = participant.phone ?: "",
                 clientID = participant.participantId,
                 clientFullName = participant.fullName,
-                clientMotherName = participant.motherName
+                clientMotherName = participant.motherName,
+                administeredVaccines = administeredVaccines
             )
 
             val dialog = VisitDetailsDialog.newInstance(visitDetails, visitsKey)
