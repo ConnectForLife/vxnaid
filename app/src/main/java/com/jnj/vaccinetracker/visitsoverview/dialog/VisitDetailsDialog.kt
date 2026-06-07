@@ -50,6 +50,9 @@ class VisitDetailsDialog : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val isHistoricalVisit = visitKey == Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY
+        binding.tableRowVaccinesAdministered.visibility = if (isHistoricalVisit) View.VISIBLE else View.GONE
+
         val tableRowViews = listOf(
             binding.tableRowVisitDate,
             binding.tableRowVaccines,
