@@ -383,13 +383,15 @@ class VisitsListFragment : BaseFragment(),
             val participant = visitData.participant
             val visitType = visitData.attributes[Constants.ATTRIBUTE_VISIT_TYPE_VXNAID] ?: ""
 
-            val substancesConfig = configurationManager.getSubstancesConfig()
-            val vaccineSubstances = substancesConfig.filter { it.category == Constants.VACCINES_CATEGORY_NAME }
-            val conceptNameToLabel = vaccineSubstances.associate { it.conceptName to it.label } +
-                ChildHealthPlusService.values().associate { it.conceptName to it.displayName }
-            val administeredVaccines = visitData.observations.keys
-                .mapNotNull { key -> conceptNameToLabel.entries.find { key == "${it.key} ${Constants.DATE_STR}" }?.value }
-                .joinToString(", ")
+            val administeredVaccines = if (visitsKey == Constants.VISITS_OVERVIEW_HISTORICAL_VISITS_KEY) {
+                val substancesConfig = configurationManager.getSubstancesConfig()
+                val vaccineSubstances = substancesConfig.filter { it.category == Constants.VACCINES_CATEGORY_NAME }
+                val conceptNameToLabel = vaccineSubstances.associate { it.conceptName to it.label } +
+                    ChildHealthPlusService.values().associate { it.conceptName to it.displayName }
+                visitData.observations.keys
+                    .mapNotNull { key -> conceptNameToLabel.entries.find { key == "${it.key} ${Constants.DATE_STR}" }?.value }
+                    .joinToString(", ")
+            } else ""
 
             val visitDetails = VisitDetailsDTO(
                 formattedVisitDate = visitData.formattedStartDateTime,
