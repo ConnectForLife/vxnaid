@@ -35,10 +35,17 @@ class UploadDraftVisitUseCase @Inject constructor(
         try {
             api.createVisit(request)
         } catch (ex: WebCallException) {
-            when (ex.cause) {
-                is DuplicateRequestException -> {
-                    // ignore exception and pretend visit was created so draft state becomes uploaded
+            when {
+                ex.cause is DuplicateRequestException -> {
+                    // ignore and treat as uploaded
                     logWarn("duplicate request exception during createVisit")
+                }
+                ex.code == 404 -> {
+                    // participant no longer exists on the backend — drop this pending visit
+                    // rather than retrying forever
+                    logWarn("createVisit 404 participant not found, dropping draft visit ${draftVisit.visitUuid}")
+                    draftVisitRepository.deleteByVisitUuid(draftVisit.visitUuid)
+                    return
                 }
                 else -> throw ex
             }

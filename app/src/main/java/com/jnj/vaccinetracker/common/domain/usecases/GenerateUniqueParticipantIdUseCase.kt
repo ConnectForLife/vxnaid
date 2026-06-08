@@ -27,7 +27,7 @@ class GenerateUniqueParticipantIdUseCase @Inject constructor(
         findParticipantByParticipantIdUseCase.findDeletedParticipantbyId(participantId) !=null
 
     private suspend fun generateUniqueParticipantId(site: Site, deviceName: String, sequenceNumber: Int): String {
-        val countryCode = site.countryCode
+        val countryCode = site.countryCode.orEmpty()
         val participantIdCandidate = createParticipantId(countryCode = countryCode, deviceName = deviceName, sequenceNumber)
         return if (doesParticipantIdExists(participantIdCandidate)) {
             // current sequence is already in use so create the next one and store it

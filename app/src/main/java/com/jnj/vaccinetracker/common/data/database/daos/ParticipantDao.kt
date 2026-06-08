@@ -59,6 +59,9 @@ interface ParticipantDao : ParticipantDaoBase<ParticipantEntity, RoomParticipant
     @Delete(entity = ParticipantEntity::class)
     override suspend fun delete(deleteParticipantModel: RoomDeleteParticipantModel): Int
 
+    @Query("DELETE FROM participant WHERE participantId = :participantId AND participantUuid != :participantUuid")
+    suspend fun deleteConflictingByParticipantId(participantId: String, participantUuid: String): Int
+
     @Query("delete from participant")
     override suspend fun deleteAll()
 
