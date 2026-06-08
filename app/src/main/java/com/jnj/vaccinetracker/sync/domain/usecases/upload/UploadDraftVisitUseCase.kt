@@ -1,5 +1,6 @@
 package com.jnj.vaccinetracker.sync.domain.usecases.upload
 
+import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitEncounterRepository
 import com.jnj.vaccinetracker.common.data.database.repositories.DraftVisitRepository
 import com.jnj.vaccinetracker.common.data.models.api.request.CreateVisitAttributeDto
 import com.jnj.vaccinetracker.common.data.models.api.request.VisitCreateRequest
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class UploadDraftVisitUseCase @Inject constructor(
     private val api: VaccineTrackerSyncApiDataSource,
     private val draftVisitRepository: DraftVisitRepository,
+    private val draftVisitEncounterRepository: DraftVisitEncounterRepository,
 ) {
 
     private fun DraftVisit.toDto() = VisitCreateRequest(
@@ -42,9 +44,10 @@ class UploadDraftVisitUseCase @Inject constructor(
                 }
                 ex.code == 404 -> {
                     // participant no longer exists on the backend — drop this pending visit
-                    // rather than retrying forever
+                    // and any associated encounter rather than retrying forever
                     logWarn("createVisit 404 participant not found, dropping draft visit ${draftVisit.visitUuid}")
                     draftVisitRepository.deleteByVisitUuid(draftVisit.visitUuid)
+                    draftVisitEncounterRepository.deleteByVisitUuid(draftVisit.visitUuid)
                     return
                 }
                 else -> throw ex

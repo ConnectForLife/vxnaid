@@ -341,8 +341,8 @@ class RegisterParticipantParticipantDetailsViewModel @Inject constructor(
     }
 
     private fun onSiteAndConfigurationLoaded(site: Site, configuration: Configuration, loc: TranslationMap) {
-        defaultPhoneCountryCode.set(site.countryCode)
-        if (phoneCountryCode.get() == null) phoneCountryCode.set(site.countryCode)
+        defaultPhoneCountryCode.set(site.countryCode.orEmpty())
+        if (phoneCountryCode.get() == null) phoneCountryCode.set(site.countryCode.orEmpty())
 
         vaccineNames.set(configuration.vaccines.map { vaccine ->
             DisplayValue(vaccine.name, loc[vaccine.name])
