@@ -45,7 +45,7 @@ class ParticipantFlowPhoneNumberViewModel @Inject constructor(
                 val site = syncSettingsRepository.getSiteUuid()?.let { configurationManager.getSiteByUuid(it) } ?: throw NoSiteUuidAvailableException()
                 logInfo("site country ${site.countryCode} ${site.country}")
                 defaultPhoneCountryCode.set(prefCountryCode.get())
-                prefCountryCode.get()?: defaultPhoneCountryCode.set(site.countryCode)
+                prefCountryCode.get()?: defaultPhoneCountryCode.set(site.countryCode.orEmpty())
                 loading.set(false)
             } catch (ex: Throwable) {
                 yield()

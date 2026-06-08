@@ -15,7 +15,7 @@ data class Site(
     val name: String,
     val country: String,
     val cluster: String = "",
-    val countryCode: String = "",
+    val countryCode: String? = null,
     val siteCode: String = "",
     val parentLocationUuid: String? = null,
 ) {

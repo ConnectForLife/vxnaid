@@ -121,6 +121,12 @@ class ParticipantRepository @Inject constructor(
                 if (isDeletedByUuid) {
                     logInfo("deleted participant for replace ${model.participantUuid} or participantId ${model.participantId}")
                 }
+                // A different-UUID row with the same participantId would violate the UNIQUE
+                // constraint on participantId even after the UUID-based delete above.
+                val isDeletedById = participantDao.deleteConflictingByParticipantId(model.participantId, model.participantUuid) > 0
+                if (isDeletedById) {
+                    logInfo("deleted conflicting participant with same participantId ${model.participantId} different uuid")
+                }
             }
 
             val insertedParticipant = participantDao.insert(model.toPersistence()) > 0
