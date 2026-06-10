@@ -23,6 +23,11 @@ interface DownloadSyncRecordsUseCase {
 data class SyncResponseState(val syncStatus: SyncStatus, val tableCount: Long?)
 
 abstract class DownloadSyncRecordsUseCaseBase<T : SyncRecordBase> : DownloadSyncRecordsUseCase {
+
+    companion object {
+        private const val LARGE_MISMATCH_THRESHOLD = 50L
+    }
+
     protected abstract val syncLogger: SyncLogger
     protected abstract val syncEntityType: SyncEntityType
     protected abstract val validateSyncResponseUseCase: ValidateSyncResponseUseCase
@@ -120,6 +125,12 @@ abstract class DownloadSyncRecordsUseCaseBase<T : SyncRecordBase> : DownloadSync
         } catch (ex: TotalSyncScopeRecordCountMismatchException) {
             val currentResponseState = SyncResponseState(SyncStatus.OK, ex.backendTableCount)
             logError("total record sync call mismatch", ex)
+            val deficit = ex.backendTableCount - ex.localCount
+            if (deficit > LARGE_MISMATCH_THRESHOLD && syncRequest.dateModifiedOffset != null) {
+                logWarn("large sync deficit ($deficit records missing), resetting offset to trigger full re-sync [$syncEntityType]")
+                val resetRequest = syncRequest.copy(dateModifiedOffset = null, uuidsWithDateModifiedOffset = emptyList())
+                return download(resetRequest, null)
+            }
             return if (currentResponseState == lastResponseState) {
                 syncLogger.logSyncError(syncValidationError(syncRequest, SyncStatus.OK), ex)
                 throw ex

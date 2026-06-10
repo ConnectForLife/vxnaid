@@ -51,10 +51,16 @@ class UploadDraftParticipantUseCase @Inject constructor(
         val response = try {
             api.registerParticipant(request, draftParticipant.biometricsTemplate?.readBytes())
         } catch (ex: WebCallException) {
-            when (ex.cause) {
-                is DuplicateRequestException -> onDuplicateRequestException(draftParticipant)
-                is ParticipantNinAlreadyExistsException -> throw ex.cause
-                is ParticipantAlreadyExistsException -> throw ex.cause
+            val cause = ex.cause
+            when {
+                cause is DuplicateRequestException -> onDuplicateRequestException(draftParticipant)
+                cause is ParticipantNinAlreadyExistsException -> throw cause
+                cause is ParticipantAlreadyExistsException && !allowDuplicate -> {
+                    // pending-call context: participant already on backend, stop retrying and treat as uploaded
+                    logWarn("ParticipantAlreadyExistsException for pending call ${draftParticipant.participantUuid} (${draftParticipant.participantId}), treating as already registered")
+                    onDuplicateRequestException(draftParticipant)
+                }
+                cause is ParticipantAlreadyExistsException -> throw cause
                 else -> throw ex
             }
         }
