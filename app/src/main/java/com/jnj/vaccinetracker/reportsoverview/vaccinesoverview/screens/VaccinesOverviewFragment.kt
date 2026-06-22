@@ -193,20 +193,21 @@ class VaccinesOverviewFragment : BaseFragment(),
             vaccinesOverviewViewModel.substancesConfig.value =
                 vaccinesOverviewViewModel.getSubstancesConfig()
 
-            val childHealthLabels = ChildHealthPlusService.values().map { it.displayName }.sorted()
-            val childHealthConceptNames = ChildHealthPlusService.values().map { it.conceptName }.sorted()
+            val sortedChildHealth = ChildHealthPlusService.values().sortedBy { it.displayName }
+            val childHealthLabels = sortedChildHealth.map { it.displayName }
+            val childHealthConceptNames = sortedChildHealth.map { it.conceptName }
+
+            val sortedSubstances = vaccinesOverviewViewModel.substancesConfig.value!!
+                .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
+                .sortedBy { it.label }
 
             val vaccineLabels =
-                listOf(Constants.ALL_STRING) + vaccinesOverviewViewModel.substancesConfig.value!!
-                    .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
-                    .map { it.label }
-                    .sorted() + childHealthLabels
+                listOf(Constants.ALL_STRING) + sortedSubstances.map { it.label } + childHealthLabels
 
             val vaccineConceptNames =
-                listOf(Constants.EMPTY_STRING_VALUE) + vaccinesOverviewViewModel.substancesConfig.value!!
-                    .filter { it.category == Constants.VACCINES_CATEGORY_NAME }
-                    .map { it.conceptName }
-                    .sorted() + childHealthConceptNames
+                listOf(Constants.EMPTY_STRING_VALUE) + sortedSubstances.map { it.conceptName } + childHealthConceptNames
+
+            val realConceptNames = vaccineConceptNames.drop(1)
 
             val vaccinesAdapter = VaccineDropdownItemAdapter(
                 requireContext(),
@@ -216,7 +217,7 @@ class VaccinesOverviewFragment : BaseFragment(),
             )
 
             if (selectedVaccineConceptNames.isEmpty()) {
-                selectedVaccineConceptNames.addAll(vaccineConceptNames)
+                selectedVaccineConceptNames.addAll(realConceptNames)
                 vaccinesAdapter.isSelectAllChecked = true
             }
 
@@ -225,12 +226,11 @@ class VaccinesOverviewFragment : BaseFragment(),
 
             binding.autoCompleteVaccines.setOnItemClickListener { parent, view, position, id ->
                 if (position == 0) {
-                    if (selectedVaccineConceptNames.size == vaccineConceptNames.size) {
+                    if (vaccinesAdapter.isSelectAllChecked) {
                         selectedVaccineConceptNames.clear()
                     } else {
-                        selectedVaccineConceptNames.addAll(vaccineConceptNames)
+                        selectedVaccineConceptNames.addAll(realConceptNames)
                     }
-                    vaccinesAdapter.toggleSelectAll()
                 } else {
                     val selectedConceptName = vaccineConceptNames[position]
                     if (selectedVaccineConceptNames.contains(selectedConceptName)) {
@@ -241,7 +241,7 @@ class VaccinesOverviewFragment : BaseFragment(),
                 }
 
                 vaccinesAdapter.isSelectAllChecked =
-                    selectedVaccineConceptNames.size == vaccineConceptNames.size
+                    selectedVaccineConceptNames.containsAll(realConceptNames)
 
                 val selectedText = if (vaccinesAdapter.isSelectAllChecked) {
                     Constants.ALL_STRING
@@ -378,11 +378,7 @@ class VaccinesOverviewFragment : BaseFragment(),
                         (selectedEndDate == null || observationDate <= selectedEndDate!!.toDate())
             } else false
 
-            val vaccineMatches = when {
-                selectedVaccineConceptNames.isEmpty() -> true
-                selectedVaccineConceptNames.contains(Constants.ALL_STRING) -> true
-                else -> selectedVaccineConceptNames.contains(observation.vaccineName)
-            }
+            val vaccineMatches = selectedVaccineConceptNames.contains(observation.vaccineName)
 
             val locationMatches = when (selectedLocation) {
                 Constants.ALL_STRING -> true
@@ -534,11 +530,7 @@ class VaccinesOverviewFragment : BaseFragment(),
                             (endDate == null || observationDate <= endDate.toDate())
                 } else false
 
-                val vaccineMatches = when {
-                    selectedVaccineConceptNames.isEmpty() -> true
-                    selectedVaccineConceptNames.contains(Constants.ALL_STRING) -> true
-                    else -> selectedVaccineConceptNames.contains(observation.vaccineName)
-                }
+                val vaccineMatches = selectedVaccineConceptNames.contains(observation.vaccineName)
 
                 val locationMatches = when (selectedLocation) {
                     Constants.ALL_STRING -> true
