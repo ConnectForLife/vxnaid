@@ -183,8 +183,13 @@ class VisitViewModel @Inject constructor(
         visitType: String
     ): List<SubstanceDataModel> {
         val byAge = SubstancesDataUtil.getSubstancesDataForCurrentVisit(birthDate, visits, configurationManager)
-        val forVisitType = byAge.filter { it.visitType == visitType }
-        if (forVisitType.isNotEmpty()) return forVisitType
+        val visitTypesOrdered = SubstancesDataUtil.getVisitTypesInOrder(configurationManager.getSubstancesConfig())
+        val currentVisitIndex = visitTypesOrdered.indexOf(visitType)
+        val forCurrentAndEarlier = byAge.filter { substance ->
+            val idx = visitTypesOrdered.indexOf(substance.visitType)
+            idx in 0..currentVisitIndex
+        }
+        if (forCurrentAndEarlier.isNotEmpty()) return forCurrentAndEarlier
         return SubstancesDataUtil.getSubstancesDataForVisitType(visitType, configurationManager)
     }
 
